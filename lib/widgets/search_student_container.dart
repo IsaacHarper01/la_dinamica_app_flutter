@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 
 class SearchStudentContainer extends StatelessWidget {
-  const SearchStudentContainer({super.key});
+  final String circleText;
+
+  const SearchStudentContainer({super.key, required this.circleText});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class SearchStudentContainer extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Asistencias de hoy: 25',
+                circleText,
                 style: TextStyle(
                     color: colorList[4],
                     fontSize: 18,

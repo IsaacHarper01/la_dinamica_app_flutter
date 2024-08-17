@@ -3,8 +3,8 @@ import 'package:la_dinamica_app/widgets/preview_student_container.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
 
 const students = <String>[
-  'Isaac se la super come'
-      'Paco',
+  'Isaac se la super come',
+  'Paco',
   'Chava',
   'Alex',
   'Sebas',
@@ -29,7 +29,9 @@ class HomeScreen extends StatelessWidget {
             SizedBox(
               height: screenHeight * 0.06,
             ),
-            const SearchStudentContainer(),
+            const SearchStudentContainer(
+              circleText: 'Asistencias de hoy: 25',
+            ),
             SizedBox(
               height: screenHeight * 0.01,
             ),
