@@ -10,7 +10,7 @@ class SearchStudentContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      height: screenHeight * 0.18,
+      height: screenHeight * 0.16,
       width: double.infinity,
       decoration: BoxDecoration(color: colorList[8]),
       child: Column(
@@ -30,7 +30,7 @@ class SearchStudentContainer extends StatelessWidget {
                 circleText,
                 style: TextStyle(
                     color: colorList[4],
-                    fontSize: screenHeight * 0.025,
+                    fontSize: screenHeight * 0.015,
                     fontWeight: FontWeight.w600),
               ),
             ),
@@ -43,11 +43,15 @@ class SearchStudentContainer extends StatelessWidget {
                     borderSide: BorderSide(color: colorList[7]),
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
                   ),
-                  fillColor: colorList[7],
+                  fillColor: colorList[3],
                   filled: true,
                   hintText: 'Nombre',
-                  hintStyle: TextStyle(fontSize: screenHeight * 0.025),
-                  suffixIcon: const Icon(Icons.search),
+                  hintStyle: TextStyle(
+                      fontSize: screenHeight * 0.020, color: colorList[8]),
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: colorList[8],
+                  ),
                   contentPadding: EdgeInsets.symmetric(
                     vertical:
                         screenHeight * 0.015, // Centra el texto verticalmente

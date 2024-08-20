@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
 
@@ -28,24 +30,44 @@ class StudentsScreen extends StatelessWidget {
           SizedBox(
             height: screenHeight * 0.06,
           ),
-          FilledButton.icon(
-            onPressed: () {
-              //TODO, hacer funcion de agregar
-            },
-            label: const Text('Agregar alumno'),
-            icon: const Icon(Icons.group_add_rounded),
-          ),
+          const SearchStudentContainer(circleText: 'Total de alumnos: 150'),
           SizedBox(
             height: screenHeight * 0.01,
           ),
-          const SearchStudentContainer(circleText: 'Total de alumnos: 150'),
+          Padding(
+            padding: EdgeInsets.only(right: screenHeight * 0.01),
+            child: Row(children: [
+              const Spacer(),
+              FilledButton.icon(
+                onPressed: () {
+                  //TODO, hacer funcion de agregar
+                },
+                label: const Text('Agregar alumno'),
+                icon: const Icon(Icons.group_add_rounded),
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(colorList[3])),
+              ),
+            ]),
+          ),
           SizedBox(
             height: screenHeight * 0.01,
           ),
           ...students.map((student) {
             return Column(
               children: [
-                PreviewStudentContainerReduce(name: student),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            StudentDetailScreen(name: student),
+                      ),
+                    );
+                  },
+                  splashColor: colorList[6],
+                  child: PreviewStudentContainerReduce(name: student),
+                ),
                 const Divider(
                   height: 0,
                   indent: 20,

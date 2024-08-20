@@ -13,7 +13,7 @@ class PreviewStudentContainer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        height: screenHeight * 0.14,
+        height: screenHeight * 0.11,
         width: screenWidth,
         child: Row(
           children: [
@@ -23,7 +23,7 @@ class PreviewStudentContainer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   child: Image.network(
                     'https://i.pinimg.com/originals/fb/6d/16/fb6d16c4321ab45dad1c6290f2740f7a.jpg',
-                    width: screenHeight * 0.11,
+                    width: screenHeight * 0.08,
                     fit: BoxFit.cover,
                   )),
             ),
@@ -47,55 +47,24 @@ class PreviewStudentContainer extends StatelessWidget {
                         maxLines: 1,
                       ),
                     ),
-                    Text(
-                      'Clases',
-                      style: TextStyle(fontSize: screenHeight * 0.02),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 2,
-                              color: Colors.green,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Completas: 12',
-                              style: TextStyle(
-                                  color: Colors.green,
-                                  fontSize: screenHeight * 0.018,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 2,
+                          color: Colors.blue,
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 2,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Clases Faltantes: 4',
+                          style: TextStyle(
                               color: Colors.blue,
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Faltantes: 4',
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: screenHeight * 0.018,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
+                              fontSize: screenHeight * 0.018,
+                              fontWeight: FontWeight.w600),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
