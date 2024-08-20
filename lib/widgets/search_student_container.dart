@@ -30,7 +30,7 @@ class SearchStudentContainer extends StatelessWidget {
                 circleText,
                 style: TextStyle(
                     color: colorList[4],
-                    fontSize: 18,
+                    fontSize: screenHeight * 0.025,
                     fontWeight: FontWeight.w600),
               ),
             ),
@@ -46,11 +46,13 @@ class SearchStudentContainer extends StatelessWidget {
                   fillColor: colorList[7],
                   filled: true,
                   hintText: 'Nombre',
-                  hintStyle: const TextStyle(fontSize: 18),
+                  hintStyle: TextStyle(fontSize: screenHeight * 0.025),
                   suffixIcon: const Icon(Icons.search),
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 15.0, // Centra el texto verticalmente
-                    horizontal: 50.0, // Centra el texto horizontalmente
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical:
+                        screenHeight * 0.015, // Centra el texto verticalmente
+                    horizontal:
+                        screenHeight * 0.02, // Centra el texto horizontalmente
                   ),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(

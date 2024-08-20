@@ -39,16 +39,17 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                       // Envuelve el Text en un Flexible para evitar el desbordamiento
                       child: Text(
                         name,
-                        style: const TextStyle(
-                            fontSize: 26, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            fontSize: screenHeight * 0.022,
+                            fontWeight: FontWeight.w500),
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
                         maxLines: 1,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'ID',
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: screenHeight * 0.015),
                     ),
                   ],
                 ),

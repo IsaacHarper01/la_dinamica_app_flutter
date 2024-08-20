@@ -39,16 +39,17 @@ class PreviewStudentContainer extends StatelessWidget {
                       // Envuelve el Text en un Flexible para evitar el desbordamiento
                       child: Text(
                         name,
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            fontSize: screenHeight * 0.025,
+                            fontWeight: FontWeight.w500),
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
                         maxLines: 1,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Clases',
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: screenHeight * 0.02),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -61,13 +62,13 @@ class PreviewStudentContainer extends StatelessWidget {
                             ),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(
                               'Completas: 12',
                               style: TextStyle(
                                   color: Colors.green,
-                                  fontSize: 18,
+                                  fontSize: screenHeight * 0.018,
                                   fontWeight: FontWeight.w600),
                             ),
                           ),
@@ -83,13 +84,13 @@ class PreviewStudentContainer extends StatelessWidget {
                             ),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(
                               'Faltantes: 4',
                               style: TextStyle(
                                   color: Colors.blue,
-                                  fontSize: 18,
+                                  fontSize: screenHeight * 0.018,
                                   fontWeight: FontWeight.w600),
                             ),
                           ),

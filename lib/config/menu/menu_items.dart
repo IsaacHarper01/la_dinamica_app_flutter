@@ -9,7 +9,7 @@ class MenuItem {
 }
 
 const appMenuItmes = <MenuItem>[
-  MenuItem(title: 'Inicio', link: '/home', icon: Icons.home_max_rounded),
+  MenuItem(title: 'Inicio', link: '/home', icon: Icons.home_rounded),
   MenuItem(
       title: 'Alumnos',
       link: '/students',
