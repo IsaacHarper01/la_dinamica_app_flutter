@@ -5,6 +5,7 @@ import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
 
+
 const students = <String>[
   'Isaac se la super come',
   'Paco',

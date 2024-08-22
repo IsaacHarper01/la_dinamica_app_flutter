@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/backend/database.dart';
 
 class AddStudentScreen extends StatefulWidget {
   const AddStudentScreen({super.key});
@@ -13,21 +14,19 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
   // Crear un controlador para cada campo de texto
   final List<TextEditingController> _controllers =
-      List.generate(9, (index) => TextEditingController());
+      List.generate(6, (index) => TextEditingController());
 
   // Lista de nombres personalizados para cada campo
   final List<String> _fieldNames = [
     'Nombre',
-    'Apellido',
-    'Correo Electrónico',
+    'Localidad',
     'Teléfono',
-    'Dirección',
-    'Ciudad',
-    'Estado',
-    'Código Postal',
-    'País'
+    'Edad',
+    'Fecha de nacimiento',
+    'Correo Electrónico'
   ];
-
+  //La lista de las etiquetas y los nombres en la base de datos difieren por lo que hice otra variable
+  final List<String> _Namesdb = ['name','address','phone','age','birthday','email'];
   @override
   void dispose() {
     // Liberar los controladores cuando no se necesiten más
@@ -39,12 +38,16 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
 
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      // Aquí puedes acceder a los valores de los TextFields
+      // instancia de la base de datos
+      final db = DatabaseHelper();
+      //se convierten los valores a Map
+      Map<String,dynamic> data={};
       for (var i = 0; i < _controllers.length; i++) {
-        print('${_fieldNames[i]}: ${_controllers[i].text}');
+        data['${_Namesdb[i]}']=_controllers[i].text;
       }
-
-      // Aquí puedes enviar los datos, o realizar cualquier otra acción
+      //se insertan los valores en la base
+      db.InsertGeneralData(data);
+      print('inertion successful');
     }
   }
 
