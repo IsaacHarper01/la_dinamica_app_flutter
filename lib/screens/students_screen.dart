@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
@@ -44,7 +45,10 @@ class StudentsScreen extends StatelessWidget {
               const Spacer(),
               FilledButton.icon(
                 onPressed: () {
-                  //TODO, hacer funcion de agregar
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddStudentScreen()));
                 },
                 label: const Text('Agregar alumno'),
                 icon: const Icon(Icons.group_add_rounded),
