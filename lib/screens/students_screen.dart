@@ -20,7 +20,11 @@ class StudentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isPortatil = orientation == Orientation.portrait;
+    final screenHeight = isPortatil
+        ? MediaQuery.of(context).size.height
+        : MediaQuery.of(context).size.height * 2;
 
     return Scaffold(
         body: SingleChildScrollView(
