@@ -33,12 +33,16 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isPortatil = orientation == Orientation.portrait;
+    final screenHeight = isPortatil
+        ? MediaQuery.of(context).size.height
+        : MediaQuery.of(context).size.height * 2;
 
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
-        color: colorList[5],
+        color: colorList[0],
         height: screenHeight * 0.07,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -53,14 +57,15 @@ class _MainScreenState extends State<MainScreen> {
                 children: [
                   Icon(
                     item.icon,
-                    color: _selectedIndex == idx ? colorList[4] : colorList[1],
+                    color: _selectedIndex == idx ? colorList[4] : colorList[5],
+                    size: screenHeight * 0.025,
                   ),
                   Text(
                     item.title,
                     style: TextStyle(
-                      color:
-                          _selectedIndex == idx ? colorList[4] : colorList[1],
-                    ),
+                        color:
+                            _selectedIndex == idx ? colorList[4] : colorList[5],
+                        fontSize: screenHeight * 0.015),
                   ),
                 ],
               ),
