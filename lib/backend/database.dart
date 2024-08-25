@@ -1,7 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+
 class DatabaseHelper{
+  var names = null;
   Future<Database> _openDatabase() async{
     final databasepath = await getDatabasesPath();
     final path = join(databasepath,'alumnos.db');
@@ -90,11 +92,18 @@ class DatabaseHelper{
     return data;
   }
 
-  Future<List<Map<String,dynamic>>> fetchGeneralData()async{
+  Future<Map<String,dynamic>> fetchGeneralData()async{
     final db = await _openDatabase();
     final data = await db.query('General');
+    List<dynamic> ids = data.map((element)=>element['id']).toList();
+    List<dynamic> names = data.map((element)=>element['name']).toList();
+    List<dynamic> emails = data.map((element)=>element['email']).toList();
+    List<dynamic> phones = data.map((element)=>element['phone']).toList();
+    List<dynamic> address = data.map((element)=>element['address']).toList();
+    List<dynamic> ages = data.map((element)=>element['age']).toList();
+    List<dynamic> birthdays = data.map((element)=>element['birthday']).toList();
     await db.close();
-    return data;
+    return({'ids':ids,'names':names,'emails':emails,'phones':phones,'address':address,'ages':ages,'birthdays':birthdays});
   }
 
   Future<List<Map<String,dynamic>>> fetchData()async{
@@ -103,4 +112,5 @@ class DatabaseHelper{
     await db.close();
     return data;
   }
+
 }
