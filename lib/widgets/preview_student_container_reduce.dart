@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class PreviewStudentContainerReduce extends StatelessWidget {
   final String name;
+  final int id;
 
-  const PreviewStudentContainerReduce({super.key, required this.name});
+  const PreviewStudentContainerReduce({super.key, required this.name, required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'ID',
+                      'ID: $id',
                       style: TextStyle(fontSize: screenHeight * 0.015),
                     ),
                   ],

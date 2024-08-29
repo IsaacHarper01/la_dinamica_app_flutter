@@ -102,15 +102,31 @@ class DatabaseHelper{
     List<dynamic> address = data.map((element)=>element['address']).toList();
     List<dynamic> ages = data.map((element)=>element['age']).toList();
     List<dynamic> birthdays = data.map((element)=>element['birthday']).toList();
+    print(names.length);
     await db.close();
     return({'ids':ids,'names':names,'emails':emails,'phones':phones,'address':address,'ages':ages,'birthdays':birthdays});
   }
 
-  Future<List<Map<String,dynamic>>> fetchData()async{
+  Future<List<Map<String,dynamic>>> fetchMetricsData()async{
     final db = await _openDatabase();
     final data = await db.query('Metrics');
     await db.close();
     return data;
+  }
+  //this function could recive a string to indicate in which table will to delete the id
+  //if the table parameter is not specified all the registers in all the tables will be delete
+  Future<int> deleteRegister(int id, String? table) async{
+    final db = await _openDatabase();
+    if (table == 'General') {return db.delete('General',where: 'id=?',whereArgs: [id]);}
+    else if(table=='Payments'){return db.delete('Payments',where: 'id=?',whereArgs: [id]);}
+    else if(table=='Attendance'){return db.delete('Attendace',where: 'id=?',whereArgs: [id]);}
+    else if(table=='Metrics'){return db.delete('Metrics',where: 'id=?',whereArgs: [id]);}
+    else{
+      db.delete('General',where: 'id=?',whereArgs: [id]);
+      db.delete('Payments',where: 'id=?',whereArgs: [id]);
+      db.delete('Attendance',where: 'id=?',whereArgs: [id]);
+      return db.delete('Metrics',where: 'id=?',whereArgs: [id]);
+    }
   }
 
 }

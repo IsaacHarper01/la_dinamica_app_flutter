@@ -1,7 +1,9 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
+import 'package:la_dinamica_app/screens/home_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
@@ -30,8 +32,11 @@ class StudentsScreen extends StatelessWidget {
           }else{
             //El snapshot.data contiene la informacion en forma de lista de los alumnos[ids,names,emails,phones,address,ages,birthdays]
             List<dynamic> students = snapshot.data['names'];
+            List<dynamic> students_ids = snapshot.data['ids'];
+            List<int> students_index = List.generate(students.length, (index)=>index);
+            int num = students.length;
             //probablemente sea mejor pasarle todo el snapshot a scroll view para tener no solo la informacion de los nombres
-         return scroll_virew(screenHeight: screenHeight, students: students);
+         return scroll_virew(screenHeight: screenHeight, students: students, num_alumnos: num,index_list: students_index,ids: students_ids,);
           }
         },
       ),
@@ -44,11 +49,18 @@ class scroll_virew extends StatelessWidget {
     super.key,
     required this.screenHeight,
     required this.students,
+    required this.num_alumnos,
+    required this.index_list,
+    required this.ids,
+
   });
 
   final double screenHeight;
   final List<dynamic> students;
-
+  final List<dynamic> ids;
+  final int num_alumnos;
+  final List<int> index_list;
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -58,7 +70,7 @@ class scroll_virew extends StatelessWidget {
       SizedBox(
         height: screenHeight * 0.06,
       ),
-      const SearchStudentContainer(circleText: 'Total de alumnos: 150'),
+      SearchStudentContainer(circleText: 'Total de alumnos: $num_alumnos'),
       SizedBox(
         height: screenHeight * 0.01,
       ),
@@ -83,8 +95,9 @@ class scroll_virew extends StatelessWidget {
       SizedBox(
         height: screenHeight * 0.01,
       ),
-      ...students.map((student) {
-        return Column(
+      ...index_list.map((i) {
+        return FadeInUp(
+          child:Column(
           children: [
             InkWell(
               onTap: () {
@@ -92,12 +105,12 @@ class scroll_virew extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        StudentDetailScreen(name: student),
+                        StudentDetailScreen(name: students[i]),
                   ),
                 );
               },
               splashColor: colorList[6],
-              child: PreviewStudentContainerReduce(name: student),
+              child: PreviewStudentContainerReduce(name: students[i], id: ids[i],),
             ),
             const Divider(
               height: 0,
@@ -105,6 +118,7 @@ class scroll_virew extends StatelessWidget {
               endIndent: 20,
             ),
           ],
+        ),
         );
       })
     ],
