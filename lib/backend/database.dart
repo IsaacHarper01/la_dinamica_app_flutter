@@ -128,5 +128,4 @@ class DatabaseHelper{
       return db.delete('Metrics',where: 'id=?',whereArgs: [id]);
     }
   }
-
 }
