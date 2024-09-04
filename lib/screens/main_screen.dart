@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/menu/menu_items.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/screens/config_screen.dart';
 import 'package:la_dinamica_app/screens/earn_screen.dart';
 import 'package:la_dinamica_app/screens/home_screen.dart';
 import 'package:la_dinamica_app/screens/pays_screen.dart';
-import 'package:la_dinamica_app/screens/profile_screen.dart';
 import 'package:la_dinamica_app/screens/students_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
     StudentsScreen(),
     EarnScreen(),
     PaysScreen(),
-    ProfileScreen()
+    ConfigScreen()
   ];
 
   void _onItemTapped(int index) {
