@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
 import 'package:la_dinamica_app/backend/database.dart';
@@ -18,6 +19,10 @@ class HomeScreen extends StatelessWidget {
     final db = DatabaseHelper();
 
     return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: ()=>scannerQR(),
+          child: Icon(Icons.qr_code_scanner_outlined),
+          ),
         body: FutureBuilder(
           future: db.fetchAttendanceToday(), 
           builder: (BuildContext context, AsyncSnapshot snapshot) {
