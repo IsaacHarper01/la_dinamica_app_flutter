@@ -2,7 +2,7 @@ name: la_dinamica_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -28,18 +28,14 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  animate_do: null
   cupertino_icons: ^1.0.8
   fl_chart: ^0.69.0
   flutter:
     sdk: flutter
-  sqflite: ^2.3.3+1
-  animate_do:
   flutter_barcode_scanner: ^2.0.0
   permission_handler: ^11.3.1
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8 
+  sqflite: ^2.3.3+1
 
 dev_dependencies:
 
@@ -63,7 +59,6 @@ flutter_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
