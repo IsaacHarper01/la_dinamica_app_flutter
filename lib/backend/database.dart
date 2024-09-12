@@ -1,9 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
-
 class DatabaseHelper{
-  var names = null;
+
+//CREATE DATABASE
+
   Future<Database> _openDatabase() async{
     final databasepath = await getDatabasesPath();
     final path = join(databasepath,'alumnos.db');
@@ -28,6 +28,8 @@ class DatabaseHelper{
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         userId INTEGER,
         amount REAL,
+        clases INT,
+        type TEXT,
         date TEXT
       )
     ''');
@@ -44,15 +46,25 @@ class DatabaseHelper{
       CREATE TABLE Attendance (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         userId INTEGER,
+        name TEXT,
         date TEXT,
         status TEXT
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE Plans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        type TEXT,
+        clases INT,
+        price FLOAT
       )
     ''');
       },version: 1
     );
   }
+
 ///INSERTS
-///
+
   Future<void> InserAttendancetData(Map<String, dynamic> row) async{
     final db = await _openDatabase();
     await db.insert('Attendance', row);
@@ -76,11 +88,23 @@ class DatabaseHelper{
     await db.insert('Metrics', row);
     await db.close();
   }
-///FETCH ALL DATA
-///
-  Future<List<Map<String,dynamic>>> fetchAttendanceData()async{
+
+  Future<void> InsertPlanData(Map<String, dynamic> row) async{
     final db = await _openDatabase();
-    final data = await db.query('Attendance');
+    await db.insert('Plans', row);
+    await db.close();
+  }
+
+///FETCH ALL DATA
+
+  Future<List<Map<String,dynamic>>> fetchAttendanceRange(DateTime min, DateTime max) async{
+    final db = await _openDatabase();
+    final List<Map<String, dynamic>> data = await db.query('Attendance', where: 'date BETWEEN ? AND ?',
+    whereArgs: [
+      min.toIso8601String(),
+      max.toIso8601String(),
+        ],
+      );
     await db.close();
     return data;
   }
@@ -102,7 +126,16 @@ class DatabaseHelper{
     List<dynamic> address = data.map((element)=>element['address']).toList();
     List<dynamic> ages = data.map((element)=>element['age']).toList();
     List<dynamic> birthdays = data.map((element)=>element['birthday']).toList();
-    print(names.length);
+    //InserAttendancetData({'userID': 3,'name': 'Isaac Hernandez', 'date':DateTime.now().toString().split(' ')[0],'status':'Presente'});
+    //InserAttendancetData({'userID': 4,'date':'2024-09-06','status':'presente'});
+    //DateTime startDate = DateTime(2024, 9, 03);
+    //DateTime endDate = DateTime(2024, 9, 05);
+    //final DateTime maximun = DateTime.;
+    //fetchAttendanceRange(startDate, endDate);
+    //deleteRegister(4, 'Attendance');
+    //deleteDB();
+    //print(fetchAttendanceToday());
+    //print(fetchSimpleData('General', 'name', 2, false));
     await db.close();
     return({'ids':ids,'names':names,'emails':emails,'phones':phones,'address':address,'ages':ages,'birthdays':birthdays});
   }
@@ -113,13 +146,45 @@ class DatabaseHelper{
     await db.close();
     return data;
   }
-  //this function could recive a string to indicate in which table will to delete the id
-  //if the table parameter is not specified all the registers in all the tables will be delete
+
+//FETCH A SINGLE DATA FROM TABLE
+ 
+  Future<Object?> fetchSimpleData(String table, String field, int id, bool allfields)async{
+    final db = await _openDatabase();
+    final data = await db.query('General', where: 'id LIKE ?', whereArgs: [id],);
+    if (data.isNotEmpty) {
+    if (allfields) {
+      return data[0]; // Returns Map<String, dynamic>
+    } else {
+      return data[0][field]; // Returns dynamic (e.g., String, int)
+    }
+    }else {
+    return null; // Handle the case where no data is found
+    }
+  }
+
+  Future<Map<String,dynamic>> fetchAttendanceToday()async{
+    final db = await _openDatabase();
+    final today = DateTime.now().toString().split(' ')[0];
+    final data = await db.query(
+      'Attendance',
+      where: 'date LIKE ? AND status = ?',
+      whereArgs: [today + '%','Presente'], // % to account for time in the string
+    );
+    await db.close();
+    List<dynamic> ids = data.map((elemet) => elemet['userId']).toList();
+    List<dynamic> names = data.map((element) => element['name']).toList();
+  
+    return ({'ids':ids,'names':names});
+  }
+
+//DELETE FUNCTIONS
+
   Future<int> deleteRegister(int id, String? table) async{
     final db = await _openDatabase();
     if (table == 'General') {return db.delete('General',where: 'id=?',whereArgs: [id]);}
     else if(table=='Payments'){return db.delete('Payments',where: 'id=?',whereArgs: [id]);}
-    else if(table=='Attendance'){return db.delete('Attendace',where: 'id=?',whereArgs: [id]);}
+    else if(table=='Attendance'){return db.delete('Attendance',where: 'id=?',whereArgs: [id]);}
     else if(table=='Metrics'){return db.delete('Metrics',where: 'id=?',whereArgs: [id]);}
     else{
       db.delete('General',where: 'id=?',whereArgs: [id]);
@@ -129,4 +194,18 @@ class DatabaseHelper{
     }
   }
 
+  Future<void> deleteTable(String table)async{
+  final db = await _openDatabase();
+  db.delete(table);
+  print('Table $table deleted succesfully');
+  }
+
+  Future<void> deleteDB() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'alumnos.db');
+
+    // Delete the database
+    await deleteDatabase(path);
+    print('Database deleted');
+  }
 }

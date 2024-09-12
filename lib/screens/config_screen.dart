@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/backend/database.dart';
 
 class ConfigScreen extends StatelessWidget {
   const ConfigScreen({super.key});
