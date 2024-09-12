@@ -28,9 +28,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  
   flutter:
     sdk: flutter
   sqflite: ^2.3.3+1
+  fl_chart: ^0.69.0
   animate_do:
   flutter_barcode_scanner: ^2.0.0
   permission_handler: ^11.3.1
@@ -40,21 +42,20 @@ dependencies:
   cupertino_icons: ^1.0.8 
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-    
+
   flutter_launcher_icons: ^0.11.0
-  
+
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+  flutter_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 flutter_icons:
   android: true
   ios: true
@@ -72,13 +73,10 @@ flutter:
   assets:
     - assets/
   #   - images/a_dot_ham.jpeg
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
