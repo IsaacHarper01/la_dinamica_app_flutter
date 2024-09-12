@@ -109,6 +109,36 @@ class StudentDetailScreen extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  FilledButton(
+                      onPressed: () {},
+                      style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStateProperty.all(colorList[2])),
+                      child: const Text('Asistencia')),
+                  FilledButton(
+                      onPressed: () {},
+                      style: ButtonStyle(
+                          backgroundColor:
+                              WidgetStateProperty.all(colorList[4])),
+                      child: const Text('Pagar')),
+                  FilledButton(
+                    onPressed: () {},
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(colorList[3])),
+                    child: const Text('Desarrollo'),
+                  )
+                ],
+              ),
+            ),
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(

@@ -26,7 +26,14 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     'Correo Electrónico'
   ];
   //La lista de las etiquetas y los nombres en la base de datos difieren por lo que hice otra variable
-  final List<String> _Namesdb = ['name','address','phone','age','birthday','email'];
+  final List<String> _Namesdb = [
+    'name',
+    'address',
+    'phone',
+    'age',
+    'birthday',
+    'email'
+  ];
   @override
   void dispose() {
     // Liberar los controladores cuando no se necesiten más
@@ -36,19 +43,29 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     super.dispose();
   }
 
-  void _submitForm() {
+  void _submitForm(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
       // instancia de la base de datos
       final db = DatabaseHelper();
       //se convierten los valores a Map
-      Map<String,dynamic> data={};
+      Map<String, dynamic> data = {};
       for (var i = 0; i < _controllers.length; i++) {
-        data['${_Namesdb[i]}']=_controllers[i].text;
+        data['${_Namesdb[i]}'] = _controllers[i].text;
       }
       //se insertan los valores en la base
       db.InsertGeneralData(data);
       print('inertion successful');
     }
+    // Mostrar SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Registro exitoso'),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    // Volver a la pantalla anterior
+    Navigator.pop(context);
   }
 
   @override
@@ -121,7 +138,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _submitForm,
+                  onPressed: () {
+                    _submitForm(context);
+                  },
                   child: const Text('Registrar'),
                 ),
               ],
