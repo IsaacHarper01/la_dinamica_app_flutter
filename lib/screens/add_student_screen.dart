@@ -54,7 +54,6 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       }
       //se insertan los valores en la base
       db.InsertGeneralData(data);
-      print('inertion successful');
     }
     // Mostrar SnackBar
     ScaffoldMessenger.of(context).showSnackBar(

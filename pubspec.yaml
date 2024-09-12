@@ -31,7 +31,6 @@ dependencies:
   
   flutter:
     sdk: flutter
-  sqflite: ^2.3.3+1
   fl_chart: ^0.69.0
   animate_do:
   flutter_barcode_scanner: ^2.0.0

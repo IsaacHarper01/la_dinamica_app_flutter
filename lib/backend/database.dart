@@ -45,10 +45,11 @@ class DatabaseHelper{
     await db.execute('''
       CREATE TABLE Attendance (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER,
-        name TEXT,
-        date TEXT,
-        status TEXT
+        userId INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        date TEXT NOT NULL,
+        status TEXT NOT NULL,
+        UNIQUE(userId,date)
       )
     ''');
     await db.execute('''
@@ -65,10 +66,18 @@ class DatabaseHelper{
 
 ///INSERTS
 
-  Future<void> InserAttendancetData(Map<String, dynamic> row) async{
+  Future<void> InserAttendanceData(int id, String name) async{
     final db = await _openDatabase();
-    await db.insert('Attendance', row);
+    final today_date = DateTime.now().toString().split(' ')[0];
+    Map<String, dynamic> row = {'userId':id,'name':name,'date':today_date,'status':'Presente'};
+    try {
+      await db.insert('Attendance', row);
+      print('Asistencia registrada');
+    } catch (e) {
+      print('Asistencia ya registrada');
+    }
     await db.close();
+    
   } 
 
   Future<void> InsertGeneralData(Map<String, dynamic> row) async{
@@ -128,8 +137,8 @@ class DatabaseHelper{
     List<dynamic> birthdays = data.map((element)=>element['birthday']).toList();
     //InserAttendancetData({'userID': 3,'name': 'Isaac Hernandez', 'date':DateTime.now().toString().split(' ')[0],'status':'Presente'});
     //InserAttendancetData({'userID': 4,'date':'2024-09-06','status':'presente'});
-    //DateTime startDate = DateTime(2024, 9, 03);
-    //DateTime endDate = DateTime(2024, 9, 05);
+    //DateTime startDate = DateTime(2024, 9, 10);
+    //DateTime endDate = DateTime(2024, 9, 15);
     //final DateTime maximun = DateTime.;
     //fetchAttendanceRange(startDate, endDate);
     //deleteRegister(4, 'Attendance');

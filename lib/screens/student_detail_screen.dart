@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/backend/database.dart';
 
 class StudentDetailScreen extends StatelessWidget {
   final String name;
+  final int id;
 
-  const StudentDetailScreen({super.key, required this.name});
+  const StudentDetailScreen({super.key, required this.name,required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +19,7 @@ class StudentDetailScreen extends StatelessWidget {
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
     bool isActive = true;
+    DatabaseHelper db = DatabaseHelper();
 
     return Scaffold(
       appBar: AppBar(
@@ -119,22 +122,30 @@ class StudentDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   FilledButton(
-                      onPressed: () {},
+                      onPressed: () async{
+                        await db.InserAttendanceData(id, name);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('Asistencia Registrada'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      },
                       style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.all(colorList[2])),
-                      child: const Text('Asistencia')),
+                      child: const Text('Marcar Asistencia')),
                   FilledButton(
                       onPressed: () {},
                       style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.all(colorList[4])),
-                      child: const Text('Pagar')),
+                      child: const Text('Pagos')),
                   FilledButton(
                     onPressed: () {},
                     style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(colorList[3])),
-                    child: const Text('Desarrollo'),
+                    child: const Text('Metricas'),
                   )
                 ],
               ),

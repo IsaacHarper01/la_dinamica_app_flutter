@@ -139,7 +139,7 @@ class ScrollViewContent extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                StudentDetailScreen(name: students[i]),
+                                StudentDetailScreen(name: students[i], id: ids[i]),
                           ),
                         );
                       },
