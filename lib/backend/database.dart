@@ -22,37 +22,36 @@ class DatabaseHelper{
         email TEXT
       )
     ''');
-
-    await db.execute('''
-      CREATE TABLE Payments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER,
-        amount REAL,
-        clases INT,
-        type TEXT,
-        date TEXT
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE Metrics (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER,
-        metric TEXT,
-        date TEXT,
-        value REAL
-      )
-    ''');
-    await db.execute('''
-      CREATE TABLE Attendance (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER NOT NULL,
-        name TEXT NOT NULL,
-        date TEXT NOT NULL,
-        status TEXT NOT NULL,
-        UNIQUE(userId,date)
-      )
-    ''');
-    await db.execute('''
+      await db.execute('''
+        CREATE TABLE Payments (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          userId INTEGER,
+          amount REAL,
+          clases INT,
+          type TEXT,
+          date TEXT
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE Metrics (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          userId INTEGER,
+          metric TEXT,
+          date TEXT,
+          value REAL
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE Attendance (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          userId INTEGER NOT NULL,
+          name TEXT NOT NULL,
+          date TEXT NOT NULL,
+          status TEXT NOT NULL,
+          UNIQUE(userId,date)
+        )
+      ''');
+      await db.execute('''
       CREATE TABLE Plans (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         type TEXT,
@@ -155,6 +154,14 @@ class DatabaseHelper{
     await db.close();
     return data;
   }
+
+  Future<List<Map<String,dynamic>>> fetchPlansData()async{
+    final db = await _openDatabase();
+    final data = await db.query('Plans');
+    await db.close();
+    return data;
+  }
+
 
 //FETCH A SINGLE DATA FROM TABLE
  

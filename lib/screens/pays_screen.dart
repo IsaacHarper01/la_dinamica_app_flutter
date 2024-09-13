@@ -115,27 +115,6 @@ class PaysScreen extends StatelessWidget {
                             height: screenHeight * 0.01,
                           ),
                           const Text(
-                            'ID: 124852',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          SizedBox(
-                            height: screenHeight * 0.01,
-                          ),
-                          const Text(
-                            'ID: Nombre del Alumno: Isaac se la come',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          SizedBox(
-                            height: screenHeight * 0.01,
-                          ),
-                          const Text(
-                            'Tipo de plan: Hombro al fallo',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          SizedBox(
-                            height: screenHeight * 0.01,
-                          ),
-                          const Text(
                             'Total de clases: 15',
                             style: TextStyle(color: Colors.white),
                           ),

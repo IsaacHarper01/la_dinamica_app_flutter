@@ -21,6 +21,7 @@ Future<void> scannerQR() async{
     barCodeScanner = 'Fail to get platform version';
     return;
   }
+  print(barCodeScanner);
   List<String> qrdata = barCodeScanner.split(',');
   String name = qrdata[0].split(':')[1];
   String id = qrdata[1].split(':')[1];
