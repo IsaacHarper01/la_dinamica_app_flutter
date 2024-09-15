@@ -167,7 +167,7 @@ class DatabaseHelper{
  
   Future<Object?> fetchSimpleData(String table, String field, int id, bool allfields)async{
     final db = await _openDatabase();
-    final data = await db.query('General', where: 'id LIKE ?', whereArgs: [id],);
+    final data = await db.query(table, where: 'id LIKE ?', whereArgs: [id],);
     if (data.isNotEmpty) {
     if (allfields) {
       return data[0]; // Returns Map<String, dynamic>
@@ -193,6 +193,24 @@ class DatabaseHelper{
   
     return ({'ids':ids,'names':names});
   }
+
+  Future<List<List<String>>> fetchNamesIdsPlans() async {
+  final db = await _openDatabase();
+
+  // Fetch the raw data from the database
+  final names = await db.query('General', columns: ['name']); 
+  final ids = await db.query('General', columns: ['id']);
+  final plans = await db.query('Plans');
+
+  // Convert each list of maps into a list of strings
+  List<String> namesList = names.map((e) => e['name'].toString()).toList();
+  List<String> idsList = ids.map((e) => e['id'].toString()).toList();
+  List<String> plantype = plans.map((e) => e['type'].toString()).toList();
+  List<String> planprice = plans.map((e) => e['price'].toString()).toList();
+  List<String> num_class = plans.map((e)=>e['clases'].toString()).toList();
+  
+  return [namesList, idsList, plantype,planprice,num_class];
+}
 
 //DELETE FUNCTIONS
 
