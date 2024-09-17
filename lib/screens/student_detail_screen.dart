@@ -6,7 +6,7 @@ class StudentDetailScreen extends StatelessWidget {
   final String name;
   final int id;
 
-  const StudentDetailScreen({super.key, required this.name,required this.id});
+  const StudentDetailScreen({super.key, required this.name, required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class StudentDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   FilledButton(
-                      onPressed: () async{
+                      onPressed: () async {
                         await db.InserAttendanceData(id, name);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
