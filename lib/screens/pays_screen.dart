@@ -10,7 +10,8 @@ class PaysScreen extends StatefulWidget {
 }
 
 class _PaysScreenState extends State<PaysScreen> {
-  int selectedIndex = 0; // Variable para guardar el índice seleccionado
+  int planIndex = 0; // Variable para guardar el índice del plan seleccionado
+  
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +37,12 @@ class _PaysScreenState extends State<PaysScreen> {
               final ids = data[1];
               final plansType = data[2];
               final costs = data[3];
-              final classes = data[4]; // Añadir las clases
+              final clases = data[4]; // Añadir las clases
 
               return paymentBox(screenWidth, screenHeight, names, ids,
-                  plansType, costs, classes, selectedIndex, (newIndex) {
+                  plansType, costs, clases, planIndex, (newIndex) {
                 setState(() {
-                  selectedIndex = newIndex; // Actualizar el índice seleccionado
+                  planIndex = newIndex; // Actualizar el índice seleccionado
                 });
               });
             }
@@ -57,9 +58,13 @@ Widget paymentBox(
     List<String> ids,
     List<String> plansType,
     List<String> costs,
-    List<String> classes, // Añadir el array de clases
-    int selectedIndex,
+    List<String> clases, // Añadir el array de clases
+    int planIndex,
     Function(int) onPlanSelected) {
+    int nameIndex = 0;
+    Map<String,dynamic> payMap;
+    String date = DateTime.now().toString().split(' ')[0];
+
   return Center(
     child: SingleChildScrollView(
         child: Padding(
@@ -107,9 +112,10 @@ Widget paymentBox(
                           fillColor: Colors.white,
                           border: OutlineInputBorder(),
                         ),
-                        value: names[0], // Valor inicial
+                        value: names[nameIndex], // Valor inicial
                         onChanged: (String? newValue) {
-                          // Aquí puedes manejar el valor seleccionado
+                          nameIndex = names.indexOf(newValue!);
+                          print(nameIndex);
                         },
                         items:
                             names.map<DropdownMenuItem<String>>((String value) {
@@ -136,7 +142,7 @@ Widget paymentBox(
                           border: OutlineInputBorder(),
                         ),
                         value: plansType[
-                            selectedIndex], // Valor inicial basado en el índice seleccionado
+                            planIndex], // Valor inicial basado en el índice seleccionado
                         onChanged: (String? newValue) {
                           // Actualizar el índice cuando se selecciona un nuevo plan
                           onPlanSelected(plansType.indexOf(newValue!));
@@ -152,14 +158,14 @@ Widget paymentBox(
                         height: screenHeight * 0.01,
                       ),
                       Text(
-                        'Total de clases: ${classes[selectedIndex]}', // Mostrar el total de clases según el plan seleccionado
+                        'Total de clases: ${clases[planIndex]}', // Mostrar el total de clases según el plan seleccionado
                         style: const TextStyle(color: Colors.white),
                       ),
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
                       Text(
-                        'Total a pagar: ${costs[selectedIndex]}',
+                        'Total a pagar: ${costs[planIndex]}',
                         style: const TextStyle(color: Colors.white),
                       ),
                     ]),
@@ -174,7 +180,12 @@ Widget paymentBox(
                       style: ButtonStyle(
                           backgroundColor:
                               WidgetStatePropertyAll(colorList[3])),
-                      onPressed: () {},
+                      onPressed: () {
+                        payMap = {'userId':nameIndex+1,'amount':costs[planIndex],'clases':clases[planIndex],'type':plansType[planIndex],'date':date};
+                        print(payMap);
+                        final db = DatabaseHelper();
+                        db.InserPaymentData(payMap);
+                      },
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(

@@ -120,6 +120,7 @@ class DatabaseHelper{
   Future<List<Map<String,dynamic>>> fetchPaymentsData()async{
     final db = await _openDatabase();
     final data = await db.query('Payments');
+    print(data);
     await db.close();
     return data;
   }
@@ -142,8 +143,9 @@ class DatabaseHelper{
     //fetchAttendanceRange(startDate, endDate);
     //deleteRegister(4, 'Attendance');
     //deleteDB();
-    //print(fetchAttendanceToday());
-    //print(fetchSimpleData('General', 'name', 2, false));
+    fetchPaymentsData();
+    //varifyPay(0);
+    //print(fetchSimpleData('Payments', 'userId', 2, false));
     await db.close();
     return({'ids':ids,'names':names,'emails':emails,'phones':phones,'address':address,'ages':ages,'birthdays':birthdays});
   }
@@ -197,21 +199,30 @@ class DatabaseHelper{
   Future<List<List<String>>> fetchNamesIdsPlans() async {
   final db = await _openDatabase();
 
-  // Fetch the raw data from the database
   final names = await db.query('General', columns: ['name']); 
   final ids = await db.query('General', columns: ['id']);
   final plans = await db.query('Plans');
 
-  // Convert each list of maps into a list of strings
   List<String> namesList = names.map((e) => e['name'].toString()).toList();
   List<String> idsList = ids.map((e) => e['id'].toString()).toList();
   List<String> plantype = plans.map((e) => e['type'].toString()).toList();
   List<String> planprice = plans.map((e) => e['price'].toString()).toList();
   List<String> num_class = plans.map((e)=>e['clases'].toString()).toList();
   
-  return [namesList, idsList, plantype,planprice,num_class];
+  return [namesList, idsList, plantype, planprice, num_class];
 }
 
+  Future<Map<String, dynamic>?> fetchLastPayment(int userId) async {
+    final db = await _openDatabase();
+    final List<Map<String, dynamic>> results = await db.query('Payments',where: 'userId = ?', whereArgs: [userId],orderBy: 'id DESC',limit: 1,);
+    return results.isNotEmpty ? results.first : null;
+}
+
+  Future<Map<String, dynamic>?> fetchBasePayment() async {
+      final db = await _openDatabase();
+      final List<Map<String, dynamic>> results = await db.query('Plans',where: 'clases = 1',limit: 1,);
+      return results[0].isNotEmpty ? results.first : null;
+  }
 //DELETE FUNCTIONS
 
   Future<int> deleteRegister(int id, String? table) async{
@@ -242,4 +253,34 @@ class DatabaseHelper{
     await deleteDatabase(path);
     print('Database deleted');
   }
+
+//UPDATE VALUES
+
+  Future<void> updateClases(int Id, int remainingClases) async {
+    final db = await _openDatabase();
+    await db.update('Payments', {'clases': remainingClases}, where: 'id = ?', whereArgs: [Id],);
+  }
+
+  Future<void> varifyPay(int userId) async{
+    var lastPay = await fetchLastPayment(userId);
+    var basePayment = await fetchBasePayment();
+    double cost = basePayment!['price'];
+    String date = DateTime.now().toString().split(' ')[0];
+    Map<String,dynamic> pay;
+    if (lastPay==null) {
+      pay = {'userId':userId,'amount':cost,'clases':0,'type':basePayment['type'],'date':date};
+      InserPaymentData(pay);
+      return;
+    }else if ((lastPay['type']!=basePayment['type']) && (lastPay['clases']>0)) {
+      var id = lastPay['id'];
+      var remainingClases = lastPay['clases']-1;
+      updateClases(id, remainingClases);
+    }else{
+      pay = {'userId':userId,'amount':cost,'clases':0,'type':basePayment['type'],'date':date};
+      InserPaymentData(pay);
+    }
+  }
+
 }
+
+

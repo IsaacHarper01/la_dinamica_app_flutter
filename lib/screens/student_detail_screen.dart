@@ -124,6 +124,7 @@ class StudentDetailScreen extends StatelessWidget {
                   FilledButton(
                       onPressed: () async {
                         await db.InserAttendanceData(id, name);
+                        await db.varifyPay(id);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: const Text('Asistencia Registrada'),
@@ -207,10 +208,6 @@ class StudentDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    'Total de clases: 10',
-                    style: TextStyle(fontSize: 20),
-                  ),
                   Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text('Clases asistidas: 1'),
@@ -229,16 +226,9 @@ class StudentDetailScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Nombre del tutor: Shrek'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
                     child: Text('Telefono del tutor: 213246574968'),
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('Telefono secundario: 52456432125'),
-                  ),
+      
                 ],
               ),
             )
