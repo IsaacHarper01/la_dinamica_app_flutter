@@ -12,22 +12,26 @@ Future<void> scannerQR() async {
   try {
     barCodeScanner = await FlutterBarcodeScanner.scanBarcode(
         "#ff6666", "Cancelar", false, ScanMode.QR);
+    if (barCodeScanner=='-1') {
+      return;
+    }
+    List<String> qrdata = barCodeScanner.split(',');
+      String name = qrdata[0].split(':')[1];
+      String id = qrdata[1].split(':')[1];
+      String age = qrdata[2].split(':')[1];
+      String address = qrdata[3].split(':')[1];
+      String phone = qrdata[4].split(':')[1];
+      Map<String, String> data = {
+        'name': name,
+        'id': id,
+        'age': age,
+        'address': address,
+        'phone': phone
+      };
   } on PlatformException {
     barCodeScanner = 'Fail to get platform version';
     return;
   }
   //print(barCodeScanner);
-  List<String> qrdata = barCodeScanner.split(',');
-  String name = qrdata[0].split(':')[1];
-  String id = qrdata[1].split(':')[1];
-  String age = qrdata[2].split(':')[1];
-  String address = qrdata[3].split(':')[1];
-  String phone = qrdata[4].split(':')[1];
-  Map<String, String> data = {
-    'name': name,
-    'id': id,
-    'age': age,
-    'address': address,
-    'phone': phone
-  };
+  
 }

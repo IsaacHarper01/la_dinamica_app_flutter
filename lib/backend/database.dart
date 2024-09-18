@@ -143,7 +143,7 @@ class DatabaseHelper{
     //fetchAttendanceRange(startDate, endDate);
     //deleteRegister(4, 'Attendance');
     //deleteDB();
-    fetchPaymentsData();
+    //fetchPaymentsData();
     //varifyPay(0);
     //print(fetchSimpleData('Payments', 'userId', 2, false));
     await db.close();
@@ -218,11 +218,25 @@ class DatabaseHelper{
     return results.isNotEmpty ? results.first : null;
 }
 
+  Future<Map<String, dynamic>?> fetchLastPayandStudentlData(int userId) async {
+    final db = await _openDatabase();
+    final List<Map<String, dynamic>> lastPay = await db.query('Payments',where: 'userId = ?', whereArgs: [userId],orderBy: 'id DESC',limit: 1,);
+    final List<Map<String,dynamic>> studentData = await db.query('General',where: 'id = ?',whereArgs: [userId]);
+    print({'lastPay': lastPay.isNotEmpty ? lastPay.first : {},
+    'studentData': studentData.isNotEmpty ? studentData.first : {}});
+    return {
+    'lastPay': lastPay.isNotEmpty ? lastPay.first : {},
+    'studentData': studentData.isNotEmpty ? studentData.first : {}
+  };
+  
+}
+
   Future<Map<String, dynamic>?> fetchBasePayment() async {
       final db = await _openDatabase();
       final List<Map<String, dynamic>> results = await db.query('Plans',where: 'clases = 1',limit: 1,);
       return results[0].isNotEmpty ? results.first : null;
   }
+
 //DELETE FUNCTIONS
 
   Future<int> deleteRegister(int id, String? table) async{
