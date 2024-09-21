@@ -106,7 +106,8 @@ class ScrollViewContent extends StatelessWidget {
               height: screenHeight * 0.06,
             ),
             SearchStudentContainer(
-                circleText: 'Total de alumnos: $num_alumnos'),
+              circleText: 'Total de alumnos: $num_alumnos',
+            ),
             SizedBox(
               height: screenHeight * 0.01,
             ),
@@ -133,20 +134,46 @@ class ScrollViewContent extends StatelessWidget {
               return FadeInUp(
                 child: Column(
                   children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                StudentDetailScreen(name: students[i], id: ids[i]),
-                          ),
-                        );
+                    Dismissible(
+                      key: Key(
+                          ids[i].toString()), // Llave única para cada elemento
+                      background: Container(
+                        color: Colors.green,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.only(left: 20),
+                        child: const Icon(Icons.arrow_forward,
+                            color: Colors.white),
+                      ),
+                      secondaryBackground: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child:
+                            const Icon(Icons.arrow_back, color: Colors.white),
+                      ),
+                      confirmDismiss: (direction) async {
+                        print(direction);
+                        //TODO:   ISACC AQUI VAN LAS FUNCIONES CON UN IF CON DIRECTION
+                        return false;
                       },
-                      splashColor: colorList[6],
-                      child: PreviewStudentContainerReduce(
-                        name: students[i],
-                        id: ids[i],
+
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => StudentDetailScreen(
+                                name: students[i],
+                                id: ids[i],
+                              ),
+                            ),
+                          );
+                        },
+                        splashColor: colorList[6],
+                        child: PreviewStudentContainerReduce(
+                          name: students[i],
+                          id: ids[i],
+                        ),
                       ),
                     ),
                     const Divider(
@@ -157,7 +184,7 @@ class ScrollViewContent extends StatelessWidget {
                   ],
                 ),
               );
-            }),
+            }).toList(),
           ],
         ),
       ),

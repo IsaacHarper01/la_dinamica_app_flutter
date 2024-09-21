@@ -56,30 +56,32 @@ class screen_info extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: screenHeight * 0.06,
-            ),
-            SearchStudentContainer(
-              circleText: 'Asistencias de hoy: $num_alumnos',
-            ),
-            SizedBox(
-              height: screenHeight * 0.01,
-            ),
-            // Verifica si no hay alumnos
-            num_alumnos == 0
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      'assets/images/f=ma11.png',
-                      height: screenHeight * 0.2,
-                      fit: BoxFit.cover,
-                    ))
-                : Column(
+    return num_alumnos == 0
+        ? Center(
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/images/f=ma11.png',
+                  height: screenHeight * 0.2,
+                  fit: BoxFit.cover,
+                )),
+          )
+        : SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: screenHeight * 0.06,
+                  ),
+                  SearchStudentContainer(
+                    circleText: 'Asistencias de hoy: $num_alumnos',
+                  ),
+                  SizedBox(
+                    height: screenHeight * 0.01,
+                  ),
+                  // Verifica si no hay alumnos
+                  Column(
                     children: students.map((student) {
                       return Column(
                         children: [
@@ -93,9 +95,9 @@ class screen_info extends StatelessWidget {
                       );
                     }).toList(),
                   ),
-          ],
-        ),
-      ),
-    );
+                ],
+              ),
+            ),
+          );
   }
 }
