@@ -79,10 +79,13 @@ class DatabaseHelper{
     
   } 
 
-  Future<void> InsertGeneralData(Map<String, dynamic> row) async{
+  Future<int> InsertGeneralData(Map<String, dynamic> row) async{
     final db = await _openDatabase();
     await db.insert('General', row);
+    final data = await db.query('General',where: 'name = ?',whereArgs: [row['name']]);
+    final int id = data[0]['id'] as int;
     await db.close();
+    return id;
   }
 
   Future<void> InserPaymentData(Map<String, dynamic> row) async{
@@ -142,7 +145,7 @@ class DatabaseHelper{
     //final DateTime maximun = DateTime.;
     //fetchAttendanceRange(startDate, endDate);
     //deleteRegister(4, 'Attendance');
-    //deleteDB();
+    // deleteDB();
     //fetchPaymentsData();
     //varifyPay(0);
     //print(fetchSimpleData('Payments', 'userId', 2, false));

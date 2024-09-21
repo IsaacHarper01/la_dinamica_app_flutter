@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
+import 'package:la_dinamica_app/backend/create_credential.dart';
 
 class AddStudentScreen extends StatefulWidget {
   const AddStudentScreen({super.key});
@@ -43,17 +44,17 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     super.dispose();
   }
 
-  void _submitForm(BuildContext context) {
+  void _submitForm(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      // instancia de la base de datos
+      
       final db = DatabaseHelper();
-      //se convierten los valores a Map
       Map<String, dynamic> data = {};
       for (var i = 0; i < _controllers.length; i++) {
         data['${_Namesdb[i]}'] = _controllers[i].text;
       }
-      //se insertan los valores en la base
-      db.InsertGeneralData(data);
+      //insert the values in the database and generate the PDF file
+      final id = await db.InsertGeneralData(data);
+      generateQRAndSaveAsPdf(id, data['name'], data['address'], data['phone'],data['age']);
     }
     // Mostrar SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
