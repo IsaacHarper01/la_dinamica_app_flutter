@@ -10,17 +10,17 @@ class PaysScreen extends StatefulWidget {
 }
 
 class _PaysScreenState extends State<PaysScreen> {
-  int planIndex = 0; // Variable para guardar el índice del plan seleccionado
-  
+  ValueNotifier<int> planIndexNotifier = ValueNotifier<int>(0);
+  ValueNotifier<int> nameIndexNotifier = ValueNotifier<int>(0);
 
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
-    final bool isPortatil = orientation == Orientation.portrait;
-    final screenHeight = isPortatil
+    final bool isPortrait = orientation == Orientation.portrait;
+    final screenHeight = isPortrait
         ? MediaQuery.of(context).size.height
         : MediaQuery.of(context).size.height * 2;
-    final screenWidth = isPortatil
+    final screenWidth = isPortrait
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
     final db = DatabaseHelper();
@@ -31,6 +31,8 @@ class _PaysScreenState extends State<PaysScreen> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError || !snapshot.hasData) {
+              return const Center(child: Text('Error al cargar datos'));
             } else {
               final data = snapshot.data;
               final names = data[0];
@@ -39,12 +41,18 @@ class _PaysScreenState extends State<PaysScreen> {
               final costs = data[3];
               final clases = data[4]; // Añadir las clases
 
-              return paymentBox(screenWidth, screenHeight, names, ids,
-                  plansType, costs, clases, planIndex, (newIndex) {
-                setState(() {
-                  planIndex = newIndex; // Actualizar el índice seleccionado
-                });
-              });
+              return paymentBox(
+                screenWidth,
+                screenHeight,
+                names,
+                ids,
+                plansType,
+                costs,
+                clases,
+                planIndexNotifier,
+                nameIndexNotifier,
+                context,
+              );
             }
           }),
     );
@@ -58,42 +66,39 @@ Widget paymentBox(
     List<String> ids,
     List<String> plansType,
     List<String> costs,
-    List<String> clases, // Añadir el array de clases
-    int planIndex,
-    Function(int) onPlanSelected) {
-    int nameIndex = 0;
-    Map<String,dynamic> payMap;
-    String date = DateTime.now().toString().split(' ')[0];
-
+    List<String> clases,
+    ValueNotifier<int> planIndexNotifier,
+    ValueNotifier<int> nameIndexNotifier,
+    BuildContext context) {
   return Center(
     child: SingleChildScrollView(
-        child: Padding(
-      padding: const EdgeInsets.all(30),
-      child: Container(
-        height: 520,
-        width: screenWidth * 0.8,
-        decoration: BoxDecoration(
-            color: colorList[1], borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Asignar Plan',
-                    style: TextStyle(color: Colors.white, fontSize: 30),
-                  ),
-                ],
-              ),
-              const Divider(),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                    screenWidth * 0.1, 0, screenWidth * 0.1, 0),
-                child: Column(
+      child: Padding(
+        padding: const EdgeInsets.all(30),
+        child: Container(
+          height: 520,
+          width: screenWidth * 0.8,
+          decoration: BoxDecoration(
+              color: colorList[1], borderRadius: BorderRadius.circular(10)),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Asignar Plan',
+                      style: TextStyle(color: Colors.white, fontSize: 30),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                      screenWidth * 0.1, 0, screenWidth * 0.1, 0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
@@ -106,24 +111,33 @@ Widget paymentBox(
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
-                      DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(),
-                        ),
-                        value: names[nameIndex], // Valor inicial
-                        onChanged: (String? newValue) {
-                          nameIndex = names.indexOf(newValue!);
-                          print(nameIndex);
-                        },
-                        items:
-                            names.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                      ValueListenableBuilder<int>(
+                        valueListenable: nameIndexNotifier,
+                        builder: (context, nameIndex, _) {
+                          return DropdownButtonFormField<String>(
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            value: (nameIndex < names.length)
+                                ? names[nameIndex]
+                                : null, // Verificar si nameIndex es válido
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                nameIndexNotifier.value =
+                                    names.indexOf(newValue);
+                              }
+                            },
+                            items: names
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
                           );
-                        }).toList(),
+                        },
                       ),
                       SizedBox(
                         height: screenHeight * 0.01,
@@ -135,56 +149,81 @@ Widget paymentBox(
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
-                      DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(),
-                        ),
-                        value: plansType[
-                            planIndex], // Valor inicial basado en el índice seleccionado
-                        onChanged: (String? newValue) {
-                          // Actualizar el índice cuando se selecciona un nuevo plan
-                          onPlanSelected(plansType.indexOf(newValue!));
-                        },
-                        items: plansType.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                      ValueListenableBuilder<int>(
+                        valueListenable: planIndexNotifier,
+                        builder: (context, planIndex, _) {
+                          return DropdownButtonFormField<String>(
+                            decoration: const InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            value: (planIndex < plansType.length)
+                                ? plansType[planIndex]
+                                : null, // Verificar si planIndex es válido
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                planIndexNotifier.value =
+                                    plansType.indexOf(newValue);
+                              }
+                            },
+                            items: plansType
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
                           );
-                        }).toList(),
+                        },
                       ),
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
-                      Text(
-                        'Total de clases: ${clases[planIndex]}', // Mostrar el total de clases según el plan seleccionado
-                        style: const TextStyle(color: Colors.white),
+                      ValueListenableBuilder<int>(
+                        valueListenable: planIndexNotifier,
+                        builder: (context, planIndex, _) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total de clases: ${clases[planIndex]}',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              SizedBox(
+                                height: screenHeight * 0.01,
+                              ),
+                              Text(
+                                'Total a pagar: ${costs[planIndex]}',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                      SizedBox(
-                        height: screenHeight * 0.01,
-                      ),
-                      Text(
-                        'Total a pagar: ${costs[planIndex]}',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ]),
-              ),
-              SizedBox(
-                height: screenHeight * 0.03,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton(
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.03,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FilledButton(
                       style: ButtonStyle(
-                          backgroundColor:
-                              WidgetStatePropertyAll(colorList[3])),
+                        backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                      ),
                       onPressed: () {
-                        payMap = {'userId':nameIndex+1,'amount':costs[planIndex],'clases':clases[planIndex],'type':plansType[planIndex],'date':date};
-                        print(payMap);
-                        final db = DatabaseHelper();
-                        db.InserPaymentData(payMap);
+                        assignedPlan(
+                          clases: clases,
+                          context: context,
+                          costs: costs,
+                          date: DateTime.now().toString(),
+                          nameIndex: nameIndexNotifier.value,
+                          planIndex: planIndexNotifier.value,
+                          plansType: plansType,
+                        );
                       },
                       child: const Padding(
                         padding: EdgeInsets.all(8.0),
@@ -192,13 +231,42 @@ Widget paymentBox(
                           'Asignar',
                           style: TextStyle(fontSize: 20),
                         ),
-                      ))
-                ],
-              )
-            ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    )),
+    ),
+  );
+}
+
+void assignedPlan({
+  required int nameIndex,
+  required List<String> costs,
+  required int planIndex,
+  required List<String> clases,
+  required List<String> plansType,
+  required String date,
+  required BuildContext context,
+}) {
+  var payMap = {
+    'userId': nameIndex + 1,
+    'amount': costs[planIndex],
+    'clases': clases[planIndex],
+    'type': plansType[planIndex],
+    'date': date
+  };
+  print(payMap);
+  final db = DatabaseHelper();
+  db.InserPaymentData(payMap);
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Registro exitoso'),
+      backgroundColor: Colors.green,
+    ),
   );
 }

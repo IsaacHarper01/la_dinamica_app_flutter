@@ -3,8 +3,26 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 
-class ConfigScreen extends StatelessWidget {
+class ConfigScreen extends StatefulWidget {
   const ConfigScreen({super.key});
+
+  @override
+  State<ConfigScreen> createState() => _ConfigScreenState();
+}
+
+class _ConfigScreenState extends State<ConfigScreen> {
+  late Future plansFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    plansFuture = fetchPlans();
+  }
+
+  Future fetchPlans() async {
+    final db = DatabaseHelper();
+    return db.fetchPlansData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,29 +31,30 @@ class ConfigScreen extends StatelessWidget {
     final screenWidth = isPortatil
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
-    final db = DatabaseHelper();
-    
 
     return Scaffold(
-      
       body: FutureBuilder(
-        future: db.fetchPlansData(), 
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          future: plansFuture,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else {
-            List<List<String>> planes=[];
-            for (var item in snapshot.data) {
-              planes.add([item['type'],item['clases'].toString(),item['price'].toString()]);
-            }  
-            return box_plans(screenWidth, context, planes);
+              List<List<String>> planes = [];
+              for (var item in snapshot.data) {
+                planes.add([
+                  item['type'],
+                  item['clases'].toString(),
+                  item['price'].toString()
+                ]);
+              }
+              return box_plans(screenWidth, context, planes);
             }
-            }
-              ),
+          }),
     );
   }
 
-  Center box_plans(double screenWidth, BuildContext context, List<List<String>> planes) {
+  Center box_plans(
+      double screenWidth, BuildContext context, List<List<String>> planes) {
     return Center(
         child: SingleChildScrollView(
       child: Padding(
@@ -68,12 +87,20 @@ class ConfigScreen extends StatelessWidget {
                         style: ButtonStyle(
                             backgroundColor:
                                 WidgetStatePropertyAll(colorList[3])),
-                        onPressed: () {
-                          Navigator.push(
+                        onPressed: () async {
+                          // Esperar a que regrese de AddNewPlan
+                          final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const AddNewPlan(),
                               ));
+
+                          // Si el resultado no es nulo, recargar planes
+                          if (result == true) {
+                            setState(() {
+                              plansFuture = fetchPlans();
+                            });
+                          }
                         },
                         child: const Row(
                           children: [
@@ -121,9 +148,7 @@ class ConfigScreen extends StatelessWidget {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-              
-                  ],
+                  children: [],
                 )
               ],
             ),
@@ -133,5 +158,3 @@ class ConfigScreen extends StatelessWidget {
     ));
   }
 }
-
-
