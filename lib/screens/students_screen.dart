@@ -7,7 +7,6 @@ import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
 
-//const students = ['Sebas Putin','Alex Sintec','Isaac Hernandez'];
 
 class StudentsScreen extends StatefulWidget {
   const StudentsScreen({super.key});
@@ -17,7 +16,7 @@ class StudentsScreen extends StatefulWidget {
 }
 
 class _StudentsScreenState extends State<StudentsScreen> {
-  Future<Map<String, dynamic>>? _studentsFuture; // Ajusta el tipo aquí
+  Future<Map<String, dynamic>>? _studentsFuture; 
 
   @override
   void initState() {
@@ -96,6 +95,17 @@ class ScrollViewContent extends StatelessWidget {
   final List<int> index_list;
   final VoidCallback onAddStudent;
 
+  void _insertAttendance(id,name){
+    final db = DatabaseHelper();
+    db.InserAttendanceData(id, name);
+    db.varifyPay(id);
+  }
+
+  void _deleteRegister(id){
+    final db = DatabaseHelper();
+    db.deleteRegister(id, null);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -138,22 +148,38 @@ class ScrollViewContent extends StatelessWidget {
                       key: Key(
                           ids[i].toString()), // Llave única para cada elemento
                       background: Container(
-                        color: Colors.green,
+                        color: const Color.fromARGB(255, 102, 165, 104),
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(left: 20),
                         child: const Icon(Icons.arrow_forward,
                             color: Colors.white),
                       ),
                       secondaryBackground: Container(
-                        color: Colors.red,
+                        color: const Color.fromARGB(255, 179, 103, 97),
                         alignment: Alignment.centerRight,
                         padding: const EdgeInsets.only(right: 20),
                         child:
                             const Icon(Icons.arrow_back, color: Colors.white),
                       ),
                       confirmDismiss: (direction) async {
-                        print(direction);
-                        //TODO:   ISACC AQUI VAN LAS FUNCIONES CON UN IF CON DIRECTION
+                        if (direction==DismissDirection.startToEnd) {
+                          _insertAttendance(ids[i],students[i]);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Asistencia Registrada'),
+                              backgroundColor: Colors.green,
+                          ),
+                        );
+                        }else{
+                          _deleteRegister(ids[i]);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Registro Eliminado'),
+                              backgroundColor: Colors.red,
+                          ),
+                         );
+                        }
+
                         return false;
                       },
 
