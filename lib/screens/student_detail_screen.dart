@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
@@ -6,8 +7,9 @@ import 'package:la_dinamica_app/backend/database.dart';
 class StudentDetailScreen extends StatelessWidget {
   final String name;
   final int id;
+  final String image;
 
-  StudentDetailScreen({super.key, required this.name, required this.id});
+  StudentDetailScreen({super.key, required this.name, required this.id, required this.image});
   
   Map<String, dynamic> paymentData={'id':0,'userId':0,'amount':0,'clases':0,'type':'Desconocido','date':'-'};
   Map<String,dynamic> studentData={};
@@ -69,8 +71,8 @@ class StudentDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     child: Opacity(
                       opacity: 0.5,
-                      child: Image.network(
-                        'https://i.pinimg.com/originals/fb/6d/16/fb6d16c4321ab45dad1c6290f2740f7a.jpg',
+                      child: Image.file(
+                        File(image),
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),

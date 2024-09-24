@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
@@ -53,8 +54,11 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         data['${_Namesdb[i]}'] = _controllers[i].text;
       }
       //insert the values in the database and generate the PDF file
+      
+      final image = await pickAndSaveImage(data['name']);
+      data['image'] = image;
       final id = await db.InsertGeneralData(data);
-      generateQRAndSaveAsPdf(id, data['name'], data['address'], data['phone'],data['age']);
+      //generateQRAndSaveAsPdf(id, data['name'], data['address'], data['phone'],data['age']);
     }
     // Mostrar SnackBar
     ScaffoldMessenger.of(context).showSnackBar(

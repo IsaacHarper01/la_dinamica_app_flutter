@@ -1,3 +1,4 @@
+import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 class DatabaseHelper{
@@ -19,7 +20,8 @@ class DatabaseHelper{
         phone TEXT,
         age TEXT,
         birthday TEXT,
-        email TEXT
+        email TEXT,
+        image TEXT
       )
     ''');
       await db.execute('''
@@ -138,19 +140,21 @@ class DatabaseHelper{
     List<dynamic> address = data.map((element)=>element['address']).toList();
     List<dynamic> ages = data.map((element)=>element['age']).toList();
     List<dynamic> birthdays = data.map((element)=>element['birthday']).toList();
+    List<dynamic> images = data.map((element)=>element['image']).toList();
     //InserAttendancetData({'userID': 3,'name': 'Isaac Hernandez', 'date':DateTime.now().toString().split(' ')[0],'status':'Presente'});
     //InserAttendancetData({'userID': 4,'date':'2024-09-06','status':'presente'});
-    //DateTime startDate = DateTime(2024, 9, 10);
-    //DateTime endDate = DateTime(2024, 9, 15);
+    // DateTime startDate = DateTime(2024, 9, 21);
+    // DateTime endDate = DateTime(2024, 9, 23);
     //final DateTime maximun = DateTime.;
     //fetchAttendanceRange(startDate, endDate);
     //deleteRegister(4, 'Attendance');
-    // deleteDB();
+    //generateAttendanceReport(startDate, endDate);
+    //deleteDB();
     //fetchPaymentsData();
     //varifyPay(0);
     //print(fetchSimpleData('Payments', 'userId', 2, false));
     await db.close();
-    return({'ids':ids,'names':names,'emails':emails,'phones':phones,'address':address,'ages':ages,'birthdays':birthdays});
+    return({'ids':ids,'names':names,'emails':emails,'phones':phones,'address':address,'ages':ages,'birthdays':birthdays,'images':images});
   }
 
   Future<List<Map<String,dynamic>>> fetchMetricsData()async{
@@ -192,11 +196,22 @@ class DatabaseHelper{
       where: 'date LIKE ? AND status = ?',
       whereArgs: [today + '%','Presente'], // % to account for time in the string
     );
-    await db.close();
+    
     List<dynamic> ids = data.map((elemet) => elemet['userId']).toList();
     List<dynamic> names = data.map((element) => element['name']).toList();
-  
-    return ({'ids':ids,'names':names});
+    List<String?> images=[];
+    for (var id in ids) {
+      final List<Map<String, dynamic>> result= await db.query('General',columns: ['image'],where: 'id = ?',whereArgs: [id]);
+      if (result.isNotEmpty) {
+      // If there is an image for the ID, add the image path to the list
+      images.add(result[0]['image'] as String?);
+    } else {
+      // If no image is found for the ID, add null or handle it as needed
+      images.add(null);
+    }
+  }
+    await db.close();
+    return ({'ids':ids,'names':names,'images':images});
   }
 
   Future<List<List<String>>> fetchNamesIdsPlans() async {

@@ -48,6 +48,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
             List<int> students_index =
                 List.generate(students.length, (index) => index);
             int num = students.length;
+            List<dynamic> images = snapshot.data!['images']!;
 
             return ScrollViewContent(
               screenHeight: MediaQuery.of(context).size.height,
@@ -55,6 +56,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
               num_alumnos: num,
               index_list: students_index,
               ids: students_ids,
+              images: images,
               onAddStudent: () {
                 _loadStudents(); // Vuelve a cargar la lista de estudiantes
                 Navigator.push(
@@ -85,12 +87,14 @@ class ScrollViewContent extends StatelessWidget {
     required this.num_alumnos,
     required this.index_list,
     required this.ids,
+    required this.images,
     required this.onAddStudent,
   });
 
   final double screenHeight;
   final List<dynamic> students;
   final List<dynamic> ids;
+  final List<dynamic> images;
   final int num_alumnos;
   final List<int> index_list;
   final VoidCallback onAddStudent;
@@ -191,6 +195,7 @@ class ScrollViewContent extends StatelessWidget {
                               builder: (context) => StudentDetailScreen(
                                 name: students[i],
                                 id: ids[i],
+                                image: images[i],
                               ),
                             ),
                           );
@@ -199,6 +204,7 @@ class ScrollViewContent extends StatelessWidget {
                         child: PreviewStudentContainerReduce(
                           name: students[i],
                           id: ids[i],
+                          image: images[i],
                         ),
                       ),
                     ),

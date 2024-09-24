@@ -29,12 +29,16 @@ class HomeScreen extends StatelessWidget {
             } else {
               List<dynamic> ids = snapshot.data['ids'];
               List<dynamic> names = snapshot.data['names'];
+              List<dynamic> images = snapshot.data['images'];
+              List<int> students_index = List.generate(ids.length, (index) => index);
               int num_alumnos = ids.length;
 
               return screen_info(
                 screenHeight: screenHeight,
                 num_alumnos: num_alumnos,
                 students: names,
+                images: images,
+                studentsIndex: students_index,
               );
             }
           },
@@ -48,11 +52,15 @@ class screen_info extends StatelessWidget {
     required this.screenHeight,
     required this.num_alumnos,
     required this.students,
+    required this.images,
+    required this.studentsIndex
   });
 
   final double screenHeight;
   final int num_alumnos;
   final List<dynamic> students;
+  final List<dynamic> images;
+  final List<int> studentsIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -82,10 +90,10 @@ class screen_info extends StatelessWidget {
                   ),
                   // Verifica si no hay alumnos
                   Column(
-                    children: students.map((student) {
+                    children: studentsIndex.map((i) {
                       return Column(
                         children: [
-                          PreviewStudentContainer(name: student),
+                          PreviewStudentContainer(name: students[i],image: images[i],),
                           const Divider(
                             height: 0,
                             indent: 20,

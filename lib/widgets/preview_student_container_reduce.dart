@@ -1,10 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class PreviewStudentContainerReduce extends StatelessWidget {
   final String name;
   final int id;
+  final String image;
 
-  const PreviewStudentContainerReduce({super.key, required this.name, required this.id});
+  const PreviewStudentContainerReduce({super.key, required this.name, required this.id, required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +28,8 @@ class PreviewStudentContainerReduce extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.network(
-                    'https://i.pinimg.com/originals/fb/6d/16/fb6d16c4321ab45dad1c6290f2740f7a.jpg',
+                  child: Image.file(
+                    File(image),
                     width: screenHeight * 0.06,
                     fit: BoxFit.cover,
                   )),
