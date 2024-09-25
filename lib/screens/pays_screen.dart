@@ -136,6 +136,7 @@ Widget paymentBox(
                                 child: Text(value),
                               );
                             }).toList(),
+                            style: const TextStyle(color: Colors.black),
                           );
                         },
                       ),
@@ -174,6 +175,7 @@ Widget paymentBox(
                                 child: Text(value),
                               );
                             }).toList(),
+                            style: const TextStyle(color: Colors.black),
                           );
                         },
                       ),
@@ -229,7 +231,7 @@ Widget paymentBox(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
                           'Asignar',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                       ),
                     ),
@@ -260,7 +262,7 @@ void assignedPlan({
     'type': plansType[planIndex],
     'date': date
   };
-  print(payMap);
+  //print(payMap);
   final db = DatabaseHelper();
   db.InserPaymentData(payMap);
   ScaffoldMessenger.of(context).showSnackBar(

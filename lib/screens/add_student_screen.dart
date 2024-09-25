@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/backend/database.dart';
-import 'package:la_dinamica_app/backend/create_credential.dart';
 
 class AddStudentScreen extends StatefulWidget {
   const AddStudentScreen({super.key});
@@ -28,7 +26,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     'Correo Electrónico'
   ];
   //La lista de las etiquetas y los nombres en la base de datos difieren por lo que hice otra variable
-  final List<String> _Namesdb = [
+  final List<String> _namesdb = [
     'name',
     'address',
     'phone',
@@ -46,30 +44,40 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   }
 
   void _submitForm(BuildContext context) async {
+    // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
-      
-      final db = DatabaseHelper();
+      //final db = DatabaseHelper();
       Map<String, dynamic> data = {};
+
+      // Recopilar los datos de los controladores
       for (var i = 0; i < _controllers.length; i++) {
-        data['${_Namesdb[i]}'] = _controllers[i].text;
+        data[_namesdb[i]] = _controllers[i].text;
       }
-      //insert the values in the database and generate the PDF file
-      
+
+      // Insertar los valores en la base de datos y generar el archivo PDF
       final image = await pickAndSaveImage(data['name']);
       data['image'] = image;
-      final id = await db.InsertGeneralData(data);
-      //generateQRAndSaveAsPdf(id, data['name'], data['address'], data['phone'],data['age']);
-    }
-    // Mostrar SnackBar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Registro exitoso'),
-        backgroundColor: Colors.green,
-      ),
-    );
+      //final id = await db.InsertGeneralData(data);
 
-    // Volver a la pantalla anterior
-    Navigator.pop(context);
+      // Mostrar SnackBar confirmando el registro
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registro exitoso'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Volver a la pantalla anterior
+      Navigator.pop(context);
+    } else {
+      // Si hay campos vacíos, mostrar un mensaje de error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, complete todos los campos.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

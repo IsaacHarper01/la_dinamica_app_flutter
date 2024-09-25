@@ -43,7 +43,7 @@ class _BarChart extends StatelessWidget {
       );
 
   Widget getTitles(double value, TitleMeta meta) {
-    final style = const TextStyle(
+    const style = TextStyle(
       color: Colors.blue,
       fontWeight: FontWeight.bold,
       fontSize: 14,

@@ -70,6 +70,7 @@ class _EarnScreenState extends State<EarnScreen> {
                       },
                       child: Text(
                         "Inicio: ${startDate.month}/${startDate.day}/${startDate.year}",
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -92,6 +93,7 @@ class _EarnScreenState extends State<EarnScreen> {
                       },
                       child: Text(
                         "Final: ${endDate.month}/${endDate.day}/${endDate.year}",
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ],
@@ -115,7 +117,10 @@ class _EarnScreenState extends State<EarnScreen> {
                       child: const Center(
                         child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Activo'),
+                          child: Text(
+                            'Activo',
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                       ),
                     ),
@@ -130,7 +135,10 @@ class _EarnScreenState extends State<EarnScreen> {
                       child: const Center(
                         child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text('Desactivado'),
+                          child: Text(
+                            'Desactivado',
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                       ),
                     ),

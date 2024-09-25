@@ -9,10 +9,18 @@ class StudentDetailScreen extends StatelessWidget {
   final int id;
   final String image;
 
-  StudentDetailScreen({super.key, required this.name, required this.id, required this.image});
-  
-  Map<String, dynamic> paymentData={'id':0,'userId':0,'amount':0,'clases':0,'type':'Desconocido','date':'-'};
-  Map<String,dynamic> studentData={};
+  StudentDetailScreen(
+      {super.key, required this.name, required this.id, required this.image});
+
+  Map<String, dynamic> paymentData = {
+    'id': 0,
+    'userId': 0,
+    'amount': 0,
+    'clases': 0,
+    'type': 'Desconocido',
+    'date': '-'
+  };
+  Map<String, dynamic> studentData = {};
 
   @override
   Widget build(BuildContext context) {
@@ -28,37 +36,38 @@ class StudentDetailScreen extends StatelessWidget {
     DatabaseHelper db = DatabaseHelper();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(name),
-      ),
-      body: FutureBuilder(
-        future: db.fetchLastPayandStudentlData(id), 
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-                if(snapshot.data['lastPay'].isNotEmpty){
+        appBar: AppBar(
+          title: Text(name),
+        ),
+        body: FutureBuilder(
+            future: db.fetchLastPayandStudentlData(id),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                if (snapshot.data['lastPay'].isNotEmpty) {
                   paymentData = snapshot.data['lastPay'];
                 }
                 studentData = snapshot.data['studentData'];
-                return info_screen(screenHeight, db, context, screenWidth, isActive, paymentData, studentData);
-            }}
-            ) 
-      
-    );
+                return infoScreen(screenHeight, db, context, screenWidth,
+                    isActive, paymentData, studentData);
+              }
+            }));
   }
 
-  SingleChildScrollView info_screen(
-    double screenHeight,
-    DatabaseHelper db,
-    BuildContext context,
-    double screenWidth,
-    bool isActive,
-    Map<String,dynamic>paymentData,
-    Map<String,dynamic> studentData){
-    if (paymentData['clases']==0){
-      isActive=false;
-    }else{isActive=true;}
+  SingleChildScrollView infoScreen(
+      double screenHeight,
+      DatabaseHelper db,
+      BuildContext context,
+      double screenWidth,
+      bool isActive,
+      Map<String, dynamic> paymentData,
+      Map<String, dynamic> studentData) {
+    if (paymentData['clases'] == 0) {
+      isActive = false;
+    } else {
+      isActive = true;
+    }
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -103,16 +112,16 @@ class StudentDetailScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.fmd_good_rounded,
                                   color: Colors.white,
                                 ),
                                 Text(
                                   '${studentData['address']}',
-                                  style: TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ],
                             ),
@@ -125,16 +134,16 @@ class StudentDetailScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.directions_walk_rounded,
                                 color: Colors.white,
                               ),
                               Text(
                                 '${studentData['age']} años',
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               ),
                             ],
                           ),
@@ -160,21 +169,19 @@ class StudentDetailScreen extends StatelessWidget {
                       await db.InserAttendanceData(id, name);
                       await db.varifyPay(id);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Asistencia Registrada'),
+                        const SnackBar(
+                          content: Text('Asistencia Registrada'),
                           backgroundColor: Colors.green,
                         ),
                       );
                     },
                     style: ButtonStyle(
-                        backgroundColor:
-                            WidgetStateProperty.all(colorList[2])),
+                        backgroundColor: WidgetStateProperty.all(colorList[2])),
                     child: const Text('Marcar Asistencia')),
                 FilledButton(
                     onPressed: () {},
                     style: ButtonStyle(
-                        backgroundColor:
-                            WidgetStateProperty.all(colorList[4])),
+                        backgroundColor: WidgetStateProperty.all(colorList[4])),
                     child: const Text('Pagos')),
                 FilledButton(
                   onPressed: () {},
@@ -186,11 +193,11 @@ class StudentDetailScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Tipo de plan',
                   style: TextStyle(fontSize: 25),
                 ),
@@ -237,28 +244,27 @@ class StudentDetailScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text('Clases faltantes: ${paymentData['clases']}'),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text('ID: $id'),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text('Fecha del ultimo pago: ${paymentData['date']}'),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text('Telefono: ${studentData['phone']}'),
                 ),
-    
               ],
             ),
           )
