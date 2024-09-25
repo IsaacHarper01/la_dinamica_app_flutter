@@ -1,14 +1,19 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/services.dart';
+import 'package:pdf/pdf.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:path_provider/path_provider.dart';
 
-Future<void> generateQRAndSaveAsPdf(int id, String name, String address, String number, String age) async {
+Future<void> generateCredentialandSend(int id, String name, String address, String number, String age, String photo) async {
   // 1. Generate the QR code widget
-  final qrCodeData = id.toString() + name + address + number + age;
-  
+  final qrCodeData = id.toString()+ ',' + name+ ',' + address + ',' + number + ',' + age;
+  final File photoFile = File(photo);
+  final Uint8List photoBytes = await photoFile.readAsBytes();
+  final ByteData wallpaperData = await rootBundle.load('assets/images/fondo6.jpg');
+
   // 2. Create a PDF document
   final pdf = pw.Document();
 
@@ -17,10 +22,14 @@ Future<void> generateQRAndSaveAsPdf(int id, String name, String address, String 
     data: qrCodeData,
     version: QrVersions.auto,
     gapless: false,
-  ).toImage(120); // 150 is the size of the image
+    dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color.fromRGBO(29, 156, 230, 0.655)),
+    eyeStyle:  QrEyeStyle(color: Color.fromRGBO(29, 156, 230, 0.655)
+    ),  
+  ).toImage(120); // 120 is the size of the image
 
   final byteData = await image.toByteData(format: ImageByteFormat.png);
-  final imageBytes = byteData!.buffer.asUint8List();
+  final qrImageBytes = byteData!.buffer.asUint8List();
+  final Uint8List wallpaperBytes = wallpaperData.buffer.asUint8List();
 
   // 4. Add the QR code image to the PDF document
 
@@ -29,47 +38,64 @@ Future<void> generateQRAndSaveAsPdf(int id, String name, String address, String 
       build: (pw.Context context) {
         return pw.Center(
           child: pw.Container(
-            height: 300, // Example size of container
-            width: 400, // Example size of container
+            height: 600, 
+            width: 230,
             decoration: pw.BoxDecoration(
               border: pw.Border.all(width: 2),
             ),
             child: pw.Stack(
               children: [
-                // Move the QR image using Positioned
-                pw.Positioned(
-                  top: 165, // Adjust the top margin
-                  left: 140, // Adjust the left margin
-                  child: pw.Image(pw.MemoryImage(imageBytes)),
+                pw.Positioned( 
+                  child: pw.Image(
+                    pw.MemoryImage(wallpaperBytes),
+                    width: 350,  
+                    ),
                 ),
-                // Add other widgets if necessary
                 pw.Positioned(
-                  top: 40,
-                  left: 130,
-                  child: pw.Text(
-                    "nombre: $name",
-                    style: pw.TextStyle(fontSize: 15,font: pw.Font.timesBoldItalic()),
+                  top: 410, 
+                  left: 55, 
+                  child: pw.Image(pw.MemoryImage(qrImageBytes)),
+                ),
+                pw.Positioned(
+                  top: 20, 
+                  left: 50,
+                  child:  pw.ClipRRect(
+                      horizontalRadius: 60, 
+                      verticalRadius: 60,   
+                      child: pw.Image(
+                        pw.MemoryImage(photoBytes), 
+                        width: 135,  
+                        height: 135, 
+                    ),
                   ),
                 ),
                 pw.Positioned(
-                  top: 70,
-                  left: 130,
+                  top: 180,
+                  left: 20,
                   child: pw.Text(
-                    "numero de alumno: $id",
-                    style: pw.TextStyle(fontSize: 15,font: pw.Font.timesBoldItalic()),
+                    "$name",
+                    style: pw.TextStyle(fontSize: 15,font: pw.Font.timesBoldItalic(),color: PdfColor.fromRYB(0, 0, 0)),
                   ),
                 ),
                 pw.Positioned(
-                  top: 100,
-                  left: 130,
+                  top: 210,
+                  left: 95,
                   child: pw.Text(
-                    "telefono: $number",
-                    style: pw.TextStyle(fontSize: 15,font: pw.Font.timesBoldItalic()),
+                    "$number",
+                    style: pw.TextStyle(fontSize: 10,font: pw.Font.timesBoldItalic(),color: PdfColor.fromRYB(0, 0, 0)),
+                  ),
+                ),
+                pw.Positioned(
+                  top: 230,
+                  left: 110,
+                  child: pw.Text(
+                    "ID: $id",
+                    style: pw.TextStyle(fontSize: 10,font: pw.Font.timesBoldItalic(),color: PdfColor.fromRYB(0, 0, 0)),
                   ),
                 ),
                 pw.Divider(
-                  thickness: 2, // Thickness of the line
-                  height: 490,   // Space between line and text
+                  thickness: 2, 
+                  height: 690,   
           ),
               ],
             ),
@@ -83,8 +109,8 @@ Future<void> generateQRAndSaveAsPdf(int id, String name, String address, String 
   // 5. Save the PDF file
   final output = await getTemporaryDirectory();
   print(output.path);
-  final file = File("${output.path}/$name.pdf");
-  await file.writeAsBytes(await pdf.save());
+  //final file = File("${output.path}/$name.pdf");
+  //await file.writeAsBytes(await pdf.save());
 
   // Optional: Print or share the PDF file
   await Printing.sharePdf(bytes: await pdf.save(), filename: '$name.pdf');

@@ -58,7 +58,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       final image = await pickAndSaveImage(data['name']);
       data['image'] = image;
       final id = await db.InsertGeneralData(data);
-      //generateQRAndSaveAsPdf(id, data['name'], data['address'], data['phone'],data['age']);
+      generateCredentialandSend(id, data['name'], data['address'], data['phone'],data['age'],image);
     }
     // Mostrar SnackBar
     ScaffoldMessenger.of(context).showSnackBar(

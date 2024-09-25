@@ -1,6 +1,6 @@
-import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:la_dinamica_app/backend/create_credential.dart';
 class DatabaseHelper{
 
 //CREATE DATABASE
@@ -149,6 +149,7 @@ class DatabaseHelper{
     //fetchAttendanceRange(startDate, endDate);
     //deleteRegister(4, 'Attendance');
     //generateAttendanceReport(startDate, endDate);
+    //generateCredentialandSend(4, 'Uriel Javier Carranza Lopez', 'San Martin', '554203659', '12', '/data/user/0/com.example.la_dinamica_app/app_flutter/Pancho pantera.jpg');
     //deleteDB();
     //fetchPaymentsData();
     //varifyPay(0);
