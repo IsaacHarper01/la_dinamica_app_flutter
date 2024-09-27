@@ -28,29 +28,23 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  animate_do: null
+  csv: ^5.0.0
+  fl_chart: ^0.69.0
   flutter:
     sdk: flutter
-  fl_chart: ^0.69.0
-  animate_do:
   flutter_barcode_scanner: ^2.0.0
-  permission_handler: ^11.3.1
-  sqflite: ^2.3.3+1
-  qr_flutter: ^4.1.0
-  pdf: ^3.10.2
-  csv: ^5.0.0
-  path_provider: ^2.0.14
-  printing: ^5.10.0
-  image_picker: ^0.8.4+11
+  flutter_riverpod: ^2.5.1
   image: ^4.1.0
+  image_picker: ^0.8.4+11
+  path_provider: ^2.0.14
+  pdf: ^3.10.2
+  permission_handler: ^11.3.1
+  printing: ^5.10.0
+  qr_flutter: ^4.1.0
+  sqflite: ^2.3.3+1
 
 dev_dependencies:
-  #flutter_launcher_icons: ^0.11.0
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
@@ -72,6 +66,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/f=ma11.png
+    - assets/images/f=ma18.png
     - assets/images/
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see

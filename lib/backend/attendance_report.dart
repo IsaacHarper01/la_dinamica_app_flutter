@@ -4,9 +4,8 @@ import 'package:csv/csv.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
-Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) async {
-  
+Future<void> generateAttendanceReport(
+    DateTime startDate, DateTime endDate) async {
   var status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
@@ -16,13 +15,13 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
   final attendanceData = await db.fetchAttendanceRange(startDate, endDate);
   // If no data found, return early
   if (attendanceData.isEmpty) {
-    print("No attendance records found for the specified date range.");
+    //print("No attendance records found for the specified date range.");
     return;
   }
 
   // Convert the data into a CSV format
   List<List<String>> csvData = [
-    ['Id del Alumno', 'Nombre', 'fecha', 'Estado'],  
+    ['Id del Alumno', 'Nombre', 'fecha', 'Estado'],
   ];
 
   attendanceData.forEach((row) {
@@ -43,9 +42,8 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
     String path = directory.path;
     File file = File('$path/attendance_report.csv');
     await file.writeAsString(csvContent);
-    print("CSV report generated at: ${path}");
-  }else{
-    print('Could not find an external storage directory');
+    //print("CSV report generated at: ${path}");
+  } else {
+    //print('Could not find an external storage directory');
   }
-
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:la_dinamica_app/backend/database.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> scannerQR() async {
@@ -16,18 +17,17 @@ Future<void> scannerQR() async {
       return;
     }
     List<String> qrdata = barCodeScanner.split(',');
-      String id = qrdata[0];
+      int id = int.parse(qrdata[0]);
       String name = qrdata[1];
       String address = qrdata[2];
       String phone = qrdata[3];
       String age = qrdata[4];
-      Map<String, String> data = {
-        'name': name,
-        'id': id,
-        'age': age,
-        'address': address,
-        'phone': phone
-      };
+      
+    final db = DatabaseHelper();
+    db.InserAttendanceData(id, name);
+    db.varifyPay(id);
+    print('Registro Exitóso');
+    
   } on PlatformException {
     barCodeScanner = 'Fail to get platform version';
     return;

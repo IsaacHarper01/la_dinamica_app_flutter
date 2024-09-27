@@ -1,6 +1,8 @@
+import 'dart:ffi';
+
+import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:la_dinamica_app/backend/create_credential.dart';
 class DatabaseHelper{
 
 //CREATE DATABASE
@@ -213,6 +215,32 @@ class DatabaseHelper{
   }
     await db.close();
     return ({'ids':ids,'names':names,'images':images});
+  }
+
+  Future<double> fetchIncomeRange(String start,String? end)async{
+    final db = await _openDatabase();
+    double result = 0.0;
+    List<Map<String,Object?>> data=[];
+
+    if (end==null) {  
+      data = await db.query(
+      'Payments',
+      columns: ['amount'],
+      where: 'date LIKE ?',
+      whereArgs: [start + '%'], // % to account for time in the string
+    );  
+    }else{
+      data = await db.query(
+      'Payments',
+      columns: ['amount'],
+      where: 'date BETWEEN ? AND ?',
+      whereArgs: [start + '%',end + '%'], // % to account for time in the string
+      ); 
+    }
+  for (var element in data) {
+    result += element['amount'] as double;
+  }
+  return result; 
   }
 
   Future<List<List<String>>> fetchNamesIdsPlans() async {

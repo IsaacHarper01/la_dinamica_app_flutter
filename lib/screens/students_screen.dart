@@ -7,7 +7,6 @@ import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
 
-
 class StudentsScreen extends StatefulWidget {
   const StudentsScreen({super.key});
 
@@ -16,7 +15,7 @@ class StudentsScreen extends StatefulWidget {
 }
 
 class _StudentsScreenState extends State<StudentsScreen> {
-  Future<Map<String, dynamic>>? _studentsFuture; 
+  Future<Map<String, dynamic>>? _studentsFuture;
 
   @override
   void initState() {
@@ -38,14 +37,14 @@ class _StudentsScreenState extends State<StudentsScreen> {
         builder: (BuildContext context,
             AsyncSnapshot<Map<String, dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             // El snapshot.data contiene la información en forma de lista de los alumnos [ids, names, emails, phones, address, ages, birthdays]
             List<dynamic> students = snapshot.data!['names']!;
-            List<dynamic> students_ids = snapshot.data!['ids']!;
-            List<int> students_index =
+            List<dynamic> studentsIds = snapshot.data!['ids']!;
+            List<int> studentsIndex =
                 List.generate(students.length, (index) => index);
             int num = students.length;
             List<dynamic> images = snapshot.data!['images']!;
@@ -53,9 +52,9 @@ class _StudentsScreenState extends State<StudentsScreen> {
             return ScrollViewContent(
               screenHeight: MediaQuery.of(context).size.height,
               students: students,
-              num_alumnos: num,
-              index_list: students_index,
-              ids: students_ids,
+              numAlumnos: num,
+              indexList: studentsIndex,
+              ids: studentsIds,
               images: images,
               onAddStudent: () {
                 _loadStudents(); // Vuelve a cargar la lista de estudiantes
@@ -84,8 +83,8 @@ class ScrollViewContent extends StatelessWidget {
     super.key,
     required this.screenHeight,
     required this.students,
-    required this.num_alumnos,
-    required this.index_list,
+    required this.numAlumnos,
+    required this.indexList,
     required this.ids,
     required this.images,
     required this.onAddStudent,
@@ -95,19 +94,58 @@ class ScrollViewContent extends StatelessWidget {
   final List<dynamic> students;
   final List<dynamic> ids;
   final List<dynamic> images;
-  final int num_alumnos;
-  final List<int> index_list;
+  final int numAlumnos;
+  final List<int> indexList;
   final VoidCallback onAddStudent;
 
-  void _insertAttendance(id,name){
+  void _insertAttendance(id, name) {
     final db = DatabaseHelper();
     db.InserAttendanceData(id, name);
     db.varifyPay(id);
   }
 
-  void _deleteRegister(id){
+  void _deleteRegister(id) {
     final db = DatabaseHelper();
     db.deleteRegister(id, null);
+  }
+
+  void handleDeleteDash(context, i) async {
+    // Mostrar un cuadro de diálogo para confirmar la eliminación
+    bool? shouldDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Eliminación'),
+          content: const Text(
+              '¿Estás seguro de que quieres eliminar este registro?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(false); // Retornar false si cancela
+              },
+            ),
+            TextButton(
+              child: const Text('Eliminar'),
+              onPressed: () {
+                Navigator.of(context).pop(true); // Retornar true si confirma
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    // Si el usuario confirma, eliminar el registro
+    if (shouldDelete == true) {
+      _deleteRegister(ids[i]);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registro Eliminado'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -120,7 +158,7 @@ class ScrollViewContent extends StatelessWidget {
               height: screenHeight * 0.06,
             ),
             SearchStudentContainer(
-              circleText: 'Total de alumnos: $num_alumnos',
+              circleText: 'Total de alumnos: $numAlumnos',
             ),
             SizedBox(
               height: screenHeight * 0.01,
@@ -132,8 +170,14 @@ class ScrollViewContent extends StatelessWidget {
                   const Spacer(),
                   FilledButton.icon(
                     onPressed: onAddStudent,
-                    label: const Text('Agregar alumno'),
-                    icon: const Icon(Icons.group_add_rounded),
+                    label: const Text(
+                      'Agregar alumno',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    icon: const Icon(
+                      Icons.group_add_rounded,
+                      color: Colors.white,
+                    ),
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(colorList[3]),
                     ),
@@ -144,7 +188,7 @@ class ScrollViewContent extends StatelessWidget {
             SizedBox(
               height: screenHeight * 0.01,
             ),
-            ...index_list.map((i) {
+            ...indexList.map((i) {
               return FadeInUp(
                 child: Column(
                   children: [
@@ -166,22 +210,16 @@ class ScrollViewContent extends StatelessWidget {
                             const Icon(Icons.arrow_back, color: Colors.white),
                       ),
                       confirmDismiss: (direction) async {
-                        if (direction==DismissDirection.startToEnd) {
-                          _insertAttendance(ids[i],students[i]);
+                        if (direction == DismissDirection.startToEnd) {
+                          _insertAttendance(ids[i], students[i]);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Asistencia Registrada'),
+                            const SnackBar(
+                              content: Text('Asistencia Registrada'),
                               backgroundColor: Colors.green,
-                          ),
-                        );
-                        }else{
-                          _deleteRegister(ids[i]);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Registro Eliminado'),
-                              backgroundColor: Colors.red,
-                          ),
-                         );
+                            ),
+                          );
+                        } else {
+                          handleDeleteDash(context, i);
                         }
 
                         return false;
@@ -216,7 +254,7 @@ class ScrollViewContent extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

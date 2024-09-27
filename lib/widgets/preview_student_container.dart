@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 class PreviewStudentContainer extends StatelessWidget {
@@ -52,25 +51,6 @@ class PreviewStudentContainer extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
                         maxLines: 1,
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 2,
-                          color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Clases Faltantes: 4',
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: screenHeight * 0.018,
-                              fontWeight: FontWeight.w600),
-                        ),
                       ),
                     ),
                   ],

@@ -33,7 +33,7 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
 
   // 4. Add the QR code image to the PDF document
 
- pdf.addPage(
+  pdf.addPage(
     pw.Page(
       build: (pw.Context context) {
         return pw.Center(
@@ -70,12 +70,18 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
                   ),
                 ),
                 pw.Positioned(
-                  top: 180,
+                  top: 160,
                   left: 20,
-                  child: pw.Text(
-                    "$name",
-                    style: pw.TextStyle(fontSize: 15,font: pw.Font.timesBoldItalic(),color: PdfColor.fromRYB(0, 0, 0)),
-                  ),
+                  child: pw.Container(
+                    height: 50,
+                    width: 200,
+                    child: pw.Center(
+                      child: pw.Text(
+                        "$name",
+                        style: pw.TextStyle(fontSize: 15,font: pw.Font.timesBoldItalic(),color: PdfColor.fromRYB(0, 0, 0)),
+                      ),
+                    ),
+                  )
                 ),
                 pw.Positioned(
                   top: 210,
@@ -105,7 +111,6 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
     ),
   );
 
-  
   // 5. Save the PDF file
   final output = await getTemporaryDirectory();
   print(output.path);
