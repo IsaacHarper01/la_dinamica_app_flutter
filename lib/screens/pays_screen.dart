@@ -222,7 +222,7 @@ Widget paymentBox(
                           context: context,
                           costs: costs,
                           date: DateTime.now().toString(),
-                          nameIndex: nameIndexNotifier.value,
+                          nameIndex: int.parse(ids[nameIndexNotifier.value]),
                           planIndex: planIndexNotifier.value,
                           plansType: plansType,
                         );
@@ -256,7 +256,7 @@ void assignedPlan({
   required BuildContext context,
 }) {
   var payMap = {
-    'userId': nameIndex + 1,
+    'userId': nameIndex,
     'amount': costs[planIndex],
     'clases': clases[planIndex],
     'type': plansType[planIndex],
