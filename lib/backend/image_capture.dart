@@ -18,7 +18,7 @@ Future<String> pickAndSaveImage(String name) async {
     img.Image originalImage = img.decodeImage(imageBytes)!;
 
     // Resize the image (for example, to 300x300)
-    img.Image resizedImage = img.copyResize(originalImage, width: 300, height: 300);
+    img.Image resizedImage = img.copyResize(originalImage, width: 300, height: 400);
 
     // Get the directory to save the image
     Directory directory = await getApplicationDocumentsDirectory();

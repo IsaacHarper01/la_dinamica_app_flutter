@@ -221,7 +221,7 @@ Widget paymentBox(
                           clases: clases,
                           context: context,
                           costs: costs,
-                          date: DateTime.now().toString(),
+                          date: DateTime.now().toString().split(' ')[0],
                           nameIndex: int.parse(ids[nameIndexNotifier.value]),
                           planIndex: planIndexNotifier.value,
                           plansType: plansType,

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -29,11 +27,12 @@ class DatabaseHelper{
       await db.execute('''
         CREATE TABLE Payments (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          userId INTEGER,
-          amount REAL,
-          clases INT,
-          type TEXT,
-          date TEXT
+          userId INTEGER NOT NULL,
+          amount REAL NOT NULL,
+          clases INT NOT NULL,
+          type TEXT NOT NULL,
+          date TEXT NOT NULL,
+          UNIQUE(userId,date,amount)
         )
       ''');
       await db.execute('''
@@ -94,7 +93,12 @@ class DatabaseHelper{
 
   Future<void> InserPaymentData(Map<String, dynamic> row) async{
     final db = await _openDatabase();
-    await db.insert('Payments', row);
+    try {
+      await db.insert('Payments', row);
+    } catch (e) {
+      print('Pago ya registrado');
+    }
+    
     await db.close();
   }
 
@@ -151,11 +155,11 @@ class DatabaseHelper{
     //fetchAttendanceRange(startDate, endDate);
     //deleteRegister(4, 'Attendance');
     //generateAttendanceReport(startDate, endDate);
-    //generateCredentialandSend(4, 'Uriel Javier Carranza Lopez', 'San Martin', '554203659', '12', '/data/user/0/com.example.la_dinamica_app/app_flutter/Pancho pantera.jpg');
+    //generateCredentialandSend(4, 'Uriel Javier Carranza Lopez', 'San Martin', '554203659', '12', '/data/user/0/com.example.la_dinamica_app/app_flutter/Alex Marin.jpg');
     //deleteDB();
     //fetchPaymentsData();
     //varifyPay(0);
-    //print(fetchSimpleData('Payments', 'userId', 2, false));
+    //deleteTable('Payments');
     await db.close();
     return({'ids':ids,'names':names,'emails':emails,'phones':phones,'address':address,'ages':ages,'birthdays':birthdays,'images':images});
   }

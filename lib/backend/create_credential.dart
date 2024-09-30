@@ -58,10 +58,10 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
                 ),
                 pw.Positioned(
                   top: 20, 
-                  left: 50,
+                  left: 65,
                   child:  pw.ClipRRect(
-                      horizontalRadius: 60, 
-                      verticalRadius: 60,   
+                      horizontalRadius: 50, 
+                      verticalRadius: 50,   
                       child: pw.Image(
                         pw.MemoryImage(photoBytes), 
                         width: 135,  
@@ -85,9 +85,9 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
                 ),
                 pw.Positioned(
                   top: 210,
-                  left: 95,
+                  left: 90,
                   child: pw.Text(
-                    "$number",
+                    "Tel: $number",
                     style: pw.TextStyle(fontSize: 10,font: pw.Font.timesBoldItalic(),color: PdfColor.fromRYB(0, 0, 0)),
                   ),
                 ),
