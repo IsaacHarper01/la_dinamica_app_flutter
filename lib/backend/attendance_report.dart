@@ -6,22 +6,24 @@ import 'package:permission_handler/permission_handler.dart';
 
 Future<void> generateAttendanceReport(
     DateTime startDate, DateTime endDate) async {
+  // Solicitar permiso de almacenamiento
   var status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
   }
 
+  // Obtener los datos de asistencia desde la base de datos
   DatabaseHelper db = DatabaseHelper();
   final attendanceData = await db.fetchAttendanceRange(startDate, endDate);
-  // If no data found, return early
+
+  // Si no hay datos, salir
   if (attendanceData.isEmpty) {
-    //print("No attendance records found for the specified date range.");
     return;
   }
 
-  // Convert the data into a CSV format
+  // Convertir los datos en formato CSV
   List<List<String>> csvData = [
-    ['Id del Alumno', 'Nombre', 'fecha', 'Estado'],
+    ['Id del Alumno', 'Nombre', 'Fecha', 'Estado'],
   ];
 
   attendanceData.forEach((row) {
@@ -33,17 +35,24 @@ Future<void> generateAttendanceReport(
     ]);
   });
 
-  // Generate CSV
+  // Generar contenido CSV
   String csvContent = const ListToCsvConverter().convert(csvData);
 
-  // Save CSV file to device
-  Directory? directory = await getExternalStorageDirectory();
+  // Obtener el directorio público de descargas
+  Directory? directory = (await getExternalStorageDirectories(
+    type: StorageDirectory.downloads,
+  ))
+      ?.first;
+
   if (directory != null) {
     String path = directory.path;
-    File file = File('$path/attendance_report.csv');
+    File file = File(
+        '$path/attendance_report_${DateTime.now().millisecondsSinceEpoch}.csv');
     await file.writeAsString(csvContent);
-    //print("CSV report generated at: ${path}");
+
+    // Imprimir la ubicación donde se generó el archivo
+    print("CSV report generated at: $path");
   } else {
-    //print('Could not find an external storage directory');
+    print('No se pudo encontrar el directorio de descargas.');
   }
 }
