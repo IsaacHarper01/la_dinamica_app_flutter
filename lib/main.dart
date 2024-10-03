@@ -25,5 +25,5 @@ class MyApp extends ConsumerWidget {
           brightness: isDarkMode ? Brightness.dark : Brightness.light),
       home: const MainScreen(),
     );
-  }
+  } 
 }
