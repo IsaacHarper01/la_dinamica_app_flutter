@@ -5,19 +5,25 @@ import 'package:la_dinamica_app/backend/database.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> generateAttendanceReport(
-  DateTime startDate, DateTime endDate) async {
-  
+    DateTime startDate, DateTime endDate) async {
+  // Solicitar permiso de almacenamiento
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
+
+  // Obtener los datos de asistencia desde la base de datos
   DatabaseHelper db = DatabaseHelper();
   final attendanceData = await db.fetchAttendanceRange(startDate, endDate);
-  // If no data found, return early
+
+  // Si no hay datos, salir
   if (attendanceData.isEmpty) {
-    //print("No attendance records found for the specified date range.");
     return;
   }
 
-  // Convert the data into a CSV format
+  // Convertir los datos en formato CSV
   List<List<String>> csvData = [
-    ['Id del Alumno', 'Nombre', 'fecha', 'Estado'],
+    ['Id del Alumno', 'Nombre', 'Fecha', 'Estado'],
   ];
 
   attendanceData.forEach((row) {
@@ -29,60 +35,24 @@ Future<void> generateAttendanceReport(
     ]);
   });
 
-  // Generate CSV
+  // Generar contenido CSV
   String csvContent = const ListToCsvConverter().convert(csvData);
-  
-  Future<bool> _requestPermision() async {
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      // If permission is not granted, request it
-      status = await Permission.storage.request();
-    }
 
-    if (status.isGranted) {
-      print("Permission granted");
-      return true;
-      // Proceed with writing to external storage
-    } else if (status.isDenied) {
-      print("Permission denied");
-      return false;
-      // Handle the case where the user denies the permission
-    } else if (status.isPermanentlyDenied) {
-      // Open app settings so the user can manually enable the permission
-      await openAppSettings();
-      return true;
-    }
-    return false;
+  // Obtener el directorio público de descargas
+  Directory? directory = (await getExternalStorageDirectories(
+    type: StorageDirectory.downloads,
+  ))
+      ?.first;
+
+  if (directory != null) {
+    String path = directory.path;
+    File file = File(
+        '$path/attendance_report_${DateTime.now().millisecondsSinceEpoch}.csv');
+    await file.writeAsString(csvContent);
+
+    // Imprimir la ubicación donde se generó el archivo
+    print("CSV report generated at: $path");
+  } else {
+    print('No se pudo encontrar el directorio de descargas.');
   }
-
-  if (await _requestPermision()){
-    Directory? directory = await getExternalStorageDirectory();
-  
-    if (directory != null) {
-      String path = directory.path;
-      print(path);
-      List<String> folders = path.split('/');
-      String new_path = '';
-      for (var i = 1; i < folders.length; i++) {
-        if (folders[i]=='Android'){
-          break;
-        }else{
-          new_path += '/' + folders[i]; 
-        }
-      } 
-      
-      new_path += '/La_Dinamica_Folder';
-      print(new_path);
-      if (await Directory(new_path).exists()) {
-        // File file = File('$path/attendance_report.csv');
-        // await file.writeAsString(csvContent);
-      print("CSV report generated at: ${new_path}");
-      }else{
-      Directory(new_path).create();
-      print('Directorio creado en $new_path'); 
-      }
-    }
-    }
-  // Save CSV file to device
-  
 }
