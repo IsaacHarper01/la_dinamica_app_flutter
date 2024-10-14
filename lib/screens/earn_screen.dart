@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/widgets/bar_chart_widget.dart';
@@ -130,24 +131,12 @@ class _EarnScreenState extends State<EarnScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: screenWidth / 2.8,
-                    decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
-                        border: Border.all(width: 1),
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            bottomLeft: Radius.circular(10))),
-                    child: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Activo',
-                          style: TextStyle(color: Colors.black),
-                        ),
+                  ElevatedButton(
+                      onPressed: () {
+                        generateAttendanceReport(startDate, endDate);
+                      },
+                      child: Text('Reporte de asistencia'),
                       ),
-                    ),
-                  ),
                   Container(
                     width: screenWidth / 2.8,
                     decoration: BoxDecoration(

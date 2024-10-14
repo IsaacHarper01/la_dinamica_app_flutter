@@ -7,7 +7,6 @@ import 'package:path/path.dart' as path;
 Future<String> pickAndSaveImage(String name) async {
   final picker = ImagePicker();
   final pickedFile = await picker.pickImage(source: ImageSource.camera);
-  print('nombre del alumno: $name');
 
   if (pickedFile != null) {
     // Get the image as a File
@@ -18,17 +17,15 @@ Future<String> pickAndSaveImage(String name) async {
     img.Image originalImage = img.decodeImage(imageBytes)!;
 
     // Resize the image (for example, to 300x300)
-    img.Image resizedImage = img.copyResize(originalImage, width: 300, height: 400);
+    img.Image resizedImage = img.copyResize(originalImage, width: 500, height: 600);
 
     // Get the directory to save the image
     Directory directory = await getApplicationDocumentsDirectory();
     String newPath = path.join(directory.path, '$name.jpg');
-    print('antes de salvar la imagen: $newPath');
     // Save the resized image as a file
     File resizedImageFile = File(newPath)
       ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 85)); // Save with compression
     
-    print('Image saved at: $newPath');
     return newPath;
     
   } else {

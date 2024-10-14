@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 
@@ -62,7 +63,9 @@ class StudentDetailScreen extends StatelessWidget {
       double screenWidth,
       bool isActive,
       Map<String, dynamic> paymentData,
-      Map<String, dynamic> studentData) {
+      Map<String, dynamic> studentData) 
+      
+      {
     if (paymentData['clases'] == 0) {
       isActive = false;
     } else {
@@ -265,6 +268,11 @@ class StudentDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Text('Telefono: ${studentData['phone']}'),
                 ),
+                ElevatedButton(
+                  onPressed:(){
+                    generateCredentialandSend(id,name,studentData['address'],studentData['phone'],studentData['age'],image);
+                  },
+                  child: Text('Generar Credencial'))
               ],
             ),
           )

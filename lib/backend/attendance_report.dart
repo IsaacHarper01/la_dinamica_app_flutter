@@ -3,6 +3,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:share_plus/share_plus.dart';
 
 Future<void> generateAttendanceReport(
     DateTime startDate, DateTime endDate) async {
@@ -37,22 +38,13 @@ Future<void> generateAttendanceReport(
 
   // Generar contenido CSV
   String csvContent = const ListToCsvConverter().convert(csvData);
-
   // Obtener el directorio público de descargas
-  Directory? directory = (await getExternalStorageDirectories(
-    type: StorageDirectory.downloads,
-  ))
-      ?.first;
+  Directory? directory = (await getTemporaryDirectory());
 
-  if (directory != null) {
-    String path = directory.path;
-    File file = File(
-        '$path/attendance_report_${DateTime.now().millisecondsSinceEpoch}.csv');
-    await file.writeAsString(csvContent);
+  String path = directory.path;
+  String fileName = '$path/attendance_report_${DateTime.now().toString().split(' ')[0]}.csv';
+  File file = File(fileName);
+  await file.writeAsString(csvContent);
 
-    // Imprimir la ubicación donde se generó el archivo
-    print("CSV report generated at: $path");
-  } else {
-    print('No se pudo encontrar el directorio de descargas.');
-  }
+  await Share.shareXFiles([XFile(fileName)], text: 'Attendance report');
 }
