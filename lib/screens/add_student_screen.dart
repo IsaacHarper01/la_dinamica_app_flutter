@@ -60,8 +60,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       final image = await pickAndSaveImage(data['name']);
       data['image'] = image;
       final id = await db.InsertGeneralData(data);
-      generateCredentialandSend(id, data['name'], data['address'], data['phone'],data['age'],image);
-      
+      generateCredentialandSend(
+          id, data['name'], data['address'], data['phone'], data['age'], image);
+
       // Mostrar SnackBar confirmando el registro
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -130,8 +131,11 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                               padding:
                                   const EdgeInsets.symmetric(vertical: 8.0),
                               child: TextFormField(
+                                style: const TextStyle(color: Colors.black),
                                 controller: _controllers[index],
                                 decoration: InputDecoration(
+                                  labelStyle:
+                                      const TextStyle(color: Colors.black),
                                   labelText: _fieldNames[index],
                                   hintText:
                                       'Ingrese ${_fieldNames[index].toLowerCase()}',

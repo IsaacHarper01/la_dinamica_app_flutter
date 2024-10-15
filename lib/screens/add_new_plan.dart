@@ -56,57 +56,59 @@ class _AddNewPlanState extends State<AddNewPlan> {
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: colorList[1],
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey, // Asociar la clave global al formulario
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Agregar nuevo Plan',
-                      style: TextStyle(color: Colors.white, fontSize: 25),
-                    ),
-                    const SizedBox(height: 20),
-                    // Generar los TextFormField dinámicamente con validación
-                    for (var i = 0; i < labels.length; i++) ...[
-                      TextFormField(
-                        style: const TextStyle(color: Colors.white),
-                        controller: _controllers[i],
-                        decoration: InputDecoration(
-                          labelText: labels[i],
-                          labelStyle: const TextStyle(color: Colors.white),
-                          border: const OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, ingrese ${labels[i].toLowerCase()}';
-                          }
-                          return null;
-                        },
+        child: SingleChildScrollView(
+          child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                color: colorList[1],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey, // Asociar la clave global al formulario
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Agregar nuevo Plan',
+                        style: TextStyle(color: Colors.white, fontSize: 25),
                       ),
                       const SizedBox(height: 20),
+                      // Generar los TextFormField dinámicamente con validación
+                      for (var i = 0; i < labels.length; i++) ...[
+                        TextFormField(
+                          style: const TextStyle(color: Colors.white),
+                          controller: _controllers[i],
+                          decoration: InputDecoration(
+                            labelText: labels[i],
+                            labelStyle: const TextStyle(color: Colors.white),
+                            border: const OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor, ingrese ${labels[i].toLowerCase()}';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                      const SizedBox(height: 20),
+                      FilledButton(
+                        onPressed:
+                            _registerPlan, // Llamar a la función de registro
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                        ),
+                        child: const Text(
+                          'Registrar',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ],
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed:
-                          _registerPlan, // Llamar a la función de registro
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(colorList[3]),
-                      ),
-                      child: const Text(
-                        'Registrar',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

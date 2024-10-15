@@ -161,7 +161,7 @@ Widget paymentBox(
                                     return names.map((String value) {
                                       return Text(
                                         value.length > 15
-                                            ? '${value.substring(0, isPortrait ? 10 : 50)}...'
+                                            ? '${value.substring(0, isPortrait ? 10 : value.length < 50 ? value.length - 1 : 50)}...'
                                             : value, // Limitar a 15 caracteres en el valor seleccionado también
                                         overflow: TextOverflow
                                             .ellipsis, // Agregar elipsis si es necesario

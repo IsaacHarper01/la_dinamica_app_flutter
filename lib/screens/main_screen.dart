@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
                   Icon(
                     item.icon,
                     color: _selectedIndex == idx ? colorList[4] : colorList[5],
-                    size: screenHeight * 0.025,
+                    size: screenHeight * 0.020,
                   ),
                   Text(
                     item.title,
