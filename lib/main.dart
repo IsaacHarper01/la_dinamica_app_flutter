@@ -7,7 +7,7 @@ import 'package:la_dinamica_app/screens/main_screen.dart';
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
-
+ 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
