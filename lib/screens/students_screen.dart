@@ -199,15 +199,15 @@ class ScrollViewContent extends StatelessWidget {
                         color: const Color.fromARGB(255, 102, 165, 104),
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(left: 20),
-                        child: const Icon(Icons.arrow_forward,
+                        child: const Icon(Icons.add_task,
                             color: Colors.white),
                       ),
                       secondaryBackground: Container(
                         color: const Color.fromARGB(255, 179, 103, 97),
                         alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
+                        padding: const EdgeInsets.only(right: 20), 
                         child:
-                            const Icon(Icons.arrow_back, color: Colors.white),
+                            const Icon(Icons.delete, color: Colors.white),
                       ),
                       confirmDismiss: (direction) async {
                         if (direction == DismissDirection.startToEnd) {

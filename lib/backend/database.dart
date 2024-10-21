@@ -119,8 +119,8 @@ class DatabaseHelper{
     final db = await _openDatabase();
     final List<Map<String, dynamic>> data = await db.query('Attendance', where: 'date BETWEEN ? AND ?',
     whereArgs: [
-      min.toIso8601String(),
-      max.toIso8601String(),
+      min.toString().split(' ')[0],
+      max.toString().split(' ')[0],
         ],
       );
     await db.close();
@@ -178,7 +178,18 @@ class DatabaseHelper{
 
 
 //FETCH A SINGLE DATA FROM TABLE
- 
+  Future<List<List<String>>> fetchAges(List<int> ids)async{
+    final db = await _openDatabase();
+    final List<String> ages= [];
+    final List<String> address=[];
+    for (var id in ids) {
+      var data = await db.query('General',where: 'id = ?',whereArgs: [id]);
+      ages.add(data[0]['age'] as String);
+      address.add(data[0]['address'] as String);
+    }
+    return [ages,address];
+  }
+
   Future<Object?> fetchSimpleData(String table, String field, int id, bool allfields)async{
     final db = await _openDatabase();
     final data = await db.query(table, where: 'id LIKE ?', whereArgs: [id],);
@@ -313,6 +324,12 @@ class DatabaseHelper{
     // Delete the database
     await deleteDatabase(path);
     print('Database deleted');
+  }
+
+  Future<void> deleteAttendance(int id, String date)async{
+    final Database db = await _openDatabase();
+    db.delete('Attendance',where: 'userId = ? AND date = ?',whereArgs: [id,date]);
+    db.delete('Payments',where: 'userId = ? AND date = ?',whereArgs: [id,date]); 
   }
 
 //UPDATE VALUES

@@ -5,8 +5,7 @@ import 'package:la_dinamica_app/backend/database.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-Future<void> generateAttendanceReport(
-    DateTime startDate, DateTime endDate) async {
+Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) async {
   // Solicitar permiso de almacenamiento
   var status = await Permission.storage.status;
   if (!status.isGranted) {
@@ -16,25 +15,32 @@ Future<void> generateAttendanceReport(
   // Obtener los datos de asistencia desde la base de datos
   DatabaseHelper db = DatabaseHelper();
   final attendanceData = await db.fetchAttendanceRange(startDate, endDate);
-
+  
   // Si no hay datos, salir
   if (attendanceData.isEmpty) {
     return;
   }
+  final List<int> ids = [];
 
-  // Convertir los datos en formato CSV
+  attendanceData.forEach((row){
+    ids.add(row['userId']);
+  });
+
+  final agesAndAddress = await db.fetchAges(ids);
+  
   List<List<String>> csvData = [
-    ['Id del Alumno', 'Nombre', 'Fecha', 'Estado'],
+    ['Id del Alumno', 'Nombre', 'Edad', 'Localidad' ,'Fecha'],
   ];
 
-  attendanceData.forEach((row) {
+  for (var i = 0; i < attendanceData.length; i++) {
     csvData.add([
-      row['userId'].toString(),
-      row['name'].toString(),
-      row['date'].toString(),
-      row['status'].toString(),
+      attendanceData[i]['userId'].toString(),
+      attendanceData[i]['name'].toString(),
+      agesAndAddress[0][i].toString(),
+      agesAndAddress[1][i].toString(),
+      attendanceData[i]['date'].toString(),
     ]);
-  });
+  };
 
   // Generar contenido CSV
   String csvContent = const ListToCsvConverter().convert(csvData);
