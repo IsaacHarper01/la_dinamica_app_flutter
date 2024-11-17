@@ -73,9 +73,7 @@ class DatabaseHelper{
     Map<String, dynamic> row = {'userId':id,'name':name,'date':today_date,'status':'Presente'};
     try {
       await db.insert('Attendance', row);
-      print('Asistencia registrada');
     } catch (e) {
-      print('Asistencia ya registrada');
     }
     await db.close();
     
