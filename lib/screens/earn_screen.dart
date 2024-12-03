@@ -4,6 +4,7 @@ import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/widgets/bar_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
+import 'package:la_dinamica_app/widgets/line_chart_widget.dart';
 
 class EarnScreen extends StatefulWidget {
   const EarnScreen({super.key});
@@ -49,7 +50,7 @@ class _EarnScreenState extends State<EarnScreen> {
       
       body: FutureBuilder<double>(
         
-        future: db.fetchIncomeRange(startDate.toString().split(' ')[0],null),//here you can put the range in string type
+        future: db.fetchIncomeRange(startDate.toString().split(' ')[0],endDate.toString().split(' ')[0]),//here you can put the range in string type
         builder: (BuildContext context,
             AsyncSnapshot<double> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -135,26 +136,12 @@ class _EarnScreenState extends State<EarnScreen> {
                       onPressed: () {
                         generateAttendanceReport(startDate, endDate);
                       },
-                      child: Text('Reporte de asistencia'),
+                      child: Text('Reporte de asistencias'),
                       ),
-                  Container(
-                    width: screenWidth / 2.8,
-                    decoration: BoxDecoration(
-                        color: Colors.green.shade100,
-                        border: Border.all(width: 1),
-                        borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10))),
-                    child: const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Desactivado',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
+                  ElevatedButton(onPressed: (){
+                      //add the function to create an income report
+                  }, 
+                  child: Text('Reporte de Ingresos'))
                 ],
               ),
               const SizedBox(height: 10),
@@ -209,15 +196,15 @@ class _EarnScreenState extends State<EarnScreen> {
               Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: colorList[1], width: 5)),
-                  child: const BarChartWidget()),
+                      border: Border.all(color: colorList[1], width: 1)),
+                  child: LineChartWidget()),
               const SizedBox(
                 height: 20,
               ),
               Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: colorList[1], width: 5)),
+                      border: Border.all(color: colorList[1], width: 1)),
                   child: const PieChartWidget()), // Tu widget de gráfico
             ],
           ),

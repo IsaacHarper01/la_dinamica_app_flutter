@@ -1,0 +1,15 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ladinamicaapp-staging-ade5a-authRole",
+      "UnauthRoleArn": "arn:aws:iam::730335326941:role/amplify-ladinamicaapp-staging-ade5a-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::730335326941:role/amplify-ladinamicaapp-staging-ade5a-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-ladinamicaapp-staging-ade5a-deployment",
+      "UnauthRoleName": "amplify-ladinamicaapp-staging-ade5a-unauthRole",
+      "StackName": "amplify-ladinamicaapp-staging-ade5a",
+      "StackId": "arn:aws:cloudformation:us-east-1:730335326941:stack/amplify-ladinamicaapp-staging-ade5a/7f67f300-9c6a-11ef-a1ff-0e106e7e8ba5",
+      "AmplifyAppId": "d35s61arzutrxf"
+    }
+  }
+}

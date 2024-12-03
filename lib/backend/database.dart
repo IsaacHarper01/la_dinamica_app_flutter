@@ -233,7 +233,7 @@ class DatabaseHelper{
     double result = 0.0;
     List<Map<String,Object?>> data=[];
 
-    if (end==null) {  
+    if (end==null || end==start) {  
       data = await db.query(
       'Payments',
       columns: ['amount'],
