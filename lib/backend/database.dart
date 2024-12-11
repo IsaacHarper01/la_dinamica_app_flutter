@@ -330,6 +330,16 @@ class DatabaseHelper{
     db.delete('Payments',where: 'userId = ? AND date = ?',whereArgs: [id,date]); 
   }
 
+  Future<void> deleteStudentPlan(int id)async{
+    final Database db = await _openDatabase();
+    final pay = {"userId": id,
+                "amount":0,
+                "clases":0,
+                "type": 'Cancelacion',
+                "date": DateTime.now().toString().split(' ')[0]};
+    db.insert('Payments', pay);
+  }
+
 //UPDATE VALUES
 
   Future<void> updateClases(int Id, int remainingClases) async {

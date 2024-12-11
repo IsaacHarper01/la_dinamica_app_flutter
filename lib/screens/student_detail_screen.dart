@@ -272,7 +272,12 @@ class StudentDetailScreen extends StatelessWidget {
                   onPressed:(){
                     generateCredentialandSend(id,name,studentData['address'],studentData['phone'],studentData['age'],image);
                   },
-                  child: Text('Generar Credencial'))
+                  child: Text('Generar Credencial')),
+                ElevatedButton(
+                  onPressed: (){
+                    db.deleteStudentPlan(id);
+                  }, 
+                  child:Text('Eliminar Plan'))
               ],
             ),
           )
