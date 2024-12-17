@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/backend/Income_report.dart';
 import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -139,7 +140,7 @@ class _EarnScreenState extends State<EarnScreen> {
                       child: Text('Reporte de asistencias'),
                       ),
                   ElevatedButton(onPressed: (){
-                      //add the function to create an income report
+                      generateIncomeReport(startDate, endDate);
                   }, 
                   child: Text('Reporte de Ingresos'))
                 ],

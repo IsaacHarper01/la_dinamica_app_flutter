@@ -125,6 +125,18 @@ class DatabaseHelper{
     return data;
   }
 
+  Future<List<Map<String,dynamic>>> fetchPaymentsRange(DateTime min, DateTime max) async{
+    final db = await _openDatabase();
+    final List<Map<String, dynamic>> data = await db.query('Payments', where: 'date BETWEEN ? AND ?',
+    whereArgs: [
+      min.toString().split(' ')[0],
+      max.toString().split(' ')[0],
+      ],
+    );
+    await db.close();
+    return data;
+  }
+
   Future<List<Map<String,dynamic>>> fetchPaymentsData()async{
     final db = await _openDatabase();
     final data = await db.query('Payments');
