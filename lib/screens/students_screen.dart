@@ -64,7 +64,6 @@ class _StudentsScreenState extends State<StudentsScreen> {
                     builder: (context) => const AddStudentScreen(),
                   ),
                 ).then((_) {
-                  // Actualiza la lista al volver de la pantalla de agregar estudiante
                   setState(() {
                     _loadStudents();
                   });

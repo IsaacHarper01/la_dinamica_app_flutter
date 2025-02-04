@@ -161,19 +161,7 @@ class _EarnScreenState extends State<EarnScreen> {
                         'Datos de la fecha Actual: $date',
                         style: TextStyle(color: Colors.white),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(
-                            'Asistencias',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            '25 Alumnos',
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
-                      ),
+                      
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -198,7 +186,7 @@ class _EarnScreenState extends State<EarnScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: colorList[1], width: 1)),
-                  child: LineChartWidget()),
+                  child: LineChartWidget(startDate: startDate, endDate: endDate,)),
               const SizedBox(
                 height: 20,
               ),

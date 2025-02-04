@@ -36,8 +36,6 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
 
   csvData.add(['Total','${min.toString().split(' ')[0]} - ${max.toString().split(' ')[0]}', '', '$total']);
 
-  print(csvData);
-  print(paymentsData);
   // Generar contenido CSV
   String csvContent = const ListToCsvConverter().convert(csvData);
   // Obtener el directorio público de descargas

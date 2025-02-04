@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
+import 'package:la_dinamica_app/screens/metrics_screen.dart';
 
 // ignore: must_be_immutable
 class StudentDetailScreen extends StatelessWidget {
@@ -187,7 +188,12 @@ class StudentDetailScreen extends StatelessWidget {
                         backgroundColor: WidgetStateProperty.all(colorList[4])),
                     child: const Text('Pagos')),
                 FilledButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => MetricsPage(name: name,)));
+                  },
                   style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[3])),
                   child: const Text('Metricas'),

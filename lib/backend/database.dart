@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 class DatabaseHelper{
@@ -136,6 +138,32 @@ class DatabaseHelper{
     await db.close();
     return data;
   }
+
+  Future<Map<String,dynamic>> fetchTotalAmountRange(DateTime min, DateTime max) async{
+
+      final db = await _openDatabase();
+      Map<String, dynamic> clasesDates = {}; 
+      final List<Map<String, dynamic>> data = await db.query('Payments', where: 'date BETWEEN ? AND ?',
+      whereArgs: [
+        min.toString().split(' ')[0],
+        max.toString().split(' ')[0],
+        ],
+      );
+      for (var element in data){
+        String dateKey = element["date"];
+        double amount = element["amount"];
+
+        if (clasesDates.containsKey(dateKey)){
+          clasesDates[dateKey] += amount;
+        }
+        else{
+          clasesDates[dateKey] = amount;
+        }
+        
+      }
+      await db.close();
+      return clasesDates;
+    }  
 
   Future<List<Map<String,dynamic>>> fetchPaymentsData()async{
     final db = await _openDatabase();
