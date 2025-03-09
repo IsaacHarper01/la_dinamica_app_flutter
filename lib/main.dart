@@ -3,6 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/screens/main_screen.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
+
+import 'amplifyconfiguration.dart';
+import 'models/ModelProvider.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
