@@ -7,11 +7,10 @@ import 'package:la_dinamica_app/screens/main_screen.dart';
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
- 
+
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(isDark);
@@ -25,5 +24,5 @@ class MyApp extends ConsumerWidget {
           brightness: isDarkMode ? Brightness.dark : Brightness.light),
       home: const MainScreen(),
     );
-  } 
+  }
 }

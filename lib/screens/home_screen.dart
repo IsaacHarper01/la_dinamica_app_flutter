@@ -12,41 +12,45 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Orientation orientation = MediaQuery.of(context).orientation;
-    final bool isPortatil = orientation == Orientation.portrait;
-    final screenHeight = isPortatil
+    final bool isPortrait = orientation == Orientation.portrait;
+    final screenHeight = isPortrait
         ? MediaQuery.of(context).size.height
         : MediaQuery.of(context).size.height * 2;
     final db = DatabaseHelper();
     final isDarkMode = ref.watch(isDark);
 
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => scannerQR(),
-          child: const Icon(Icons.qr_code_scanner_outlined),
-        ),
-        body: FutureBuilder(
-          future: db.fetchAttendanceToday(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              List<dynamic> ids = snapshot.data['ids'];
-              List<dynamic> names = snapshot.data['names'];
-              List<dynamic> images = snapshot.data['images'];
-              List<int> studentsIndex =
-                  List.generate(ids.length, (index) => index);
-              int numAlumnos = ids.length;
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => scannerQR(context),
+        child: const Icon(Icons.qr_code_scanner_outlined),
+      ),
+      body: FutureBuilder(
+        future: db.fetchAttendanceToday(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text('Error al cargar los datos.'));
+          } else {
+            List<dynamic> ids = snapshot.data['ids'] ?? [];
+            List<dynamic> names = snapshot.data['names'] ?? [];
+            List<dynamic> images = snapshot.data['images'] ?? [];
 
-              return ScreenInfo(
-                  screenHeight: screenHeight,
-                  numAlumnos: numAlumnos,
-                  students: names,
-                  images: images,
-                  studentsIndex: studentsIndex,
-                  isDarkMode: isDarkMode);
-            }
-          },
-        ));
+            List<int> studentsIndex =
+                List.generate(ids.length, (index) => index);
+            int numAlumnos = ids.length;
+
+            return ScreenInfo(
+                screenHeight: screenHeight,
+                numAlumnos: numAlumnos,
+                students: names,
+                images: images,
+                studentsIndex: studentsIndex,
+                isDarkMode: isDarkMode);
+          }
+        },
+      ),
+    );
   }
 }
 
@@ -72,14 +76,15 @@ class ScreenInfo extends StatelessWidget {
     return numAlumnos == 0
         ? Center(
             child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  isDarkMode
-                      ? 'assets/images/f=ma18.png'
-                      : 'assets/images/f=ma11.png',
-                  height: isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
-                  fit: BoxFit.cover,
-                )),
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                isDarkMode
+                    ? 'assets/images/f=ma18.png'
+                    : 'assets/images/f=ma11.png',
+                height: isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
+                fit: BoxFit.cover,
+              ),
+            ),
           )
         : SingleChildScrollView(
             child: Center(
@@ -97,21 +102,23 @@ class ScreenInfo extends StatelessWidget {
                   ),
                   // Verifica si no hay alumnos
                   Column(
-                    children: studentsIndex.map((i) {
-                      return Column(
-                        children: [
-                          PreviewStudentContainer(
-                            name: students[i],
-                            image: images[i],
-                          ),
-                          const Divider(
-                            height: 0,
-                            indent: 20,
-                            endIndent: 20,
-                          ),
-                        ],
-                      );
-                    }).toList(),
+                    children: studentsIndex.map(
+                      (i) {
+                        return Column(
+                          children: [
+                            PreviewStudentContainer(
+                              name: students[i],
+                              image: images[i],
+                            ),
+                            const Divider(
+                              height: 0,
+                              indent: 20,
+                              endIndent: 20,
+                            ),
+                          ],
+                        );
+                      },
+                    ).toList(),
                   ),
                 ],
               ),
