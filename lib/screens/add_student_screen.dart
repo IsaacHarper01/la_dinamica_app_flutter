@@ -3,6 +3,7 @@ import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
+import 'package:logger/logger.dart';
 
 class AddStudentScreen extends StatefulWidget {
   const AddStudentScreen({super.key});
@@ -13,6 +14,7 @@ class AddStudentScreen extends StatefulWidget {
 
 class _AddStudentScreenState extends State<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
+  final logger = Logger();
 
   // Crear un controlador para cada campo de texto
   final List<TextEditingController> _controllers =
@@ -55,6 +57,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       for (var i = 0; i < _controllers.length; i++) {
         data[_namesdb[i]] = _controllers[i].text;
       }
+
+      logger.i('Datos del formulario: $data');
 
       // Insertar los valores en la base de datos y generar el archivo PDF
       final image = await pickAndSaveImage(data['name']);

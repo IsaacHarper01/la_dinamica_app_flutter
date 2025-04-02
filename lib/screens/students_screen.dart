@@ -32,7 +32,6 @@ class _StudentsScreenState extends State<StudentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<Map<String, dynamic>>(
-        // Ajusta el tipo aquí
         future: _studentsFuture,
         builder: (BuildContext context,
             AsyncSnapshot<Map<String, dynamic>> snapshot) {
