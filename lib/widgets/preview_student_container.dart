@@ -32,7 +32,7 @@ class PreviewStudentContainer extends StatelessWidget {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       onDismissed: (direction) {
-        if (onDismissed != null) onDismissed!();
+        _showDeleteConfirmationDialog(context);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -52,7 +52,6 @@ class PreviewStudentContainer extends StatelessWidget {
                     )),
               ),
               Expanded(
-                // Usa Expanded para que el contenido del Column se ajuste al espacio disponible
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -60,7 +59,6 @@ class PreviewStudentContainer extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Flexible(
-                        // Envuelve el Text en un Flexible para evitar el desbordamiento
                         child: Text(
                           name,
                           style: TextStyle(
@@ -79,6 +77,36 @@ class PreviewStudentContainer extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('¿Eliminar asistencia?'),
+          content: const Text(
+              '¿Estás seguro de que deseas eliminar esta asistencia?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (onDismissed != null) {
+                  onDismissed!();
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('Eliminar'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
