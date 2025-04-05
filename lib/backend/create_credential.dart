@@ -22,8 +22,8 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
     data: qrCodeData,
     version: QrVersions.auto,
     gapless: false,
-    dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color.fromRGBO(209, 207, 207, 0.655)),
-    eyeStyle:  QrEyeStyle(color: Color.fromRGBO(209, 207, 207, 0.655)
+    dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color.fromRGBO(0, 0, 0, 0.655)),
+    eyeStyle:  QrEyeStyle(color: Color.fromRGBO(0, 0, 0, 0.655)
     ),  
   ).toImage(120); // 120 is the size of the image
 
@@ -51,10 +51,15 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
                     width: 350,  
                     ),
                 ),
-                pw.Positioned(
-                  top: 410, 
-                  left: 55, 
-                  child: pw.Image(pw.MemoryImage(qrImageBytes)),
+                pw.Positioned( 
+                  top: 400, 
+                  left: 65,
+                  child: pw.Container(
+                    width: 110,
+                    height: 110,
+                    color: PdfColors.white,
+                    child: pw.Image(pw.MemoryImage(qrImageBytes)),
+                  )
                 ),
                 pw.Positioned(
                   top: 20, 

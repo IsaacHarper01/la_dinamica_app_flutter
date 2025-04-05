@@ -6,8 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.la_dinamica_app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973" // Many plugins depends on this Android NDK version.
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.example.la_dinamica_app"
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
