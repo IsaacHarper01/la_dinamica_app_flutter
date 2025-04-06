@@ -10,7 +10,6 @@ Future<void> scannerQR(BuildContext context) async {
   final logger = Logger();
 
   if (!status.isGranted) return;
-
   if (!context.mounted) return;
 
   // Navigate to the scanner screen and wait for the result
@@ -19,45 +18,38 @@ Future<void> scannerQR(BuildContext context) async {
     MaterialPageRoute(builder: (context) => const ScannerScreen()),
   );
 
-
-  // If the user didn't scan anything, return without doing anything.
   if (scannedCode == null) {
     logger.d('No se escaneó ningún código QR o el código QR es inválido.');
     return;
-  };
+  }
 
   try {
-    List<String>? data = scannedCode.split(',');
-
+    List<String> data = scannedCode.split(',');
     if (data.length < 5) {
       logger.e("Formato de datos incorrecto: $scannedCode");
-      Navigator.pop(context, null);
       return;
     }
 
     int id = int.tryParse(data[0]) ?? -1;
     if (id == -1) {
-      logger.e("ID no válido: $data[0]");
-      Navigator.pop(context, null);
+      logger.e("ID no válido: ${data[0]}");
       return;
     }
 
     String name = data[1];
-    String address = data[2];
-    String phone = data[3];
-    String age = data[4];
-
     final db = DatabaseHelper();
-    db.InserAttendanceData(id, name);
-    db.varifyPay(id);
 
-    logger.i('Datos del QR procesados correctamente.');
-    logger.i('Registrado correctamente');
+    if (await db.fetchSimpleData('General','name',id,false)!=null){ //check if student exist in General table
+      db.InserAttendanceData(id, name);
+      db.varifyPay(id);
+      logger.i('Asistencia de $name registrada con ID: $id');
+    }else{
+      logger.i('Alumno no encontrado');
+    }
+    
 
-    Navigator.pop(context, scannedCode);
   } catch (e) {
     logger.e('Error al procesar los datos del QR: $e');
-    Navigator.pop(context, scannedCode);
   }
 }
 
@@ -82,22 +74,16 @@ class _ScannerScreenState extends State<ScannerScreen> {
       appBar: AppBar(title: const Text("Escanear QR")),
       body: MobileScanner(
         controller: _scannerController,
-        onDetect: (BarcodeCapture barcode) {
-          if (barcode.raw == null) {
+        onDetect: (BarcodeCapture barcode) async {
+          if (barcode.barcodes.isEmpty || barcode.barcodes.first.rawValue == null) {
             Navigator.pop(context, null);
             return;
           }
 
-          final String scannedData = barcode.raw!.toString();
+          final String? scannedData = barcode.barcodes.first.rawValue;
 
-          if (!scannedData.contains(',')) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('El código QR no es válido.'))
-            );
-            Navigator.pop(context, null);
-            return;
-          }
-
+          _scannerController.stop();
+          await Future.delayed(const Duration(milliseconds: 300));
           Navigator.pop(context, scannedData);
         },
       ),

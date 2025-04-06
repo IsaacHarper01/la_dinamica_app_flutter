@@ -191,19 +191,7 @@ class DatabaseHelper {
     List<dynamic> birthdays =
         data.map((element) => element['birthday']).toList();
     List<dynamic> images = data.map((element) => element['image']).toList();
-    //InserAttendancetData({'userID': 3,'name': 'Isaac Hernandez', 'date':DateTime.now().toString().split(' ')[0],'status':'Presente'});
-    //InserAttendancetData({'userID': 4,'date':'2024-09-06','status':'presente'});
-    //DateTime startDate = DateTime(2024, 10, 01);
-    //DateTime endDate = DateTime(2024, 10, 03);
-    //final DateTime maximun = DateTime.;
-    //fetchAttendanceRange(startDate, endDate);
-    //deleteRegister(4, 'Attendance');
-    //generateAttendanceReport(startDate, endDate);
-    //generateCredentialandSend(4, 'Uriel Javier Carranza Lopez', 'San Martin', '554203659', '12', '/data/user/0/com.example.la_dinamica_app/app_flutter/Alex Marin.jpg');
-    //deleteDB();
-    //fetchPaymentsData();
-    //varifyPay(0);
-    //deleteTable('Payments');
+   
     await db.close();
     return ({
       'ids': ids,
