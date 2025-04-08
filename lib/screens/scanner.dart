@@ -25,14 +25,16 @@ Future<void> scannerQR(BuildContext context) async {
 
   try {
     List<String> data = scannedCode.split(',');
-    if (data.length < 5) {
-      logger.e("Formato de datos incorrecto: $scannedCode");
-      return;
-    }
-
     int id = int.tryParse(data[0]) ?? -1;
+
     if (id == -1) {
       logger.e("ID no válido: ${data[0]}");
+      ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('ID no encontrado'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
       return;
     }
 
@@ -43,8 +45,20 @@ Future<void> scannerQR(BuildContext context) async {
       db.InserAttendanceData(id, name);
       db.varifyPay(id);
       logger.i('Asistencia de $name registrada con ID: $id');
+      ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Asistencia de Registrada'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
     }else{
       logger.i('Alumno no encontrado');
+      ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('ID no encontrado'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
     }
     
 
