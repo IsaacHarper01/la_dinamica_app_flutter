@@ -31,8 +31,8 @@ class PreviewStudentContainer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: const Icon(Icons.delete, color: Colors.white),
       ),
-      onDismissed: (direction) {
-        _showDeleteConfirmationDialog(context);
+      confirmDismiss: (direction) async {
+        return await _showDeleteConfirmationDialog(context);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -80,8 +80,8 @@ class PreviewStudentContainer extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context) {
-    showDialog(
+  Future<bool> _showDeleteConfirmationDialog(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -91,7 +91,7 @@ class PreviewStudentContainer extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(false);
               },
               child: const Text('Cancelar'),
             ),
@@ -100,7 +100,7 @@ class PreviewStudentContainer extends StatelessWidget {
                 if (onDismissed != null) {
                   onDismissed!();
                 }
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(true);
               },
               child: const Text('Eliminar'),
             ),
@@ -108,5 +108,6 @@ class PreviewStudentContainer extends StatelessWidget {
         );
       },
     );
+    return confirmed ?? false;
   }
 }

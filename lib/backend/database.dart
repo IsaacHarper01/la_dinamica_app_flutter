@@ -191,7 +191,7 @@ class DatabaseHelper {
     List<dynamic> birthdays =
         data.map((element) => element['birthday']).toList();
     List<dynamic> images = data.map((element) => element['image']).toList();
-   
+
     await db.close();
     return ({
       'ids': ids,
@@ -357,12 +357,18 @@ class DatabaseHelper {
 
   Future<Map<String, dynamic>?> fetchBasePayment() async {
     final db = await _openDatabase();
+
     final List<Map<String, dynamic>> results = await db.query(
       'Plans',
       where: 'clases = 1',
       limit: 1,
     );
-    return results[0].isNotEmpty ? results.first : null;
+
+    if (results.isNotEmpty) {
+      return results.first;
+    } else {
+      return null;
+    }
   }
 
 //DELETE FUNCTIONS
@@ -445,35 +451,53 @@ class DatabaseHelper {
   }
 
   Future<void> varifyPay(int userId) async {
-    var lastPay = await fetchLastPayment(userId);
-    var basePayment = await fetchBasePayment();
-    double cost = basePayment!['price'];
-    String date = DateTime.now().toString().split(' ')[0];
-    Map<String, dynamic> pay;
-    if (lastPay == null) {
-      pay = {
-        'userId': userId,
-        'amount': cost,
-        'clases': 0,
-        'type': basePayment['type'],
-        'date': date
-      };
-      InserPaymentData(pay);
-      return;
-    } else if ((lastPay['type'] != basePayment['type']) &&
-        (lastPay['clases'] > 0)) {
-      var id = lastPay['id'];
-      var remainingClases = lastPay['clases'] - 1;
-      updateClases(id, remainingClases);
-    } else {
-      pay = {
-        'userId': userId,
-        'amount': cost,
-        'clases': 0,
-        'type': basePayment['type'],
-        'date': date
-      };
-      InserPaymentData(pay);
+    try {
+      var lastPay = await fetchLastPayment(userId);
+      var basePayment = await fetchBasePayment();
+
+      if (basePayment == null || basePayment.isEmpty) {
+        throw Exception('No se pudo obtener la información del pago base');
+      }
+
+      print('Base payment: $basePayment');
+
+      double cost = basePayment['price'] ?? 0.0;
+      String type = basePayment['type'] ?? '';
+
+      String date = DateTime.now().toString().split(' ')[0];
+
+      Map<String, dynamic> pay;
+
+      if (lastPay == null) {
+        pay = {
+          'userId': userId,
+          'amount': cost,
+          'clases': 0,
+          'type': type,
+          'date': date
+        };
+        print('No hay pagos anteriores');
+        print('Pago: $pay');
+        // await InserPaymentData(pay);
+        return;
+      } else {
+        if (lastPay['type'] != type && (lastPay['clases'] ?? 0) > 0) {
+          var id = lastPay['id'];
+          var remainingClases = (lastPay['classes'] ?? 0) -1;
+          await updateClases(id, remainingClases);
+        } else {
+          pay = {
+            'userId': userId,
+            'amount': cost,
+            'clases': 0,
+            'type': type,
+            'date': date
+          };
+          await InserPaymentData(pay);
+        }
+      }
+    } catch (e) {
+      throw Exception('Error al verificar o procesar el pago: $e');
     }
   }
 }

@@ -4,13 +4,13 @@ import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-Future<void> scannerQR(BuildContext context) async {
+Future<Map<String, dynamic>?> scannerQR(BuildContext context) async {
   // Request camera permission
   var status = await Permission.camera.request();
   final logger = Logger();
 
-  if (!status.isGranted) return;
-  if (!context.mounted) return;
+  if (!status.isGranted) return null;
+  if (!context.mounted) return null;
 
   // Navigate to the scanner screen and wait for the result
   final String? scannedCode = await Navigator.push(
@@ -20,36 +20,37 @@ Future<void> scannerQR(BuildContext context) async {
 
   if (scannedCode == null) {
     logger.d('No se escaneó ningún código QR o el código QR es inválido.');
-    return;
+    return null;
+
   }
 
   try {
     List<String> data = scannedCode.split(',');
     if (data.length < 5) {
       logger.e("Formato de datos incorrecto: $scannedCode");
-      return;
+      return null;
     }
 
     int id = int.tryParse(data[0]) ?? -1;
     if (id == -1) {
       logger.e("ID no válido: ${data[0]}");
-      return;
+      return null;
     }
 
     String name = data[1];
     final db = DatabaseHelper();
 
-    if (await db.fetchSimpleData('General','name',id,false)!=null){ //check if student exist in General table
-      db.InserAttendanceData(id, name);
-      db.varifyPay(id);
+    if (await db.fetchSimpleData('General', 'name', id, false) != null) {
+      //check if student exist in General table
       logger.i('Asistencia de $name registrada con ID: $id');
-    }else{
+      return Future.value({'id': id, 'name': name});
+    } else {
       logger.i('Alumno no encontrado');
+      return null;
     }
-    
-
   } catch (e) {
     logger.e('Error al procesar los datos del QR: $e');
+    return null;
   }
 }
 
@@ -62,6 +63,7 @@ class ScannerScreen extends StatefulWidget {
 
 class _ScannerScreenState extends State<ScannerScreen> {
   final MobileScannerController _scannerController = MobileScannerController();
+
   @override
   void dispose() {
     _scannerController.dispose();
@@ -75,7 +77,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
       body: MobileScanner(
         controller: _scannerController,
         onDetect: (BarcodeCapture barcode) async {
-          if (barcode.barcodes.isEmpty || barcode.barcodes.first.rawValue == null) {
+          if (barcode.barcodes.isEmpty ||
+              barcode.barcodes.first.rawValue == null) {
             Navigator.pop(context, null);
             return;
           }
