@@ -14,9 +14,20 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final db = DatabaseHelper();
       final snapshot = await db.fetchAttendanceToday();
+
+      if (snapshot == null || snapshot.isEmpty) {
+        state = const AsyncValue.data([]);
+        return;
+      }
+
       List<dynamic> ids = snapshot['ids'] ?? [];
       List<dynamic> names = snapshot['names'] ?? [];
       List<dynamic> images = snapshot['images'] ?? [];
+
+      if (ids.isEmpty || names.isEmpty || images.isEmpty) {
+        state = const AsyncValue.data([]);
+        return;
+      }
 
       List<Student> students = List.generate(ids.length, (index) {
         return Student(
@@ -29,6 +40,19 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
       state = AsyncValue.data(students);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  Future<void> insertAttendance(int studentId, String name) async {
+    try {
+      final db = DatabaseHelper();
+      await db.InserAttendanceData(studentId, name);
+
+      await db.varifyPay(studentId);
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    } finally {
+      await fetchAttendanceToday();
     }
   }
 

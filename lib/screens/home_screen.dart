@@ -22,6 +22,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.read(studentsProvider.notifier).fetchAttendanceToday();
   }
 
+  Future<void> registerAssistance(BuildContext context) async {
+    final result = await scannerQR(context);
+
+    if (result == null || result.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ID no encontrado'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print("No se escanearon datos o hubo un error");
+      return;
+    }
+
+    final id = result['id'];
+    final name = result['name'];
+
+    await ref.read(studentsProvider.notifier).insertAttendance(id, name);
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Asistencia registrada'),
+          backgroundColor: Colors.green,
+        ),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
@@ -35,14 +61,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => scannerQR(context),
+        onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),
       ),
       body: studentsState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (students) {
-          if (students.isEmpty) {
+          if (students == null ||students.isEmpty) {
             return Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
