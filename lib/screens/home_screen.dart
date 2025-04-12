@@ -58,7 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (students) {
-          if (students == null ||students.isEmpty) {
+          if (students.isEmpty) {
             return Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),

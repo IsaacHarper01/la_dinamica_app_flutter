@@ -3,7 +3,6 @@ import 'package:la_dinamica_app/backend/Income_report.dart';
 import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/widgets/bar_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/line_chart_widget.dart';
 

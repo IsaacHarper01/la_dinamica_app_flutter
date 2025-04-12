@@ -15,7 +15,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
       final db = DatabaseHelper();
       final snapshot = await db.fetchAttendanceToday();
 
-      if (snapshot == null || snapshot.isEmpty) {
+      if (snapshot.isEmpty) {
         state = const AsyncValue.data([]);
         return;
       }
