@@ -44,10 +44,10 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context) async {
     if (await db.fetchSimpleData('General', 'name', id, false) != null) {
       //check if student exist in General table
       logger.i('Asistencia de $name registrada con ID: $id');
-      
       return Future.value({'id': id, 'name': name});
     } else {
       logger.i('Alumno no encontrado');
+      return null;
     }
   } catch (e) {
     logger.e('Error al procesar los datos del QR: $e');

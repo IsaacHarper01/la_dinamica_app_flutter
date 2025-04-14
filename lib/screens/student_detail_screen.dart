@@ -1,19 +1,33 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
-import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
+import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
 
+import '../providers/attendance_provider.dart';
+
 // ignore: must_be_immutable
-class StudentDetailScreen extends StatelessWidget {
+class StudentDetailScreen extends ConsumerStatefulWidget {
   final String name;
   final int id;
   final String image;
 
-  StudentDetailScreen(
-      {super.key, required this.name, required this.id, required this.image});
+  const StudentDetailScreen({
+    super.key,
+    required this.name,
+    required this.id,
+    required this.image,
+  });
 
+  @override
+  ConsumerState<StudentDetailScreen> createState() =>
+      _StudentDetailScreenState();
+}
+
+class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   Map<String, dynamic> paymentData = {
     'id': 0,
     'userId': 0,
@@ -22,7 +36,11 @@ class StudentDetailScreen extends StatelessWidget {
     'type': 'Desconocido',
     'date': '-'
   };
+
   Map<String, dynamic> studentData = {};
+  bool isActive = true;
+
+  final DatabaseHelper db = DatabaseHelper();
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +52,14 @@ class StudentDetailScreen extends StatelessWidget {
     final screenWidth = isPortatil
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
-    bool isActive = true;
-    DatabaseHelper db = DatabaseHelper();
+
+    final attendedIds = ref.watch(attendedIdsProvider);
+    final bool hasAttendance = attendedIds.contains(widget.id);
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(name),
-        ),
+        appBar: AppBar(title: Text(widget.name)),
         body: FutureBuilder(
-            future: db.fetchLastPayandStudentlData(id),
+            future: db.fetchLastPayandStudentlData(widget.id),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -51,27 +68,16 @@ class StudentDetailScreen extends StatelessWidget {
                   paymentData = snapshot.data['lastPay'];
                 }
                 studentData = snapshot.data['studentData'];
-                return infoScreen(screenHeight, db, context, screenWidth,
-                    isActive, paymentData, studentData);
+                return infoScreen(
+                    screenHeight, context, screenWidth, hasAttendance);
               }
             }));
   }
 
-  SingleChildScrollView infoScreen(
-      double screenHeight,
-      DatabaseHelper db,
-      BuildContext context,
-      double screenWidth,
-      bool isActive,
-      Map<String, dynamic> paymentData,
-      Map<String, dynamic> studentData) 
-      
-      {
-    if (paymentData['clases'] == 0) {
-      isActive = false;
-    } else {
-      isActive = true;
-    }
+  Widget infoScreen(double screenHeight, BuildContext context,
+      double screenWidth, bool hasAttendance) {
+    isActive = paymentData['clases'] != 0;
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -81,27 +87,46 @@ class StudentDetailScreen extends StatelessWidget {
               SizedBox(
                 height: 200,
                 child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Opacity(
-                      opacity: 0.5,
-                      child: Image.file(
-                        File(image),
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
-                    )),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Opacity(
+                    opacity: 0.5,
+                    child: Image.file(
+                      File(widget.image),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
               ),
+              if (hasAttendance)
+                Positioned(
+                  bottom: 12,
+                  right: 12,
+                  child: AnimatedScale(
+                    scale: 1.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(6),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
               Column(
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: screenHeight * 0.05,
-                      ),
+                      widget.name,
+                      style: TextStyle(fontSize: screenHeight * 0.05),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
@@ -159,19 +184,19 @@ class StudentDetailScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 FilledButton(
                     onPressed: () async {
-                      await db.InserAttendanceData(id, name);
-                      await db.varifyPay(id);
+                      await db.InserAttendanceData(widget.id, widget.name);
+                      await db.varifyPay(widget.id);
+                      setState(() {
+                        hasAttendance = true;
+                      });
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Asistencia Registrada'),
@@ -190,9 +215,11 @@ class StudentDetailScreen extends StatelessWidget {
                 FilledButton(
                   onPressed: () {
                     Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => MetricsPage(name: name,)));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MetricsPage(
+                                  name: widget.name,
+                                )));
                   },
                   style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[3])),
@@ -264,7 +291,7 @@ class StudentDetailScreen extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('ID: $id'),
+                  child: Text('ID: ${widget.id}'),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -275,15 +302,21 @@ class StudentDetailScreen extends StatelessWidget {
                   child: Text('Telefono: ${studentData['phone']}'),
                 ),
                 ElevatedButton(
-                  onPressed:(){
-                    generateCredentialandSend(id,name,studentData['address'],studentData['phone'],studentData['age'],image);
-                  },
-                  child: Text('Generar Credencial')),
+                    onPressed: () {
+                      generateCredentialandSend(
+                          widget.id,
+                          widget.name,
+                          studentData['address'],
+                          studentData['phone'],
+                          studentData['age'],
+                          widget.image);
+                    },
+                    child: Text('Generar Credencial')),
                 ElevatedButton(
-                  onPressed: (){
-                    db.deleteStudentPlan(id);
-                  }, 
-                  child:Text('Eliminar Plan'))
+                    onPressed: () {
+                      db.deleteStudentPlan(widget.id);
+                    },
+                    child: Text('Eliminar Plan'))
               ],
             ),
           )

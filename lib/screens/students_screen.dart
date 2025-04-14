@@ -1,7 +1,10 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/providers/attendance_provider.dart';
+import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
@@ -76,7 +79,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
   }
 }
 
-class ScrollViewContent extends StatelessWidget {
+class ScrollViewContent extends ConsumerWidget {
   const ScrollViewContent({
     super.key,
     required this.screenHeight,
@@ -147,7 +150,9 @@ class ScrollViewContent extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final attendedIds = ref.watch(attendedIdsProvider);
+
     return SingleChildScrollView(
       child: Center(
         child: Column(
@@ -191,25 +196,25 @@ class ScrollViewContent extends StatelessWidget {
                 child: Column(
                   children: [
                     Dismissible(
-                      key: Key(
-                          ids[i].toString()), // Llave única para cada elemento
+                      key: Key(ids[i].toString()),
+                      // Llave única para cada elemento
                       background: Container(
                         color: const Color.fromARGB(255, 102, 165, 104),
                         alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(left: 20),
-                        child: const Icon(Icons.add_task,
-                            color: Colors.white),
+                        child: const Icon(Icons.add_task, color: Colors.white),
                       ),
                       secondaryBackground: Container(
                         color: const Color.fromARGB(255, 179, 103, 97),
                         alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20), 
-                        child:
-                            const Icon(Icons.delete, color: Colors.white),
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(Icons.delete, color: Colors.white),
                       ),
                       confirmDismiss: (direction) async {
                         if (direction == DismissDirection.startToEnd) {
-                          _insertAttendance(ids[i], students[i]);
+                          ref
+                              .read(studentsProvider.notifier)
+                              .insertAttendance(ids[i], students[i]);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Asistencia Registrada'),
@@ -241,6 +246,13 @@ class ScrollViewContent extends StatelessWidget {
                           name: students[i],
                           id: ids[i],
                           image: images[i],
+                          backgroundColor: attendedIds.contains(ids[i])
+                              ? Colors.green.withAlpha(20)
+                              : Colors.transparent,
+                          trailingIcon: attendedIds.contains(ids[i])
+                              ? const Icon(Icons.check_circle,
+                                  color: Colors.green)
+                              : null,
                         ),
                       ),
                     ),
