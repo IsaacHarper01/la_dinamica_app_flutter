@@ -189,7 +189,7 @@ class DatabaseHelper {
     List<dynamic> birthdays =
         data.map((element) => element['birthday']).toList();
     List<dynamic> images = data.map((element) => element['image']).toList();
-
+    
     await db.close();
     return ({
       'ids': ids,
@@ -457,11 +457,10 @@ class DatabaseHelper {
         throw Exception('No se pudo obtener la información del pago base');
       }
 
-      print('Base payment: $basePayment');
-
       double cost = basePayment['price'] ?? 0.0;
       String type = basePayment['type'] ?? '';
 
+      print("COSTO: $cost");
       String date = DateTime.now().toString().split(' ')[0];
 
       Map<String, dynamic> pay;
@@ -475,25 +474,23 @@ class DatabaseHelper {
           'date': date
         };
         print('No hay pagos anteriores');
-        print('Pago: $pay');
         // await InserPaymentData(pay);
         return;
-      } else {
-        if (lastPay['type'] != type && (lastPay['clases'] ?? 0) > 0) {
-          var id = lastPay['id'];
-          var remainingClases = (lastPay['clases'] ?? 0) -1;
-          await updateClases(id, remainingClases);
-        } else {
-          pay = {
-            'userId': userId,
-            'amount': cost,
-            'clases': 0,
-            'type': type,
-            'date': date
-          };
-          await InserPaymentData(pay);
-        }
-      }
+      } else if ((lastPay['type'] != basePayment['type']) &&
+        (lastPay['clases'] > 0)) {
+      var id = lastPay['id'];
+      var remainingClases = lastPay['clases'] - 1;
+      await updateClases(id, remainingClases);
+    } else {
+      pay = {
+        'userId': userId,
+        'amount': cost,
+        'clases': 0,
+        'type': basePayment['type'],
+        'date': date
+      };
+      await InserPaymentData(pay);
+    }
     } catch (e) {
       throw Exception('Error al verificar o procesar el pago: $e');
     }
