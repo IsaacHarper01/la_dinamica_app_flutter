@@ -39,4 +39,4 @@ type General @model @auth(rules: [{allow: public}]) {
   birthday: AWSDate
   email: String
   image: String
-}
+} 

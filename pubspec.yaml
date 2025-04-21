@@ -8,11 +8,16 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  flutter:
-    sdk: flutter
-  animate_do:
+  amplify_api: ^2.6.1
+  amplify_auth_cognito: ^2.6.1
+  amplify_authenticator: ^2.3.3
+  amplify_datastore: ^2.6.1
+  amplify_flutter: ^2.6.1
+  animate_do: null
   csv: ^5.0.0
   fl_chart: ^0.69.0
+  flutter:
+    sdk: flutter
   flutter_riverpod: ^2.5.1
   image: ^4.1.0
   image_picker: ^0.8.4+11
