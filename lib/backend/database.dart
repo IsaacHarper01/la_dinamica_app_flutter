@@ -460,11 +460,10 @@ class DatabaseHelper {
       double cost = basePayment['price'] ?? 0.0;
       String type = basePayment['type'] ?? '';
 
-      print("COSTO: $cost");
       String date = DateTime.now().toString().split(' ')[0];
 
       Map<String, dynamic> pay;
-
+      
       if (lastPay == null) {
         pay = {
           'userId': userId,
@@ -473,8 +472,7 @@ class DatabaseHelper {
           'type': type,
           'date': date
         };
-        print('No hay pagos anteriores');
-        // await InserPaymentData(pay);
+        await InserPaymentData(pay);
         return;
       } else if ((lastPay['type'] != basePayment['type']) &&
         (lastPay['clases'] > 0)) {
