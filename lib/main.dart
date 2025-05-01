@@ -17,9 +17,10 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       title: 'La Dinamica del Movimiento',
       debugShowCheckedModeBanner: false,
+      
       theme: ThemeData(
           useMaterial3: true,
-          colorSchemeSeed: colorList[0],
+          colorSchemeSeed: Color.fromRGBO(204, 208, 207, 1.0),
           appBarTheme: const AppBarTheme(centerTitle: false),
           brightness: isDarkMode ? Brightness.dark : Brightness.light),
       home: const MainScreen(),

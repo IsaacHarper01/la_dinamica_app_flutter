@@ -219,6 +219,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                         MaterialPageRoute(
                             builder: (context) => MetricsPage(
                                   name: widget.name,
+                                  image: widget.image,
                                 )));
                   },
                   style: ButtonStyle(
