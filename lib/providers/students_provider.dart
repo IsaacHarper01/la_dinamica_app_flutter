@@ -4,17 +4,18 @@ import 'package:la_dinamica_app/model/student.dart';
 import '../backend/database.dart';
 
 final studentsProvider = StateNotifierProvider<StudentsNotifier, AsyncValue<List<Student>>>((ref) {
-  return StudentsNotifier();
+  return StudentsNotifier(ref);
 });
 
 class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
-  StudentsNotifier() : super(const AsyncValue.loading());
+  final Ref ref;
 
-  Future<void> fetchAttendanceToday() async {
+  StudentsNotifier(this.ref) : super(const AsyncValue.loading());
+
+  Future<void> fetchAttendanceToday(String date) async {
     try {
       final db = DatabaseHelper();
-      final snapshot = await db.fetchAttendanceToday();
-
+      final snapshot = await db.fetchAttendanceToday(date);
       if (snapshot.isEmpty) {
         state = const AsyncValue.data([]);
         return;
@@ -43,16 +44,16 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     }
   }
 
-  Future<void> insertAttendance(int studentId, String name) async {
+  Future<void> insertAttendance(int studentId, String name, String date) async {
     try {
       final db = DatabaseHelper();
-      await db.InserAttendanceData(studentId, name);
+      await db.InserAttendanceData(studentId, name, date);
 
-      await db.varifyPay(studentId);
+      await db.varifyPay(studentId,date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {
-      await fetchAttendanceToday();
+      await fetchAttendanceToday(date);
     }
   }
 
@@ -60,7 +61,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final db = DatabaseHelper();
       await db.deleteAttendance(studentId, date);
-      await fetchAttendanceToday();
+      await fetchAttendanceToday(date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }

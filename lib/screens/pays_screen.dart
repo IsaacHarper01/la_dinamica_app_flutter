@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 
 class PaysScreen extends ConsumerStatefulWidget {
   const PaysScreen({super.key});
@@ -27,6 +28,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
         : MediaQuery.of(context).size.width * 0.8;
     final db = DatabaseHelper();
     final isDarkMode = ref.watch(isDark);
+    final String date = ref.watch(dateProvider);
 
     return Scaffold(
       body: FutureBuilder(
@@ -56,6 +58,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
                   nameIndexNotifier,
                   context,
                   isDarkMode,
+                  date,
                   isPortrait);
             }
           }),
@@ -75,6 +78,7 @@ Widget paymentBox(
     ValueNotifier<int> nameIndexNotifier,
     BuildContext context,
     bool isDarkMode,
+    String date,
     bool isPortrait) {
   return Center(
     child: clases.isEmpty
@@ -259,7 +263,7 @@ Widget paymentBox(
                                 clases: clases,
                                 context: context,
                                 costs: costs,
-                                date: DateTime.now().toString().split(' ')[0],
+                                date: date,
                                 nameIndex:
                                     int.parse(ids[nameIndexNotifier.value]),
                                 planIndex: planIndexNotifier.value,

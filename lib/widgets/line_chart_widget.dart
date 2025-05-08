@@ -1,18 +1,20 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/database.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 
-class LineChartWidget extends StatelessWidget {
+class LineChartWidget extends ConsumerWidget{
   final DateTime startDate;
   final DateTime endDate;
-
+  
   LineChartWidget({super.key, required this.startDate, required this.endDate});
 
   @override
-  Widget build(BuildContext context) {
-    final today = DateTime.now();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final today = DateTime.parse(ref.watch(dateProvider));
     var n = 30;
-    
+    print('FECHA DE HOY: $today');
     if(startDate.toString().split(' ')[0] != endDate.toString().split(' ')[0]){
       n = endDate.difference(startDate).inDays;
     }
@@ -35,9 +37,12 @@ class LineChartWidget extends StatelessWidget {
   Center Linechart(data) {
 
     final y_data = <FlSpot>[];
-    final x_data = <String>[];
     double i = 0;
-    for(var key in data.keys){
+    final sortedDataList = data.entries.toList()
+          ..sort((a,b)=> DateTime.parse(a.key).compareTo(DateTime.parse(b.key)));
+    final orderedData = Map.fromEntries(sortedDataList);
+
+    for(var key in orderedData.keys){
       y_data.add(FlSpot(i,data[key]));
       i++;
     }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
-import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/screens/main_screen.dart';
 
 void main() {
