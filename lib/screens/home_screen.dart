@@ -41,11 +41,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     await ref.read(studentsProvider.notifier).insertAttendance(id, name);
     ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Asistencia registrada'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      const SnackBar(
+        content: Text('Asistencia registrada'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -55,7 +55,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final screenHeight = isPortrait
         ? MediaQuery.of(context).size.height
         : MediaQuery.of(context).size.height * 2;
-    final isDarkMode = ref.watch(isDark);
+    final themeMode = ref.watch(themeNotifierProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
 
     final studentsState = ref.watch(studentsProvider);
 
@@ -68,7 +69,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (students) {
-          if (students == null ||students.isEmpty) {
+          if (students == null || students.isEmpty) {
             return Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),

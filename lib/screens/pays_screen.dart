@@ -26,7 +26,8 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
     final db = DatabaseHelper();
-    final isDarkMode = ref.watch(isDark);
+    final themeMode = ref.watch(themeNotifierProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
 
     return Scaffold(
       body: FutureBuilder(
@@ -162,9 +163,10 @@ Widget paymentBox(
                                       return Text(
                                         value.length > 15
                                             ? '${value.substring(0, isPortrait ? 10 : value.length < 50 ? value.length - 1 : 50)}...'
-                                            : value, // Limitar a 15 caracteres en el valor seleccionado también
-                                        overflow: TextOverflow
-                                            .ellipsis, // Agregar elipsis si es necesario
+                                            : value,
+                                        // Limitar a 15 caracteres en el valor seleccionado también
+                                        overflow: TextOverflow.ellipsis,
+                                        // Agregar elipsis si es necesario
                                         maxLines: 1,
                                         softWrap: false,
                                       );
@@ -195,7 +197,8 @@ Widget paymentBox(
                                   ),
                                   value: (planIndex < plansType.length)
                                       ? plansType[planIndex]
-                                      : null, // Verificar si planIndex es válido
+                                      : null,
+                                  // Verificar si planIndex es válido
                                   onChanged: (String? newValue) {
                                     if (newValue != null) {
                                       planIndexNotifier.value =

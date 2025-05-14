@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/config/provider/theme_provider.dart';
-import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
+import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 
 class ConfigScreen extends ConsumerStatefulWidget {
@@ -35,7 +34,8 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
     final screenWidth = isPortatil
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
-    final isDarkMode = ref.watch(isDark);
+    final themeMode = ref.watch(themeNotifierProvider);
+    final isDark = themeMode == ThemeMode.dark;
 
     return Scaffold(
       body: FutureBuilder(
@@ -52,77 +52,91 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                   item['price'].toString()
                 ]);
               }
-              return boxPlans(screenWidth, context, planes, isDarkMode);
+              return boxPlans(screenWidth, context, planes, isDark, themeMode);
             }
           }),
     );
   }
 
   Center boxPlans(double screenWidth, BuildContext context,
-      List<List<String>> planes, bool isDarkMode) {
+      List<List<String>> planes, bool isDark, ThemeMode themeMode) {
     return Center(
         child: SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(top: 20, bottom: 20),
         child: Column(
+          spacing: 20,
           children: [
             TextButton(
-                onPressed: () {
-                  //TODO, funcionalidad de Habilitar vencimiento
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: colorList[3],
-                      borderRadius: BorderRadius.circular(18)),
-                  child: const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text(
-                        'Habilitar vencimiento',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      )),
-                )),
-            const SizedBox(
-              height: 20,
+              onPressed: () {
+                //TODO, funcionalidad de Habilitar vencimiento
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                padding: const EdgeInsets.all(12.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+              ),
+              child: const Text('Habilitar vencimiento'),
             ),
-            TextButton(
-                onPressed: () {
-                  ref.read(isDark.notifier).update((state) => !isDarkMode);
+            Center(
+              child: PopupMenuButton<ThemeMode>(
+                initialValue: themeMode,
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.color_lens),
+                    SizedBox(width: 4),
+                    Text('Tema'),
+                  ],
+                ),
+                onSelected: (mode) async {
+                  ref.read(themeNotifierProvider.notifier).setTheme(mode);
                 },
-                child: Container(
-                  width: 80,
-                  decoration: BoxDecoration(
-                      color: colorList[3],
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: ThemeMode.light,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          isDarkMode
-                              ? Icons.dark_mode_rounded
-                              : Icons.light_mode_rounded,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(
-                          width: 2,
-                        ),
-                        Text(
-                          isDarkMode ? 'Dark' : 'Light',
-                          style: const TextStyle(color: Colors.white),
-                        )
+                        Icon(Icons.light_mode, color: Colors.amber[400]),
+                        const SizedBox(width: 8),
+                        const Text('Claro'),
                       ],
                     ),
                   ),
-                )),
-            const SizedBox(
-              height: 20,
+                  PopupMenuItem(
+                    value: ThemeMode.dark,
+                    child: Row(
+                      children: [
+                        Icon(Icons.dark_mode, color: Colors.deepPurple[800]),
+                        const SizedBox(width: 8),
+                        const Text('Oscuro'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: ThemeMode.system,
+                    child: Row(
+                      children: [
+                        Icon(Icons.settings, color: Colors.grey[400]),
+                        const SizedBox(width: 8),
+                        const Text('Sistema'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             Container(
               width: screenWidth * 0.9,
               decoration: BoxDecoration(
-                  color: colorList[1], borderRadius: BorderRadius.circular(16)),
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -135,19 +149,33 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                         Text(
                           'Configuraciones de planes',
                           style: TextStyle(
-                              fontSize: screenWidth * 0.06,
-                              color: Colors.white),
+                            fontSize: screenWidth * 0.06,
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                          ),
                         )
                       ],
                     ),
-                    const Divider(),
+                    Divider(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         FilledButton(
-                            style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStatePropertyAll(colorList[3])),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer,
+                              surfaceTintColor:
+                                  Theme.of(context).colorScheme.surfaceTint,
+                              foregroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                              iconColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                            ),
                             onPressed: () async {
                               // Esperar a que regrese de AddNewPlan
                               final result = await Navigator.push(
@@ -164,18 +192,10 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                               }
                             },
                             child: const Row(
+                              spacing: 5,
                               children: [
-                                Icon(
-                                  Icons.add_circle_outlined,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Agregar nuevo plan',
-                                  style: TextStyle(color: Colors.white),
-                                )
+                                Icon(Icons.add_circle_outlined),
+                                Text('Agregar nuevo plan')
                               ],
                             )),
                       ],
