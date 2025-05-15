@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 
 class PaysScreen extends ConsumerStatefulWidget {
   const PaysScreen({super.key});
@@ -26,7 +27,9 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
     final db = DatabaseHelper();
-    final isDarkMode = ref.watch(isDark);
+    final themeMode = ref.watch(themeNotifierProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
+    final String date = ref.watch(dateProvider);
 
     return Scaffold(
       body: FutureBuilder(
@@ -56,6 +59,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
                   nameIndexNotifier,
                   context,
                   isDarkMode,
+                  date,
                   isPortrait);
             }
           }),
@@ -75,6 +79,7 @@ Widget paymentBox(
     ValueNotifier<int> nameIndexNotifier,
     BuildContext context,
     bool isDarkMode,
+    String date,
     bool isPortrait) {
   return Center(
     child: clases.isEmpty
@@ -82,8 +87,8 @@ Widget paymentBox(
             borderRadius: BorderRadius.circular(16),
             child: Image.asset(
               isDarkMode
-                  ? 'assets/images/f=ma18.png'
-                  : 'assets/images/f=ma11.png',
+                  ? 'assets/images/f_ma18.png'
+                  : 'assets/images/f_ma11.png',
               height: isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
               fit: BoxFit.cover,
             ))
@@ -162,9 +167,10 @@ Widget paymentBox(
                                       return Text(
                                         value.length > 15
                                             ? '${value.substring(0, isPortrait ? 10 : value.length < 50 ? value.length - 1 : 50)}...'
-                                            : value, // Limitar a 15 caracteres en el valor seleccionado también
-                                        overflow: TextOverflow
-                                            .ellipsis, // Agregar elipsis si es necesario
+                                            : value,
+                                        // Limitar a 15 caracteres en el valor seleccionado también
+                                        overflow: TextOverflow.ellipsis,
+                                        // Agregar elipsis si es necesario
                                         maxLines: 1,
                                         softWrap: false,
                                       );
@@ -195,7 +201,8 @@ Widget paymentBox(
                                   ),
                                   value: (planIndex < plansType.length)
                                       ? plansType[planIndex]
-                                      : null, // Verificar si planIndex es válido
+                                      : null,
+                                  // Verificar si planIndex es válido
                                   onChanged: (String? newValue) {
                                     if (newValue != null) {
                                       planIndexNotifier.value =
@@ -259,7 +266,7 @@ Widget paymentBox(
                                 clases: clases,
                                 context: context,
                                 costs: costs,
-                                date: DateTime.now().toString().split(' ')[0],
+                                date: date,
                                 nameIndex:
                                     int.parse(ids[nameIndexNotifier.value]),
                                 planIndex: planIndexNotifier.value,

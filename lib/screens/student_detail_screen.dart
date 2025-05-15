@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
 
 import '../providers/attendance_provider.dart';
@@ -55,6 +56,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
     final attendedIds = ref.watch(attendedIdsProvider);
     final bool hasAttendance = attendedIds.contains(widget.id);
+    
 
     return Scaffold(
         appBar: AppBar(title: Text(widget.name)),
@@ -77,6 +79,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   Widget infoScreen(double screenHeight, BuildContext context,
       double screenWidth, bool hasAttendance) {
     isActive = paymentData['clases'] != 0;
+    final String date = ref.watch(dateProvider);
 
     return SingleChildScrollView(
       child: Column(
@@ -192,8 +195,8 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               children: [
                 FilledButton(
                     onPressed: () async {
-                      await db.InserAttendanceData(widget.id, widget.name);
-                      await db.varifyPay(widget.id);
+                      await db.InserAttendanceData(widget.id, widget.name, date);
+                      await db.varifyPay(widget.id, date);
                       setState(() {
                         hasAttendance = true;
                       });
@@ -212,18 +215,20 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                     style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(colorList[4])),
                     child: const Text('Pagos')),
-                FilledButton(
+                FilledButton.icon(
                   onPressed: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => MetricsPage(
                                   name: widget.name,
+                                  image: widget.image,
                                 )));
                   },
                   style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[3])),
-                  child: const Text('Metricas'),
+                  label: const Text('Metricas'),
+                  icon: Icon(Icons.bar_chart_outlined),
                 )
               ],
             ),
@@ -314,7 +319,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                     child: Text('Generar Credencial')),
                 ElevatedButton(
                     onPressed: () {
-                      db.deleteStudentPlan(widget.id);
+                      db.deleteStudentPlan(widget.id, date);
                     },
                     child: Text('Eliminar Plan'))
               ],

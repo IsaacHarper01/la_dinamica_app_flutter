@@ -5,6 +5,7 @@ import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
@@ -99,11 +100,6 @@ class ScrollViewContent extends ConsumerWidget {
   final List<int> indexList;
   final VoidCallback onAddStudent;
 
-  void _insertAttendance(id, name) {
-    final db = DatabaseHelper();
-    db.InserAttendanceData(id, name);
-    db.varifyPay(id);
-  }
 
   void _deleteRegister(id) {
     final db = DatabaseHelper();
@@ -152,6 +148,7 @@ class ScrollViewContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final attendedIds = ref.watch(attendedIdsProvider);
+    final date = ref.watch(dateProvider);
 
     return SingleChildScrollView(
       child: Center(
@@ -214,7 +211,7 @@ class ScrollViewContent extends ConsumerWidget {
                         if (direction == DismissDirection.startToEnd) {
                           ref
                               .read(studentsProvider.notifier)
-                              .insertAttendance(ids[i], students[i]);
+                              .insertAttendance(ids[i], students[i], date);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Asistencia Registrada'),

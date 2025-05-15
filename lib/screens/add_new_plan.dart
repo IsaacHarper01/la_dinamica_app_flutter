@@ -1,46 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/backend/database.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/providers/plan_provider.dart';
 
-class AddNewPlan extends StatefulWidget {
+import '../model/plan.dart';
+
+class AddNewPlan extends ConsumerStatefulWidget {
   const AddNewPlan({super.key});
 
   @override
-  State<AddNewPlan> createState() => _AddNewPlanState();
+  ConsumerState<AddNewPlan> createState() => _AddNewPlanState();
 }
 
-class _AddNewPlanState extends State<AddNewPlan> {
+class _AddNewPlanState extends ConsumerState<AddNewPlan> {
   final List<String> labels = ['Tipo de plan', 'Clases', 'Precio'];
   final List<TextEditingController> _controllers =
       List.generate(3, (index) => TextEditingController());
 
   final _formKey = GlobalKey<FormState>(); // Clave global para el formulario
 
-  void _registerPlan() {
+  void _registerPlan() async {
     // Verificar si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       // Recuperar texto de cada TextEditingController
-      Map<String, dynamic> plan = {
-        'type': _controllers[0].text,
-        'clases': _controllers[1].text,
-        'price': _controllers[2].text
-      };
-      DatabaseHelper db = DatabaseHelper();
 
-      db.InsertPlanData(plan);
-
-      // Mostrar un SnackBar de confirmación
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Plan registrado exitosamente'),
-          backgroundColor: Colors.green,
-        ),
+      final plan = Plan(
+        id: 0,
+        type: _controllers[0].text,
+        clases: int.parse(_controllers[1].text),
+        price: double.parse(_controllers[2].text),
       );
 
-      // Regresar a ConfigScreen con true si se agregó el plan
-      Navigator.pop(context, true);
+      try {
+        await ref.read(planProvider.notifier).addPlan(plan);
+
+        if (context.mounted) {
+          Navigator.pop(context, true);
+        }
+      } catch (_) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text("Hubo un error al registrar el plan"),
+              backgroundColor: ColorScheme.of(context).error,
+            ),
+          );
+        }
+      }
     } else {
-      // Mostrar un SnackBar si hay campos vacíos
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, complete todos los campos'),
@@ -52,66 +58,93 @@ class _AddNewPlanState extends State<AddNewPlan> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Center(
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorList[1],
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey, // Asociar la clave global al formulario
+      appBar: AppBar(
+        title: const Text('Nuevo Plan'),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: _formKey, // Asociar la clave global al formulario
+          child: Column(
+            spacing: 20,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Card(
+                color: colorScheme.surface,
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                    spacing: 20,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
+                      Text(
                         'Agregar nuevo Plan',
-                        style: TextStyle(color: Colors.white, fontSize: 25),
+                        style: textTheme.headlineSmall?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 20),
-                      // Generar los TextFormField dinámicamente con validación
-                      for (var i = 0; i < labels.length; i++) ...[
-                        TextFormField(
-                          style: const TextStyle(color: Colors.white),
-                          controller: _controllers[i],
-                          decoration: InputDecoration(
-                            labelText: labels[i],
-                            labelStyle: const TextStyle(color: Colors.white),
-                            border: const OutlineInputBorder(),
+                      ...List.generate(labels.length, (i) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: TextFormField(
+                            controller: _controllers[i],
+                            style: TextStyle(color: colorScheme.onSurface),
+                            decoration: InputDecoration(
+                              labelText: labels[i],
+                              labelStyle:
+                                  TextStyle(color: colorScheme.onSurface),
+                              filled: true,
+                              fillColor: colorScheme.surfaceDim,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor, ingrese ${labels[i].toLowerCase()}';
+                              }
+                              return null;
+                            },
+                            keyboardType: i == 1
+                                ? TextInputType.number
+                                : i == 2
+                                    ? const TextInputType.numberWithOptions(
+                                        decimal: true)
+                                    : TextInputType.text,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor, ingrese ${labels[i].toLowerCase()}';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                      const SizedBox(height: 20),
-                      FilledButton(
-                        onPressed:
-                            _registerPlan, // Llamar a la función de registro
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(colorList[3]),
-                        ),
-                        child: const Text(
-                          'Registrar',
-                          style: TextStyle(color: Colors.white),
+                        );
+                      }),
+                      const SizedBox(height: 24),
+                      FilledButton.icon(
+                        onPressed: _registerPlan,
+                        icon: const Icon(Icons.save),
+                        label: const Text('Registrar'),
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                          textStyle: const TextStyle(fontSize: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

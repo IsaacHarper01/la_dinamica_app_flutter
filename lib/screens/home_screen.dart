@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
+import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 
 import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
@@ -16,10 +18,18 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late String selectedDate;
+
   @override
   void initState() {
     super.initState();
-    ref.read(studentsProvider.notifier).fetchAttendanceToday();
+
+    // Defer execution to avoid modifying state during widget build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      selectedDate = ref.read(dateProvider);
+      print(selectedDate);
+      ref.read(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
+    });
   }
 
   Future<void> registerAssistance(BuildContext context) async {
@@ -39,13 +49,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final id = result['id'];
     final name = result['name'];
 
-    await ref.read(studentsProvider.notifier).insertAttendance(id, name);
+    await ref
+        .read(studentsProvider.notifier)
+        .insertAttendance(id, name, selectedDate);
     ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Asistencia registrada'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      const SnackBar(
+        content: Text('Asistencia registrada'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -55,27 +67,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final screenHeight = isPortrait
         ? MediaQuery.of(context).size.height
         : MediaQuery.of(context).size.height * 2;
-    final isDarkMode = ref.watch(isDark);
+    final themeMode = ref.watch(themeNotifierProvider);
+    final isDarkMode = themeMode == ThemeMode.dark;
 
     final studentsState = ref.watch(studentsProvider);
 
+    void _onDateSelected(String date) {
+      setState(() {
+        ref.read(dateProvider.notifier).state = date;
+      });
+    }
+
     return Scaffold(
+      appBar: AppBar(
+        actions: [CalendarButton()],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),
       ),
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       body: studentsState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (students) {
-          if (students == null ||students.isEmpty) {
+          if (students == null || students.isEmpty) {
             return Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
                   isDarkMode
-                      ? 'assets/images/f=ma18.png'
-                      : 'assets/images/f=ma11.png',
+                      ? 'assets/images/f_ma18.png'
+                      : 'assets/images/f_ma11.png',
                   height: isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
                   fit: BoxFit.cover,
                 ),
@@ -108,8 +131,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             onDismissed: () {
                               ref
                                   .read(studentsProvider.notifier)
-                                  .deleteAttendance(student.id,
-                                      DateTime.now().toString().split(' ')[0]);
+                                  .deleteAttendance(
+                                      student.id, ref.watch(dateProvider));
                             },
                           ),
                           const Divider(

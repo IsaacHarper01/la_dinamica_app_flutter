@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/config/theme/util.dart';
 import 'package:la_dinamica_app/screens/main_screen.dart';
+
+import 'config/provider/theme_provider.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -13,15 +15,17 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(isDark);
+    final themeMode = ref.watch(themeNotifierProvider);
+    TextTheme textTheme = createTextTheme(context, "Mulish", "Work Sans");
+
+    MaterialTheme theme = MaterialTheme(textTheme);
+
     return MaterialApp(
       title: 'La Dinamica del Movimiento',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          useMaterial3: true,
-          colorSchemeSeed: colorList[0],
-          appBarTheme: const AppBarTheme(centerTitle: false),
-          brightness: isDarkMode ? Brightness.dark : Brightness.light),
+      theme: theme.light(),
+      darkTheme: theme.dark(),
+      themeMode: themeMode,
       home: const MainScreen(),
     );
   }
