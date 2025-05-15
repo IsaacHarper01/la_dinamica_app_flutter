@@ -1,9 +1,11 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../model/plan.dart';
 
 class DatabaseHelper {
 //CREATE DATABASE
-  
+
   Future<Database> _openDatabase() async {
     final databasepath = await getDatabasesPath();
     final path = join(databasepath, 'alumnos.db');
@@ -210,11 +212,12 @@ class DatabaseHelper {
     return data;
   }
 
-  Future<List<Map<String, dynamic>>> fetchPlansData() async {
+  Future<List<Plan>> fetchPlansData() async {
     final db = await _openDatabase();
     final data = await db.query('Plans');
     await db.close();
-    return data;
+
+    return data.map((map) => Plan.fromMap(map)).toList();
   }
 
 //FETCH A SINGLE DATA FROM TABLE
@@ -436,6 +439,15 @@ class DatabaseHelper {
     db.insert('Payments', pay);
   }
 
+  Future<void> deletePlanById(int id) async {
+    final db = await _openDatabase();
+    await db.delete(
+      'plans',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
 //UPDATE VALUES
 
   Future<void> updateClases(int Id, int remainingClases) async {
@@ -461,7 +473,7 @@ class DatabaseHelper {
       String type = basePayment['type'] ?? '';
 
       Map<String, dynamic> pay;
-      
+
       if (lastPay == null) {
         pay = {
           'userId': userId,
@@ -473,20 +485,20 @@ class DatabaseHelper {
         await InserPaymentData(pay);
         return;
       } else if ((lastPay['type'] != basePayment['type']) &&
-        (lastPay['clases'] > 0)) {
-      var id = lastPay['id'];
-      var remainingClases = lastPay['clases'] - 1;
-      await updateClases(id, remainingClases);
-    } else {
-      pay = {
-        'userId': userId,
-        'amount': cost,
-        'clases': 0,
-        'type': basePayment['type'],
-        'date': date
-      };
-      await InserPaymentData(pay);
-    }
+          (lastPay['clases'] > 0)) {
+        var id = lastPay['id'];
+        var remainingClases = lastPay['clases'] - 1;
+        await updateClases(id, remainingClases);
+      } else {
+        pay = {
+          'userId': userId,
+          'amount': cost,
+          'clases': 0,
+          'type': basePayment['type'],
+          'date': date
+        };
+        await InserPaymentData(pay);
+      }
     } catch (e) {
       throw Exception('Error al verificar o procesar el pago: $e');
     }

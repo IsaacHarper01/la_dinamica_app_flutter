@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
+import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
+import 'package:la_dinamica_app/widgets/section_card_widget.dart';
+
+import '../model/plan.dart';
+import '../widgets/theme_selector_widget.dart';
 
 class ConfigScreen extends ConsumerStatefulWidget {
   const ConfigScreen({super.key});
@@ -12,232 +16,205 @@ class ConfigScreen extends ConsumerStatefulWidget {
 }
 
 class _ConfigScreenState extends ConsumerState<ConfigScreen> {
-  late Future plansFuture;
-
   @override
-  void initState() {
-    super.initState();
-    plansFuture = fetchPlans();
-  }
-
-  Future fetchPlans() async {
-    final db = DatabaseHelper();
-    return db.fetchPlansData();
-  }
-
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
-    final Orientation orientation = MediaQuery.of(context).orientation;
-    final bool isPortatil = orientation == Orientation.portrait;
-    final screenWidth = isPortatil
-        ? MediaQuery.of(context).size.width
-        : MediaQuery.of(context).size.width * 0.8;
+  Widget build(BuildContext context) {
+    final plansState = ref.watch(planProvider);
     final themeMode = ref.watch(themeNotifierProvider);
-    final isDark = themeMode == ThemeMode.dark;
+    final colorScheme = ColorScheme.of(context);
+    final textTheme = TextTheme.of(context);
 
     return Scaffold(
-      body: FutureBuilder(
-          future: plansFuture,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              List<List<String>> planes = [];
-              for (var item in snapshot.data) {
-                planes.add([
-                  item['type'],
-                  item['clases'].toString(),
-                  item['price'].toString()
-                ]);
-              }
-              return boxPlans(screenWidth, context, planes, isDark, themeMode);
-            }
-          }),
-    );
-  }
-
-  Center boxPlans(double screenWidth, BuildContext context,
-      List<List<String>> planes, bool isDark, ThemeMode themeMode) {
-    return Center(
-        child: SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20),
-        child: Column(
-          spacing: 20,
-          children: [
-            TextButton(
-              onPressed: () {
-                //TODO, funcionalidad de Habilitar vencimiento
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                padding: const EdgeInsets.all(12.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
+      appBar: AppBar(
+        title: const Text('Ajustes'),
+        centerTitle: true,
+        actions: [
+          ThemeSelector(
+            themeMode: themeMode,
+            onChanged: (mode) {
+              ref.read(themeNotifierProvider.notifier).setTheme(mode);
+            },
+          ),
+        ],
+      ),
+      body: plansState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, st) => Center(child: Text('Error: $e')),
+        data: (planes) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+          child: ListView(
+            children: [
+              ElevatedButton.icon(
+                icon: const Icon(Icons.lock_clock),
+                label: const Text('Habilitar vencimiento'),
+                onPressed: () {
+                  // TODO: Implementar funcionalidad de habilitar vencimiento
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  textStyle: textTheme.titleMedium,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
               ),
-              child: const Text('Habilitar vencimiento'),
-            ),
-            Center(
-              child: PopupMenuButton<ThemeMode>(
-                initialValue: themeMode,
-                child: const Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.color_lens),
-                    SizedBox(width: 4),
-                    Text('Tema'),
-                  ],
+              const SizedBox(height: 24),
+              SectionCard(
+                title: 'Planes disponibles',
+                actions: [
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AddNewPlan()),
+                      );
+                      if (result == true) {
+                        ref.read(planProvider.notifier).loadPlans();
+                      }
+                    },
+                    icon: const Icon(Icons.add_circle_outline),
+                    label: const Text('Nuevo Plan'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                ],
+                child: Column(
+                  children: planes
+                      .map((plan) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6.0),
+                            child: PlanCard(
+                              plan: plan,
+                              onDelete: () {
+                                ref
+                                    .read(planProvider.notifier)
+                                    .deletePlan(plan.id);
+                              },
+                            ),
+                          ))
+                      .toList(),
                 ),
-                onSelected: (mode) async {
-                  ref.read(themeNotifierProvider.notifier).setTheme(mode);
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: ThemeMode.light,
-                    child: Row(
-                      children: [
-                        Icon(Icons.light_mode, color: Colors.amber[400]),
-                        const SizedBox(width: 8),
-                        const Text('Claro'),
-                      ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PlanCard extends StatelessWidget {
+  final Plan plan;
+  final VoidCallback onDelete;
+
+  const PlanCard({
+    super.key,
+    required this.plan,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final colorScheme = ColorScheme.of(context);
+    final textTheme = TextTheme.of(context);
+
+    return Card(
+      elevation: 2,
+      color: colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          spacing: 12,
+          children: [
+            Icon(Icons.fitness_center, color: colorScheme.primary),
+            Expanded(
+              child: Column(
+                spacing: 6,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    plan.type,
+                    style: textTheme.bodyLarge!.copyWith(
+                      fontSize: screenWidth * 0.045,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  PopupMenuItem(
-                    value: ThemeMode.dark,
-                    child: Row(
-                      children: [
-                        Icon(Icons.dark_mode, color: Colors.deepPurple[800]),
-                        const SizedBox(width: 8),
-                        const Text('Oscuro'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: ThemeMode.system,
-                    child: Row(
-                      children: [
-                        Icon(Icons.settings, color: Colors.grey[400]),
-                        const SizedBox(width: 8),
-                        const Text('Sistema'),
-                      ],
-                    ),
+                  Row(
+                    spacing: 4,
+                    children: [
+                      Icon(
+                        Icons.class_,
+                        size: 18,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      Text(
+                        '${plan.clases} clases',
+                        style: textTheme.labelLarge,
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.attach_money,
+                        size: 18,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      Text(
+                        '\$${plan.price.toStringAsFixed(2)}',
+                        style: textTheme.labelLarge,
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            Container(
-              width: screenWidth * 0.9,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Configuraciones de planes',
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.06,
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                          ),
-                        )
-                      ],
-                    ),
-                    Divider(
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
+            PopupMenuButton<String>(
+              onSelected: (value) async {
+                if (value == 'delete') {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('¿Eliminar Plan?'),
+                      content: const Text(
+                        'Esta acción no se puede deshacer. ¿Estás seguro?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancelar'),
+                        ),
                         FilledButton(
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
-                              surfaceTintColor:
-                                  Theme.of(context).colorScheme.surfaceTint,
-                              foregroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
-                              iconColor: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
-                            ),
-                            onPressed: () async {
-                              // Esperar a que regrese de AddNewPlan
-                              final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const AddNewPlan(),
-                                  ));
-
-                              // Si el resultado no es nulo, recargar planes
-                              if (result == true) {
-                                setState(() {
-                                  plansFuture = fetchPlans();
-                                });
-                              }
-                            },
-                            child: const Row(
-                              spacing: 5,
-                              children: [
-                                Icon(Icons.add_circle_outlined),
-                                Text('Agregar nuevo plan')
-                              ],
-                            )),
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Eliminar'),
+                        ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Column(
-                      children: planes.map((item) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: item.map((subitem) {
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      subitem,
-                                      style: TextStyle(
-                                          fontSize: screenWidth * 0.04,
-                                          color: Colors.black),
-                                    ),
-                                  ),
-                                );
-                              }).toList()),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
+                  );
+
+                  if (confirm == true) {
+                    onDelete();
+                  }
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: Colors.redAccent),
+                      SizedBox(width: 8),
+                      Text('Eliminar'),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
       ),
-    ));
+    );
   }
 }

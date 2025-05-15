@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
-import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 
@@ -49,7 +49,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final id = result['id'];
     final name = result['name'];
 
-    await ref.read(studentsProvider.notifier).insertAttendance(id, name, selectedDate);
+    await ref
+        .read(studentsProvider.notifier)
+        .insertAttendance(id, name, selectedDate);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Asistencia registrada'),
@@ -69,8 +71,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDarkMode = themeMode == ThemeMode.dark;
 
     final studentsState = ref.watch(studentsProvider);
-    
-    void _onDateSelected(String date){
+
+    void _onDateSelected(String date) {
       setState(() {
         ref.read(dateProvider.notifier).state = date;
       });
@@ -95,8 +97,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
                   isDarkMode
-                      ? 'assets/images/f=ma18.png'
-                      : 'assets/images/f=ma11.png',
+                      ? 'assets/images/f_ma18.png'
+                      : 'assets/images/f_ma11.png',
                   height: isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
                   fit: BoxFit.cover,
                 ),
@@ -129,8 +131,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             onDismissed: () {
                               ref
                                   .read(studentsProvider.notifier)
-                                  .deleteAttendance(student.id,
-                                      ref.watch(dateProvider));
+                                  .deleteAttendance(
+                                      student.id, ref.watch(dateProvider));
                             },
                           ),
                           const Divider(

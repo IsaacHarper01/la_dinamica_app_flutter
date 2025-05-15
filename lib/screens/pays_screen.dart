@@ -31,7 +31,6 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
     final isDarkMode = themeMode == ThemeMode.dark;
     final String date = ref.watch(dateProvider);
 
-
     return Scaffold(
       body: FutureBuilder(
           future: db.fetchNamesIdsPlans(),
@@ -88,8 +87,8 @@ Widget paymentBox(
             borderRadius: BorderRadius.circular(16),
             child: Image.asset(
               isDarkMode
-                  ? 'assets/images/f=ma18.png'
-                  : 'assets/images/f=ma11.png',
+                  ? 'assets/images/f_ma18.png'
+                  : 'assets/images/f_ma11.png',
               height: isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
               fit: BoxFit.cover,
             ))
@@ -168,8 +167,10 @@ Widget paymentBox(
                                       return Text(
                                         value.length > 15
                                             ? '${value.substring(0, isPortrait ? 10 : value.length < 50 ? value.length - 1 : 50)}...'
-                                            : value, // Limitar a 15 caracteres en el valor seleccionado también
-                                        overflow: TextOverflow.ellipsis, // Agregar elipsis si es necesario
+                                            : value,
+                                        // Limitar a 15 caracteres en el valor seleccionado también
+                                        overflow: TextOverflow.ellipsis,
+                                        // Agregar elipsis si es necesario
                                         maxLines: 1,
                                         softWrap: false,
                                       );
@@ -200,7 +201,8 @@ Widget paymentBox(
                                   ),
                                   value: (planIndex < plansType.length)
                                       ? plansType[planIndex]
-                                      : null, // Verificar si planIndex es válido
+                                      : null,
+                                  // Verificar si planIndex es válido
                                   onChanged: (String? newValue) {
                                     if (newValue != null) {
                                       planIndexNotifier.value =

@@ -1,45 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:la_dinamica_app/backend/database.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/providers/plan_provider.dart';
 
-class AddNewPlan extends StatefulWidget {
+import '../model/plan.dart';
+
+class AddNewPlan extends ConsumerStatefulWidget {
   const AddNewPlan({super.key});
 
   @override
-  State<AddNewPlan> createState() => _AddNewPlanState();
+  ConsumerState<AddNewPlan> createState() => _AddNewPlanState();
 }
 
-class _AddNewPlanState extends State<AddNewPlan> {
+class _AddNewPlanState extends ConsumerState<AddNewPlan> {
   final List<String> labels = ['Tipo de plan', 'Clases', 'Precio'];
   final List<TextEditingController> _controllers =
       List.generate(3, (index) => TextEditingController());
 
   final _formKey = GlobalKey<FormState>(); // Clave global para el formulario
 
-  void _registerPlan() {
+  void _registerPlan() async {
     // Verificar si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       // Recuperar texto de cada TextEditingController
-      Map<String, dynamic> plan = {
-        'type': _controllers[0].text,
-        'clases': _controllers[1].text,
-        'price': _controllers[2].text
-      };
-      DatabaseHelper db = DatabaseHelper();
 
-      db.InsertPlanData(plan);
-
-      // Mostrar un SnackBar de confirmación
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Plan registrado exitosamente'),
-          backgroundColor: Colors.green,
-        ),
+      final plan = Plan(
+        id: 0,
+        type: _controllers[0].text,
+        clases: int.parse(_controllers[1].text),
+        price: double.parse(_controllers[2].text),
       );
 
-      // Regresar a ConfigScreen con true si se agregó el plan
-      Navigator.pop(context, true);
+      try {
+        await ref.read(planProvider.notifier).addPlan(plan);
+
+        if (context.mounted) {
+          Navigator.pop(context, true);
+        }
+      } catch (_) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text("Hubo un error al registrar el plan"),
+              backgroundColor: ColorScheme.of(context).error,
+            ),
+          );
+        }
+      }
     } else {
-      // Mostrar un SnackBar si hay campos vacíos
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, complete todos los campos'),
@@ -109,6 +116,12 @@ class _AddNewPlanState extends State<AddNewPlan> {
                               }
                               return null;
                             },
+                            keyboardType: i == 1
+                                ? TextInputType.number
+                                : i == 2
+                                    ? const TextInputType.numberWithOptions(
+                                        decimal: true)
+                                    : TextInputType.text,
                           ),
                         );
                       }),
