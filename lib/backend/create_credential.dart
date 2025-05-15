@@ -22,9 +22,8 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
     data: qrCodeData,
     version: QrVersions.auto,
     gapless: false,
-    dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color.fromRGBO(0, 0, 0, 0.655)),
-    eyeStyle:  QrEyeStyle(color: Color.fromRGBO(0, 0, 0, 0.655)
-    ),  
+    dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color.fromRGBO(0, 0, 0, 1.0)),
+    eyeStyle:  QrEyeStyle(color: Color.fromRGBO(0, 0, 0, 1.0)),  
   ).toImage(120); // 120 is the size of the image
 
   final byteData = await image.toByteData(format: ImageByteFormat.png);
@@ -51,15 +50,27 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
                     width: 350,  
                     ),
                 ),
-                pw.Positioned( 
-                  top: 400, 
+                pw.Positioned(
+                  top: 400,
                   left: 65,
                   child: pw.Container(
                     width: 110,
                     height: 110,
-                    color: PdfColors.white,
-                    child: pw.Image(pw.MemoryImage(qrImageBytes)),
-                  )
+                    decoration: pw.BoxDecoration(
+                      color: PdfColors.white, // Outer container background
+                      borderRadius: pw.BorderRadius.circular(10), // Rounded corners
+                    ),
+                    padding: const pw.EdgeInsets.all(10), // Padding for inner QR
+                    child: pw.Container(
+                      decoration: pw.BoxDecoration(
+                        borderRadius: pw.BorderRadius.circular(8),
+                      ),
+                      child: pw.Image(
+                        pw.MemoryImage(qrImageBytes), // Your QR image bytes
+                        fit: pw.BoxFit.contain, // Ensures QR fits within container
+                      ),
+                    ),
+                  ),
                 ),
                 pw.Positioned(
                   top: 20, 

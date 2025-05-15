@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
 //CREATE DATABASE
-
+  
   Future<Database> _openDatabase() async {
     final databasepath = await getDatabasesPath();
     final path = join(databasepath, 'alumnos.db');
@@ -64,9 +64,9 @@ class DatabaseHelper {
 
   ///INSERTS
 
-  Future<void> InserAttendanceData(int id, String name) async {
+  Future<void> InserAttendanceData(int id, String name, String date) async {
     final db = await _openDatabase();
-    final today_date = DateTime.now().toString().split(' ')[0];
+    final today_date = date;
     Map<String, dynamic> row = {
       'userId': id,
       'name': name,
@@ -249,9 +249,9 @@ class DatabaseHelper {
     }
   }
 
-  Future<Map<String, dynamic>> fetchAttendanceToday() async {
+  Future<Map<String, dynamic>> fetchAttendanceToday(String date) async {
     final db = await _openDatabase();
-    final today = DateTime.now().toString().split(' ')[0];
+    final today = date;
     final data = await db.query(
       'Attendance',
       where: 'date LIKE ? AND status = ?',
@@ -424,14 +424,14 @@ class DatabaseHelper {
     });
   }
 
-  Future<void> deleteStudentPlan(int id) async {
+  Future<void> deleteStudentPlan(int id, String date) async {
     final Database db = await _openDatabase();
     final pay = {
       "userId": id,
       "amount": 0,
       "clases": 0,
       "type": 'Cancelacion',
-      "date": DateTime.now().toString().split(' ')[0]
+      "date": date
     };
     db.insert('Payments', pay);
   }
@@ -448,7 +448,7 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> varifyPay(int userId) async {
+  Future<void> varifyPay(int userId, String date) async {
     try {
       var lastPay = await fetchLastPayment(userId);
       var basePayment = await fetchBasePayment();
@@ -457,15 +457,11 @@ class DatabaseHelper {
         throw Exception('No se pudo obtener la información del pago base');
       }
 
-      print('Base payment: $basePayment');
-
       double cost = basePayment['price'] ?? 0.0;
       String type = basePayment['type'] ?? '';
 
-      String date = DateTime.now().toString().split(' ')[0];
-
       Map<String, dynamic> pay;
-
+      
       if (lastPay == null) {
         pay = {
           'userId': userId,
@@ -474,26 +470,23 @@ class DatabaseHelper {
           'type': type,
           'date': date
         };
-        print('No hay pagos anteriores');
-        print('Pago: $pay');
-        // await InserPaymentData(pay);
+        await InserPaymentData(pay);
         return;
-      } else {
-        if (lastPay['type'] != type && (lastPay['clases'] ?? 0) > 0) {
-          var id = lastPay['id'];
-          var remainingClases = (lastPay['clases'] ?? 0) -1;
-          await updateClases(id, remainingClases);
-        } else {
-          pay = {
-            'userId': userId,
-            'amount': cost,
-            'clases': 0,
-            'type': type,
-            'date': date
-          };
-          await InserPaymentData(pay);
-        }
-      }
+      } else if ((lastPay['type'] != basePayment['type']) &&
+        (lastPay['clases'] > 0)) {
+      var id = lastPay['id'];
+      var remainingClases = lastPay['clases'] - 1;
+      await updateClases(id, remainingClases);
+    } else {
+      pay = {
+        'userId': userId,
+        'amount': cost,
+        'clases': 0,
+        'type': basePayment['type'],
+        'date': date
+      };
+      await InserPaymentData(pay);
+    }
     } catch (e) {
       throw Exception('Error al verificar o procesar el pago: $e');
     }

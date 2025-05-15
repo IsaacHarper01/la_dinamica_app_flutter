@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/Income_report.dart';
 import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/line_chart_widget.dart';
 
-class EarnScreen extends StatefulWidget {
+class EarnScreen extends ConsumerStatefulWidget {
   const EarnScreen({super.key});
 
   @override
   _EarnScreenState createState() => _EarnScreenState();
 }
 
-class _EarnScreenState extends State<EarnScreen> {
-  DateTime startDate = DateTime.now(); // Fecha de inicio
-  DateTime endDate = DateTime.now(); // Fecha de finalización
+class _EarnScreenState extends ConsumerState<EarnScreen> {
+  
+  late DateTime startDate;
+  late DateTime endDate;
+
+  @override
+  void initState() {
+    super.initState();
+    final selectedDate = ref.read(dateProvider);
+    startDate = DateTime.parse(selectedDate);
+    endDate = DateTime.parse(selectedDate);
+  }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
+    
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: isStart ? startDate : endDate,
@@ -47,9 +59,7 @@ class _EarnScreenState extends State<EarnScreen> {
     final db = DatabaseHelper();
 
     return Scaffold(
-      
       body: FutureBuilder<double>(
-        
         future: db.fetchIncomeRange(startDate.toString().split(' ')[0],endDate.toString().split(' ')[0]),//here you can put the range in string type
         builder: (BuildContext context,
             AsyncSnapshot<double> snapshot) {
@@ -59,8 +69,8 @@ class _EarnScreenState extends State<EarnScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
           double result = snapshot.data!;
-          final today = DateTime.now().toString().split(' ')[0];
-          return IncomeScreen(context, screenWidth, result,today);
+          final today = ref.watch(dateProvider);
+          return IncomeScreen(context, screenWidth, result, today);
           }}) 
     );
   }
