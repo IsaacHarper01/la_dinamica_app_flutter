@@ -55,7 +55,7 @@ class LineChartWidget extends ConsumerWidget{
         LineChartData(
           minY: 0,
           gridData: FlGridData(show: true),
-          titlesData: FlTitlesData(
+          titlesData: const FlTitlesData(
             rightTitles: AxisTitles(
               sideTitles: SideTitles(showTitles:false),
             ),
@@ -66,7 +66,7 @@ class LineChartWidget extends ConsumerWidget{
           lineBarsData: [
             LineChartBarData(
               spots: y_data,
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [Colors.blue, Colors.lightBlue],
               ), // Use gradient instead of colors
               barWidth: 3,

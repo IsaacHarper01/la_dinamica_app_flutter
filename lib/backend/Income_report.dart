@@ -24,7 +24,7 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
     ['Id del Alumno', 'Fecha', 'Concepto','Monto']
   ];
   num total = 0;
-  paymentsData.forEach((pay){
+  for (var pay in paymentsData) {
     total += pay['amount'];
     csvData.add([
       pay['userId'].toString(),
@@ -32,7 +32,7 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
       pay['type'].toString(),
       pay['amount'].toString(),
     ]);
-  });
+  }
 
   csvData.add(['Total','${min.toString().split(' ')[0]} - ${max.toString().split(' ')[0]}', '', '$total']);
 

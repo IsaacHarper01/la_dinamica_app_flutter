@@ -25,7 +25,7 @@ class _CalendarTimeRangePickerState extends State<CalendarTimeRangePicker> {
           firstDay: DateTime.utc(2020, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
           calendarStyle: 
-            CalendarStyle(defaultTextStyle: TextStyle(color: Color.fromRGBO(204, 208, 207, 1.0)),
+            const CalendarStyle(defaultTextStyle: TextStyle(color: Color.fromRGBO(204, 208, 207, 1.0)),
                           weekendTextStyle: TextStyle(color: Color.fromRGBO(204, 208, 207, 1.0)),
                           selectedTextStyle: TextStyle(color: Color.fromRGBO(204, 208, 207, 1.0)),
                           rangeStartDecoration: BoxDecoration(color: Color.fromRGBO(155, 168, 171, 1.0))),
@@ -42,8 +42,8 @@ class _CalendarTimeRangePickerState extends State<CalendarTimeRangePicker> {
           onPressed: () async {
             final result = await showTimeRangePicker(
               context: context,
-              start: TimeOfDay(hour: 9, minute: 0),
-              end: TimeOfDay(hour: 17, minute: 0),
+              start: const TimeOfDay(hour: 9, minute: 0),
+              end: const TimeOfDay(hour: 17, minute: 0),
             );
             if (result != null) {
               setState(() {
@@ -55,11 +55,11 @@ class _CalendarTimeRangePickerState extends State<CalendarTimeRangePicker> {
           child: const Text("Pick Time Range"),
         ),
         if (_selectedTimeRange != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
             child: Text(
               "Time: ",
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
       ],

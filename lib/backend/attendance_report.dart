@@ -22,9 +22,9 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
   }
   final List<int> ids = [];
 
-  attendanceData.forEach((row){
+  for (var row in attendanceData) {
     ids.add(row['userId']);
-  });
+  }
 
   final agesAndAddress = await db.fetchAges(ids);
   
@@ -40,7 +40,7 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
       agesAndAddress[1][i].toString(),
       attendanceData[i]['date'].toString(),
     ]);
-  };
+  }
 
   // Generar contenido CSV
   String csvContent = const ListToCsvConverter().convert(csvData);

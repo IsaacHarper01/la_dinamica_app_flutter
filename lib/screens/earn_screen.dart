@@ -59,7 +59,9 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
     final db = DatabaseHelper();
 
     return Scaffold(
+      
       body: FutureBuilder<double>(
+        
         future: db.fetchIncomeRange(startDate.toString().split(' ')[0],endDate.toString().split(' ')[0]),//here you can put the range in string type
         builder: (BuildContext context,
             AsyncSnapshot<double> snapshot) {
@@ -162,25 +164,25 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                     color: colorList[3],
                     borderRadius: BorderRadius.circular(16)),
                 child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
                         'Datos de la fecha Actual: $date',
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                       
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text(
+                          const Text(
                             'Ganancias',
                             style: TextStyle(color: Colors.white),
                           ),
                           Text(
                             '\$${result.toString()}',
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           )
                         ],
                       )
