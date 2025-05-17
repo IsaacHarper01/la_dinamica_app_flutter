@@ -1,5 +1,7 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../model/plan.dart';
 
 class DatabaseHelper {
 //CREATE DATABASE
@@ -211,11 +213,12 @@ class DatabaseHelper {
     return data;
   }
 
-  Future<List<Map<String, dynamic>>> fetchPlansData() async {
+  Future<List<Plan>> fetchPlansData() async {
     final db = await _openDatabase();
     final data = await db.query('Plans');
     await db.close();
-    return data;
+
+    return data.map((map) => Plan.fromMap(map)).toList();
   }
 
 //FETCH A SINGLE DATA FROM TABLE
@@ -435,6 +438,15 @@ class DatabaseHelper {
       "date": date
     };
     db.insert('Payments', pay);
+  }
+
+  Future<void> deletePlanById(int id) async {
+    final db = await _openDatabase();
+    await db.delete(
+      'plans',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
 //UPDATE VALUES

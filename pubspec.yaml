@@ -25,6 +25,8 @@ dependencies:
   qr_flutter: ^4.1.0
   share_plus: ^10.0.3
   sqflite: ^2.3.3+1
+  google_fonts: ^6.2.1
+  shared_preferences: ^2.0.1
   table_calendar: ^3.0.9
   time_range_picker: ^2.0.0
 
@@ -36,15 +38,15 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/f=ma11.png"
+  image_path: "assets/images/f_ma11.png"
 
 flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/f=ma11.png
-    - assets/images/f=ma18.png
     - assets/images/
+    - assets/images/f_ma11.png
+    - assets/images/f_ma18.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see
