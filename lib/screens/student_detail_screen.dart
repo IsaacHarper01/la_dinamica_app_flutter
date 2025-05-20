@@ -228,7 +228,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[3])),
                   label: const Text('Metricas'),
-                  icon: Icon(Icons.bar_chart_outlined),
+                  icon: const Icon(Icons.bar_chart_outlined),
                 )
               ],
             ),
@@ -316,12 +316,12 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                           studentData['age'],
                           widget.image);
                     },
-                    child: Text('Generar Credencial')),
+                    child: const Text('Generar Credencial')),
                 ElevatedButton(
                     onPressed: () {
                       db.deleteStudentPlan(widget.id, date);
                     },
-                    child: Text('Eliminar Plan'))
+                    child: const Text('Eliminar Plan'))
               ],
             ),
           )

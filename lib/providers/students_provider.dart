@@ -12,6 +12,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
 
   StudentsNotifier(this.ref) : super(const AsyncValue.loading());
 
+
   Future<void> fetchAttendanceToday(String date) async {
     try {
       final db = DatabaseHelper();

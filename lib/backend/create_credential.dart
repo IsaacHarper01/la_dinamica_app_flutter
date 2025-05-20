@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 Future<void> generateCredentialandSend(int id, String name, String address, String number, String age, String photo) async {
   // 1. Generate the QR code widget
-  final qrCodeData = id.toString()+ ',' + name+ ',' + address + ',' + number + ',' + age;
+  final qrCodeData = '$id,$name,$address,$number,$age';
   final File photoFile = File(photo);
   final Uint8List photoBytes = await photoFile.readAsBytes();
   final ByteData wallpaperData = await rootBundle.load('assets/images/fondo6.jpg');
@@ -23,7 +23,7 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
     version: QrVersions.auto,
     gapless: false,
     dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color.fromRGBO(0, 0, 0, 1.0)),
-    eyeStyle:  QrEyeStyle(color: Color.fromRGBO(0, 0, 0, 1.0)),  
+    eyeStyle:  const QrEyeStyle(color: Color.fromRGBO(0, 0, 0, 1.0)),  
   ).toImage(120); // 120 is the size of the image
 
   final byteData = await image.toByteData(format: ImageByteFormat.png);
@@ -93,7 +93,7 @@ Future<void> generateCredentialandSend(int id, String name, String address, Stri
                     width: 200,
                     child: pw.Center(
                       child: pw.Text(
-                        "$name",
+                        name,
                         style: pw.TextStyle(fontSize: 15,font: pw.Font.timesBoldItalic(),color: PdfColor.fromRYB(0, 0, 0)),
                       ),
                     ),

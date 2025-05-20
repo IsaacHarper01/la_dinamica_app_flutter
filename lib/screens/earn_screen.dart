@@ -148,12 +148,12 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                       onPressed: () {
                         generateAttendanceReport(startDate, endDate);
                       },
-                      child: Text('Reporte de asistencias'),
+                      child: const Text('Reporte de asistencias'),
                       ),
                   ElevatedButton(onPressed: (){
                       generateIncomeReport(startDate, endDate);
                   }, 
-                  child: Text('Reporte de Ingresos'))
+                  child: const Text('Reporte de Ingresos'))
                 ],
               ),
               const SizedBox(height: 10),

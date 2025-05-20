@@ -22,19 +22,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void initState() {
-  super.initState();
+    super.initState();
 
-  // Cargar asistencia con la fecha actual solo una vez
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    final selectedDate = ref.read(dateProvider);
-    ref.read(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
-  });
-
-    
-    ref.listen<String>(dateProvider, (previous, next) {
-    ref.read(studentsProvider.notifier).fetchAttendanceToday(next);
-  });
-}
+    // Defer execution to avoid modifying state during widget build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      selectedDate = ref.read(dateProvider);
+      ref.read(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
+    });
+  }
 
   Future<void> registerAssistance(BuildContext context) async {
     final result = await scannerQR(context);
@@ -76,7 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final studentsState = ref.watch(studentsProvider);
 
-    void _onDateSelected(String date) {
+    void onDateSelected(String date) {
       setState(() {
         ref.read(dateProvider.notifier).state = date;
       });
@@ -84,7 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        actions: [CalendarButton()],
+        actions: const [CalendarButton()],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
@@ -95,7 +90,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
         data: (students) {
-          if (students == null || students.isEmpty) {
+          if (students.isEmpty) {
             return Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),

@@ -33,20 +33,20 @@ class _MetricsPageState extends State<MetricsPage> {
     DateTime? selectedDate;
     TimeRange? selectedRange;
     final List<String> metricas = ['velocidad','fuerza','resistencia'];
-    final List<String> tipo_de_metrica = ['examen','evaluacion_mensual','evaluacion_diaria']; 
+    final List<String> tipoDeMetrica = ['examen','evaluacion_mensual','evaluacion_diaria']; 
     String? selectedValue = 'velocidad';
 
     return Scaffold(
         appBar: AppBar(
-          title: Center(child: Text('$title')),
+          title: Center(child: Text(title)),
         ),
-        backgroundColor: Color.fromRGBO(6, 20, 27, 1.0),
+        backgroundColor: const Color.fromRGBO(6, 20, 27, 1.0),
         body: ListView(
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container( //Student photo and Calendar Cointainer
               height: 400,
-              color: Color.fromRGBO(35, 55, 69, 1.0), //provisional ELIMINAR!!!
+              color: const Color.fromRGBO(35, 55, 69, 1.0), //provisional ELIMINAR!!!
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,14 +117,14 @@ class _MetricsPageState extends State<MetricsPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      FilledButton(onPressed: (){}, child: Text("Velocidad")),
-                      FilledButton(onPressed: (){}, child: Text("Examen"))
+                      FilledButton(onPressed: (){}, child: const Text("Velocidad")),
+                      FilledButton(onPressed: (){}, child: const Text("Examen"))
                     ],
                   ),
                 ),
                 Container(  //Main Charts container
                 height: 330,
-                color: Color.fromRGBO(17, 33, 45, 1.0),
+                color: const Color.fromRGBO(17, 33, 45, 1.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -132,7 +132,7 @@ class _MetricsPageState extends State<MetricsPage> {
                       height: 280,
                       width: 300,
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(74, 92, 106, 1.0),
+                        color: const Color.fromRGBO(74, 92, 106, 1.0),
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
@@ -140,7 +140,7 @@ class _MetricsPageState extends State<MetricsPage> {
                       height: 280,
                       width: 330,
                       decoration: BoxDecoration(
-                        color: Color.fromRGBO(74, 92, 106, 1.0),
+                        color: const Color.fromRGBO(74, 92, 106, 1.0),
                         borderRadius: BorderRadius.circular(20),
                       ),
                     )
@@ -151,7 +151,7 @@ class _MetricsPageState extends State<MetricsPage> {
             ),
             Container(
               height: 400,
-              color: Color.fromRGBO(35, 55, 69, 1.0),
+              color: const Color.fromRGBO(35, 55, 69, 1.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -159,7 +159,7 @@ class _MetricsPageState extends State<MetricsPage> {
                     height: 350,
                     width: 620,
                     decoration: BoxDecoration(
-                      color: Color.fromRGBO(74, 92, 106, 1.0),
+                      color: const Color.fromRGBO(74, 92, 106, 1.0),
                       borderRadius: BorderRadius.circular(20),
                     ),
                   )

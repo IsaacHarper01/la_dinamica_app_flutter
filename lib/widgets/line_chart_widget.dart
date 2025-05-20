@@ -8,7 +8,7 @@ class LineChartWidget extends ConsumerWidget{
   final DateTime startDate;
   final DateTime endDate;
   
-  LineChartWidget({super.key, required this.startDate, required this.endDate});
+  const LineChartWidget({super.key, required this.startDate, required this.endDate});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,25 +36,25 @@ class LineChartWidget extends ConsumerWidget{
 
   Center Linechart(data) {
 
-    final y_data = <FlSpot>[];
+    final yData = <FlSpot>[];
     double i = 0;
     final sortedDataList = data.entries.toList()
           ..sort((a,b)=> DateTime.parse(a.key).compareTo(DateTime.parse(b.key)));
     final orderedData = Map.fromEntries(sortedDataList);
 
     for(var key in orderedData.keys){
-      y_data.add(FlSpot(i,data[key]));
+      yData.add(FlSpot(i,data[key]));
       i++;
     }
     
     return Center(
-    child: Container(
+    child: SizedBox(
       width: 300, // Set a specific width
       height: 400, // Set a specific height
       child: LineChart(
         LineChartData(
           minY: 0,
-          gridData: FlGridData(show: true),
+          gridData: const FlGridData(show: true),
           titlesData: const FlTitlesData(
             rightTitles: AxisTitles(
               sideTitles: SideTitles(showTitles:false),
@@ -65,7 +65,7 @@ class LineChartWidget extends ConsumerWidget{
           ),
           lineBarsData: [
             LineChartBarData(
-              spots: y_data,
+              spots: yData,
               gradient: const LinearGradient(
                 colors: [Colors.blue, Colors.lightBlue],
               ), // Use gradient instead of colors
