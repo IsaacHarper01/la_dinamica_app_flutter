@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 import 'package:la_dinamica_app/widgets/section_card_widget.dart';
 
-import '../model/plan.dart';
 import '../widgets/theme_selector_widget.dart';
 
 class ConfigScreen extends ConsumerStatefulWidget {
@@ -105,7 +105,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
 }
 
 class PlanCard extends StatelessWidget {
-  final Plan plan;
+  final Plans plan;
   final VoidCallback onDelete;
 
   const PlanCard({
@@ -138,7 +138,7 @@ class PlanCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    plan.type,
+                    plan.type!,
                     style: textTheme.bodyLarge!.copyWith(
                       fontSize: screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
@@ -163,7 +163,7 @@ class PlanCard extends StatelessWidget {
                         color: colorScheme.onSurfaceVariant,
                       ),
                       Text(
-                        '\$${plan.price.toStringAsFixed(2)}',
+                        '\$${plan.price!.toStringAsFixed(2)}',
                         style: textTheme.labelLarge,
                       ),
                     ],

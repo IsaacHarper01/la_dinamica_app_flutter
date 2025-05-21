@@ -134,7 +134,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ); */
                         List<Plans> plans =
                             await dataStoreReadService.getPlans();
-                        safePrint(plans);
+                        safePrint(plans[0].toMap());
                         /* String planIdToDelete =
                             '3fc79bef-387b-47a1-b57b-0fc4bbc1940a';
                         await dataStoreDeleteService
