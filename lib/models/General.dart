@@ -130,12 +130,12 @@ class General extends amplify_core.Model {
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("address=" + "$_address" + ", ");
     buffer.write("phone=" + "$_phone" + ", ");
-    buffer.write("age=" + (_age != null ? _age!.toString() : "null") + ", ");
-    buffer.write("birthday=" + (_birthday != null ? _birthday!.format() : "null") + ", ");
+    buffer.write("age=" + (_age != null ? _age.toString() : "null") + ", ");
+    buffer.write("birthday=" + (_birthday != null ? _birthday.format() : "null") + ", ");
     buffer.write("email=" + "$_email" + ", ");
     buffer.write("image=" + "$_image" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

@@ -100,10 +100,10 @@ class Plans extends amplify_core.Model {
     buffer.write("Plans {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("type=" + "$_type" + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
-    buffer.write("price=" + (_price != null ? _price!.toString() : "null") + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("clases=" + (_clases != null ? _clases.toString() : "null") + ", ");
+    buffer.write("price=" + (_price != null ? _price.toString() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

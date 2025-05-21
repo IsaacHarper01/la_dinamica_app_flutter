@@ -114,12 +114,12 @@ class Payments extends amplify_core.Model {
     buffer.write("Payments {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("userId=" + "$_userId" + ", ");
-    buffer.write("amount=" + (_amount != null ? _amount!.toString() : "null") + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
+    buffer.write("amount=" + (_amount != null ? _amount.toString() : "null") + ", ");
+    buffer.write("clases=" + (_clases != null ? _clases.toString() : "null") + ", ");
     buffer.write("type=" + "$_type" + ", ");
-    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("date=" + (_date != null ? _date.format() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

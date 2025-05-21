@@ -108,10 +108,10 @@ class Metrics extends amplify_core.Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("userId=" + "$_userId" + ", ");
     buffer.write("metric=" + "$_metric" + ", ");
-    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
-    buffer.write("value=" + (_value != null ? _value!.toString() : "null") + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("date=" + (_date != null ? _date.format() : "null") + ", ");
+    buffer.write("value=" + (_value != null ? _value.toString() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

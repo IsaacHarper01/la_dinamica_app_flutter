@@ -13,8 +13,27 @@ import 'models/ModelProvider.dart';
 
 import 'config/provider/theme_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _configureAmplify(); // ✅ Se asegura que se configure una sola vez
   runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> _configureAmplify() async {
+  final datastorePlugin = AmplifyDataStore(modelProvider: ModelProvider.instance);
+  final apiPlugin = AmplifyAPI();
+
+  if (!Amplify.isConfigured) {
+    try {
+      await Amplify.addPlugins([datastorePlugin, apiPlugin]);
+      await Amplify.configure(amplifyconfig);
+      safePrint('✅ Amplify configurado correctamente');
+    } on AmplifyAlreadyConfiguredException {
+      safePrint('⚠️ Amplify ya estaba configurado');
+    } catch (e) {
+      safePrint('❌ Error al configurar Amplify: $e');
+    }
+  }
 }
 
 class MyApp extends ConsumerWidget {
@@ -22,12 +41,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Inicializar Amplify antes de que la app se cargue
-    _configureAmplify();
-
     final themeMode = ref.watch(themeNotifierProvider);
     TextTheme textTheme = createTextTheme(context, "Mulish", "Work Sans");
-
     MaterialTheme theme = MaterialTheme(textTheme);
 
     return MaterialApp(
@@ -39,22 +54,5 @@ class MyApp extends ConsumerWidget {
       home: const MainScreen(),
     );
   }
-
-  Future<void> _configureAmplify() async {
-    final datastorePlugin =
-        AmplifyDataStore(modelProvider: ModelProvider.instance);
-    final apiPlugin = AmplifyAPI();
-
-    if (!Amplify.isConfigured) {
-      try {
-        await Amplify.addPlugins([datastorePlugin, apiPlugin]);
-        await Amplify.configure(amplifyconfig);
-        safePrint('✅ Amplify configurado correctamente');
-      } on AmplifyAlreadyConfiguredException {
-        safePrint('⚠️ Amplify ya estaba configurado');
-      } catch (e) {
-        safePrint('❌ Error al configurar Amplify: $e');
-      }
-    }
-  }
 }
+

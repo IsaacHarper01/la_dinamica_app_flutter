@@ -1,5 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
 
 class DataStoreReadService {
   Future<List<Plans>> getPlans() async {
