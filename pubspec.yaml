@@ -8,11 +8,16 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  flutter:
-    sdk: flutter
-  animate_do:
+  amplify_api: ^2.6.1
+  amplify_auth_cognito: ^2.6.1
+  amplify_authenticator: ^2.3.3
+  amplify_datastore: ^2.6.1
+  amplify_flutter: ^2.6.1
+  animate_do: null
   csv: ^5.0.0
   fl_chart: ^0.69.0
+  flutter:
+    sdk: flutter
   flutter_riverpod: ^2.5.1
   image: ^4.1.0
   image_picker: ^0.8.4+11
@@ -38,15 +43,15 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/f_ma11.png"
+  image_path: "assets/images/f=ma11.png"
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
-    - assets/images/f_ma11.png
-    - assets/images/f_ma18.png
+    - assets/images/f=ma11.png
+    - assets/images/f=ma18.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see

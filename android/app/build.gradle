@@ -10,18 +10,19 @@ android {
     ndkVersion = "27.0.12077973"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
         applicationId = "com.example.la_dinamica_app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = 35
+        minSdkVersion = 24  // ✅ Fijás directamente el valor mínimo requerido por Amplify
+        targetSdk = 34      // ✅ Mejor usar la última versión estable soportada por Flutter
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -30,6 +31,11 @@ android {
         release {
             signingConfig = signingConfigs.debug
         }
+    }
+    
+    dependencies {
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")  // Agregar la dependencia para desugarización
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10")   // Asegurarse de tener la versión correcta de Kotlin
     }
 }
 

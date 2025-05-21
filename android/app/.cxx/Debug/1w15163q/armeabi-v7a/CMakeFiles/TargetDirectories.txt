@@ -1,0 +1,2 @@
+C:/Users/IsaacAnibalHernandez/OneDrive - Optimen SC/Documents/FlutterProjects/la_dinamica_app_flutter/android/app/.cxx/Debug/1w15163q/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/IsaacAnibalHernandez/OneDrive - Optimen SC/Documents/FlutterProjects/la_dinamica_app_flutter/android/app/.cxx/Debug/1w15163q/armeabi-v7a/CMakeFiles/rebuild_cache.dir
