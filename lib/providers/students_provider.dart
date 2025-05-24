@@ -1,5 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/student.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/create_queries_aws.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 import '../backend/database.dart';
 
@@ -16,15 +20,16 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   Future<void> fetchAttendanceToday(String date) async {
     try {
       final db = DatabaseHelper();
-      final snapshot = await db.fetchAttendanceToday(date);
+      final awsDb = DataStoreReadService();
+      final snapshot = await awsDb.getAttendanceByDate(date); //await db.fetchAttendanceToday(date);
       if (snapshot.isEmpty) {
         state = const AsyncValue.data([]);
         return;
       }
 
-      List<dynamic> ids = snapshot['ids'] ?? [];
-      List<dynamic> names = snapshot['names'] ?? [];
-      List<dynamic> images = snapshot['images'] ?? [];
+      List<dynamic> ids = snapshot.map((g)=> g.userId).toList() ?? [];
+      List<dynamic> names = snapshot.map((g)=> g.name).toList() ?? [];
+      List<dynamic> images = await awsDb.getImages(snapshot.map((g)=> g.userId!).toList());
 
       if (ids.isEmpty || names.isEmpty || images.isEmpty) {
         state = const AsyncValue.data([]);
@@ -48,8 +53,13 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   Future<void> insertAttendance(int studentId, String name, String date) async {
     try {
       final db = DatabaseHelper();
+      final awsDb = DataStoreService();
       await db.InserAttendanceData(studentId, name, date);
-
+      await awsDb.saveAttendance(
+        userId: studentId,
+        name: name,
+        date: date,
+      );
       await db.varifyPay(studentId,date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -60,8 +70,10 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
 
   Future<void> deleteAttendance(int studentId, String date) async {
     try {
-      final db = DatabaseHelper();
+      final db = DatabaseHelper(); 
+      final awsDb = DataStoreDeleteService();
       await db.deleteAttendance(studentId, date);
+      await awsDb.deleteAttendanceByID(studentId, date);
       await fetchAttendanceToday(date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);

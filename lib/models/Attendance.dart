@@ -27,7 +27,7 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class Attendance extends amplify_core.Model {
   static const classType = const _AttendanceModelType();
   final String id;
-  final String? _userId;
+  final int? _userId;
   final String? _name;
   final amplify_core.TemporalDate? _date;
   final String? _status;
@@ -47,7 +47,7 @@ class Attendance extends amplify_core.Model {
       );
   }
   
-  String? get userId {
+  int? get userId {
     return _userId;
   }
   
@@ -73,7 +73,7 @@ class Attendance extends amplify_core.Model {
   
   const Attendance._internal({required this.id, userId, name, date, status, createdAt, updatedAt}): _userId = userId, _name = name, _date = date, _status = status, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Attendance({String? id, String? userId, String? name, amplify_core.TemporalDate? date, String? status}) {
+  factory Attendance({String? id, int? userId, String? name, amplify_core.TemporalDate? date, String? status}) {
     return Attendance._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       userId: userId,
@@ -106,7 +106,7 @@ class Attendance extends amplify_core.Model {
     
     buffer.write("Attendance {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("userId=" + "$_userId" + ", ");
+    buffer.write("userId=" + (_userId != null ? _userId!.toString() : "null") + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
     buffer.write("status=" + "$_status" + ", ");
@@ -117,7 +117,7 @@ class Attendance extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Attendance copyWith({String? userId, String? name, amplify_core.TemporalDate? date, String? status}) {
+  Attendance copyWith({int? userId, String? name, amplify_core.TemporalDate? date, String? status}) {
     return Attendance._internal(
       id: id,
       userId: userId ?? this.userId,
@@ -127,7 +127,7 @@ class Attendance extends amplify_core.Model {
   }
   
   Attendance copyWithModelFieldValues({
-    ModelFieldValue<String?>? userId,
+    ModelFieldValue<int?>? userId,
     ModelFieldValue<String?>? name,
     ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<String?>? status
@@ -143,7 +143,7 @@ class Attendance extends amplify_core.Model {
   
   Attendance.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _userId = json['userId'],
+      _userId = (json['userId'] as num?)?.toInt(),
       _name = json['name'],
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
       _status = json['status'],
@@ -190,7 +190,7 @@ class Attendance extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Attendance.USERID,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(

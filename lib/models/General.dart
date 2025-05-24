@@ -27,10 +27,11 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class General extends amplify_core.Model {
   static const classType = const _GeneralModelType();
   final String id;
+  final int? _numId;
   final String? _name;
   final String? _address;
-  final String? _phone;
   final int? _age;
+  final String? _phone;
   final amplify_core.TemporalDate? _birthday;
   final String? _email;
   final String? _image;
@@ -50,6 +51,10 @@ class General extends amplify_core.Model {
       );
   }
   
+  int? get numId {
+    return _numId;
+  }
+  
   String? get name {
     return _name;
   }
@@ -58,12 +63,12 @@ class General extends amplify_core.Model {
     return _address;
   }
   
-  String? get phone {
-    return _phone;
-  }
-  
   int? get age {
     return _age;
+  }
+  
+  String? get phone {
+    return _phone;
   }
   
   amplify_core.TemporalDate? get birthday {
@@ -86,15 +91,16 @@ class General extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const General._internal({required this.id, name, address, phone, age, birthday, email, image, createdAt, updatedAt}): _name = name, _address = address, _phone = phone, _age = age, _birthday = birthday, _email = email, _image = image, _createdAt = createdAt, _updatedAt = updatedAt;
+  const General._internal({required this.id, numId, name, address, age, phone, birthday, email, image, createdAt, updatedAt}): _numId = numId, _name = name, _address = address, _age = age, _phone = phone, _birthday = birthday, _email = email, _image = image, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory General({String? id, String? name, String? address, String? phone, int? age, amplify_core.TemporalDate? birthday, String? email, String? image}) {
+  factory General({String? id, int? numId, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image}) {
     return General._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      numId: numId,
       name: name,
       address: address,
-      phone: phone,
       age: age,
+      phone: phone,
       birthday: birthday,
       email: email,
       image: image);
@@ -109,10 +115,11 @@ class General extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is General &&
       id == other.id &&
+      _numId == other._numId &&
       _name == other._name &&
       _address == other._address &&
-      _phone == other._phone &&
       _age == other._age &&
+      _phone == other._phone &&
       _birthday == other._birthday &&
       _email == other._email &&
       _image == other._image;
@@ -127,47 +134,51 @@ class General extends amplify_core.Model {
     
     buffer.write("General {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("numId=" + (_numId != null ? _numId!.toString() : "null") + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("address=" + "$_address" + ", ");
+    buffer.write("age=" + (_age != null ? _age!.toString() : "null") + ", ");
     buffer.write("phone=" + "$_phone" + ", ");
-    buffer.write("age=" + (_age != null ? _age.toString() : "null") + ", ");
-    buffer.write("birthday=" + (_birthday != null ? _birthday.format() : "null") + ", ");
+    buffer.write("birthday=" + (_birthday != null ? _birthday!.format() : "null") + ", ");
     buffer.write("email=" + "$_email" + ", ");
     buffer.write("image=" + "$_image" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  General copyWith({String? name, String? address, String? phone, int? age, amplify_core.TemporalDate? birthday, String? email, String? image}) {
+  General copyWith({int? numId, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image}) {
     return General._internal(
       id: id,
+      numId: numId ?? this.numId,
       name: name ?? this.name,
       address: address ?? this.address,
-      phone: phone ?? this.phone,
       age: age ?? this.age,
+      phone: phone ?? this.phone,
       birthday: birthday ?? this.birthday,
       email: email ?? this.email,
       image: image ?? this.image);
   }
   
   General copyWithModelFieldValues({
+    ModelFieldValue<int?>? numId,
     ModelFieldValue<String?>? name,
     ModelFieldValue<String?>? address,
-    ModelFieldValue<String?>? phone,
     ModelFieldValue<int?>? age,
+    ModelFieldValue<String?>? phone,
     ModelFieldValue<amplify_core.TemporalDate?>? birthday,
     ModelFieldValue<String?>? email,
     ModelFieldValue<String?>? image
   }) {
     return General._internal(
       id: id,
+      numId: numId == null ? this.numId : numId.value,
       name: name == null ? this.name : name.value,
       address: address == null ? this.address : address.value,
-      phone: phone == null ? this.phone : phone.value,
       age: age == null ? this.age : age.value,
+      phone: phone == null ? this.phone : phone.value,
       birthday: birthday == null ? this.birthday : birthday.value,
       email: email == null ? this.email : email.value,
       image: image == null ? this.image : image.value
@@ -176,10 +187,11 @@ class General extends amplify_core.Model {
   
   General.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _numId = (json['numId'] as num?)?.toInt(),
       _name = json['name'],
       _address = json['address'],
-      _phone = json['phone'],
       _age = (json['age'] as num?)?.toInt(),
+      _phone = json['phone'],
       _birthday = json['birthday'] != null ? amplify_core.TemporalDate.fromString(json['birthday']) : null,
       _email = json['email'],
       _image = json['image'],
@@ -187,15 +199,16 @@ class General extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'address': _address, 'phone': _phone, 'age': _age, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'numId': _numId, 'name': _name, 'address': _address, 'age': _age, 'phone': _phone, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'numId': _numId,
     'name': _name,
     'address': _address,
-    'phone': _phone,
     'age': _age,
+    'phone': _phone,
     'birthday': _birthday,
     'email': _email,
     'image': _image,
@@ -205,10 +218,11 @@ class General extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<GeneralModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<GeneralModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final NUMID = amplify_core.QueryField(fieldName: "numId");
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final ADDRESS = amplify_core.QueryField(fieldName: "address");
-  static final PHONE = amplify_core.QueryField(fieldName: "phone");
   static final AGE = amplify_core.QueryField(fieldName: "age");
+  static final PHONE = amplify_core.QueryField(fieldName: "phone");
   static final BIRTHDAY = amplify_core.QueryField(fieldName: "birthday");
   static final EMAIL = amplify_core.QueryField(fieldName: "email");
   static final IMAGE = amplify_core.QueryField(fieldName: "image");
@@ -230,6 +244,12 @@ class General extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: General.NUMID,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: General.NAME,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
@@ -242,15 +262,15 @@ class General extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.PHONE,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: General.AGE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: General.PHONE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(

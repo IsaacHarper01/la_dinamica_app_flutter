@@ -27,7 +27,7 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class Metrics extends amplify_core.Model {
   static const classType = const _MetricsModelType();
   final String id;
-  final String? _userId;
+  final int? _userId;
   final String? _metric;
   final amplify_core.TemporalDate? _date;
   final double? _value;
@@ -47,7 +47,7 @@ class Metrics extends amplify_core.Model {
       );
   }
   
-  String? get userId {
+  int? get userId {
     return _userId;
   }
   
@@ -73,7 +73,7 @@ class Metrics extends amplify_core.Model {
   
   const Metrics._internal({required this.id, userId, metric, date, value, createdAt, updatedAt}): _userId = userId, _metric = metric, _date = date, _value = value, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Metrics({String? id, String? userId, String? metric, amplify_core.TemporalDate? date, double? value}) {
+  factory Metrics({String? id, int? userId, String? metric, amplify_core.TemporalDate? date, double? value}) {
     return Metrics._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       userId: userId,
@@ -106,18 +106,18 @@ class Metrics extends amplify_core.Model {
     
     buffer.write("Metrics {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("userId=" + "$_userId" + ", ");
+    buffer.write("userId=" + (_userId != null ? _userId!.toString() : "null") + ", ");
     buffer.write("metric=" + "$_metric" + ", ");
-    buffer.write("date=" + (_date != null ? _date.format() : "null") + ", ");
-    buffer.write("value=" + (_value != null ? _value.toString() : "null") + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
+    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
+    buffer.write("value=" + (_value != null ? _value!.toString() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Metrics copyWith({String? userId, String? metric, amplify_core.TemporalDate? date, double? value}) {
+  Metrics copyWith({int? userId, String? metric, amplify_core.TemporalDate? date, double? value}) {
     return Metrics._internal(
       id: id,
       userId: userId ?? this.userId,
@@ -127,7 +127,7 @@ class Metrics extends amplify_core.Model {
   }
   
   Metrics copyWithModelFieldValues({
-    ModelFieldValue<String?>? userId,
+    ModelFieldValue<int?>? userId,
     ModelFieldValue<String?>? metric,
     ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<double?>? value
@@ -143,7 +143,7 @@ class Metrics extends amplify_core.Model {
   
   Metrics.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _userId = json['userId'],
+      _userId = (json['userId'] as num?)?.toInt(),
       _metric = json['metric'],
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
       _value = (json['value'] as num?)?.toDouble(),
@@ -190,7 +190,7 @@ class Metrics extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Metrics.USERID,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(

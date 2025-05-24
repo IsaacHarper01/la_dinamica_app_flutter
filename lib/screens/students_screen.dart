@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
@@ -19,7 +22,7 @@ class StudentsScreen extends StatefulWidget {
 }
 
 class _StudentsScreenState extends State<StudentsScreen> {
-  Future<Map<String, dynamic>>? _studentsFuture;
+  late Future<List<General>> _studentsFuture;
 
   @override
   void initState() {
@@ -28,29 +31,29 @@ class _StudentsScreenState extends State<StudentsScreen> {
   }
 
   void _loadStudents() {
-    final db = DatabaseHelper();
-    _studentsFuture = db.fetchGeneralData();
+    final awsDb = DataStoreReadService();
+    _studentsFuture = awsDb.getGeneral();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<Map<String, dynamic>>(
+      body: FutureBuilder<List<General>>(
         future: _studentsFuture,
         builder: (BuildContext context,
-            AsyncSnapshot<Map<String, dynamic>> snapshot) {
+            AsyncSnapshot<List<General>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            // El snapshot.data contiene la información en forma de lista de los alumnos [ids, names, emails, phones, address, ages, birthdays]
-            List<dynamic> students = snapshot.data!['names']!;
-            List<dynamic> studentsIds = snapshot.data!['ids']!;
+            
+            List<dynamic> students = snapshot.data!.map((g)=> g.name).toList();
+            List<dynamic> studentsIds = snapshot.data!.map((g)=> g.numId).toList();
             List<int> studentsIndex =
                 List.generate(students.length, (index) => index);
             int num = students.length;
-            List<dynamic> images = snapshot.data!['images']!;
+            List<dynamic> images = snapshot.data!.map((g)=> g.image).toList();
 
             return ScrollViewContent(
               screenHeight: MediaQuery.of(context).size.height,
@@ -104,6 +107,8 @@ class ScrollViewContent extends ConsumerWidget {
   void _deleteRegister(id) {
     final db = DatabaseHelper();
     db.deleteRegister(id, null);
+    final awsDb = DataStoreDeleteService();
+    awsDb.deleteStudentByID(id);
   }
 
   void handleDeleteDash(context, i) async {

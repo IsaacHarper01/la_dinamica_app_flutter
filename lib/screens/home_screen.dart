@@ -2,11 +2,6 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
-import 'package:la_dinamica_app/models/ModelProvider.dart';
-
-import 'package:la_dinamica_app/providers/create_queries_aws.dart';
-import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
@@ -77,9 +72,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final isDarkMode = themeMode == ThemeMode.dark;
 
     final studentsState = ref.watch(studentsProvider);
-    final dataStoreService = DataStoreService();
-    DataStoreReadService dataStoreReadService = DataStoreReadService();
-    DataStoreDeleteService dataStoreDeleteService = DataStoreDeleteService();
 
     return Scaffold(
       appBar: AppBar(
@@ -96,9 +88,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         data: (students) {
           if (students.isEmpty) {
             return Center(
-              child: Column(
-                children: [
-                  ClipRRect(
+              child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Image.asset(
                       isDarkMode
@@ -108,41 +98,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
                       fit: BoxFit.cover,
                     ),
-                  ),
-                  FilledButton(
-                      onPressed: () async {
-                        await dataStoreService.savePlan(
-                          type: "clase unica",
-                          clases: 1,
-                          price: 40.0,
-                        );
-                        /* List<Plans> plans =
-                            await dataStoreReadService.getPlans();
-                        safePrint(plans); */
-                        /* String planIdToDelete =
-                            '3fc79bef-387b-47a1-b57b-0fc4bbc1940a';
-                        await dataStoreDeleteService
-                            .deletePlanById(planIdToDelete); */
-                      },
-                      child: const Text('Crear')),
-                  FilledButton(
-                      onPressed: () async {
-                        /* await _dataStoreService.savePlan(
-                          type: "Lorem ipsum dolor sit amet",
-                          clases: 1020,
-                          price: 123.45,
-                        ); */
-                        List<Plans> plans =
-                            await dataStoreReadService.getPlans();
-                        safePrint(plans[0].toMap());
-                        /* String planIdToDelete =
-                            '3fc79bef-387b-47a1-b57b-0fc4bbc1940a';
-                        await dataStoreDeleteService
-                            .deletePlanById(planIdToDelete); */
-                      },
-                      child: const Text('Read'))
-                ],
-              ),
+                  )
             );
           }
 

@@ -1,0 +1,43 @@
+type Plans @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  type: String
+  clases: Int
+  price: Float
+}
+
+type Attendance @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userId: Int
+  name: String
+  date: AWSDate
+  status: String
+}
+
+type Metrics @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userId: Int
+  metric: String
+  date: AWSDate
+  value: Float
+}
+
+type Payments @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userId: Int
+  amount: Float
+  clases: Int
+  type: String
+  date: AWSDate
+}
+
+type General @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  numId: Int
+  name: String
+  address: String
+  age: Int
+  phone: String
+  birthday: AWSDate
+  email: String
+  image: String
+} 

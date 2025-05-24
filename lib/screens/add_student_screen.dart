@@ -1,8 +1,10 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
+import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:logger/logger.dart';
 
 class AddStudentScreen extends StatefulWidget {
@@ -51,6 +53,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final db = DatabaseHelper();
+      final aws_db = DataStoreService();
+
       Map<String, dynamic> data = {};
 
       // Recopilar los datos de los controladores
@@ -63,9 +67,24 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       // Insertar los valores en la base de datos y generar el archivo PDF
       final image = await pickAndSaveImage(data['name']);
       data['image'] = image;
-      final id = await db.InsertGeneralData(data);
+      
+      final id = await aws_db.saveGeneral(
+          name: data['name'],
+          address: data['address'],
+          phone: data['phone'],
+          age: int.parse(data['age']),
+          birthday: data['birthday'],
+          email: data['email'],
+          image: image);
+
+      await db.InsertGeneralData(data); //This is an insertion in the local database
       generateCredentialandSend(
-          id, data['name'], data['address'], data['phone'], data['age'], image);
+          id, 
+          data['name'], 
+          data['address'], 
+          data['phone'], 
+          data['age'], 
+          image);
 
       // Mostrar SnackBar confirmando el registro
       ScaffoldMessenger.of(context).showSnackBar(

@@ -27,7 +27,7 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class Payments extends amplify_core.Model {
   static const classType = const _PaymentsModelType();
   final String id;
-  final String? _userId;
+  final int? _userId;
   final double? _amount;
   final int? _clases;
   final String? _type;
@@ -48,7 +48,7 @@ class Payments extends amplify_core.Model {
       );
   }
   
-  String? get userId {
+  int? get userId {
     return _userId;
   }
   
@@ -78,7 +78,7 @@ class Payments extends amplify_core.Model {
   
   const Payments._internal({required this.id, userId, amount, clases, type, date, createdAt, updatedAt}): _userId = userId, _amount = amount, _clases = clases, _type = type, _date = date, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Payments({String? id, String? userId, double? amount, int? clases, String? type, amplify_core.TemporalDate? date}) {
+  factory Payments({String? id, int? userId, double? amount, int? clases, String? type, amplify_core.TemporalDate? date}) {
     return Payments._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       userId: userId,
@@ -113,19 +113,19 @@ class Payments extends amplify_core.Model {
     
     buffer.write("Payments {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("userId=" + "$_userId" + ", ");
-    buffer.write("amount=" + (_amount != null ? _amount.toString() : "null") + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases.toString() : "null") + ", ");
+    buffer.write("userId=" + (_userId != null ? _userId!.toString() : "null") + ", ");
+    buffer.write("amount=" + (_amount != null ? _amount!.toString() : "null") + ", ");
+    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
     buffer.write("type=" + "$_type" + ", ");
-    buffer.write("date=" + (_date != null ? _date.format() : "null") + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
+    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  Payments copyWith({String? userId, double? amount, int? clases, String? type, amplify_core.TemporalDate? date}) {
+  Payments copyWith({int? userId, double? amount, int? clases, String? type, amplify_core.TemporalDate? date}) {
     return Payments._internal(
       id: id,
       userId: userId ?? this.userId,
@@ -136,7 +136,7 @@ class Payments extends amplify_core.Model {
   }
   
   Payments copyWithModelFieldValues({
-    ModelFieldValue<String?>? userId,
+    ModelFieldValue<int?>? userId,
     ModelFieldValue<double?>? amount,
     ModelFieldValue<int?>? clases,
     ModelFieldValue<String?>? type,
@@ -154,7 +154,7 @@ class Payments extends amplify_core.Model {
   
   Payments.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _userId = json['userId'],
+      _userId = (json['userId'] as num?)?.toInt(),
       _amount = (json['amount'] as num?)?.toDouble(),
       _clases = (json['clases'] as num?)?.toInt(),
       _type = json['type'],
@@ -204,7 +204,7 @@ class Payments extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Payments.USERID,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
