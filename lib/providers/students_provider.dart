@@ -54,6 +54,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final db = DatabaseHelper();
       final awsDb = DataStoreService();
+      final awsDb2 = DataStoreReadService();
       await db.InserAttendanceData(studentId, name, date);
       await awsDb.saveAttendance(
         userId: studentId,
@@ -61,6 +62,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
         date: date,
       );
       await db.varifyPay(studentId,date);
+      await awsDb2.verifyPayment(studentId, date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {

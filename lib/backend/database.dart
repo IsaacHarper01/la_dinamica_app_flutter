@@ -470,8 +470,6 @@ class DatabaseHelper {
         throw Exception('No se pudo obtener la información del pago base');
       }
 
-      print('Base payment: $basePayment');
-
       double cost = basePayment['price'] ?? 0.0;
       String type = basePayment['type'] ?? '';
 
@@ -488,9 +486,9 @@ class DatabaseHelper {
         await InserPaymentData(pay);
         return;
       } else {
-        if (lastPay['type'] != type && (lastPay['clases'] ?? 0) > 0) {
+        if (lastPay['type'] != type && (lastPay['clases']) > 0) {
           var id = lastPay['id'];
-          var remainingClases = (lastPay['clases'] ?? 0) -1;
+          var remainingClases = (lastPay['clases']) -1;
           await updateClases(id, remainingClases);
         } else {
           pay = {
