@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
 
 import '../providers/attendance_provider.dart';
@@ -29,19 +32,28 @@ class StudentDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
-  Map<String, dynamic> paymentData = {
-    'id': 0,
-    'userId': 0,
-    'amount': 0,
-    'clases': 0,
-    'type': 'Desconocido',
-    'date': '-'
-  };
+  Payments paymentData = Payments(
+    id: '0',
+    userId: 0,
+    amount: 0.0,
+    clases: 0,
+    type: 'Desconocido',
+    date: TemporalDate(DateTime.now()),
+  );
 
-  Map<String, dynamic> studentData = {};
+  General studentData = General(
+    id: '0',
+    name: 'Desconocido',
+    address: 'Desconocido',
+    phone: 'Desconocido',
+    age: 0,
+    image: '',
+  );
+
   bool isActive = true;
 
   final DatabaseHelper db = DatabaseHelper();
+  final awsDb = DataStoreReadService();
 
   @override
   Widget build(BuildContext context) {
@@ -61,15 +73,16 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     return Scaffold(
         appBar: AppBar(title: Text(widget.name)),
         body: FutureBuilder(
-            future: db.fetchLastPayandStudentlData(widget.id),
+            future: awsDb.getLastPayandStudentData(widget.id),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else {
-                if (snapshot.data['lastPay'].isNotEmpty) {
+                if (snapshot.data['lastPay'] != null && snapshot.data['studentData'] != null) {
                   paymentData = snapshot.data['lastPay'];
+                  studentData = snapshot.data['studentData'];
                 }
-                studentData = snapshot.data['studentData'];
+                
                 return infoScreen(
                     screenHeight, context, screenWidth, hasAttendance);
               }
@@ -78,7 +91,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
   Widget infoScreen(double screenHeight, BuildContext context,
       double screenWidth, bool hasAttendance) {
-    isActive = paymentData['clases'] != 0;
+    isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
 
     return SingleChildScrollView(
@@ -152,7 +165,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  '${studentData['address']}',
+                                  '${studentData.address}',
                                   style: const TextStyle(color: Colors.white),
                                 ),
                               ],
@@ -174,7 +187,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                                 color: Colors.white,
                               ),
                               Text(
-                                '${studentData['age']} años',
+                                '${studentData.age} años',
                                 style: const TextStyle(color: Colors.white),
                               ),
                             ],
@@ -242,7 +255,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   'Tipo de plan',
                   style: TextStyle(fontSize: 25),
                 ),
-                Text('${paymentData['type']}')
+                Text('${paymentData.type}')
               ],
             ),
           ),
@@ -292,7 +305,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Clases faltantes: ${paymentData['clases']}'),
+                  child: Text('Clases faltantes: ${paymentData.clases}'),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -300,20 +313,20 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Fecha del ultimo pago: ${paymentData['date']}'),
+                  child: Text('Fecha del ultimo pago: ${paymentData.date}'),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('Telefono: ${studentData['phone']}'),
+                  child: Text('Telefono: ${studentData.phone}'),
                 ),
                 ElevatedButton(
                     onPressed: () {
                       generateCredentialandSend(
                           widget.id,
                           widget.name,
-                          studentData['address'],
-                          studentData['phone'],
-                          studentData['age'],
+                          studentData.address!,
+                          studentData.phone!,
+                          studentData.age.toString(),
                           widget.image);
                     },
                     child: const Text('Generar Credencial')),

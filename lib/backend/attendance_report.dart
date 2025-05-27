@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -13,8 +13,9 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
   }
 
   // Obtener los datos de asistencia desde la base de datos
-  DatabaseHelper db = DatabaseHelper();
-  final attendanceData = await db.fetchAttendanceRange(startDate, endDate);
+  final awsDb = DataStoreReadService();
+  
+  final attendanceData = await awsDb.getAttendanceRange(startDate, endDate);
   
   // Si no hay datos, salir
   if (attendanceData.isEmpty) {
@@ -23,10 +24,10 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
   final List<int> ids = [];
 
   for (var row in attendanceData) {
-    ids.add(row['userId']);
+    ids.add(row.userId!);
   }
 
-  final agesAndAddress = await db.fetchAges(ids);
+  final agesAndAddress = await awsDb.getAgesandAddress(ids);
   
   List<List<String>> csvData = [
     ['Id del Alumno', 'Nombre', 'Edad', 'Localidad' ,'Fecha'],
@@ -34,11 +35,11 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
 
   for (var i = 0; i < attendanceData.length; i++) {
     csvData.add([
-      attendanceData[i]['userId'].toString(),
-      attendanceData[i]['name'].toString(),
+      attendanceData[i].userId.toString(),
+      attendanceData[i].name.toString(),
       agesAndAddress[0][i].toString(),
       agesAndAddress[1][i].toString(),
-      attendanceData[i]['date'].toString(),
+      attendanceData[i].date.toString(),
     ]);
   }
 

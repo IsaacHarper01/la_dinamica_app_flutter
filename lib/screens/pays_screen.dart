@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+
+import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class PaysScreen extends ConsumerStatefulWidget {
   const PaysScreen({super.key});
@@ -26,14 +28,14 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
     final screenWidth = isPortrait
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
-    final db = DatabaseHelper();
+    final awsDb = DataStoreReadService();
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
     final String date = ref.watch(dateProvider);
 
     return Scaffold(
       body: FutureBuilder(
-          future: db.fetchNamesIdsPlans(),
+          future: awsDb.getPlansNamesIds(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -302,16 +304,15 @@ void assignedPlan({
   required String date,
   required BuildContext context,
 }) {
-  var payMap = {
-    'userId': nameIndex,
-    'amount': costs[planIndex],
-    'clases': clases[planIndex],
-    'type': plansType[planIndex],
-    'date': date
-  };
-  //print(payMap);
-  final db = DatabaseHelper();
-  db.InserPaymentData(payMap);
+  final awsDb = DataStoreService();
+  awsDb.savePayment(
+    userId: nameIndex,
+    amount: double.parse(costs[planIndex]),
+    clases: int.parse(clases[planIndex]),
+    type: plansType[planIndex],
+    date: date,
+  );
+
   ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(
       content: Text('Registro exitoso'),

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
@@ -53,19 +51,41 @@ Future<void> deleteAttendanceByID(int id, String date) async {
     try {
       List<Attendance> attendance = await Amplify.DataStore.query(
         Attendance.classType,
-        where: Attendance.USERID.eq(id) & Attendance.DATE.eq(TemporalDate(DateTime.parse(date))),
+        where: Attendance.USERID.eq(id),
+        sortBy: [Attendance.DATE.descending()],
       );
+      List<Payments> payments = await Amplify.DataStore.query(
+        Payments.classType,
+        where: Payments.USERID.eq(id),
+        sortBy: [Payments.DATE.descending()],
+      );
+
       if (attendance.isNotEmpty) {
-        for (var att in attendance) {
-          await Amplify.DataStore.delete(att);
+          await Amplify.DataStore.delete(attendance.last);
+
+      safePrint('✅ Asistencia eliminada correctamente');
+      } 
+
+      Payments? lastPayment = payments.isNotEmpty ? payments.last : null;
+
+      if(lastPayment != null) {
+        List<Plans> plan = await Amplify.DataStore.query(
+        Plans.classType,
+        where: Plans.TYPE.eq(lastPayment.type),
+        );
+
+        if (plan.first.clases! > lastPayment.clases!  && lastPayment.date!.format() != date){
+          Payments updatedPayment = lastPayment.copyWith(clases: lastPayment.clases! + 1);
+          await Amplify.DataStore.save(updatedPayment);
+        } else {
+          await Amplify.DataStore.delete(lastPayment);
         }
-        safePrint('✅ Asistencia eliminada correctamente');
-      } else {
-        safePrint('❌ No se encontró la asistencia con el ID proporcionado');
-      }
+      } 
+      
     } catch (e) {
       safePrint('❌ Error al eliminar la Asistencia: $e');
       rethrow;
     }
   }
+
 }

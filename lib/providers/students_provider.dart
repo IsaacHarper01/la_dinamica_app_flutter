@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/student.dart';
-import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -19,7 +18,6 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
 
   Future<void> fetchAttendanceToday(String date) async {
     try {
-      final db = DatabaseHelper();
       final awsDb = DataStoreReadService();
       final snapshot = await awsDb.getAttendanceByDate(date); //await db.fetchAttendanceToday(date);
       if (snapshot.isEmpty) {

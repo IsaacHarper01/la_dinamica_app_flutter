@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -12,9 +12,9 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
   if (!status.isGranted) {
     await Permission.storage.request();
   }
-
-  DatabaseHelper db = DatabaseHelper();
-  final paymentsData = await db.fetchPaymentsRange(min, max);
+  final awsDb = DataStoreReadService();
+  
+  final paymentsData = await awsDb.getPaymentsRange(min, max);
   
   if (paymentsData.isEmpty) {
     return;
@@ -25,12 +25,12 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
   ];
   num total = 0;
   for (var pay in paymentsData) {
-    total += pay['amount'];
+    total += pay.amount!;
     csvData.add([
-      pay['userId'].toString(),
-      pay['date'].toString(),
-      pay['type'].toString(),
-      pay['amount'].toString(),
+      pay.userId.toString(),
+      pay.date.toString(),
+      pay.type.toString(),
+      pay.amount.toString(),
     ]);
   }
 

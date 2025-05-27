@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/Income_report.dart';
 import 'package:la_dinamica_app/backend/attendance_report.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/line_chart_widget.dart';
 
@@ -56,13 +56,13 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
     final screenWidth = isPortatil
         ? MediaQuery.of(context).size.width
         : MediaQuery.of(context).size.width * 0.8;
-    final db = DatabaseHelper();
+    final awsDb = DataStoreReadService();
 
     return Scaffold(
       
       body: FutureBuilder<double>(
         
-        future: db.fetchIncomeRange(startDate.toString().split(' ')[0],endDate.toString().split(' ')[0]),//here you can put the range in string type
+        future: awsDb.getIncomeRange(startDate, endDate), 
         builder: (BuildContext context,
             AsyncSnapshot<double> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -177,7 +177,7 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           const Text(
-                            'Ganancias',
+                            'Ingresos: ',
                             style: TextStyle(color: Colors.white),
                           ),
                           Text(

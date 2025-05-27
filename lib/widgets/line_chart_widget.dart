@@ -1,8 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class LineChartWidget extends ConsumerWidget{
   final DateTime startDate;
@@ -14,16 +14,16 @@ class LineChartWidget extends ConsumerWidget{
   Widget build(BuildContext context, WidgetRef ref) {
     final today = DateTime.parse(ref.watch(dateProvider));
     var n = 30;
-    print('FECHA DE HOY: $today');
+
     if(startDate.toString().split(' ')[0] != endDate.toString().split(' ')[0]){
       n = endDate.difference(startDate).inDays;
     }
 
     final lastdate = today.subtract(Duration(days: n));
-    DatabaseHelper db = DatabaseHelper();
+    final awsDb = DataStoreReadService();
 
     return FutureBuilder(
-        future: db.fetchTotalAmountRange(lastdate, today), 
+        future: awsDb.getTotalAmounRange(lastdate, today), 
       builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
