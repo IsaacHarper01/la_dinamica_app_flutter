@@ -57,6 +57,23 @@ class DataStoreReadService {
     }
   }
 
+  Future<List<Payments>> getPaymentsRange(DateTime startDate, DateTime endDate) async {
+    try {
+      List<Payments> payments = await Amplify.DataStore.query(
+        Payments.classType,
+        where: Payments.DATE.between(
+          TemporalDate(startDate),
+          TemporalDate(endDate),
+        ),
+      );
+      safePrint('✅ Pagos obtenidos correctamente');
+      return payments;
+    } catch (e) {
+      safePrint('❌ Error al obtener los pagos: $e');
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> getLastPayandStudentData(int userId) async{
     try {
       List<General> general = await Amplify.DataStore.query(
@@ -161,6 +178,26 @@ class DataStoreReadService {
       return general;
     } catch (e) {
       safePrint('❌ Error al obtener los Alumnos: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> checkIfStudentExists(int id) async {
+    try {
+      // Consultar los datos almacenados en DataStore
+      List<General> general = await Amplify.DataStore.query(
+        General.classType,
+        where: General.NUMID.eq(id),
+      );
+      if (general.isNotEmpty) {
+        safePrint('✅ El alumno con ID $id existe');
+        return true;
+      } else {
+        safePrint('❌ El alumno con ID $id no existe');
+        return false;
+      }
+    } catch (e) {
+      safePrint('❌ Error al verificar la existencia del alumno: $e');
       rethrow;
     }
   }
@@ -297,23 +334,6 @@ class DataStoreReadService {
       } else {
         return null;
       }
-    } catch (e) {
-      safePrint('❌ Error al obtener los pagos: $e');
-      rethrow;
-    }
-  }
-
-  Future<List<Payments>> getPaymentsRange(DateTime startDate, DateTime endDate) async {
-    try {
-      List<Payments> payments = await Amplify.DataStore.query(
-        Payments.classType,
-        where: Payments.DATE.between(
-          TemporalDate(startDate),
-          TemporalDate(endDate),
-        ),
-      );
-      safePrint('✅ Pagos obtenidos correctamente');
-      return payments;
     } catch (e) {
       safePrint('❌ Error al obtener los pagos: $e');
       rethrow;

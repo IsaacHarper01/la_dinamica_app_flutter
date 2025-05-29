@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:logger/logger.dart';
@@ -51,7 +50,6 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   void _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
-      final db = DatabaseHelper();
       final aws_db = DataStoreService();
 
       Map<String, dynamic> data = {};
@@ -76,7 +74,6 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
           email: data['email'],
           image: image);
 
-      await db.InsertGeneralData(data); //This is an insertion in the local database
       generateCredentialandSend(
           id, 
           data['name'], 

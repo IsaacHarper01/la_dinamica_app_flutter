@@ -205,7 +205,7 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: colorList[1], width: 1)),
-                  child: const PieChartWidget()), // Tu widget de gráfico
+                  child: PieChartWidget(startDate: startDate, endDate: endDate,)), 
             ],
           ),
         ),

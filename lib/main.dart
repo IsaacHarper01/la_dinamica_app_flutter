@@ -1,3 +1,5 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -26,6 +28,7 @@ Future<void> _configureAmplify() async {
   if (!Amplify.isConfigured) {
     try {
       await Amplify.addPlugins([datastorePlugin, apiPlugin]);
+      await Amplify.addPlugin(AmplifyAuthCognito());
       await Amplify.configure(amplifyconfig);
       safePrint('✅ Amplify configurado correctamente');
     } on AmplifyAlreadyConfiguredException {
@@ -45,13 +48,16 @@ class MyApp extends ConsumerWidget {
     TextTheme textTheme = createTextTheme(context, "Mulish", "Work Sans");
     MaterialTheme theme = MaterialTheme(textTheme);
 
-    return MaterialApp(
-      title: 'La Dinamica del Movimiento',
-      debugShowCheckedModeBanner: false,
-      theme: theme.light(),
-      darkTheme: theme.dark(),
-      themeMode: themeMode,
-      home: const MainScreen(),
+    return Authenticator( 
+      child: MaterialApp(
+        builder: Authenticator.builder(),
+        title: 'La Dinamica del Movimiento',
+        debugShowCheckedModeBanner: false,
+        theme: theme.light(),
+        darkTheme: theme.dark(),
+        themeMode: themeMode,
+        home: const MainScreen(),
+      )
     );
   }
 }

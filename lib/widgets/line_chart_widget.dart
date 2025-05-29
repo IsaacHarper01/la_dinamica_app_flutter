@@ -23,7 +23,7 @@ class LineChartWidget extends ConsumerWidget{
     final awsDb = DataStoreReadService();
 
     return FutureBuilder(
-        future: awsDb.getTotalAmounRange(lastdate, today), 
+      future: awsDb.getTotalAmounRange(lastdate, today), 
       builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

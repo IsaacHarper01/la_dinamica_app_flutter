@@ -1,205 +1,99 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/widgets/piechart_indicator.dart'; 
 
-class PieChartWidget extends StatefulWidget {
-  const PieChartWidget({super.key});
+
+class PieChartWidget extends ConsumerWidget{
+    final DateTime startDate;
+    final DateTime endDate;
+
+    const PieChartWidget({super.key, required this.startDate, required this.endDate});
 
   @override
-  State<StatefulWidget> createState() => PieChartState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    final today = DateTime.parse(ref.watch(dateProvider));
+    final awsDb = DataStoreReadService();
+    var n = 5;
+
+    if(startDate.toString().split(' ')[0] != endDate.toString().split(' ')[0]){
+      n = endDate.difference(startDate).inDays;
+    }
+
+    final lastdate = today.subtract(Duration(days: n));
+    
+    return FutureBuilder(
+
+      future: awsDb.getPaymentsRange(lastdate, today),
+      builder: (BuildContext context, AsyncSnapshot<List<Payments>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No data available'));
+        } else {
+          return Center(
+            child: SizedBox(
+              height: 300, // or any fixed height
+              child: PieChartgraph(snapshot.data!),
+            ),
+          );
+        }
+      },
+    );
+  }
 }
 
-class PieChartState extends State {
-  int touchedIndex = -1;
+PieChartgraph(List<Payments> data) {
+  
+  final sections = <PieChartSectionData>[];
+  final percentages = <String, double>{};
+  final random = Random();
+  final colors = [];
+  double total = 0;
 
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.3,
-      child: Row(
-        children: <Widget>[
-          const SizedBox(
-            height: 18,
-          ),
-          Expanded(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex = pieTouchResponse
-                            .touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 40,
-                  sections: showingSections(),
-                ),
-              ),
-            ),
-          ),
-          const Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Indicator(
-                color: Colors.blue,
-                text: 'First',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Indicator(
-                color: Colors.yellow,
-                text: 'Second',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Indicator(
-                color: Colors.purple,
-                text: 'Third',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Indicator(
-                color: Colors.green,
-                text: 'Fourth',
-                isSquare: true,
-              ),
-              SizedBox(
-                height: 18,
-              ),
-            ],
-          ),
-          const SizedBox(
-            width: 28,
-          ),
-        ],
+  for (var pay in data) {
+    final type = pay.type;
+    final amount = pay.amount!;
+    if (percentages.containsKey(type)) {
+      percentages[pay.type!] = percentages[pay.type]! + amount;
+    } else {
+      percentages[pay.type!] = amount;
+    }
+    total += amount; 
+  }
+
+  for (var type in percentages.keys) {
+    final value = percentages[type]! / total * 100; // Calculate percentage
+    final color = Color.fromRGBO(
+      random.nextInt(256), 
+      random.nextInt(256), 
+      random.nextInt(256), 
+      0.8
+    );
+    colors.add(color);
+    sections.add(
+      PieChartSectionData(
+        value: value,
+        color: color, // You can customize the color
+        title: '$value%',
+        radius: 70,
       ),
     );
-  }
+    }
 
-  List<PieChartSectionData> showingSections() {
-    return List.generate(4, (i) {
-      final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 25.0 : 16.0;
-      final radius = isTouched ? 60.0 : 50.0;
-      const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: Colors.blue,
-            value: 40,
-            title: '40%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              shadows: shadows,
-            ),
-          );
-        case 1:
-          return PieChartSectionData(
-            color: Colors.yellow,
-            value: 30,
-            title: '30%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              shadows: shadows,
-            ),
-          );
-        case 2:
-          return PieChartSectionData(
-            color: Colors.purple,
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              shadows: shadows,
-            ),
-          );
-        case 3:
-          return PieChartSectionData(
-            color: Colors.green,
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              shadows: shadows,
-            ),
-          );
-        default:
-          throw Error();
-      }
-    });
-  }
-}
-
-class Indicator extends StatelessWidget {
-  const Indicator({
-    super.key,
-    required this.color,
-    required this.text,
-    required this.isSquare,
-    this.size = 16,
-    this.textColor,
-  });
-  final Color color;
-  final String text;
-  final bool isSquare;
-  final double size;
-  final Color? textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
-            color: color,
-          ),
-        ),
-        const SizedBox(
-          width: 4,
-        ),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        )
-      ],
-    );
-  }
+  return PieChart(PieChartData(
+    sectionsSpace: 0,
+    centerSpaceRadius: 40,
+    sections: sections,
+    startDegreeOffset: -90,
+    )
+  );
 }

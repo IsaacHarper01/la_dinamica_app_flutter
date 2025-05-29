@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:la_dinamica_app/backend/database.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -39,9 +39,9 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context) async {
     }
 
     String name = data[1];
-    final db = DatabaseHelper();
+    final awsDb = DataStoreReadService();
 
-    if (await db.fetchSimpleData('General', 'name', id, false) != null) {
+    if (await awsDb.checkIfStudentExists(id)) {
       //check if student exist in General table
       logger.i('Asistencia de $name registrada con ID: $id');
       return Future.value({'id': id, 'name': name});
