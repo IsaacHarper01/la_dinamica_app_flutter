@@ -28,13 +28,13 @@ class LineChartWidget extends ConsumerWidget{
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else {
-                return Linechart(snapshot.data);
+                return Linechart(snapshot.data, n);
               }
             }
           );
   }
 
-  Center Linechart(data) {
+  Center Linechart(data, n) {
 
     final yData = <FlSpot>[];
     double i = 0;
@@ -48,39 +48,52 @@ class LineChartWidget extends ConsumerWidget{
     }
     
     return Center(
-    child: SizedBox(
-      width: 300, // Set a specific width
-      height: 400, // Set a specific height
-      child: LineChart(
-        LineChartData(
-          minY: 0,
-          gridData: const FlGridData(show: true),
-          titlesData: const FlTitlesData(
-            rightTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles:false),
-            ),
-            topTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-          ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: yData,
-              gradient: const LinearGradient(
-                colors: [Colors.blue, Colors.lightBlue],
-              ), // Use gradient instead of colors
-              barWidth: 3,
-              isStrokeCapRound: true,
-              belowBarData: BarAreaData(
-                show: true,
-                gradient: LinearGradient(
-                  colors: [Colors.blue.withOpacity(0.2), Colors.lightBlue.withOpacity(0.1)],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20,),
+        Text('Análisis de los últimos $n días',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 20,),
+        SizedBox(
+          width: 500, // Set a specific width
+          height: 400, // Set a specific height
+          child: LineChart(
+            LineChartData(
+              minY: 0,
+              gridData: const FlGridData(show: true),
+              titlesData: const FlTitlesData(
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles:false),
+                ),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
                 ),
               ),
+              lineBarsData: [
+                LineChartBarData(
+                  isCurved: true,
+                  curveSmoothness: 0.2,
+                  spots: yData,
+                  gradient: const LinearGradient(
+                    colors: [Colors.blue, Colors.lightBlue],
+                  ), // Use gradient instead of colors
+                  barWidth: 3,
+                  isStrokeCapRound: true,
+                  belowBarData: BarAreaData(
+                    show: true,
+                    gradient: LinearGradient(
+                      colors: [Colors.blue.withOpacity(0.2), Colors.lightBlue.withOpacity(0.1)],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 20),
+      ],
     ),
   );
   }
