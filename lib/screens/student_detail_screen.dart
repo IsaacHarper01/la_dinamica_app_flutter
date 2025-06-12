@@ -32,16 +32,16 @@ class StudentDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
-  Payments paymentData = Payments(
+  Pay paymentData = Pay(
     id: '0',
-    userId: 0,
+    user_id: 0,
     amount: 0.0,
     clases: 0,
     type: 'Desconocido',
     date: TemporalDate(DateTime.now()),
   );
 
-  General studentData = General(
+  Student studentData = Student(
     id: '0',
     name: 'Desconocido',
     address: 'Desconocido',

@@ -23,15 +23,19 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Attendance type in your schema. */
-class Attendance extends amplify_core.Model {
-  static const classType = const _AttendanceModelType();
+/** This is an auto generated class representing the Student type in your schema. */
+class Student extends amplify_core.Model {
+  static const classType = const _StudentModelType();
   final String id;
   final int? _user_id;
   final String? _name;
-  final amplify_core.TemporalDate? _date;
+  final String? _address;
+  final int? _age;
+  final String? _phone;
+  final amplify_core.TemporalDate? _birthday;
+  final String? _email;
+  final String? _image;
   final String? _client_id;
-  final String? _prof_id;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -42,8 +46,8 @@ class Attendance extends amplify_core.Model {
   @override
   String getId() => id;
   
-  AttendanceModelIdentifier get modelIdentifier {
-      return AttendanceModelIdentifier(
+  StudentModelIdentifier get modelIdentifier {
+      return StudentModelIdentifier(
         id: id
       );
   }
@@ -56,16 +60,32 @@ class Attendance extends amplify_core.Model {
     return _name;
   }
   
-  amplify_core.TemporalDate? get date {
-    return _date;
+  String? get address {
+    return _address;
+  }
+  
+  int? get age {
+    return _age;
+  }
+  
+  String? get phone {
+    return _phone;
+  }
+  
+  amplify_core.TemporalDate? get birthday {
+    return _birthday;
+  }
+  
+  String? get email {
+    return _email;
+  }
+  
+  String? get image {
+    return _image;
   }
   
   String? get client_id {
     return _client_id;
-  }
-  
-  String? get prof_id {
-    return _prof_id;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -76,16 +96,20 @@ class Attendance extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Attendance._internal({required this.id, user_id, name, date, client_id, prof_id, createdAt, updatedAt}): _user_id = user_id, _name = name, _date = date, _client_id = client_id, _prof_id = prof_id, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Student._internal({required this.id, user_id, name, address, age, phone, birthday, email, image, client_id, createdAt, updatedAt}): _user_id = user_id, _name = name, _address = address, _age = age, _phone = phone, _birthday = birthday, _email = email, _image = image, _client_id = client_id, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Attendance({String? id, int? user_id, String? name, amplify_core.TemporalDate? date, String? client_id, String? prof_id}) {
-    return Attendance._internal(
+  factory Student({String? id, int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id}) {
+    return Student._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       user_id: user_id,
       name: name,
-      date: date,
-      client_id: client_id,
-      prof_id: prof_id);
+      address: address,
+      age: age,
+      phone: phone,
+      birthday: birthday,
+      email: email,
+      image: image,
+      client_id: client_id);
   }
   
   bool equals(Object other) {
@@ -95,13 +119,17 @@ class Attendance extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Attendance &&
+    return other is Student &&
       id == other.id &&
       _user_id == other._user_id &&
       _name == other._name &&
-      _date == other._date &&
-      _client_id == other._client_id &&
-      _prof_id == other._prof_id;
+      _address == other._address &&
+      _age == other._age &&
+      _phone == other._phone &&
+      _birthday == other._birthday &&
+      _email == other._email &&
+      _image == other._image &&
+      _client_id == other._client_id;
   }
   
   @override
@@ -111,13 +139,17 @@ class Attendance extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Attendance {");
+    buffer.write("Student {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
     buffer.write("name=" + "$_name" + ", ");
-    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
+    buffer.write("address=" + "$_address" + ", ");
+    buffer.write("age=" + (_age != null ? _age!.toString() : "null") + ", ");
+    buffer.write("phone=" + "$_phone" + ", ");
+    buffer.write("birthday=" + (_birthday != null ? _birthday!.format() : "null") + ", ");
+    buffer.write("email=" + "$_email" + ", ");
+    buffer.write("image=" + "$_image" + ", ");
     buffer.write("client_id=" + "$_client_id" + ", ");
-    buffer.write("prof_id=" + "$_prof_id" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -125,68 +157,92 @@ class Attendance extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Attendance copyWith({int? user_id, String? name, amplify_core.TemporalDate? date, String? client_id, String? prof_id}) {
-    return Attendance._internal(
+  Student copyWith({int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id}) {
+    return Student._internal(
       id: id,
       user_id: user_id ?? this.user_id,
       name: name ?? this.name,
-      date: date ?? this.date,
-      client_id: client_id ?? this.client_id,
-      prof_id: prof_id ?? this.prof_id);
+      address: address ?? this.address,
+      age: age ?? this.age,
+      phone: phone ?? this.phone,
+      birthday: birthday ?? this.birthday,
+      email: email ?? this.email,
+      image: image ?? this.image,
+      client_id: client_id ?? this.client_id);
   }
   
-  Attendance copyWithModelFieldValues({
+  Student copyWithModelFieldValues({
     ModelFieldValue<int?>? user_id,
     ModelFieldValue<String?>? name,
-    ModelFieldValue<amplify_core.TemporalDate?>? date,
-    ModelFieldValue<String?>? client_id,
-    ModelFieldValue<String?>? prof_id
+    ModelFieldValue<String?>? address,
+    ModelFieldValue<int?>? age,
+    ModelFieldValue<String?>? phone,
+    ModelFieldValue<amplify_core.TemporalDate?>? birthday,
+    ModelFieldValue<String?>? email,
+    ModelFieldValue<String?>? image,
+    ModelFieldValue<String?>? client_id
   }) {
-    return Attendance._internal(
+    return Student._internal(
       id: id,
       user_id: user_id == null ? this.user_id : user_id.value,
       name: name == null ? this.name : name.value,
-      date: date == null ? this.date : date.value,
-      client_id: client_id == null ? this.client_id : client_id.value,
-      prof_id: prof_id == null ? this.prof_id : prof_id.value
+      address: address == null ? this.address : address.value,
+      age: age == null ? this.age : age.value,
+      phone: phone == null ? this.phone : phone.value,
+      birthday: birthday == null ? this.birthday : birthday.value,
+      email: email == null ? this.email : email.value,
+      image: image == null ? this.image : image.value,
+      client_id: client_id == null ? this.client_id : client_id.value
     );
   }
   
-  Attendance.fromJson(Map<String, dynamic> json)  
+  Student.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _user_id = (json['user_id'] as num?)?.toInt(),
       _name = json['name'],
-      _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
+      _address = json['address'],
+      _age = (json['age'] as num?)?.toInt(),
+      _phone = json['phone'],
+      _birthday = json['birthday'] != null ? amplify_core.TemporalDate.fromString(json['birthday']) : null,
+      _email = json['email'],
+      _image = json['image'],
       _client_id = json['client_id'],
-      _prof_id = json['prof_id'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'user_id': _user_id, 'name': _name, 'date': _date?.format(), 'client_id': _client_id, 'prof_id': _prof_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'user_id': _user_id, 'name': _name, 'address': _address, 'age': _age, 'phone': _phone, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'client_id': _client_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'user_id': _user_id,
     'name': _name,
-    'date': _date,
+    'address': _address,
+    'age': _age,
+    'phone': _phone,
+    'birthday': _birthday,
+    'email': _email,
+    'image': _image,
     'client_id': _client_id,
-    'prof_id': _prof_id,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<AttendanceModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<AttendanceModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<StudentModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<StudentModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final USER_ID = amplify_core.QueryField(fieldName: "user_id");
   static final NAME = amplify_core.QueryField(fieldName: "name");
-  static final DATE = amplify_core.QueryField(fieldName: "date");
+  static final ADDRESS = amplify_core.QueryField(fieldName: "address");
+  static final AGE = amplify_core.QueryField(fieldName: "age");
+  static final PHONE = amplify_core.QueryField(fieldName: "phone");
+  static final BIRTHDAY = amplify_core.QueryField(fieldName: "birthday");
+  static final EMAIL = amplify_core.QueryField(fieldName: "email");
+  static final IMAGE = amplify_core.QueryField(fieldName: "image");
   static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
-  static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Attendance";
-    modelSchemaDefinition.pluralName = "Attendances";
+    modelSchemaDefinition.name = "Student";
+    modelSchemaDefinition.pluralName = "Students";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -202,31 +258,55 @@ class Attendance extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.USER_ID,
+      key: Student.USER_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.NAME,
+      key: Student.NAME,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.DATE,
+      key: Student.ADDRESS,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Student.AGE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Student.PHONE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Student.BIRTHDAY,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.CLIENT_ID,
+      key: Student.EMAIL,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.PROF_ID,
+      key: Student.IMAGE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Student.CLIENT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
@@ -247,29 +327,29 @@ class Attendance extends amplify_core.Model {
   });
 }
 
-class _AttendanceModelType extends amplify_core.ModelType<Attendance> {
-  const _AttendanceModelType();
+class _StudentModelType extends amplify_core.ModelType<Student> {
+  const _StudentModelType();
   
   @override
-  Attendance fromJson(Map<String, dynamic> jsonData) {
-    return Attendance.fromJson(jsonData);
+  Student fromJson(Map<String, dynamic> jsonData) {
+    return Student.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Attendance';
+    return 'Student';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Attendance] in your schema.
+ * of [Student] in your schema.
  */
-class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendance> {
+class StudentModelIdentifier implements amplify_core.ModelIdentifier<Student> {
   final String id;
 
-  /** Create an instance of AttendanceModelIdentifier using [id] the primary key. */
-  const AttendanceModelIdentifier({
+  /** Create an instance of StudentModelIdentifier using [id] the primary key. */
+  const StudentModelIdentifier({
     required this.id});
   
   @override
@@ -287,7 +367,7 @@ class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendan
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'AttendanceModelIdentifier(id: $id)';
+  String toString() => 'StudentModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -295,7 +375,7 @@ class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendan
       return true;
     }
     
-    return other is AttendanceModelIdentifier &&
+    return other is StudentModelIdentifier &&
       id == other.id;
   }
   

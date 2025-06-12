@@ -22,7 +22,7 @@ class StudentsScreen extends StatefulWidget {
 }
 
 class _StudentsScreenState extends State<StudentsScreen> {
-  late Future<List<General>> _studentsFuture;
+  late Future<List<Student>> _studentsFuture;
 
   @override
   void initState() {
@@ -38,10 +38,10 @@ class _StudentsScreenState extends State<StudentsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<List<General>>(
+      body: FutureBuilder<List<Student>>(
         future: _studentsFuture,
         builder: (BuildContext context,
-            AsyncSnapshot<List<General>> snapshot) {
+            AsyncSnapshot<List<Student>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
@@ -49,7 +49,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
           } else {
             
             List<dynamic> students = snapshot.data!.map((g)=> g.name).toList();
-            List<dynamic> studentsIds = snapshot.data!.map((g)=> g.numId).toList();
+            List<dynamic> studentsIds = snapshot.data!.map((g)=> g.user_id).toList();
             List<int> studentsIndex =
                 List.generate(students.length, (index) => index);
             int num = students.length;

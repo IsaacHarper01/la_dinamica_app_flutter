@@ -23,13 +23,13 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Plans type in your schema. */
-class Plans extends amplify_core.Model {
-  static const classType = const _PlansModelType();
+/** This is an auto generated class representing the User type in your schema. */
+class User extends amplify_core.Model {
+  static const classType = const _UserModelType();
   final String id;
-  final String? _type;
-  final int? _clases;
-  final double? _price;
+  final String? _name;
+  final String? _client_id;
+  final String? _rol;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -40,22 +40,22 @@ class Plans extends amplify_core.Model {
   @override
   String getId() => id;
   
-  PlansModelIdentifier get modelIdentifier {
-      return PlansModelIdentifier(
+  UserModelIdentifier get modelIdentifier {
+      return UserModelIdentifier(
         id: id
       );
   }
   
-  String? get type {
-    return _type;
+  String? get name {
+    return _name;
   }
   
-  int? get clases {
-    return _clases;
+  String? get client_id {
+    return _client_id;
   }
   
-  double? get price {
-    return _price;
+  String? get rol {
+    return _rol;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -66,14 +66,14 @@ class Plans extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Plans._internal({required this.id, type, clases, price, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, name, client_id, rol, createdAt, updatedAt}): _name = name, _client_id = client_id, _rol = rol, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Plans({String? id, String? type, int? clases, double? price}) {
-    return Plans._internal(
+  factory User({String? id, String? name, String? client_id, String? rol}) {
+    return User._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      type: type,
-      clases: clases,
-      price: price);
+      name: name,
+      client_id: client_id,
+      rol: rol);
   }
   
   bool equals(Object other) {
@@ -83,11 +83,11 @@ class Plans extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Plans &&
+    return other is User &&
       id == other.id &&
-      _type == other._type &&
-      _clases == other._clases &&
-      _price == other._price;
+      _name == other._name &&
+      _client_id == other._client_id &&
+      _rol == other._rol;
   }
   
   @override
@@ -97,11 +97,11 @@ class Plans extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Plans {");
+    buffer.write("User {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("type=" + "$_type" + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
-    buffer.write("price=" + (_price != null ? _price!.toString() : "null") + ", ");
+    buffer.write("name=" + "$_name" + ", ");
+    buffer.write("client_id=" + "$_client_id" + ", ");
+    buffer.write("rol=" + "$_rol" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -109,56 +109,56 @@ class Plans extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Plans copyWith({String? type, int? clases, double? price}) {
-    return Plans._internal(
+  User copyWith({String? name, String? client_id, String? rol}) {
+    return User._internal(
       id: id,
-      type: type ?? this.type,
-      clases: clases ?? this.clases,
-      price: price ?? this.price);
+      name: name ?? this.name,
+      client_id: client_id ?? this.client_id,
+      rol: rol ?? this.rol);
   }
   
-  Plans copyWithModelFieldValues({
-    ModelFieldValue<String?>? type,
-    ModelFieldValue<int?>? clases,
-    ModelFieldValue<double?>? price
+  User copyWithModelFieldValues({
+    ModelFieldValue<String?>? name,
+    ModelFieldValue<String?>? client_id,
+    ModelFieldValue<String?>? rol
   }) {
-    return Plans._internal(
+    return User._internal(
       id: id,
-      type: type == null ? this.type : type.value,
-      clases: clases == null ? this.clases : clases.value,
-      price: price == null ? this.price : price.value
+      name: name == null ? this.name : name.value,
+      client_id: client_id == null ? this.client_id : client_id.value,
+      rol: rol == null ? this.rol : rol.value
     );
   }
   
-  Plans.fromJson(Map<String, dynamic> json)  
+  User.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _type = json['type'],
-      _clases = (json['clases'] as num?)?.toInt(),
-      _price = (json['price'] as num?)?.toDouble(),
+      _name = json['name'],
+      _client_id = json['client_id'],
+      _rol = json['rol'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'client_id': _client_id, 'rol': _rol, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'type': _type,
-    'clases': _clases,
-    'price': _price,
+    'name': _name,
+    'client_id': _client_id,
+    'rol': _rol,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<PlansModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<PlansModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<UserModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final TYPE = amplify_core.QueryField(fieldName: "type");
-  static final CLASES = amplify_core.QueryField(fieldName: "clases");
-  static final PRICE = amplify_core.QueryField(fieldName: "price");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
+  static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
+  static final ROL = amplify_core.QueryField(fieldName: "rol");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Plans";
-    modelSchemaDefinition.pluralName = "Plans";
+    modelSchemaDefinition.name = "User";
+    modelSchemaDefinition.pluralName = "Users";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -174,21 +174,21 @@ class Plans extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Plans.TYPE,
+      key: User.NAME,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Plans.CLASES,
+      key: User.CLIENT_ID,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Plans.PRICE,
+      key: User.ROL,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -207,29 +207,29 @@ class Plans extends amplify_core.Model {
   });
 }
 
-class _PlansModelType extends amplify_core.ModelType<Plans> {
-  const _PlansModelType();
+class _UserModelType extends amplify_core.ModelType<User> {
+  const _UserModelType();
   
   @override
-  Plans fromJson(Map<String, dynamic> jsonData) {
-    return Plans.fromJson(jsonData);
+  User fromJson(Map<String, dynamic> jsonData) {
+    return User.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Plans';
+    return 'User';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Plans] in your schema.
+ * of [User] in your schema.
  */
-class PlansModelIdentifier implements amplify_core.ModelIdentifier<Plans> {
+class UserModelIdentifier implements amplify_core.ModelIdentifier<User> {
   final String id;
 
-  /** Create an instance of PlansModelIdentifier using [id] the primary key. */
-  const PlansModelIdentifier({
+  /** Create an instance of UserModelIdentifier using [id] the primary key. */
+  const UserModelIdentifier({
     required this.id});
   
   @override
@@ -247,7 +247,7 @@ class PlansModelIdentifier implements amplify_core.ModelIdentifier<Plans> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'PlansModelIdentifier(id: $id)';
+  String toString() => 'UserModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -255,7 +255,7 @@ class PlansModelIdentifier implements amplify_core.ModelIdentifier<Plans> {
       return true;
     }
     
-    return other is PlansModelIdentifier &&
+    return other is UserModelIdentifier &&
       id == other.id;
   }
   

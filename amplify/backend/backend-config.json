@@ -1,6 +1,6 @@
 {
   "api": {
-    "LaDinamicaApp": {
+    "ladinamicaappflutter": {
       "dependsOn": [],
       "output": {
         "authConfig": {
@@ -23,7 +23,7 @@
     }
   },
   "auth": {
-    "LaDinamicaApp": {
+    "ladinamicaappflutter": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -34,18 +34,17 @@
         "passwordProtectionSettings": {
           "passwordPolicyCharacters": [
             "REQUIRES_LOWERCASE",
-            "REQUIRES_NUMBERS",
-            "REQUIRES_SYMBOLS",
-            "REQUIRES_UPPERCASE"
+            "REQUIRES_NUMBERS"
           ],
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
-          "NAME",
           "EMAIL"
         ],
         "socialProviders": [],
-        "usernameAttributes": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
         "verificationMechanisms": [
           "EMAIL"
         ]

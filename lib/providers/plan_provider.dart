@@ -8,11 +8,11 @@ import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 
 final planProvider =
-    StateNotifierProvider<PlanNotifier, AsyncValue<List<Plans>>>(
+    StateNotifierProvider<PlanNotifier, AsyncValue<List<Plan>>>(
   (ref) => PlanNotifier(),
 );
 
-class PlanNotifier extends StateNotifier<AsyncValue<List<Plans>>> {
+class PlanNotifier extends StateNotifier<AsyncValue<List<Plan>>> {
   PlanNotifier() : super(const AsyncValue.loading()) {
     loadPlans();
   }
@@ -32,7 +32,7 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<Plans>>> {
     }
   }
 
-  Future<void> addPlan(Plan plan) async {
+  Future<void> addPlan(Plan_local plan) async {
     try {
       await dataStoreService.savePlan(
         type: plan.type,

@@ -12,7 +12,7 @@ dependencies:
   amplify_auth_cognito: ^2.6.1
   amplify_authenticator: ^2.3.3
   amplify_datastore: ^2.6.1
-  amplify_flutter: ^2.6.1
+  amplify_flutter: ^2.6.2
   animate_do: null
   csv: ^5.0.0
   fl_chart: ^0.69.0

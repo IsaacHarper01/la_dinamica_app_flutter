@@ -1,0 +1,71 @@
+type Student @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  user_id: Int
+  name: String
+  address: String
+  age: Int
+  phone: String
+  birthday: AWSDate
+  email: String
+  image: String
+  client_id: String
+}
+
+type Pay @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  composite_key: String
+  user_id: Int
+  amount: Float
+  clases: Int
+  type: String
+  date: AWSDate
+  client_id: String
+  prof_id: String
+}
+
+type Plan @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  type: String
+  clases: Int
+  price: Float
+}
+
+type Metric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  user_id: Int
+  metric: String
+  date: AWSDate
+  value: Float
+  client_id: String
+  prof_id: String
+}
+
+type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  user_id: Int
+  name: String
+  date: AWSDate
+  client_id: String
+  prof_id: String
+}
+
+type User @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String
+  client_id: String
+  rol: String
+}
+
+type AppPlan @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String
+  price: Float
+}
+
+type Client @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String!
+  plan: String
+  status: String
+}
+ 

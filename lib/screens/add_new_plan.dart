@@ -23,7 +23,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
     if (_formKey.currentState?.validate() ?? false) {
       // Recuperar texto de cada TextEditingController
 
-      final plan = Plan(
+      final plan = Plan_local(
         id: 0,
         type: _controllers[0].text,
         clases: int.parse(_controllers[1].text),

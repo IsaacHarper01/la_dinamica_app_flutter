@@ -23,18 +23,18 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the General type in your schema. */
-class General extends amplify_core.Model {
-  static const classType = const _GeneralModelType();
+/** This is an auto generated class representing the Pay type in your schema. */
+class Pay extends amplify_core.Model {
+  static const classType = const _PayModelType();
   final String id;
-  final int? _numId;
-  final String? _name;
-  final String? _address;
-  final int? _age;
-  final String? _phone;
-  final amplify_core.TemporalDate? _birthday;
-  final String? _email;
-  final String? _image;
+  final String? _composite_key;
+  final int? _user_id;
+  final double? _amount;
+  final int? _clases;
+  final String? _type;
+  final amplify_core.TemporalDate? _date;
+  final String? _client_id;
+  final String? _prof_id;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -45,42 +45,42 @@ class General extends amplify_core.Model {
   @override
   String getId() => id;
   
-  GeneralModelIdentifier get modelIdentifier {
-      return GeneralModelIdentifier(
+  PayModelIdentifier get modelIdentifier {
+      return PayModelIdentifier(
         id: id
       );
   }
   
-  int? get numId {
-    return _numId;
+  String? get composite_key {
+    return _composite_key;
   }
   
-  String? get name {
-    return _name;
+  int? get user_id {
+    return _user_id;
   }
   
-  String? get address {
-    return _address;
+  double? get amount {
+    return _amount;
   }
   
-  int? get age {
-    return _age;
+  int? get clases {
+    return _clases;
   }
   
-  String? get phone {
-    return _phone;
+  String? get type {
+    return _type;
   }
   
-  amplify_core.TemporalDate? get birthday {
-    return _birthday;
+  amplify_core.TemporalDate? get date {
+    return _date;
   }
   
-  String? get email {
-    return _email;
+  String? get client_id {
+    return _client_id;
   }
   
-  String? get image {
-    return _image;
+  String? get prof_id {
+    return _prof_id;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -91,19 +91,19 @@ class General extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const General._internal({required this.id, numId, name, address, age, phone, birthday, email, image, createdAt, updatedAt}): _numId = numId, _name = name, _address = address, _age = age, _phone = phone, _birthday = birthday, _email = email, _image = image, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Pay._internal({required this.id, composite_key, user_id, amount, clases, type, date, client_id, prof_id, createdAt, updatedAt}): _composite_key = composite_key, _user_id = user_id, _amount = amount, _clases = clases, _type = type, _date = date, _client_id = client_id, _prof_id = prof_id, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory General({String? id, int? numId, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image}) {
-    return General._internal(
+  factory Pay({String? id, String? composite_key, int? user_id, double? amount, int? clases, String? type, amplify_core.TemporalDate? date, String? client_id, String? prof_id}) {
+    return Pay._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      numId: numId,
-      name: name,
-      address: address,
-      age: age,
-      phone: phone,
-      birthday: birthday,
-      email: email,
-      image: image);
+      composite_key: composite_key,
+      user_id: user_id,
+      amount: amount,
+      clases: clases,
+      type: type,
+      date: date,
+      client_id: client_id,
+      prof_id: prof_id);
   }
   
   bool equals(Object other) {
@@ -113,16 +113,16 @@ class General extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is General &&
+    return other is Pay &&
       id == other.id &&
-      _numId == other._numId &&
-      _name == other._name &&
-      _address == other._address &&
-      _age == other._age &&
-      _phone == other._phone &&
-      _birthday == other._birthday &&
-      _email == other._email &&
-      _image == other._image;
+      _composite_key == other._composite_key &&
+      _user_id == other._user_id &&
+      _amount == other._amount &&
+      _clases == other._clases &&
+      _type == other._type &&
+      _date == other._date &&
+      _client_id == other._client_id &&
+      _prof_id == other._prof_id;
   }
   
   @override
@@ -132,16 +132,16 @@ class General extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("General {");
+    buffer.write("Pay {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("numId=" + (_numId != null ? _numId!.toString() : "null") + ", ");
-    buffer.write("name=" + "$_name" + ", ");
-    buffer.write("address=" + "$_address" + ", ");
-    buffer.write("age=" + (_age != null ? _age!.toString() : "null") + ", ");
-    buffer.write("phone=" + "$_phone" + ", ");
-    buffer.write("birthday=" + (_birthday != null ? _birthday!.format() : "null") + ", ");
-    buffer.write("email=" + "$_email" + ", ");
-    buffer.write("image=" + "$_image" + ", ");
+    buffer.write("composite_key=" + "$_composite_key" + ", ");
+    buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
+    buffer.write("amount=" + (_amount != null ? _amount!.toString() : "null") + ", ");
+    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
+    buffer.write("type=" + "$_type" + ", ");
+    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
+    buffer.write("client_id=" + "$_client_id" + ", ");
+    buffer.write("prof_id=" + "$_prof_id" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -149,86 +149,86 @@ class General extends amplify_core.Model {
     return buffer.toString();
   }
   
-  General copyWith({int? numId, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image}) {
-    return General._internal(
+  Pay copyWith({String? composite_key, int? user_id, double? amount, int? clases, String? type, amplify_core.TemporalDate? date, String? client_id, String? prof_id}) {
+    return Pay._internal(
       id: id,
-      numId: numId ?? this.numId,
-      name: name ?? this.name,
-      address: address ?? this.address,
-      age: age ?? this.age,
-      phone: phone ?? this.phone,
-      birthday: birthday ?? this.birthday,
-      email: email ?? this.email,
-      image: image ?? this.image);
+      composite_key: composite_key ?? this.composite_key,
+      user_id: user_id ?? this.user_id,
+      amount: amount ?? this.amount,
+      clases: clases ?? this.clases,
+      type: type ?? this.type,
+      date: date ?? this.date,
+      client_id: client_id ?? this.client_id,
+      prof_id: prof_id ?? this.prof_id);
   }
   
-  General copyWithModelFieldValues({
-    ModelFieldValue<int?>? numId,
-    ModelFieldValue<String?>? name,
-    ModelFieldValue<String?>? address,
-    ModelFieldValue<int?>? age,
-    ModelFieldValue<String?>? phone,
-    ModelFieldValue<amplify_core.TemporalDate?>? birthday,
-    ModelFieldValue<String?>? email,
-    ModelFieldValue<String?>? image
+  Pay copyWithModelFieldValues({
+    ModelFieldValue<String?>? composite_key,
+    ModelFieldValue<int?>? user_id,
+    ModelFieldValue<double?>? amount,
+    ModelFieldValue<int?>? clases,
+    ModelFieldValue<String?>? type,
+    ModelFieldValue<amplify_core.TemporalDate?>? date,
+    ModelFieldValue<String?>? client_id,
+    ModelFieldValue<String?>? prof_id
   }) {
-    return General._internal(
+    return Pay._internal(
       id: id,
-      numId: numId == null ? this.numId : numId.value,
-      name: name == null ? this.name : name.value,
-      address: address == null ? this.address : address.value,
-      age: age == null ? this.age : age.value,
-      phone: phone == null ? this.phone : phone.value,
-      birthday: birthday == null ? this.birthday : birthday.value,
-      email: email == null ? this.email : email.value,
-      image: image == null ? this.image : image.value
+      composite_key: composite_key == null ? this.composite_key : composite_key.value,
+      user_id: user_id == null ? this.user_id : user_id.value,
+      amount: amount == null ? this.amount : amount.value,
+      clases: clases == null ? this.clases : clases.value,
+      type: type == null ? this.type : type.value,
+      date: date == null ? this.date : date.value,
+      client_id: client_id == null ? this.client_id : client_id.value,
+      prof_id: prof_id == null ? this.prof_id : prof_id.value
     );
   }
   
-  General.fromJson(Map<String, dynamic> json)  
+  Pay.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _numId = (json['numId'] as num?)?.toInt(),
-      _name = json['name'],
-      _address = json['address'],
-      _age = (json['age'] as num?)?.toInt(),
-      _phone = json['phone'],
-      _birthday = json['birthday'] != null ? amplify_core.TemporalDate.fromString(json['birthday']) : null,
-      _email = json['email'],
-      _image = json['image'],
+      _composite_key = json['composite_key'],
+      _user_id = (json['user_id'] as num?)?.toInt(),
+      _amount = (json['amount'] as num?)?.toDouble(),
+      _clases = (json['clases'] as num?)?.toInt(),
+      _type = json['type'],
+      _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
+      _client_id = json['client_id'],
+      _prof_id = json['prof_id'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'numId': _numId, 'name': _name, 'address': _address, 'age': _age, 'phone': _phone, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'composite_key': _composite_key, 'user_id': _user_id, 'amount': _amount, 'clases': _clases, 'type': _type, 'date': _date?.format(), 'client_id': _client_id, 'prof_id': _prof_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'numId': _numId,
-    'name': _name,
-    'address': _address,
-    'age': _age,
-    'phone': _phone,
-    'birthday': _birthday,
-    'email': _email,
-    'image': _image,
+    'composite_key': _composite_key,
+    'user_id': _user_id,
+    'amount': _amount,
+    'clases': _clases,
+    'type': _type,
+    'date': _date,
+    'client_id': _client_id,
+    'prof_id': _prof_id,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<GeneralModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<GeneralModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<PayModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<PayModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final NUMID = amplify_core.QueryField(fieldName: "numId");
-  static final NAME = amplify_core.QueryField(fieldName: "name");
-  static final ADDRESS = amplify_core.QueryField(fieldName: "address");
-  static final AGE = amplify_core.QueryField(fieldName: "age");
-  static final PHONE = amplify_core.QueryField(fieldName: "phone");
-  static final BIRTHDAY = amplify_core.QueryField(fieldName: "birthday");
-  static final EMAIL = amplify_core.QueryField(fieldName: "email");
-  static final IMAGE = amplify_core.QueryField(fieldName: "image");
+  static final COMPOSITE_KEY = amplify_core.QueryField(fieldName: "composite_key");
+  static final USER_ID = amplify_core.QueryField(fieldName: "user_id");
+  static final AMOUNT = amplify_core.QueryField(fieldName: "amount");
+  static final CLASES = amplify_core.QueryField(fieldName: "clases");
+  static final TYPE = amplify_core.QueryField(fieldName: "type");
+  static final DATE = amplify_core.QueryField(fieldName: "date");
+  static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
+  static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "General";
-    modelSchemaDefinition.pluralName = "Generals";
+    modelSchemaDefinition.name = "Pay";
+    modelSchemaDefinition.pluralName = "Pays";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -244,49 +244,49 @@ class General extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.NUMID,
+      key: Pay.COMPOSITE_KEY,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Pay.USER_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.NAME,
+      key: Pay.AMOUNT,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.ADDRESS,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.AGE,
+      key: Pay.CLASES,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.PHONE,
+      key: Pay.TYPE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.BIRTHDAY,
+      key: Pay.DATE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.EMAIL,
+      key: Pay.CLIENT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: General.IMAGE,
+      key: Pay.PROF_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
@@ -307,29 +307,29 @@ class General extends amplify_core.Model {
   });
 }
 
-class _GeneralModelType extends amplify_core.ModelType<General> {
-  const _GeneralModelType();
+class _PayModelType extends amplify_core.ModelType<Pay> {
+  const _PayModelType();
   
   @override
-  General fromJson(Map<String, dynamic> jsonData) {
-    return General.fromJson(jsonData);
+  Pay fromJson(Map<String, dynamic> jsonData) {
+    return Pay.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'General';
+    return 'Pay';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [General] in your schema.
+ * of [Pay] in your schema.
  */
-class GeneralModelIdentifier implements amplify_core.ModelIdentifier<General> {
+class PayModelIdentifier implements amplify_core.ModelIdentifier<Pay> {
   final String id;
 
-  /** Create an instance of GeneralModelIdentifier using [id] the primary key. */
-  const GeneralModelIdentifier({
+  /** Create an instance of PayModelIdentifier using [id] the primary key. */
+  const PayModelIdentifier({
     required this.id});
   
   @override
@@ -347,7 +347,7 @@ class GeneralModelIdentifier implements amplify_core.ModelIdentifier<General> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'GeneralModelIdentifier(id: $id)';
+  String toString() => 'PayModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -355,7 +355,7 @@ class GeneralModelIdentifier implements amplify_core.ModelIdentifier<General> {
       return true;
     }
     
-    return other is GeneralModelIdentifier &&
+    return other is PayModelIdentifier &&
       id == other.id;
   }
   

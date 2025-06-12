@@ -23,14 +23,16 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Metrics type in your schema. */
-class Metrics extends amplify_core.Model {
-  static const classType = const _MetricsModelType();
+/** This is an auto generated class representing the Metric type in your schema. */
+class Metric extends amplify_core.Model {
+  static const classType = const _MetricModelType();
   final String id;
-  final int? _userId;
+  final int? _user_id;
   final String? _metric;
   final amplify_core.TemporalDate? _date;
   final double? _value;
+  final String? _client_id;
+  final String? _prof_id;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -41,14 +43,14 @@ class Metrics extends amplify_core.Model {
   @override
   String getId() => id;
   
-  MetricsModelIdentifier get modelIdentifier {
-      return MetricsModelIdentifier(
+  MetricModelIdentifier get modelIdentifier {
+      return MetricModelIdentifier(
         id: id
       );
   }
   
-  int? get userId {
-    return _userId;
+  int? get user_id {
+    return _user_id;
   }
   
   String? get metric {
@@ -63,6 +65,14 @@ class Metrics extends amplify_core.Model {
     return _value;
   }
   
+  String? get client_id {
+    return _client_id;
+  }
+  
+  String? get prof_id {
+    return _prof_id;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -71,15 +81,17 @@ class Metrics extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Metrics._internal({required this.id, userId, metric, date, value, createdAt, updatedAt}): _userId = userId, _metric = metric, _date = date, _value = value, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Metric._internal({required this.id, user_id, metric, date, value, client_id, prof_id, createdAt, updatedAt}): _user_id = user_id, _metric = metric, _date = date, _value = value, _client_id = client_id, _prof_id = prof_id, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Metrics({String? id, int? userId, String? metric, amplify_core.TemporalDate? date, double? value}) {
-    return Metrics._internal(
+  factory Metric({String? id, int? user_id, String? metric, amplify_core.TemporalDate? date, double? value, String? client_id, String? prof_id}) {
+    return Metric._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      userId: userId,
+      user_id: user_id,
       metric: metric,
       date: date,
-      value: value);
+      value: value,
+      client_id: client_id,
+      prof_id: prof_id);
   }
   
   bool equals(Object other) {
@@ -89,12 +101,14 @@ class Metrics extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Metrics &&
+    return other is Metric &&
       id == other.id &&
-      _userId == other._userId &&
+      _user_id == other._user_id &&
       _metric == other._metric &&
       _date == other._date &&
-      _value == other._value;
+      _value == other._value &&
+      _client_id == other._client_id &&
+      _prof_id == other._prof_id;
   }
   
   @override
@@ -104,12 +118,14 @@ class Metrics extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Metrics {");
+    buffer.write("Metric {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("userId=" + (_userId != null ? _userId!.toString() : "null") + ", ");
+    buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
     buffer.write("metric=" + "$_metric" + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
     buffer.write("value=" + (_value != null ? _value!.toString() : "null") + ", ");
+    buffer.write("client_id=" + "$_client_id" + ", ");
+    buffer.write("prof_id=" + "$_prof_id" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -117,61 +133,73 @@ class Metrics extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Metrics copyWith({int? userId, String? metric, amplify_core.TemporalDate? date, double? value}) {
-    return Metrics._internal(
+  Metric copyWith({int? user_id, String? metric, amplify_core.TemporalDate? date, double? value, String? client_id, String? prof_id}) {
+    return Metric._internal(
       id: id,
-      userId: userId ?? this.userId,
+      user_id: user_id ?? this.user_id,
       metric: metric ?? this.metric,
       date: date ?? this.date,
-      value: value ?? this.value);
+      value: value ?? this.value,
+      client_id: client_id ?? this.client_id,
+      prof_id: prof_id ?? this.prof_id);
   }
   
-  Metrics copyWithModelFieldValues({
-    ModelFieldValue<int?>? userId,
+  Metric copyWithModelFieldValues({
+    ModelFieldValue<int?>? user_id,
     ModelFieldValue<String?>? metric,
     ModelFieldValue<amplify_core.TemporalDate?>? date,
-    ModelFieldValue<double?>? value
+    ModelFieldValue<double?>? value,
+    ModelFieldValue<String?>? client_id,
+    ModelFieldValue<String?>? prof_id
   }) {
-    return Metrics._internal(
+    return Metric._internal(
       id: id,
-      userId: userId == null ? this.userId : userId.value,
+      user_id: user_id == null ? this.user_id : user_id.value,
       metric: metric == null ? this.metric : metric.value,
       date: date == null ? this.date : date.value,
-      value: value == null ? this.value : value.value
+      value: value == null ? this.value : value.value,
+      client_id: client_id == null ? this.client_id : client_id.value,
+      prof_id: prof_id == null ? this.prof_id : prof_id.value
     );
   }
   
-  Metrics.fromJson(Map<String, dynamic> json)  
+  Metric.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _userId = (json['userId'] as num?)?.toInt(),
+      _user_id = (json['user_id'] as num?)?.toInt(),
       _metric = json['metric'],
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
       _value = (json['value'] as num?)?.toDouble(),
+      _client_id = json['client_id'],
+      _prof_id = json['prof_id'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'userId': _userId, 'metric': _metric, 'date': _date?.format(), 'value': _value, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'user_id': _user_id, 'metric': _metric, 'date': _date?.format(), 'value': _value, 'client_id': _client_id, 'prof_id': _prof_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'userId': _userId,
+    'user_id': _user_id,
     'metric': _metric,
     'date': _date,
     'value': _value,
+    'client_id': _client_id,
+    'prof_id': _prof_id,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<MetricsModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<MetricsModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<MetricModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<MetricModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final USERID = amplify_core.QueryField(fieldName: "userId");
+  static final USER_ID = amplify_core.QueryField(fieldName: "user_id");
   static final METRIC = amplify_core.QueryField(fieldName: "metric");
   static final DATE = amplify_core.QueryField(fieldName: "date");
   static final VALUE = amplify_core.QueryField(fieldName: "value");
+  static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
+  static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Metrics";
+    modelSchemaDefinition.name = "Metric";
     modelSchemaDefinition.pluralName = "Metrics";
     
     modelSchemaDefinition.authRules = [
@@ -188,27 +216,39 @@ class Metrics extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Metrics.USERID,
+      key: Metric.USER_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Metrics.METRIC,
+      key: Metric.METRIC,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Metrics.DATE,
+      key: Metric.DATE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Metrics.VALUE,
+      key: Metric.VALUE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Metric.CLIENT_ID,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Metric.PROF_ID,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -227,29 +267,29 @@ class Metrics extends amplify_core.Model {
   });
 }
 
-class _MetricsModelType extends amplify_core.ModelType<Metrics> {
-  const _MetricsModelType();
+class _MetricModelType extends amplify_core.ModelType<Metric> {
+  const _MetricModelType();
   
   @override
-  Metrics fromJson(Map<String, dynamic> jsonData) {
-    return Metrics.fromJson(jsonData);
+  Metric fromJson(Map<String, dynamic> jsonData) {
+    return Metric.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Metrics';
+    return 'Metric';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Metrics] in your schema.
+ * of [Metric] in your schema.
  */
-class MetricsModelIdentifier implements amplify_core.ModelIdentifier<Metrics> {
+class MetricModelIdentifier implements amplify_core.ModelIdentifier<Metric> {
   final String id;
 
-  /** Create an instance of MetricsModelIdentifier using [id] the primary key. */
-  const MetricsModelIdentifier({
+  /** Create an instance of MetricModelIdentifier using [id] the primary key. */
+  const MetricModelIdentifier({
     required this.id});
   
   @override
@@ -267,7 +307,7 @@ class MetricsModelIdentifier implements amplify_core.ModelIdentifier<Metrics> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'MetricsModelIdentifier(id: $id)';
+  String toString() => 'MetricModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -275,7 +315,7 @@ class MetricsModelIdentifier implements amplify_core.ModelIdentifier<Metrics> {
       return true;
     }
     
-    return other is MetricsModelIdentifier &&
+    return other is MetricModelIdentifier &&
       id == other.id;
   }
   

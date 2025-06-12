@@ -27,7 +27,7 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
   for (var pay in paymentsData) {
     total += pay.amount!;
     csvData.add([
-      pay.userId.toString(),
+      pay.user_id.toString(),
       pay.date.toString(),
       pay.type.toString(),
       pay.amount.toString(),

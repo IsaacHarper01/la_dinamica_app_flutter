@@ -8,7 +8,7 @@ class DataStoreService {
     required int clases,
     required double price,
   }) async {
-    final item = Plans(
+    final item = Plan(
       type: type,
       clases: clases,
       price: price,
@@ -30,8 +30,8 @@ class DataStoreService {
     required String type,
     required String date,
   }) async {
-    final item = Payments(
-        userId: userId,
+    final item = Pay(
+        user_id: userId,
         amount: amount,
         clases: clases,
         type: type,
@@ -53,8 +53,8 @@ class DataStoreService {
     required String date,
     required double value,
   }) async {
-    final item = Metrics(
-        userId: userId,
+    final item = Metric(
+        user_id: userId,
         metric: metric,
         date: TemporalDate(DateTime.parse(date)),
         value: value);
@@ -79,14 +79,14 @@ class DataStoreService {
   }) async {
     try {
       final students = await Amplify.DataStore.query(
-        General.classType,
-        sortBy: [General.NUMID.descending()],
+        Student.classType,
+        sortBy: [Student.USER_ID.descending()],
         pagination: const QueryPagination(limit: 1,),
         );
-      final lastNumId =  students.isNotEmpty? students.first.numId: 0;
+      final lastNumId =  students.isNotEmpty? students.first.user_id: 0;
       
-      final item = General(
-        numId: lastNumId! + 1,
+      final item = Student(
+        user_id: lastNumId! + 1,
         name: name,
         address: address,
         phone: phone,
@@ -99,7 +99,7 @@ class DataStoreService {
       safePrint('✅ Alumno guardado correctamente');
       final id = item.id;
       safePrint('ID del Alumno guardado: $id');
-      return item.numId!;
+      return item.user_id!;
     }
     
     catch (e) {
@@ -118,17 +118,16 @@ class DataStoreService {
     
     if (todayAttendance.isNotEmpty) {
       for (var att in todayAttendance) {
-        if (att.userId == userId) {
+        if (att.user_id == userId) {
           safePrint('Asistencia ya registrada para el usuario: $userId');
           return;
         }
       }
     }
     final item = Attendance(
-        userId: userId,
+        user_id: userId,
         name: name,
-        date: TemporalDate(DateTime.parse(date)),
-        status: "Presente");
+        date: TemporalDate(DateTime.parse(date)));
 
     try {
       await Amplify.DataStore.save(item);

@@ -1,3 +1,4 @@
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -211,14 +212,6 @@ class DatabaseHelper {
     final data = await db.query('Metrics');
     await db.close();
     return data;
-  }
-
-  Future<List<Plan>> fetchPlansData() async {
-    final db = await _openDatabase();
-    final data = await db.query('Plans');
-    await db.close();
-
-    return data.map((map) => Plan.fromMap(map)).toList();
   }
 
 //FETCH A SINGLE DATA FROM TABLE

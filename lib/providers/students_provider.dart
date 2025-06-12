@@ -25,9 +25,9 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
         return;
       }
 
-      List<dynamic> ids = snapshot.map((g)=> g.userId).toList() ?? [];
+      List<dynamic> ids = snapshot.map((g)=> g.user_id).toList() ?? [];
       List<dynamic> names = snapshot.map((g)=> g.name).toList() ?? [];
-      List<dynamic> images = await awsDb.getImages(snapshot.map((g)=> g.userId!).toList());
+      List<dynamic> images = await awsDb.getImages(snapshot.map((g)=> g.user_id!).toList());
 
       if (ids.isEmpty || names.isEmpty || images.isEmpty) {
         state = const AsyncValue.data([]);

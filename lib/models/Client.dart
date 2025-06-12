@@ -23,15 +23,13 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Payments type in your schema. */
-class Payments extends amplify_core.Model {
-  static const classType = const _PaymentsModelType();
+/** This is an auto generated class representing the Client type in your schema. */
+class Client extends amplify_core.Model {
+  static const classType = const _ClientModelType();
   final String id;
-  final int? _userId;
-  final double? _amount;
-  final int? _clases;
-  final String? _type;
-  final amplify_core.TemporalDate? _date;
+  final String? _name;
+  final String? _plan;
+  final String? _status;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -42,30 +40,31 @@ class Payments extends amplify_core.Model {
   @override
   String getId() => id;
   
-  PaymentsModelIdentifier get modelIdentifier {
-      return PaymentsModelIdentifier(
+  ClientModelIdentifier get modelIdentifier {
+      return ClientModelIdentifier(
         id: id
       );
   }
   
-  int? get userId {
-    return _userId;
+  String get name {
+    try {
+      return _name!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  double? get amount {
-    return _amount;
+  String? get plan {
+    return _plan;
   }
   
-  int? get clases {
-    return _clases;
-  }
-  
-  String? get type {
-    return _type;
-  }
-  
-  amplify_core.TemporalDate? get date {
-    return _date;
+  String? get status {
+    return _status;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -76,16 +75,14 @@ class Payments extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Payments._internal({required this.id, userId, amount, clases, type, date, createdAt, updatedAt}): _userId = userId, _amount = amount, _clases = clases, _type = type, _date = date, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Client._internal({required this.id, required name, plan, status, createdAt, updatedAt}): _name = name, _plan = plan, _status = status, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Payments({String? id, int? userId, double? amount, int? clases, String? type, amplify_core.TemporalDate? date}) {
-    return Payments._internal(
+  factory Client({String? id, required String name, String? plan, String? status}) {
+    return Client._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      userId: userId,
-      amount: amount,
-      clases: clases,
-      type: type,
-      date: date);
+      name: name,
+      plan: plan,
+      status: status);
   }
   
   bool equals(Object other) {
@@ -95,13 +92,11 @@ class Payments extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Payments &&
+    return other is Client &&
       id == other.id &&
-      _userId == other._userId &&
-      _amount == other._amount &&
-      _clases == other._clases &&
-      _type == other._type &&
-      _date == other._date;
+      _name == other._name &&
+      _plan == other._plan &&
+      _status == other._status;
   }
   
   @override
@@ -111,13 +106,11 @@ class Payments extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Payments {");
+    buffer.write("Client {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("userId=" + (_userId != null ? _userId!.toString() : "null") + ", ");
-    buffer.write("amount=" + (_amount != null ? _amount!.toString() : "null") + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
-    buffer.write("type=" + "$_type" + ", ");
-    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
+    buffer.write("name=" + "$_name" + ", ");
+    buffer.write("plan=" + "$_plan" + ", ");
+    buffer.write("status=" + "$_status" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -125,68 +118,56 @@ class Payments extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Payments copyWith({int? userId, double? amount, int? clases, String? type, amplify_core.TemporalDate? date}) {
-    return Payments._internal(
+  Client copyWith({String? name, String? plan, String? status}) {
+    return Client._internal(
       id: id,
-      userId: userId ?? this.userId,
-      amount: amount ?? this.amount,
-      clases: clases ?? this.clases,
-      type: type ?? this.type,
-      date: date ?? this.date);
+      name: name ?? this.name,
+      plan: plan ?? this.plan,
+      status: status ?? this.status);
   }
   
-  Payments copyWithModelFieldValues({
-    ModelFieldValue<int?>? userId,
-    ModelFieldValue<double?>? amount,
-    ModelFieldValue<int?>? clases,
-    ModelFieldValue<String?>? type,
-    ModelFieldValue<amplify_core.TemporalDate?>? date
+  Client copyWithModelFieldValues({
+    ModelFieldValue<String>? name,
+    ModelFieldValue<String?>? plan,
+    ModelFieldValue<String?>? status
   }) {
-    return Payments._internal(
+    return Client._internal(
       id: id,
-      userId: userId == null ? this.userId : userId.value,
-      amount: amount == null ? this.amount : amount.value,
-      clases: clases == null ? this.clases : clases.value,
-      type: type == null ? this.type : type.value,
-      date: date == null ? this.date : date.value
+      name: name == null ? this.name : name.value,
+      plan: plan == null ? this.plan : plan.value,
+      status: status == null ? this.status : status.value
     );
   }
   
-  Payments.fromJson(Map<String, dynamic> json)  
+  Client.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _userId = (json['userId'] as num?)?.toInt(),
-      _amount = (json['amount'] as num?)?.toDouble(),
-      _clases = (json['clases'] as num?)?.toInt(),
-      _type = json['type'],
-      _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
+      _name = json['name'],
+      _plan = json['plan'],
+      _status = json['status'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'userId': _userId, 'amount': _amount, 'clases': _clases, 'type': _type, 'date': _date?.format(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'plan': _plan, 'status': _status, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'userId': _userId,
-    'amount': _amount,
-    'clases': _clases,
-    'type': _type,
-    'date': _date,
+    'name': _name,
+    'plan': _plan,
+    'status': _status,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<PaymentsModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<PaymentsModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<ClientModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<ClientModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final USERID = amplify_core.QueryField(fieldName: "userId");
-  static final AMOUNT = amplify_core.QueryField(fieldName: "amount");
-  static final CLASES = amplify_core.QueryField(fieldName: "clases");
-  static final TYPE = amplify_core.QueryField(fieldName: "type");
-  static final DATE = amplify_core.QueryField(fieldName: "date");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
+  static final PLAN = amplify_core.QueryField(fieldName: "plan");
+  static final STATUS = amplify_core.QueryField(fieldName: "status");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Payments";
-    modelSchemaDefinition.pluralName = "Payments";
+    modelSchemaDefinition.name = "Client";
+    modelSchemaDefinition.pluralName = "Clients";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -202,33 +183,21 @@ class Payments extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Payments.USERID,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+      key: Client.NAME,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Payments.AMOUNT,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Payments.CLASES,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Payments.TYPE,
+      key: Client.PLAN,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Payments.DATE,
+      key: Client.STATUS,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -247,29 +216,29 @@ class Payments extends amplify_core.Model {
   });
 }
 
-class _PaymentsModelType extends amplify_core.ModelType<Payments> {
-  const _PaymentsModelType();
+class _ClientModelType extends amplify_core.ModelType<Client> {
+  const _ClientModelType();
   
   @override
-  Payments fromJson(Map<String, dynamic> jsonData) {
-    return Payments.fromJson(jsonData);
+  Client fromJson(Map<String, dynamic> jsonData) {
+    return Client.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Payments';
+    return 'Client';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Payments] in your schema.
+ * of [Client] in your schema.
  */
-class PaymentsModelIdentifier implements amplify_core.ModelIdentifier<Payments> {
+class ClientModelIdentifier implements amplify_core.ModelIdentifier<Client> {
   final String id;
 
-  /** Create an instance of PaymentsModelIdentifier using [id] the primary key. */
-  const PaymentsModelIdentifier({
+  /** Create an instance of ClientModelIdentifier using [id] the primary key. */
+  const ClientModelIdentifier({
     required this.id});
   
   @override
@@ -287,7 +256,7 @@ class PaymentsModelIdentifier implements amplify_core.ModelIdentifier<Payments> 
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'PaymentsModelIdentifier(id: $id)';
+  String toString() => 'ClientModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -295,7 +264,7 @@ class PaymentsModelIdentifier implements amplify_core.ModelIdentifier<Payments> 
       return true;
     }
     
-    return other is PaymentsModelIdentifier &&
+    return other is ClientModelIdentifier &&
       id == other.id;
   }
   

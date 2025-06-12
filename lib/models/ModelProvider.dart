@@ -20,23 +20,29 @@
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
+import 'AppPlan.dart';
 import 'Attendance.dart';
-import 'General.dart';
-import 'Metrics.dart';
-import 'Payments.dart';
-import 'Plans.dart';
+import 'Client.dart';
+import 'Metric.dart';
+import 'Pay.dart';
+import 'Plan.dart';
+import 'Student.dart';
+import 'User.dart';
 
+export 'AppPlan.dart';
 export 'Attendance.dart';
-export 'General.dart';
-export 'Metrics.dart';
-export 'Payments.dart';
-export 'Plans.dart';
+export 'Client.dart';
+export 'Metric.dart';
+export 'Pay.dart';
+export 'Plan.dart';
+export 'Student.dart';
+export 'User.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "945c5e8ae503cfd286591bb250b43106";
+  String version = "dfb9c1577d04241932ba9b85db875b9a";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [Attendance.schema, General.schema, Metrics.schema, Payments.schema, Plans.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Client.schema, Metric.schema, Pay.schema, Plan.schema, Student.schema, User.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -45,16 +51,22 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
   
   amplify_core.ModelType getModelTypeByModelName(String modelName) {
     switch(modelName) {
+      case "AppPlan":
+        return AppPlan.classType;
       case "Attendance":
         return Attendance.classType;
-      case "General":
-        return General.classType;
-      case "Metrics":
-        return Metrics.classType;
-      case "Payments":
-        return Payments.classType;
-      case "Plans":
-        return Plans.classType;
+      case "Client":
+        return Client.classType;
+      case "Metric":
+        return Metric.classType;
+      case "Pay":
+        return Pay.classType;
+      case "Plan":
+        return Plan.classType;
+      case "Student":
+        return Student.classType;
+      case "User":
+        return User.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

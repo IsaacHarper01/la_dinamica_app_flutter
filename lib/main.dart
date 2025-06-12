@@ -10,8 +10,8 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
-import 'amplifyconfiguration.dart';
-import 'models/ModelProvider.dart';
+import "amplifyconfiguration.dart";
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 import 'config/provider/theme_provider.dart';
 

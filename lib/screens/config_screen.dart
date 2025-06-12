@@ -89,7 +89,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                               onDelete: () {
                                 ref
                                     .read(planProvider.notifier)
-                                    .deletePlan(plan.id);
+                                    .deletePlan(plan.id!);
                               },
                             ),
                           ))
@@ -105,7 +105,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
 }
 
 class PlanCard extends StatelessWidget {
-  final Plans plan;
+  final Plan plan;
   final VoidCallback onDelete;
 
   const PlanCard({

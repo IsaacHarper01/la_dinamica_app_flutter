@@ -23,15 +23,13 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Attendance type in your schema. */
-class Attendance extends amplify_core.Model {
-  static const classType = const _AttendanceModelType();
+/** This is an auto generated class representing the Plan type in your schema. */
+class Plan extends amplify_core.Model {
+  static const classType = const _PlanModelType();
   final String id;
-  final int? _user_id;
-  final String? _name;
-  final amplify_core.TemporalDate? _date;
-  final String? _client_id;
-  final String? _prof_id;
+  final String? _type;
+  final int? _clases;
+  final double? _price;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -42,30 +40,22 @@ class Attendance extends amplify_core.Model {
   @override
   String getId() => id;
   
-  AttendanceModelIdentifier get modelIdentifier {
-      return AttendanceModelIdentifier(
+  PlanModelIdentifier get modelIdentifier {
+      return PlanModelIdentifier(
         id: id
       );
   }
   
-  int? get user_id {
-    return _user_id;
+  String? get type {
+    return _type;
   }
   
-  String? get name {
-    return _name;
+  int? get clases {
+    return _clases;
   }
   
-  amplify_core.TemporalDate? get date {
-    return _date;
-  }
-  
-  String? get client_id {
-    return _client_id;
-  }
-  
-  String? get prof_id {
-    return _prof_id;
+  double? get price {
+    return _price;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -76,16 +66,14 @@ class Attendance extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Attendance._internal({required this.id, user_id, name, date, client_id, prof_id, createdAt, updatedAt}): _user_id = user_id, _name = name, _date = date, _client_id = client_id, _prof_id = prof_id, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Plan._internal({required this.id, type, clases, price, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Attendance({String? id, int? user_id, String? name, amplify_core.TemporalDate? date, String? client_id, String? prof_id}) {
-    return Attendance._internal(
+  factory Plan({String? id, String? type, int? clases, double? price}) {
+    return Plan._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      user_id: user_id,
-      name: name,
-      date: date,
-      client_id: client_id,
-      prof_id: prof_id);
+      type: type,
+      clases: clases,
+      price: price);
   }
   
   bool equals(Object other) {
@@ -95,13 +83,11 @@ class Attendance extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Attendance &&
+    return other is Plan &&
       id == other.id &&
-      _user_id == other._user_id &&
-      _name == other._name &&
-      _date == other._date &&
-      _client_id == other._client_id &&
-      _prof_id == other._prof_id;
+      _type == other._type &&
+      _clases == other._clases &&
+      _price == other._price;
   }
   
   @override
@@ -111,13 +97,11 @@ class Attendance extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Attendance {");
+    buffer.write("Plan {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
-    buffer.write("name=" + "$_name" + ", ");
-    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
-    buffer.write("client_id=" + "$_client_id" + ", ");
-    buffer.write("prof_id=" + "$_prof_id" + ", ");
+    buffer.write("type=" + "$_type" + ", ");
+    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
+    buffer.write("price=" + (_price != null ? _price!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -125,110 +109,86 @@ class Attendance extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Attendance copyWith({int? user_id, String? name, amplify_core.TemporalDate? date, String? client_id, String? prof_id}) {
-    return Attendance._internal(
+  Plan copyWith({String? type, int? clases, double? price}) {
+    return Plan._internal(
       id: id,
-      user_id: user_id ?? this.user_id,
-      name: name ?? this.name,
-      date: date ?? this.date,
-      client_id: client_id ?? this.client_id,
-      prof_id: prof_id ?? this.prof_id);
+      type: type ?? this.type,
+      clases: clases ?? this.clases,
+      price: price ?? this.price);
   }
   
-  Attendance copyWithModelFieldValues({
-    ModelFieldValue<int?>? user_id,
-    ModelFieldValue<String?>? name,
-    ModelFieldValue<amplify_core.TemporalDate?>? date,
-    ModelFieldValue<String?>? client_id,
-    ModelFieldValue<String?>? prof_id
+  Plan copyWithModelFieldValues({
+    ModelFieldValue<String?>? type,
+    ModelFieldValue<int?>? clases,
+    ModelFieldValue<double?>? price
   }) {
-    return Attendance._internal(
+    return Plan._internal(
       id: id,
-      user_id: user_id == null ? this.user_id : user_id.value,
-      name: name == null ? this.name : name.value,
-      date: date == null ? this.date : date.value,
-      client_id: client_id == null ? this.client_id : client_id.value,
-      prof_id: prof_id == null ? this.prof_id : prof_id.value
+      type: type == null ? this.type : type.value,
+      clases: clases == null ? this.clases : clases.value,
+      price: price == null ? this.price : price.value
     );
   }
   
-  Attendance.fromJson(Map<String, dynamic> json)  
+  Plan.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _user_id = (json['user_id'] as num?)?.toInt(),
-      _name = json['name'],
-      _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
-      _client_id = json['client_id'],
-      _prof_id = json['prof_id'],
+      _type = json['type'],
+      _clases = (json['clases'] as num?)?.toInt(),
+      _price = (json['price'] as num?)?.toDouble(),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'user_id': _user_id, 'name': _name, 'date': _date?.format(), 'client_id': _client_id, 'prof_id': _prof_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'user_id': _user_id,
-    'name': _name,
-    'date': _date,
-    'client_id': _client_id,
-    'prof_id': _prof_id,
+    'type': _type,
+    'clases': _clases,
+    'price': _price,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<AttendanceModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<AttendanceModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<PlanModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<PlanModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final USER_ID = amplify_core.QueryField(fieldName: "user_id");
-  static final NAME = amplify_core.QueryField(fieldName: "name");
-  static final DATE = amplify_core.QueryField(fieldName: "date");
-  static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
-  static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
+  static final TYPE = amplify_core.QueryField(fieldName: "type");
+  static final CLASES = amplify_core.QueryField(fieldName: "clases");
+  static final PRICE = amplify_core.QueryField(fieldName: "price");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Attendance";
-    modelSchemaDefinition.pluralName = "Attendances";
+    modelSchemaDefinition.name = "Plan";
+    modelSchemaDefinition.pluralName = "Plans";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.PUBLIC,
         operations: const [
           amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.READ,
           amplify_core.ModelOperation.UPDATE,
-          amplify_core.ModelOperation.DELETE,
-          amplify_core.ModelOperation.READ
+          amplify_core.ModelOperation.DELETE
         ])
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.USER_ID,
+      key: Plan.TYPE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Plan.CLASES,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.NAME,
+      key: Plan.PRICE,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.DATE,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.CLIENT_ID,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.PROF_ID,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -247,29 +207,29 @@ class Attendance extends amplify_core.Model {
   });
 }
 
-class _AttendanceModelType extends amplify_core.ModelType<Attendance> {
-  const _AttendanceModelType();
+class _PlanModelType extends amplify_core.ModelType<Plan> {
+  const _PlanModelType();
   
   @override
-  Attendance fromJson(Map<String, dynamic> jsonData) {
-    return Attendance.fromJson(jsonData);
+  Plan fromJson(Map<String, dynamic> jsonData) {
+    return Plan.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Attendance';
+    return 'Plan';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Attendance] in your schema.
+ * of [Plan] in your schema.
  */
-class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendance> {
+class PlanModelIdentifier implements amplify_core.ModelIdentifier<Plan> {
   final String id;
 
-  /** Create an instance of AttendanceModelIdentifier using [id] the primary key. */
-  const AttendanceModelIdentifier({
+  /** Create an instance of PlanModelIdentifier using [id] the primary key. */
+  const PlanModelIdentifier({
     required this.id});
   
   @override
@@ -287,7 +247,7 @@ class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendan
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'AttendanceModelIdentifier(id: $id)';
+  String toString() => 'PlanModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -295,7 +255,7 @@ class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendan
       return true;
     }
     
-    return other is AttendanceModelIdentifier &&
+    return other is PlanModelIdentifier &&
       id == other.id;
   }
   
