@@ -23,9 +23,9 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Plan type in your schema. */
-class Plan extends amplify_core.Model {
-  static const classType = const _PlanModelType();
+/** This is an auto generated class representing the LocalPlan type in your schema. */
+class LocalPlan extends amplify_core.Model {
+  static const classType = const _LocalPlanModelType();
   final String id;
   final String? _type;
   final int? _clases;
@@ -40,8 +40,8 @@ class Plan extends amplify_core.Model {
   @override
   String getId() => id;
   
-  PlanModelIdentifier get modelIdentifier {
-      return PlanModelIdentifier(
+  LocalPlanModelIdentifier get modelIdentifier {
+      return LocalPlanModelIdentifier(
         id: id
       );
   }
@@ -66,10 +66,10 @@ class Plan extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Plan._internal({required this.id, type, clases, price, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _createdAt = createdAt, _updatedAt = updatedAt;
+  const LocalPlan._internal({required this.id, type, clases, price, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Plan({String? id, String? type, int? clases, double? price}) {
-    return Plan._internal(
+  factory LocalPlan({String? id, String? type, int? clases, double? price}) {
+    return LocalPlan._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       type: type,
       clases: clases,
@@ -83,7 +83,7 @@ class Plan extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Plan &&
+    return other is LocalPlan &&
       id == other.id &&
       _type == other._type &&
       _clases == other._clases &&
@@ -97,7 +97,7 @@ class Plan extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Plan {");
+    buffer.write("LocalPlan {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("type=" + "$_type" + ", ");
     buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
@@ -109,20 +109,20 @@ class Plan extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Plan copyWith({String? type, int? clases, double? price}) {
-    return Plan._internal(
+  LocalPlan copyWith({String? type, int? clases, double? price}) {
+    return LocalPlan._internal(
       id: id,
       type: type ?? this.type,
       clases: clases ?? this.clases,
       price: price ?? this.price);
   }
   
-  Plan copyWithModelFieldValues({
+  LocalPlan copyWithModelFieldValues({
     ModelFieldValue<String?>? type,
     ModelFieldValue<int?>? clases,
     ModelFieldValue<double?>? price
   }) {
-    return Plan._internal(
+    return LocalPlan._internal(
       id: id,
       type: type == null ? this.type : type.value,
       clases: clases == null ? this.clases : clases.value,
@@ -130,7 +130,7 @@ class Plan extends amplify_core.Model {
     );
   }
   
-  Plan.fromJson(Map<String, dynamic> json)  
+  LocalPlan.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _type = json['type'],
       _clases = (json['clases'] as num?)?.toInt(),
@@ -151,42 +151,42 @@ class Plan extends amplify_core.Model {
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<PlanModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<PlanModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<LocalPlanModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<LocalPlanModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final TYPE = amplify_core.QueryField(fieldName: "type");
   static final CLASES = amplify_core.QueryField(fieldName: "clases");
   static final PRICE = amplify_core.QueryField(fieldName: "price");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Plan";
-    modelSchemaDefinition.pluralName = "Plans";
+    modelSchemaDefinition.name = "LocalPlan";
+    modelSchemaDefinition.pluralName = "LocalPlans";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.PUBLIC,
         operations: const [
           amplify_core.ModelOperation.CREATE,
-          amplify_core.ModelOperation.READ,
           amplify_core.ModelOperation.UPDATE,
-          amplify_core.ModelOperation.DELETE
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
         ])
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Plan.TYPE,
+      key: LocalPlan.TYPE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Plan.CLASES,
+      key: LocalPlan.CLASES,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Plan.PRICE,
+      key: LocalPlan.PRICE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
@@ -207,29 +207,29 @@ class Plan extends amplify_core.Model {
   });
 }
 
-class _PlanModelType extends amplify_core.ModelType<Plan> {
-  const _PlanModelType();
+class _LocalPlanModelType extends amplify_core.ModelType<LocalPlan> {
+  const _LocalPlanModelType();
   
   @override
-  Plan fromJson(Map<String, dynamic> jsonData) {
-    return Plan.fromJson(jsonData);
+  LocalPlan fromJson(Map<String, dynamic> jsonData) {
+    return LocalPlan.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Plan';
+    return 'LocalPlan';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Plan] in your schema.
+ * of [LocalPlan] in your schema.
  */
-class PlanModelIdentifier implements amplify_core.ModelIdentifier<Plan> {
+class LocalPlanModelIdentifier implements amplify_core.ModelIdentifier<LocalPlan> {
   final String id;
 
-  /** Create an instance of PlanModelIdentifier using [id] the primary key. */
-  const PlanModelIdentifier({
+  /** Create an instance of LocalPlanModelIdentifier using [id] the primary key. */
+  const LocalPlanModelIdentifier({
     required this.id});
   
   @override
@@ -247,7 +247,7 @@ class PlanModelIdentifier implements amplify_core.ModelIdentifier<Plan> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'PlanModelIdentifier(id: $id)';
+  String toString() => 'LocalPlanModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -255,7 +255,7 @@ class PlanModelIdentifier implements amplify_core.ModelIdentifier<Plan> {
       return true;
     }
     
-    return other is PlanModelIdentifier &&
+    return other is LocalPlanModelIdentifier &&
       id == other.id;
   }
   

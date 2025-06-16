@@ -4,8 +4,6 @@ import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
-import '../backend/database.dart';
-
 final studentsProvider = StateNotifierProvider<StudentsNotifier, AsyncValue<List<Student>>>((ref) {
   return StudentsNotifier(ref);
 });
@@ -14,8 +12,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   final Ref ref;
 
   StudentsNotifier(this.ref) : super(const AsyncValue.loading());
-
-
+  
   Future<void> fetchAttendanceToday(String date) async {
     try {
       final awsDb = DataStoreReadService();
@@ -50,16 +47,13 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
 
   Future<void> insertAttendance(int studentId, String name, String date) async {
     try {
-      final db = DatabaseHelper();
       final awsDb = DataStoreService();
       final awsDb2 = DataStoreReadService();
-      await db.InserAttendanceData(studentId, name, date);
       await awsDb.saveAttendance(
         userId: studentId,
         name: name,
         date: date,
       );
-      await db.varifyPay(studentId,date);
       await awsDb2.verifyPayment(studentId, date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -69,10 +63,8 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   }
 
   Future<void> deleteAttendance(int studentId, String date) async {
-    try {
-      final db = DatabaseHelper(); 
+    try { 
       final awsDb = DataStoreDeleteService();
-      await db.deleteAttendance(studentId, date);
       await awsDb.deleteAttendanceByID(studentId, date);
       await fetchAttendanceToday(date);
     } catch (e) {

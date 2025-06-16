@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 
-import '../model/plan.dart';
 
 class AddNewPlan extends ConsumerStatefulWidget {
   const AddNewPlan({super.key});
@@ -23,8 +23,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
     if (_formKey.currentState?.validate() ?? false) {
       // Recuperar texto de cada TextEditingController
 
-      final plan = Plan_local(
-        id: 0,
+      final plan = LocalPlan(
         type: _controllers[0].text,
         clases: int.parse(_controllers[1].text),
         price: double.parse(_controllers[2].text),

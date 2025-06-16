@@ -6,14 +6,14 @@ class DataStoreDeleteService {
   Future<void> deletePlanById(String planId) async {
     try {
       // Hacemos una consulta para encontrar el plan por su ID
-      List<Plan> plans = await Amplify.DataStore.query(
-        Plan.classType,
-        where: Plan.ID.eq(planId),
+      List<LocalPlan> plans = await Amplify.DataStore.query(
+        LocalPlan.classType,
+        where: LocalPlan.ID.eq(planId),
       );
 
       // Verificamos si se encontró el plan
       if (plans.isNotEmpty) {
-        Plan planToDelete = plans.first; // Tomamos el primer plan encontrado
+        LocalPlan planToDelete = plans.first; // Tomamos el primer plan encontrado
 
         // Eliminamos el plan del DataStore
         await Amplify.DataStore.delete(planToDelete);
@@ -69,9 +69,9 @@ Future<void> deleteAttendanceByID(int id, String date) async {
       Pay? lastPayment = payments.isNotEmpty ? payments.last : null;
 
       if(lastPayment != null) {
-        List<Plan> plan = await Amplify.DataStore.query(
-        Plan.classType,
-        where: Plan.TYPE.eq(lastPayment.type),
+        List<LocalPlan> plan = await Amplify.DataStore.query(
+        LocalPlan.classType,
+        where: LocalPlan.TYPE.eq(lastPayment.type),
         );
 
         if (plan.first.clases! > lastPayment.clases!  && lastPayment.date!.format() != date){

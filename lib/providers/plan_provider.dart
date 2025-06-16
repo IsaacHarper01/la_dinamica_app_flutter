@@ -1,18 +1,17 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/database.dart';
-import 'package:la_dinamica_app/model/plan.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 
 final planProvider =
-    StateNotifierProvider<PlanNotifier, AsyncValue<List<Plan>>>(
+    StateNotifierProvider<PlanNotifier, AsyncValue<List<LocalPlan>>>(
   (ref) => PlanNotifier(),
 );
 
-class PlanNotifier extends StateNotifier<AsyncValue<List<Plan>>> {
+class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
   PlanNotifier() : super(const AsyncValue.loading()) {
     loadPlans();
   }
@@ -32,12 +31,12 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<Plan>>> {
     }
   }
 
-  Future<void> addPlan(Plan_local plan) async {
+  Future<void> addPlan(LocalPlan plan) async {
     try {
       await dataStoreService.savePlan(
-        type: plan.type,
-        clases: plan.clases, 
-        price: plan.price);
+        type: plan.type!,
+        clases: plan.clases!, 
+        price: plan.price!);
 
       loadPlans();
     } catch (e, st) {

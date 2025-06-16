@@ -4,10 +4,10 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class DataStoreReadService {
 
-  Future<List<Plan>> getPlans() async {
+  Future<List<LocalPlan>> getPlans() async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Plan> plans = await Amplify.DataStore.query(Plan.classType);
+      List<LocalPlan> plans = await Amplify.DataStore.query(LocalPlan.classType);
       safePrint('✅ Planes obtenidos correctamente');
       return plans;
     } catch (e) {
@@ -19,7 +19,7 @@ class DataStoreReadService {
   Future<List<List<String>>> getPlansNamesIds() async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Plan> plans = await Amplify.DataStore.query(Plan.classType);
+      List<LocalPlan> plans = await Amplify.DataStore.query(LocalPlan.classType);
       List<Student> general = await Amplify.DataStore.query(Student.classType);
 
       List<String> names = [];
@@ -93,7 +93,7 @@ class DataStoreReadService {
       print('Payments: $payments');
 
       Map<String, dynamic> result = {
-        'lastPay':  payments.last,
+        'lastPay':  payments.first,
         'studentData': general.first,
       };
       safePrint('✅ Datos obtenidos correctamente');
@@ -301,12 +301,12 @@ class DataStoreReadService {
     }
   }
 
-  Future<Plan?> getSimplePlan() async {
+  Future<LocalPlan?> getSimplePlan() async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Plan> plans = await Amplify.DataStore.query(
-        Plan.classType,
-        where: Plan.CLASES.eq(1),
+      List<LocalPlan> plans = await Amplify.DataStore.query(
+        LocalPlan.classType,
+        where: LocalPlan.CLASES.eq(1),
         );
       safePrint('✅ Planes obtenidos correctamente');
       if (plans.isNotEmpty) {
@@ -343,7 +343,7 @@ class DataStoreReadService {
   Future<void> verifyPayment(int userId, String date) async {
     try {
       Pay? lastPayment = await getLastPayment(userId);
-      Plan? basePlan = await getSimplePlan();
+      LocalPlan? basePlan = await getSimplePlan();
       double cost = 0.0;
       String planType = 'Clase Unica';
 
@@ -351,7 +351,8 @@ class DataStoreReadService {
         cost = basePlan.price!;
         planType = basePlan.type!;
       }
-
+      safePrint('Plan base obtenido: $basePlan');
+      safePrint('Ultimo pago obtenido: $lastPayment');
       if (lastPayment == null) {
         final newPayment = Pay(
           user_id: userId,
@@ -371,6 +372,7 @@ class DataStoreReadService {
             clases: remainingClases,
           );
           await Amplify.DataStore.save(newPayment);
+          safePrint('Pago actualizado con clases restantes: $remainingClases');
           return;
         } else {
           final newPayment = Pay(

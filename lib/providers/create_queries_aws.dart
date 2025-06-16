@@ -3,12 +3,13 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class DataStoreService {
+  
   Future<void> savePlan({
     required String type,
     required int clases,
     required double price,
   }) async {
-    final item = Plan(
+    final item = LocalPlan(
       type: type,
       clases: clases,
       price: price,

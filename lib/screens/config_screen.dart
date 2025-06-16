@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 import 'package:la_dinamica_app/widgets/section_card_widget.dart';
@@ -16,6 +17,7 @@ class ConfigScreen extends ConsumerStatefulWidget {
 }
 
 class _ConfigScreenState extends ConsumerState<ConfigScreen> {
+  
   @override
   Widget build(BuildContext context) {
     final plansState = ref.watch(planProvider);
@@ -47,7 +49,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 icon: const Icon(Icons.lock_clock),
                 label: const Text('Habilitar vencimiento'),
                 onPressed: () {
-                  // TODO: Implementar funcionalidad de habilitar vencimiento
+                  // Aquí puedes implementar la lógica para habilitar el vencimiento de planes
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,
@@ -105,7 +107,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
 }
 
 class PlanCard extends StatelessWidget {
-  final Plan plan;
+  final LocalPlan plan;
   final VoidCallback onDelete;
 
   const PlanCard({

@@ -1,3 +1,10 @@
+type LocalPlan @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  type: String
+  clases: Int
+  price: Float
+}
+
 type Student @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
   user_id: Int
@@ -21,13 +28,6 @@ type Pay @model @auth(rules: [{allow: public, operations: [create, read, update,
   date: AWSDate
   client_id: String
   prof_id: String
-}
-
-type Plan @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  type: String
-  clases: Int
-  price: Float
 }
 
 type Metric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {

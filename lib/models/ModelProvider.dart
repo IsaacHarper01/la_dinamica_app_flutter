@@ -23,26 +23,26 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'AppPlan.dart';
 import 'Attendance.dart';
 import 'Client.dart';
+import 'LocalPlan.dart';
 import 'Metric.dart';
 import 'Pay.dart';
-import 'Plan.dart';
 import 'Student.dart';
 import 'User.dart';
 
 export 'AppPlan.dart';
 export 'Attendance.dart';
 export 'Client.dart';
+export 'LocalPlan.dart';
 export 'Metric.dart';
 export 'Pay.dart';
-export 'Plan.dart';
 export 'Student.dart';
 export 'User.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "dfb9c1577d04241932ba9b85db875b9a";
+  String version = "39503e5cac005591d148babf2bf0e5c2";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Client.schema, Metric.schema, Pay.schema, Plan.schema, Student.schema, User.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Client.schema, LocalPlan.schema, Metric.schema, Pay.schema, Student.schema, User.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -57,12 +57,12 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Attendance.classType;
       case "Client":
         return Client.classType;
+      case "LocalPlan":
+        return LocalPlan.classType;
       case "Metric":
         return Metric.classType;
       case "Pay":
         return Pay.classType;
-      case "Plan":
-        return Plan.classType;
       case "Student":
         return Student.classType;
       case "User":
