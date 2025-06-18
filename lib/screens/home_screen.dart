@@ -1,3 +1,4 @@
+import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,7 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        actions: const [CalendarButton()],
+        actions: const [CalendarButton(),SignOutButton()],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
@@ -92,10 +93,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     borderRadius: BorderRadius.circular(16),
                     child: Image.asset(
                       isDarkMode
-                          ? 'assets/images/f=ma18.png'
-                          : 'assets/images/f=ma11.png',
+                          ? 'assets/images/f=ma11.png'
+                          : 'assets/images/f=ma18.png',
                       height:
-                          isDarkMode ? screenHeight * 0.3 : screenHeight * 0.2,
+                          isDarkMode ? screenHeight * 0.2 : screenHeight * 0.3,
                       fit: BoxFit.cover,
                     ),
                   )
