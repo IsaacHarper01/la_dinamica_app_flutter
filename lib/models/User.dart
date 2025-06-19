@@ -27,9 +27,11 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class User extends amplify_core.Model {
   static const classType = const _UserModelType();
   final String id;
+  final String? _db_id;
   final String? _name;
-  final String? _client_id;
-  final String? _rol;
+  final String? _role;
+  final String? _Plan;
+  final bool? _status;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -46,16 +48,24 @@ class User extends amplify_core.Model {
       );
   }
   
+  String? get db_id {
+    return _db_id;
+  }
+  
   String? get name {
     return _name;
   }
   
-  String? get client_id {
-    return _client_id;
+  String? get role {
+    return _role;
   }
   
-  String? get rol {
-    return _rol;
+  String? get Plan {
+    return _Plan;
+  }
+  
+  bool? get status {
+    return _status;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -66,14 +76,16 @@ class User extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const User._internal({required this.id, name, client_id, rol, createdAt, updatedAt}): _name = name, _client_id = client_id, _rol = rol, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, db_id, name, role, Plan, status, createdAt, updatedAt}): _db_id = db_id, _name = name, _role = role, _Plan = Plan, _status = status, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({String? id, String? name, String? client_id, String? rol}) {
+  factory User({String? id, String? db_id, String? name, String? role, String? Plan, bool? status}) {
     return User._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      db_id: db_id,
       name: name,
-      client_id: client_id,
-      rol: rol);
+      role: role,
+      Plan: Plan,
+      status: status);
   }
   
   bool equals(Object other) {
@@ -85,9 +97,11 @@ class User extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is User &&
       id == other.id &&
+      _db_id == other._db_id &&
       _name == other._name &&
-      _client_id == other._client_id &&
-      _rol == other._rol;
+      _role == other._role &&
+      _Plan == other._Plan &&
+      _status == other._status;
   }
   
   @override
@@ -99,9 +113,11 @@ class User extends amplify_core.Model {
     
     buffer.write("User {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("db_id=" + "$_db_id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
-    buffer.write("client_id=" + "$_client_id" + ", ");
-    buffer.write("rol=" + "$_rol" + ", ");
+    buffer.write("role=" + "$_role" + ", ");
+    buffer.write("Plan=" + "$_Plan" + ", ");
+    buffer.write("status=" + (_status != null ? _status!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -109,53 +125,65 @@ class User extends amplify_core.Model {
     return buffer.toString();
   }
   
-  User copyWith({String? name, String? client_id, String? rol}) {
+  User copyWith({String? db_id, String? name, String? role, String? Plan, bool? status}) {
     return User._internal(
       id: id,
+      db_id: db_id ?? this.db_id,
       name: name ?? this.name,
-      client_id: client_id ?? this.client_id,
-      rol: rol ?? this.rol);
+      role: role ?? this.role,
+      Plan: Plan ?? this.Plan,
+      status: status ?? this.status);
   }
   
   User copyWithModelFieldValues({
+    ModelFieldValue<String?>? db_id,
     ModelFieldValue<String?>? name,
-    ModelFieldValue<String?>? client_id,
-    ModelFieldValue<String?>? rol
+    ModelFieldValue<String?>? role,
+    ModelFieldValue<String?>? Plan,
+    ModelFieldValue<bool?>? status
   }) {
     return User._internal(
       id: id,
+      db_id: db_id == null ? this.db_id : db_id.value,
       name: name == null ? this.name : name.value,
-      client_id: client_id == null ? this.client_id : client_id.value,
-      rol: rol == null ? this.rol : rol.value
+      role: role == null ? this.role : role.value,
+      Plan: Plan == null ? this.Plan : Plan.value,
+      status: status == null ? this.status : status.value
     );
   }
   
   User.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _db_id = json['db_id'],
       _name = json['name'],
-      _client_id = json['client_id'],
-      _rol = json['rol'],
+      _role = json['role'],
+      _Plan = json['Plan'],
+      _status = json['status'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'client_id': _client_id, 'rol': _rol, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'db_id': _db_id, 'name': _name, 'role': _role, 'Plan': _Plan, 'status': _status, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'db_id': _db_id,
     'name': _name,
-    'client_id': _client_id,
-    'rol': _rol,
+    'role': _role,
+    'Plan': _Plan,
+    'status': _status,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
   static final amplify_core.QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<UserModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final DB_ID = amplify_core.QueryField(fieldName: "db_id");
   static final NAME = amplify_core.QueryField(fieldName: "name");
-  static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
-  static final ROL = amplify_core.QueryField(fieldName: "rol");
+  static final ROLE = amplify_core.QueryField(fieldName: "role");
+  static final PLAN = amplify_core.QueryField(fieldName: "Plan");
+  static final STATUS = amplify_core.QueryField(fieldName: "status");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "User";
     modelSchemaDefinition.pluralName = "Users";
@@ -174,21 +202,33 @@ class User extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: User.DB_ID,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: User.NAME,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: User.CLIENT_ID,
+      key: User.ROLE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: User.ROL,
+      key: User.PLAN,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: User.STATUS,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

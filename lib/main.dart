@@ -50,7 +50,7 @@ class MyApp extends ConsumerWidget {
     TextTheme textTheme = createTextTheme(context, "Mulish", "Work Sans");
     MaterialTheme theme = MaterialTheme(textTheme);
 
-    return Authenticator( 
+    return Authenticator(
       authenticatorBuilder: (BuildContext context, AuthenticatorState state) {
               switch (state.currentStep) {
           case AuthenticatorStep.signIn:
@@ -114,6 +114,7 @@ class MyApp extends ConsumerWidget {
             return null;
         }
       },
+      
       child: MaterialApp(
         builder: Authenticator.builder(),
         title: 'La Dinamica del Movimiento',

@@ -51,9 +51,11 @@ type Attendance @model @auth(rules: [{allow: public, operations: [create, read, 
 
 type User @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
+  db_id: AWSJSON
   name: String
-  client_id: String
-  rol: String
+  role: String
+  Plan: String
+  status: Boolean
 }
 
 type AppPlan @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {

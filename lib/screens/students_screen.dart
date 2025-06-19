@@ -32,7 +32,7 @@ class _StudentsScreenState extends State<StudentsScreen> {
 
   void _loadStudents() {
     final awsDb = DataStoreReadService();
-    _studentsFuture = awsDb.getGeneral();
+    _studentsFuture = awsDb.getStudents();
   }
 
   @override

@@ -138,5 +138,53 @@ class DataStoreService {
       rethrow;
     }
   }
+  
+  Future<void> saveUser({
+    required String id,
+    required String? clientId,
+    required String? name,
+    required String? role,
+    required String? plan,
+    required bool? status,
+  }) async {
+    final item = User(
+        id: id,
+        db_id: clientId,
+        name: name,
+        role: role,
+        Plan: plan,
+        status: status,
+    );
+
+    try {
+      await Amplify.DataStore.save(item);
+      safePrint('✅ Usuario guardado correctamente');
+    } catch (e) {
+      safePrint('❌ Error al guardar el usuario: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> saveClient({
+    required String id,
+    required String name,
+    required String? plan,
+    required String? status,
+  }) async {
+    final item = Client(
+        id: id,
+        name: name,
+        plan: plan,
+        status: status,
+    );
+
+    try {
+      await Amplify.DataStore.save(item);
+      safePrint('✅ Cliente guardado correctamente');
+    } catch (e) {
+      safePrint('❌ Error al guardar el cliente: $e');
+      rethrow;
+    }
+  }
   // Puedes añadir más métodos aquí: getPlans, deletePlan, updatePlan, etc.
 }

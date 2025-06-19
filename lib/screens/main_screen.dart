@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/menu/menu_items.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/config_screen.dart';
 import 'package:la_dinamica_app/screens/earn_screen.dart';
 import 'package:la_dinamica_app/screens/home_screen.dart';
 import 'package:la_dinamica_app/screens/pays_screen.dart';
 import 'package:la_dinamica_app/screens/students_screen.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  ConsumerState<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends ConsumerState<MainScreen> {
   int _selectedIndex = 0;
+  late Future<void> _initFuture;
 
   final List<Widget> _screens = const [
     HomeScreen(),
@@ -24,6 +27,12 @@ class _MainScreenState extends State<MainScreen> {
     PaysScreen(),
     ConfigScreen()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _initFuture = initializeUser(ref); 
+  }
 
   void _onItemTapped(int index) {
     setState(() {

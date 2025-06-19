@@ -170,7 +170,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Student>> getGeneral() async {
+  Future<List<Student>> getStudents() async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Student> general = await Amplify.DataStore.query(Student.classType);
@@ -390,6 +390,66 @@ class DataStoreReadService {
       
     } catch (e) {
       safePrint('❌ Error al verificar el pago: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> userExists(String userId) async {
+  try {
+    final users = await Amplify.DataStore.query(
+      User.classType,
+      where: User.ID.eq(userId),
+    );
+    return users.isNotEmpty;
+  } catch (e) {
+    safePrint('❌ Error checking user: $e');
+    return false;
+  }
+}
+
+  Future<bool> clientExists(String userId) async {
+    try {
+      final clients = await Amplify.DataStore.query(
+        Client.classType,
+        where: Client.ID.eq(userId),
+      );
+      return clients.isNotEmpty;
+    } catch (e) {
+      safePrint('❌ Error checking client: $e');
+      return false;
+    }
+  }
+
+  Future<User?> getUser(String userId) async {
+    try {
+      final users = await Amplify.DataStore.query(
+        User.classType,
+        where: User.ID.eq(userId),
+      );
+      if (users.isNotEmpty) {
+        return users.first;
+      } else {
+        throw Exception('User not found');
+      }
+    } catch (e) {
+      safePrint('❌ Error getting user: $e');
+      rethrow;
+    }
+  }
+
+  Future<Client?> getClient(String userId) async {
+    try {
+      final clients = await Amplify.DataStore.query(
+        Client.classType,
+        where: Client.ID.eq(userId),
+      );
+      if (clients.isNotEmpty) {
+        return clients.first;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      safePrint('❌ Error getting client: $e');
       rethrow;
     }
   }

@@ -8,6 +8,7 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
+  uuid: ^4.0.0
   amplify_api: ^2.6.1
   amplify_auth_cognito: ^2.6.1
   amplify_authenticator: ^2.3.3
@@ -34,6 +35,7 @@ dependencies:
   shared_preferences: ^2.0.1
   table_calendar: ^3.0.9
   time_range_picker: ^2.0.0
+  
 
 dev_dependencies:
   flutter_lints: ^4.0.0
