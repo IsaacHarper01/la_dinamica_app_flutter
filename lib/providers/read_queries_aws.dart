@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
@@ -340,7 +342,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> verifyPayment(int userId, String date) async {
+  Future<void> verifyPayment(int userId, String date, User user) async {
     try {
       Pay? lastPayment = await getLastPayment(userId);
       LocalPlan? basePlan = await getSimplePlan();
@@ -355,11 +357,13 @@ class DataStoreReadService {
       safePrint('Ultimo pago obtenido: $lastPayment');
       if (lastPayment == null) {
         final newPayment = Pay(
-          user_id: userId,
+          user_id: userId, //This user ID is the student ID
           amount: cost,
           clases: 0,
           type: planType,
           date: TemporalDate(DateTime.parse(date)),
+          client_id: jsonDecode(user.db_id!)['1'], //this user ID is the client ID
+          prof_id: user.id, //This user ID is the teacher ID
         );
 
       await Amplify.DataStore.save(newPayment);
@@ -381,6 +385,8 @@ class DataStoreReadService {
           clases: 0,
           type: planType,
           date: TemporalDate(DateTime.parse(date)),
+          client_id: jsonDecode(user.db_id!)['1'], //this user ID is the client ID
+          prof_id: user.id, //This user ID is the teacher ID
         );
         await Amplify.DataStore.save(newPayment);
         }

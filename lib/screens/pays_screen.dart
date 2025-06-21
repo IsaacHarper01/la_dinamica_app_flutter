@@ -1,11 +1,17 @@
+import 'dart:convert';
+
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
+
 
 class PaysScreen extends ConsumerStatefulWidget {
   const PaysScreen({super.key});
@@ -17,7 +23,7 @@ class PaysScreen extends ConsumerStatefulWidget {
 class _PaysScreenState extends ConsumerState<PaysScreen> {
   ValueNotifier<int> planIndexNotifier = ValueNotifier<int>(0);
   ValueNotifier<int> nameIndexNotifier = ValueNotifier<int>(0);
-
+  
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
@@ -32,6 +38,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
     final String date = ref.watch(dateProvider);
+    final User? user = ref.watch(userProvider);
 
     return Scaffold(
       body: FutureBuilder(
@@ -62,6 +69,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
                   context,
                   isDarkMode,
                   date,
+                  user,
                   isPortrait);
             }
           }),
@@ -82,7 +90,9 @@ Widget paymentBox(
     BuildContext context,
     bool isDarkMode,
     String date,
+    User? user,
     bool isPortrait) {
+      safePrint("USUARIO ${jsonDecode(user!.db_id!)['1']}");
   return Center(
     child: clases.isEmpty
         ? ClipRRect(
@@ -269,6 +279,7 @@ Widget paymentBox(
                                 context: context,
                                 costs: costs,
                                 date: date,
+                                user: user,
                                 nameIndex:
                                     int.parse(ids[nameIndexNotifier.value]),
                                 planIndex: planIndexNotifier.value,
@@ -302,6 +313,7 @@ void assignedPlan({
   required List<String> clases,
   required List<String> plansType,
   required String date,
+  required User user,
   required BuildContext context,
 }) {
   final awsDb = DataStoreService();
@@ -311,6 +323,8 @@ void assignedPlan({
     clases: int.parse(clases[planIndex]),
     type: plansType[planIndex],
     date: date,
+    dbId: jsonDecode(user.db_id!)['1'],
+    profId: user.id,
   );
 
   ScaffoldMessenger.of(context).showSnackBar(

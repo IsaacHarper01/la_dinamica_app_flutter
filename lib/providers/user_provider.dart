@@ -8,40 +8,49 @@ import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:uuid/uuid.dart';
 
 
-final userProvider = StateProvider<User?>((ref) => null);
+final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) => UserNotifier());
 
-Future<void> initializeUser(WidgetRef ref) async {
-  final awsDb = DataStoreReadService();
-  final awsDb2 = DataStoreService();
+class UserNotifier extends StateNotifier<User?> {
+  UserNotifier() : super(null);
 
-  try {
-    final cognitoUser = await Amplify.Auth.getCurrentUser();
-    final userId = cognitoUser.userId;
-    final email = cognitoUser.signInDetails.toJson()['username'] as String?;
-    if (await awsDb.userExists(userId)){
+  void setUser(User user) {
+    state = user;
+  }
 
-      final dbUser = await awsDb.getUser(userId);
-      ref.read(userProvider.notifier).state = dbUser;
-      safePrint('✅ Usuario obtenido: $dbUser');
-    }else{
-      final newId = { '1': Uuid().v4()};
+  Future<void> initializeUser(WidgetRef ref) async {
+    final awsDb = DataStoreReadService();
+    final awsDb2 = DataStoreService();
 
-      final newUser = User(
-        id: userId,
-        db_id: jsonEncode(newId),
-        name: '',
-        role: 'owner',
-        Plan: 'free',
-        status: true,
-      );
-      awsDb2.saveUser(id: newUser.id, clientId: newUser.db_id, name: newUser.name, role: newUser.role, plan: newUser.Plan, status: newUser.status);
-      safePrint('✅ Usuario creado: $newUser');
-      ref.read(userProvider.notifier).state = newUser;
+    try {
+      final cognitoUser = await Amplify.Auth.getCurrentUser();
+      final userId = cognitoUser.userId;
+      final email = cognitoUser.signInDetails.toJson()['username'] as String?;
+
+      if (await awsDb.userExists(userId)){
+        final dbUser = await awsDb.getUser(userId);
+        state = dbUser!;
+        safePrint('✅ Usuario obtenido: $dbUser');
+      }else{
+        final newId = { '1': Uuid().v4()};
+
+        final newUser = User(
+          id: userId,
+          db_id: jsonEncode(newId),
+          name: email,
+          role: 'owner',
+          Plan: 'free',
+          status: true,
+        );
+        awsDb2.saveUser(id: newUser.id, clientId: newUser.db_id, name: newUser.name, role: newUser.role, plan: newUser.Plan, status: newUser.status);
+        safePrint('✅ Usuario creado: $newUser');
+        state = newUser;
+      }
+
     }
-
+    catch (e) {
+      state = null;
+      safePrint('❌ Error al obtener el usuario actual: $e');
+      return;
+    }
+    }
   }
-  catch (e) {
-    safePrint('❌ Error al obtener el usuario actual: $e');
-    return;
-  }
-}

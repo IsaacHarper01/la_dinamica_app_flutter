@@ -18,7 +18,6 @@ class MainScreen extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainScreen> {
   int _selectedIndex = 0;
-  late Future<void> _initFuture;
 
   final List<Widget> _screens = const [
     HomeScreen(),
@@ -31,7 +30,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _initFuture = initializeUser(ref); 
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(userProvider.notifier).initializeUser(ref);
+    });
   }
 
   void _onItemTapped(int index) {

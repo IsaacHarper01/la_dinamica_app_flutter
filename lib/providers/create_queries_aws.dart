@@ -30,6 +30,8 @@ class DataStoreService {
     required int clases,
     required String type,
     required String date,
+    required String? dbId,
+    required String? profId,
   }) async {
     final item = Pay(
         user_id: userId,
@@ -37,6 +39,8 @@ class DataStoreService {
         clases: clases,
         type: type,
         date: TemporalDate(DateTime.parse(date)),
+        client_id: dbId,
+        prof_id: profId
         );
 
     try {
@@ -165,26 +169,4 @@ class DataStoreService {
     }
   }
 
-  Future<void> saveClient({
-    required String id,
-    required String name,
-    required String? plan,
-    required String? status,
-  }) async {
-    final item = Client(
-        id: id,
-        name: name,
-        plan: plan,
-        status: status,
-    );
-
-    try {
-      await Amplify.DataStore.save(item);
-      safePrint('✅ Cliente guardado correctamente');
-    } catch (e) {
-      safePrint('❌ Error al guardar el cliente: $e');
-      rethrow;
-    }
-  }
-  // Puedes añadir más métodos aquí: getPlans, deletePlan, updatePlan, etc.
 }
