@@ -130,17 +130,21 @@ class DataStoreReadService {
     }
   }
   
-  Future<Map<String, dynamic>> getTotalAmounRange(DateTime startDate,DateTime endDate) async {
+  Future<List<Map<String, dynamic>>?> getTotalAmounRange(DateTime startDate,DateTime endDate) async {
     Map<String, dynamic> clasesDates = {};
+    Map<String, dynamic> studentsPerDay = {};
+
     try {
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
         where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)),
       );
-      if (payments.isEmpty) {
-        safePrint('❌ No se encontraron ingresos en el rango de fechas proporcionado');
-        return {'total': 0.0, 'count': 0};
-      } else {
+      List<Attendance> students = await Amplify.DataStore.query(
+        Attendance.classType,
+        where: Attendance.DATE.between(TemporalDate(startDate),TemporalDate(endDate),),
+        );
+
+      if (payments.isNotEmpty) {
         for (var payment in payments) {
           String dateKey = payment.date!.format();
           double amount = payment.amount ?? 0.0;
@@ -150,10 +154,29 @@ class DataStoreReadService {
           } else {
             clasesDates[dateKey] = amount;
           }
-            }
         }
-      return clasesDates;
-    } catch (e) {
+      }
+      else {
+        safePrint('❌ No se encontraron pagos en el rango de fechas proporcionado');
+        clasesDates = {};
+        }
+      if (students.isNotEmpty) {
+
+        for (var student in students) {
+          String dateKey = student.date!.format();
+          if (studentsPerDay.containsKey(dateKey)) {
+            studentsPerDay[dateKey] += 1;
+          } else {
+            studentsPerDay[dateKey] = 1;
+          }
+        }
+      } else{
+        safePrint('❌ No se encontraron asistencias en el rango de fechas proporcionado');
+        studentsPerDay = {};
+      }
+      return [clasesDates, studentsPerDay];
+    }
+    catch (e) {
       safePrint('❌ Error al obtener el monto total: $e');
       rethrow;
     }

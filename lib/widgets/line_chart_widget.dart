@@ -1,8 +1,11 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/widgets/average_widget.dart';
+import 'package:la_dinamica_app/widgets/days_chart_widget.dart';
 
 class LineChartWidget extends ConsumerWidget{
   final DateTime startDate;
@@ -28,14 +31,77 @@ class LineChartWidget extends ConsumerWidget{
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else {
-                return Linechart(snapshot.data, n);
+                return infocharts(snapshot.data, n, linechart);
               }
             }
           );
   }
 
-  Center Linechart(data, n) {
+infocharts(alldata, n, linegraph){
+    final inconmeData = alldata[0];
+    final studentData = alldata[1];
 
+    final incomePerDay = getCountPerDay(inconmeData);
+    final studentsPerDay = getCountPerDay(studentData);
+
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          Text('Analisis de los ultimos $n días',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+          const SizedBox(height: 25),
+          Row(
+            children: [
+              Column(children: [
+                const Text('Ingresos por día',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: 210, 
+                height: 200, 
+                child: DaysChartWidget(values: incomePerDay['values']),
+                ),
+              ],),
+              const Spacer(),
+              SizedBox(
+                width: 450, 
+                height: 350, 
+                child: linegraph(inconmeData, n),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(children: [
+                const Text('Estudiantes por día',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: 210, 
+                height: 200,
+                child: DaysChartWidget(values: studentsPerDay['values']),
+                ),
+              ]
+              ),
+              
+              Column(children: [
+                AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
+                const SizedBox(height: 20),
+                AverageWidget(average: "\$${incomePerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
+                ]),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Center linechart(data, n) {
+    safePrint("data: $data");
     final yData = <FlSpot>[];
     double i = 0;
     final sortedDataList = data.entries.toList()
@@ -46,20 +112,9 @@ class LineChartWidget extends ConsumerWidget{
       yData.add(FlSpot(i,data[key]));
       i++;
     }
-    
     return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const SizedBox(height: 20,),
-        Text('Análisis de los últimos $n días',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20,),
-        SizedBox(
-          width: 500, // Set a specific width
-          height: 400, // Set a specific height
-          child: LineChart(
+    child:
+      LineChart(
             LineChartData(
               minY: 0,
               gridData: const FlGridData(show: true),
@@ -91,11 +146,34 @@ class LineChartWidget extends ConsumerWidget{
               ],
             ),
           ),
-        ),
-        const SizedBox(height: 20),
-      ],
-    ),
-  );
+    );
+  }
+
+  
+  Map<String, dynamic> getCountPerDay(data){ //this function could be used for both income and students
+    List<double> values = [0,0,0,0,0,0,0]; // [LU, MA, MI, JU, VI, SA, DO]
+
+    data.forEach((dateStr, earning) {
+      final date = DateTime.parse(dateStr);
+      final day = date.weekday;
+      safePrint("day: $day, earning: $earning");
+      values[day - 1] += earning;
+    });
+    int aux = 0;
+    double sum = 0.0;
+
+    for (var i = 0; i < values.length; i++) {
+      if (values[i] != 0) {
+        sum += values[i];
+        aux +=1;
+      }
+    }
+    final average = sum / aux;
+
+    return {
+      'values': values,
+      'average': average,
+    };
   }
 }
 

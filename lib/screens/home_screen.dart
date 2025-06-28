@@ -3,9 +3,11 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
+import 'package:la_dinamica_app/models/User.dart';
 
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 
@@ -22,13 +24,15 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late String selectedDate;
-
+  late User? user;
+  
   @override
   void initState() {
     super.initState();
 
     // Defer execution to avoid modifying state during widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      user = ref.read(userProvider);
       selectedDate = ref.read(dateProvider);
       ref.read(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
     });
