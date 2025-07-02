@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:logger/logger.dart';
 
@@ -9,16 +9,18 @@ class AddStudentScreen extends StatefulWidget {
   const AddStudentScreen({super.key});
 
   @override
-  _AddStudentScreenState createState() => _AddStudentScreenState();
+  AddStudentScreenState createState() => AddStudentScreenState();
 }
 
-class _AddStudentScreenState extends State<AddStudentScreen> {
+class AddStudentScreenState extends State<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
 
   // Crear un controlador para cada campo de texto
-  final List<TextEditingController> _controllers =
-      List.generate(6, (index) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
 
   // Lista de nombres personalizados para cada campo
   final List<String> _fieldNames = [
@@ -27,8 +29,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     'Teléfono',
     'Edad',
     'Fecha de nacimiento',
-    'Correo Electrónico'
+    'Correo Electrónico',
   ];
+
   //La lista de las etiquetas y los nombres en la base de datos difieren por lo que hice otra variable
   final List<String> _namesdb = [
     'name',
@@ -36,8 +39,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     'phone',
     'age',
     'birthday',
-    'email'
+    'email',
   ];
+
   @override
   void dispose() {
     // Liberar los controladores cuando no se necesiten más
@@ -50,38 +54,38 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   void _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
-      final aws_db = DataStoreService();
+      final awsDb = DataStoreService();
 
-      Map<String, dynamic> data = {};
-
-      // Recopilar los datos de los controladores
-      for (var i = 0; i < _controllers.length; i++) {
-        data[_namesdb[i]] = _controllers[i].text;
-      }
-
+      final data = {
+        for (var i = 0; i < _controllers.length; i++)
+          _namesdb[i]: _controllers[i].text,
+      };
       logger.i('Datos del formulario: $data');
 
       // Insertar los valores en la base de datos y generar el archivo PDF
-      final image = await pickAndSaveImage(data['name']);
+      final image = await pickAndSaveImage(data['name']!);
       data['image'] = image;
-      
-      final id = await aws_db.saveGeneral(
-          name: data['name'],
-          address: data['address'],
-          phone: data['phone'],
-          age: int.parse(data['age']),
-          birthday: data['birthday'],
-          email: data['email'],
-          image: image);
+
+      final id = await awsDb.saveGeneral(
+        name: data['name']!,
+        address: data['address']!,
+        phone: data['phone']!,
+        age: int.parse(data['age']!),
+        birthday: data['birthday']!,
+        email: data['email']!,
+        image: image,
+      );
 
       generateCredentialandSend(
-          id, 
-          data['name'], 
-          data['address'], 
-          data['phone'], 
-          data['age'], 
-          image);
+        id,
+        data['name']!,
+        data['address']!,
+        data['phone']!,
+        data['age']!,
+        image,
+      );
 
+      if (!mounted) return;
       // Mostrar SnackBar confirmando el registro
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -106,18 +110,13 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Student'),
-      ),
+      appBar: AppBar(title: const Text('Add Student')),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            colors: [
-              colorList[2],
-              colorList[4],
-            ],
+            colors: [colorList[2], colorList[4]],
           ),
         ),
         child: Center(
@@ -129,32 +128,35 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withAlpha(204),
                     borderRadius: BorderRadius.circular(16.0),
                   ),
                   child: Column(
                     children: [
                       ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            'https://i.pinimg.com/originals/fb/6d/16/fb6d16c4321ab45dad1c6290f2740f7a.jpg',
-                            width: 100,
-                            fit: BoxFit.cover,
-                          )),
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.network(
+                          'https://i.pinimg.com/originals/fb/6d/16/fb6d16c4321ab45dad1c6290f2740f7a.jpg',
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                       Form(
                         key: _formKey,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: List.generate(_fieldNames.length, (index) {
                             return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
                               child: TextFormField(
                                 style: const TextStyle(color: Colors.black),
                                 controller: _controllers[index],
                                 decoration: InputDecoration(
-                                  labelStyle:
-                                      const TextStyle(color: Colors.black),
+                                  labelStyle: const TextStyle(
+                                    color: Colors.black,
+                                  ),
                                   labelText: _fieldNames[index],
                                   hintText:
                                       'Ingrese ${_fieldNames[index].toLowerCase()}',

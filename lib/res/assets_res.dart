@@ -8,6 +8,7 @@ class AssetsRes {
 
   static const String PROJECT_NAME = 'la_dinamica_app';
   static const String PROJECT_VERSION = '1.0.0+1';
+  static const String DEFAULT_PROFILE = 'assets/images/default_profile.jpg';
   static const String F_MA11 = 'assets/images/f_ma11.png';
   static const String F_MA18 = 'assets/images/f_ma18.png';
 }

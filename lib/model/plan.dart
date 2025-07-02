@@ -1,18 +1,18 @@
-class Plan_local {
+class PlanLocal {
   final int id;
   final String type;
   final int clases;
   final double price;
 
-  Plan_local({
+  PlanLocal({
     required this.id,
     required this.type,
     required this.clases,
     required this.price,
   });
 
-  factory Plan_local.fromMap(Map<String, dynamic> map) {
-    return Plan_local(
+  factory PlanLocal.fromMap(Map<String, dynamic> map) {
+    return PlanLocal(
       id: map['id'],
       type: map['type'],
       clases: map['clases'],
@@ -21,10 +21,6 @@ class Plan_local {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'type': type,
-      'clases': clases,
-      'price': price,
-    };
+    return {'type': type, 'clases': clases, 'price': price};
   }
 }

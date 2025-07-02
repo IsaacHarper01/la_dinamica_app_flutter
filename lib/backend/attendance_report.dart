@@ -1,11 +1,15 @@
 import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) async {
+Future<void> generateAttendanceReport(
+  DateTime startDate,
+  DateTime endDate,
+) async {
   // Solicitar permiso de almacenamiento
   var status = await Permission.storage.status;
   if (!status.isGranted) {
@@ -14,9 +18,9 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
 
   // Obtener los datos de asistencia desde la base de datos
   final awsDb = DataStoreReadService();
-  
+
   final attendanceData = await awsDb.getAttendanceRange(startDate, endDate);
-  
+
   // Si no hay datos, salir
   if (attendanceData.isEmpty) {
     return;
@@ -28,9 +32,9 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
   }
 
   final agesAndAddress = await awsDb.getAgesandAddress(ids);
-  
+
   List<List<String>> csvData = [
-    ['Id del Alumno', 'Nombre', 'Edad', 'Localidad' ,'Fecha'],
+    ['Id del Alumno', 'Nombre', 'Edad', 'Localidad', 'Fecha'],
   ];
 
   for (var i = 0; i < attendanceData.length; i++) {
@@ -49,9 +53,12 @@ Future<void> generateAttendanceReport(DateTime startDate, DateTime endDate) asyn
   Directory? directory = (await getTemporaryDirectory());
 
   String path = directory.path;
-  String fileName = '$path/attendance_report_${DateTime.now().toString().split(' ')[0]}.csv';
+  String fileName =
+      '$path/attendance_report_${DateTime.now().toString().split(' ')[0]}.csv';
   File file = File(fileName);
   await file.writeAsString(csvContent);
 
-  await Share.shareXFiles([XFile(fileName)], text: 'Attendance report');
+  await SharePlus.instance.share(
+    ShareParams(subject: 'Reporte de asistencia', files: [XFile(fileName)]),
+  );
 }

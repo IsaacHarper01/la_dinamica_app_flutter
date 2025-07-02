@@ -1,15 +1,13 @@
-import 'dart:convert';
-
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
-
 class DataStoreReadService {
-
   Future<List<LocalPlan>> getPlans() async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<LocalPlan> plans = await Amplify.DataStore.query(LocalPlan.classType);
+      List<LocalPlan> plans = await Amplify.DataStore.query(
+        LocalPlan.classType,
+      );
       safePrint('✅ Planes obtenidos correctamente');
       return plans;
     } catch (e) {
@@ -21,7 +19,9 @@ class DataStoreReadService {
   Future<List<List<String>>> getPlansNamesIds() async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<LocalPlan> plans = await Amplify.DataStore.query(LocalPlan.classType);
+      List<LocalPlan> plans = await Amplify.DataStore.query(
+        LocalPlan.classType,
+      );
       List<Student> general = await Amplify.DataStore.query(Student.classType);
 
       List<String> names = [];
@@ -29,7 +29,7 @@ class DataStoreReadService {
       List<String> planType = [];
       List<String> planPrice = [];
       List<String> numClases = [];
-      
+
       for (var person in general) {
         names.add(person.name!);
         ids.add(person.user_id.toString());
@@ -49,8 +49,7 @@ class DataStoreReadService {
   Future<List<Pay>> getPayments() async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Pay> payments =
-          await Amplify.DataStore.query(Pay.classType);
+      List<Pay> payments = await Amplify.DataStore.query(Pay.classType);
       safePrint('✅ Pagos obtenidos correctamente');
       return payments;
     } catch (e) {
@@ -59,14 +58,14 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Pay>> getPaymentsRange(DateTime startDate, DateTime endDate) async {
+  Future<List<Pay>> getPaymentsRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     try {
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
-        where: Pay.DATE.between(
-          TemporalDate(startDate),
-          TemporalDate(endDate),
-        ),
+        where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)),
       );
       safePrint('✅ Pagos obtenidos correctamente');
       return payments;
@@ -76,7 +75,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<Map<String, dynamic>> getLastPayandStudentData(int userId) async{
+  Future<Map<String, dynamic>> getLastPayandStudentData(int userId) async {
     try {
       List<Student> general = await Amplify.DataStore.query(
         Student.classType,
@@ -92,10 +91,10 @@ class DataStoreReadService {
         safePrint('❌ No se encontraron datos para el usuario con ID $userId');
         return {};
       }
-      print('Payments: $payments');
+      safePrint('Payments: $payments');
 
       Map<String, dynamic> result = {
-        'lastPay':  payments.first,
+        'lastPay': payments.first,
         'studentData': general.first,
       };
       safePrint('✅ Datos obtenidos correctamente');
@@ -115,9 +114,11 @@ class DataStoreReadService {
         where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)),
       );
       if (payments.isEmpty) {
-        safePrint('❌ No se encontraron ingresos en el rango de fechas proporcionado');
+        safePrint(
+          '❌ No se encontraron ingresos en el rango de fechas proporcionado',
+        );
         return 0.0;
-      }else {
+      } else {
         for (var payment in payments) {
           totalIncome += payment.amount ?? 0.0;
         }
@@ -180,7 +181,6 @@ class DataStoreReadService {
       safePrint('❌ Error al obtener el monto total: $e');
       rethrow;
     }
-
   }
 
   Future<List<Metric>> getMetrics() async {
@@ -231,10 +231,12 @@ class DataStoreReadService {
     try {
       List<Student> general = [];
       for (var id in ids) {
-        general.addAll(await Amplify.DataStore.query(
-          Student.classType,
-          where: Student.USER_ID.eq(id),
-        ));
+        general.addAll(
+          await Amplify.DataStore.query(
+            Student.classType,
+            where: Student.USER_ID.eq(id),
+          ),
+        );
       }
       List<String> ages = [];
       List<String> addresses = [];
@@ -258,8 +260,9 @@ class DataStoreReadService {
   Future<List<Attendance>> getAttendance() async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Attendance> attendance =
-          await Amplify.DataStore.query(Attendance.classType);
+      List<Attendance> attendance = await Amplify.DataStore.query(
+        Attendance.classType,
+      );
       safePrint('✅ Asistencias obtenidas correctamente');
       return attendance;
     } catch (e) {
@@ -282,7 +285,9 @@ class DataStoreReadService {
   }
 
   Future<List<Attendance>> getAttendanceRange(
-      DateTime startDate, DateTime endDate) async {
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     try {
       List<Attendance> attendance = await Amplify.DataStore.query(
         Attendance.classType,
@@ -301,14 +306,15 @@ class DataStoreReadService {
 
   Future<List<String?>> getImages(List<int> ids) async {
     try {
-
-      List<Student> general = []; 
-        for (var id in ids) {
-          general.addAll(await Amplify.DataStore.query(
+      List<Student> general = [];
+      for (var id in ids) {
+        general.addAll(
+          await Amplify.DataStore.query(
             Student.classType,
             where: Student.USER_ID.eq(id),
-          ));
-        }
+          ),
+        );
+      }
       List<String> images = [];
       if (general.isNotEmpty) {
         for (var student in general) {
@@ -318,7 +324,7 @@ class DataStoreReadService {
         return images;
       } else {
         safePrint('❌ No se encontró el alumno con el ID proporcionado');
-        return [];	
+        return [];
       }
     } catch (e) {
       safePrint(' Error al obtener las imagenes: $e');
@@ -332,7 +338,7 @@ class DataStoreReadService {
       List<LocalPlan> plans = await Amplify.DataStore.query(
         LocalPlan.classType,
         where: LocalPlan.CLASES.eq(1),
-        );
+      );
       safePrint('✅ Planes obtenidos correctamente');
       if (plans.isNotEmpty) {
         return plans.first;
@@ -380,43 +386,43 @@ class DataStoreReadService {
       safePrint('Ultimo pago obtenido: $lastPayment');
       if (lastPayment == null) {
         final newPayment = Pay(
-          user_id: userId, //This user ID is the student ID
+          user_id: userId,
+          //This user ID is the student ID
           amount: cost,
           clases: 0,
           type: planType,
           date: TemporalDate(DateTime.parse(date)),
-          client_id: jsonDecode(user.db_id!)['1'], //this user ID is the client ID
+          client_id: user.db_id,
+          //this user ID is the client ID
           prof_id: user.id, //This user ID is the teacher ID
         );
 
-      await Amplify.DataStore.save(newPayment);
-      return;
-
+        await Amplify.DataStore.save(newPayment);
+        return;
       } else {
         if (lastPayment.type != planType && (lastPayment.clases!) > 0) {
-          var remainingClases = (lastPayment.clases!) -1;
-          Pay newPayment = lastPayment.copyWith(
-            clases: remainingClases,
-          );
+          var remainingClases = (lastPayment.clases!) - 1;
+          Pay newPayment = lastPayment.copyWith(clases: remainingClases);
+          await Amplify.DataStore.delete(lastPayment);
           await Amplify.DataStore.save(newPayment);
           safePrint('Pago actualizado con clases restantes: $remainingClases');
           return;
         } else {
           final newPayment = Pay(
-          user_id: userId,
-          amount: cost,
-          clases: 0,
-          type: planType,
-          date: TemporalDate(DateTime.parse(date)),
-          client_id: jsonDecode(user.db_id!)['1'], //this user ID is the client ID
-          prof_id: user.id, //This user ID is the teacher ID
-        );
-        await Amplify.DataStore.save(newPayment);
+            user_id: userId,
+            amount: cost,
+            clases: 0,
+            type: planType,
+            date: TemporalDate(DateTime.parse(date)),
+            client_id: user.db_id,
+            // this user ID is the client ID
+            prof_id: user.id, //This user ID is the teacher ID
+          );
+          await Amplify.DataStore.save(newPayment);
         }
       }
 
       safePrint('✅ Pago verificado correctamente');
-      
     } catch (e) {
       safePrint('❌ Error al verificar el pago: $e');
       rethrow;
@@ -424,17 +430,17 @@ class DataStoreReadService {
   }
 
   Future<bool> userExists(String userId) async {
-  try {
-    final users = await Amplify.DataStore.query(
-      User.classType,
-      where: User.ID.eq(userId),
-    );
-    return users.isNotEmpty;
-  } catch (e) {
-    safePrint('❌ Error checking user: $e');
-    return false;
+    try {
+      final users = await Amplify.DataStore.query(
+        User.classType,
+        where: User.ID.eq(userId),
+      );
+      return users.isNotEmpty;
+    } catch (e) {
+      safePrint('❌ Error checking user: $e');
+      return false;
+    }
   }
-}
 
   Future<bool> clientExists(String userId) async {
     try {
@@ -455,11 +461,9 @@ class DataStoreReadService {
         User.classType,
         where: User.ID.eq(userId),
       );
-      if (users.isNotEmpty) {
-        return users.first;
-      } else {
-        throw Exception('User not found');
-      }
+      if (users.isNotEmpty) return users.first;
+      safePrint('⚠️ User not found with ID: $userId');
+      return null;
     } catch (e) {
       safePrint('❌ Error getting user: $e');
       rethrow;
@@ -482,5 +486,4 @@ class DataStoreReadService {
       rethrow;
     }
   }
-
 }

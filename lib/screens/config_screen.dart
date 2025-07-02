@@ -17,7 +17,6 @@ class ConfigScreen extends ConsumerStatefulWidget {
 }
 
 class _ConfigScreenState extends ConsumerState<ConfigScreen> {
-  
   @override
   Widget build(BuildContext context) {
     final plansState = ref.watch(planProvider);
@@ -130,11 +129,7 @@ class PlanCard extends StatelessWidget {
   final LocalPlan plan;
   final VoidCallback onDelete;
 
-  const PlanCard({
-    super.key,
-    required this.plan,
-    required this.onDelete,
-  });
+  const PlanCard({super.key, required this.plan, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -145,9 +140,7 @@ class PlanCard extends StatelessWidget {
     return Card(
       elevation: 2,
       color: colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -198,22 +191,23 @@ class PlanCard extends StatelessWidget {
                 if (value == 'delete') {
                   final confirm = await showDialog<bool>(
                     context: context,
-                    builder: (_) => AlertDialog(
-                      title: const Text('¿Eliminar Plan?'),
-                      content: const Text(
-                        'Esta acción no se puede deshacer. ¿Estás seguro?',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancelar'),
+                    builder:
+                        (_) => AlertDialog(
+                          title: const Text('¿Eliminar Plan?'),
+                          content: const Text(
+                            'Esta acción no se puede deshacer. ¿Estás seguro?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancelar'),
+                            ),
+                            FilledButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Eliminar'),
+                            ),
+                          ],
                         ),
-                        FilledButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Eliminar'),
-                        ),
-                      ],
-                    ),
                   );
 
                   if (confirm == true) {
@@ -221,18 +215,19 @@ class PlanCard extends StatelessWidget {
                   }
                 }
               },
-              itemBuilder: (context) => [
-                const PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, color: Colors.redAccent),
-                      SizedBox(width: 8),
-                      Text('Eliminar'),
-                    ],
-                  ),
-                ),
-              ],
+              itemBuilder:
+                  (context) => [
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: Colors.redAccent),
+                          SizedBox(width: 8),
+                          Text('Eliminar'),
+                        ],
+                      ),
+                    ),
+                  ],
             ),
           ],
         ),

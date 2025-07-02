@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/backend/Income_report.dart';
 import 'package:la_dinamica_app/backend/attendance_report.dart';
+import 'package:la_dinamica_app/backend/income_report.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/line_chart_widget.dart';
+import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
 
 class EarnScreen extends ConsumerStatefulWidget {
   const EarnScreen({super.key});
 
   @override
-  _EarnScreenState createState() => _EarnScreenState();
+  EarnScreenState createState() => EarnScreenState();
 }
 
-class _EarnScreenState extends ConsumerState<EarnScreen> {
-  
+class EarnScreenState extends ConsumerState<EarnScreen> {
   late DateTime startDate;
   late DateTime endDate;
 
@@ -29,7 +28,6 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
-    
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: isStart ? startDate : endDate,
@@ -43,41 +41,44 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
         } else {
           endDate = pickedDate;
         }
-      }
-    );
+      });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
-    final screenWidth = isPortatil
-        ? MediaQuery.of(context).size.width
-        : MediaQuery.of(context).size.width * 0.8;
+    final screenWidth =
+        isPortatil
+            ? MediaQuery.of(context).size.width
+            : MediaQuery.of(context).size.width * 0.8;
     final awsDb = DataStoreReadService();
 
     return Scaffold(
-      
       body: FutureBuilder<double>(
-        
-        future: awsDb.getIncomeRange(startDate, endDate), 
-        builder: (BuildContext context,
-            AsyncSnapshot<double> snapshot) {
+        future: awsDb.getIncomeRange(startDate, endDate),
+        builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-          double result = snapshot.data!;
-          final today = ref.watch(dateProvider);
-          return IncomeScreen(context, screenWidth, result, today);
-          }}) 
+            double result = snapshot.data!;
+            final today = ref.watch(dateProvider);
+            return incomeScreen(context, screenWidth, result, today);
+          }
+        },
+      ),
     );
   }
 
-  Center IncomeScreen(BuildContext context, double screenWidth,double result, String date) {
+  Center incomeScreen(
+    BuildContext context,
+    double screenWidth,
+    double result,
+    String date,
+  ) {
     return Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -99,7 +100,8 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                       shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              8.0), // Ajusta el valor según lo que desees
+                            8.0,
+                          ), // Ajusta el valor según lo que desees
                         ),
                       ),
                     ),
@@ -121,13 +123,16 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                       shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              8.0), // Ajusta el valor según lo que desees
+                            8.0,
+                          ), // Ajusta el valor según lo que desees
                         ),
                       ),
                     ),
                     onPressed: () {
                       _selectDate(
-                          context, false); // false para fecha de finalización
+                        context,
+                        false,
+                      ); // false para fecha de finalización
                     },
                     child: Text(
                       "Final: ${endDate.month}/${endDate.day}/${endDate.year}",
@@ -137,23 +142,35 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                 ],
               ),
               const SizedBox(
-                  height: 10), // Espaciado entre los botones y el gráfico
+                height: 10,
+              ), // Espaciado entre los botones y el gráfico
               const Text('Generar reportes en csv'),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ElevatedButton(
+                  Flexible(
+                    child: ElevatedButton(
                       onPressed: () {
                         generateAttendanceReport(startDate, endDate);
                       },
-                      child: const Text('Reporte de asistencias'),
+                      child: const Text(
+                        'Reporte de asistencias',
+                        overflow: TextOverflow.ellipsis,
                       ),
-                  ElevatedButton(onPressed: (){
-                      generateIncomeReport(startDate, endDate);
-                  }, 
-                  child: const Text('Reporte de Ingresos'))
+                    ),
+                  ),
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        generateIncomeReport(startDate, endDate);
+                      },
+                      child: const Text(
+                        'Reporte de Ingresos',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 10),
@@ -161,8 +178,9 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                 height: 110,
                 width: screenWidth * 0.9,
                 decoration: BoxDecoration(
-                    color: colorList[3],
-                    borderRadius: BorderRadius.circular(16)),
+                  color: colorList[3],
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -172,7 +190,7 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                         'Datos de la fecha Actual: $date',
                         style: const TextStyle(color: Colors.white),
                       ),
-                      
+
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -183,29 +201,29 @@ class _EarnScreenState extends ConsumerState<EarnScreen> {
                           Text(
                             '\$${result.toString()}',
                             style: const TextStyle(color: Colors.white),
-                          )
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: colorList[1], width: 1)),
-                  child: LineChartWidget(startDate: startDate, endDate: endDate,)),
-              const SizedBox(
-                height: 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: colorList[1], width: 1),
+                ),
+                child: LineChartWidget(startDate: startDate, endDate: endDate),
               ),
+              const SizedBox(height: 20),
               Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: colorList[1], width: 1)),
-                  child: PieChartWidget(startDate: startDate, endDate: endDate,)), 
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: colorList[1], width: 1),
+                ),
+                child: PieChartWidget(startDate: startDate, endDate: endDate),
+              ),
             ],
           ),
         ),

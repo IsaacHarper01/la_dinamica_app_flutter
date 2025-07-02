@@ -1,7 +1,6 @@
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:flutter/material.dart';
 
-
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold({
     super.key,
@@ -27,7 +26,7 @@ class CustomScaffold extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/images/f=ma18.png',
+                  'assets/images/f_ma18.png',
                   height: 300,
                   fit: BoxFit.cover,
                 ),
@@ -39,9 +38,9 @@ class CustomScaffold extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Container(
-                constraints: const BoxConstraints(maxWidth: 600),
-                child: body,
-              ), 
+                  constraints: const BoxConstraints(maxWidth: 600),
+                  child: body,
+                ),
               ],
             ),
           ),

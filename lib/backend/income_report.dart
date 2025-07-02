@@ -1,27 +1,26 @@
 import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:csv/csv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-
 Future<void> generateIncomeReport(DateTime min, DateTime max) async {
-
   var status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
   }
   final awsDb = DataStoreReadService();
-  
+
   final paymentsData = await awsDb.getPaymentsRange(min, max);
-  
+
   if (paymentsData.isEmpty) {
     return;
   }
 
   List<List<String>> csvData = [
-    ['Id del Alumno', 'Fecha', 'Concepto','Monto']
+    ['Id del Alumno', 'Fecha', 'Concepto', 'Monto'],
   ];
   num total = 0;
   for (var pay in paymentsData) {
@@ -34,7 +33,12 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
     ]);
   }
 
-  csvData.add(['Total','${min.toString().split(' ')[0]} - ${max.toString().split(' ')[0]}', '', '$total']);
+  csvData.add([
+    'Total',
+    '${min.toString().split(' ')[0]} - ${max.toString().split(' ')[0]}',
+    '',
+    '$total',
+  ]);
 
   // Generar contenido CSV
   String csvContent = const ListToCsvConverter().convert(csvData);
@@ -42,9 +46,12 @@ Future<void> generateIncomeReport(DateTime min, DateTime max) async {
   Directory? directory = (await getTemporaryDirectory());
 
   String path = directory.path;
-  String fileName = '$path/income_report_${DateTime.now().toString().split(' ')[0]}.csv';
+  String fileName =
+      '$path/income_report_${DateTime.now().toString().split(' ')[0]}.csv';
   File file = File(fileName);
   await file.writeAsString(csvContent);
 
-  await Share.shareXFiles([XFile(fileName)], text: 'Attendance report');
+  await SharePlus.instance.share(
+    ShareParams(subject: 'Attendance Report', files: [XFile(fileName)]),
+  );
 }

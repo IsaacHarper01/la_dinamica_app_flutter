@@ -19,10 +19,10 @@ class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class HomeScreenState extends ConsumerState<HomeScreen> {
   late String selectedDate;
   late User? user;
   
@@ -70,18 +70,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortrait = orientation == Orientation.portrait;
-    final screenHeight = isPortrait
-        ? MediaQuery.of(context).size.height
-        : MediaQuery.of(context).size.height * 2;
+    final screenHeight =
+        isPortrait
+            ? MediaQuery.of(context).size.height
+            : MediaQuery.of(context).size.height * 2;
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
     final studentsState = ref.watch(studentsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        actions: const [CalendarButton(),SignOutButton()],
-      ),
+      appBar: AppBar(actions: const [CalendarButton(), SignOutButton()]),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),
@@ -94,16 +93,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           if (students.isEmpty) {
             return Center(
               child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      isDarkMode
-                          ? 'assets/images/f=ma11.png'
-                          : 'assets/images/f=ma18.png',
-                      height:
-                          isDarkMode ? screenHeight * 0.2 : screenHeight * 0.3,
-                      fit: BoxFit.cover,
-                    ),
-                  )
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  isDarkMode
+                      ? 'assets/images/f_ma11.png'
+                      : 'assets/images/f_ma18.png',
+                  height: isDarkMode ? screenHeight * 0.2 : screenHeight * 0.3,
+                  fit: BoxFit.cover,
+                ),
+              ),
             );
           }
 
@@ -116,35 +114,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   SearchStudentContainer(
                     circleText: 'Asistencias de hoy: ${students.length}',
                   ),
-                  SizedBox(
-                    height: screenHeight * 0.01,
-                  ),
+                  SizedBox(height: screenHeight * 0.01),
                   Column(
-                      children: students.asMap().entries.map(
-                    (entry) {
-                      Student student = entry.value;
+                    children:
+                        students.asMap().entries.map((entry) {
+                          Student student = entry.value;
 
-                      return Column(
-                        children: [
-                          PreviewStudentContainer(
-                            name: student.name,
-                            image: student.image,
-                            onDismissed: () {
-                              ref
-                                  .read(studentsProvider.notifier)
-                                  .deleteAttendance(
-                                      student.id, ref.watch(dateProvider));
-                            },
-                          ),
-                          const Divider(
-                            height: 0,
-                            indent: 20,
-                            endIndent: 20,
-                          ),
-                        ],
-                      );
-                    },
-                  ).toList())
+                          return Column(
+                            children: [
+                              PreviewStudentContainer(
+                                name: student.name,
+                                image: student.image,
+                                onDismissed: () {
+                                  ref
+                                      .read(studentsProvider.notifier)
+                                      .deleteAttendance(
+                                        student.id,
+                                        ref.watch(dateProvider),
+                                      );
+                                },
+                              ),
+                              const Divider(
+                                height: 0,
+                                indent: 20,
+                                endIndent: 20,
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                  ),
                 ],
               ),
             ),

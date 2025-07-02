@@ -7,18 +7,32 @@ import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/widgets/average_widget.dart';
 import 'package:la_dinamica_app/widgets/days_chart_widget.dart';
 
-class LineChartWidget extends ConsumerWidget{
+class LineChartWidget extends ConsumerWidget {
   final DateTime startDate;
   final DateTime endDate;
-  
-  const LineChartWidget({super.key, required this.startDate, required this.endDate});
+
+  const LineChartWidget({
+    super.key,
+    required this.startDate,
+    required this.endDate,
+  });
+
+  bool _isValidDate(String value) {
+    try {
+      DateTime.parse(value);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final today = DateTime.parse(ref.watch(dateProvider));
     var n = 30;
 
-    if(startDate.toString().split(' ')[0] != endDate.toString().split(' ')[0]){
+    if (startDate.toString().split(' ')[0] !=
+        endDate.toString().split(' ')[0]) {
       n = endDate.difference(startDate).inDays;
     }
 
@@ -26,7 +40,7 @@ class LineChartWidget extends ConsumerWidget{
     final awsDb = DataStoreReadService();
 
     return FutureBuilder(
-      future: awsDb.getTotalAmounRange(lastdate, today), 
+      future: awsDb.getTotalAmounRange(lastdate, today),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -104,12 +118,20 @@ infocharts(alldata, n, linegraph){
     safePrint("data: $data");
     final yData = <FlSpot>[];
     double i = 0;
-    final sortedDataList = data.entries.toList()
-          ..sort((a,b)=> DateTime.parse(a.key).compareTo(DateTime.parse(b.key)));
-    final orderedData = Map.fromEntries(sortedDataList);
 
-    for(var key in orderedData.keys){
-      yData.add(FlSpot(i,data[key]));
+    final filteredEntries =
+        data.entries.where((entry) => _isValidDate(entry.key)).toList();
+
+    filteredEntries.sort(
+      (a, b) => DateTime.parse(a.key).compareTo(DateTime.parse(b.key)),
+    );
+    final orderedData = Map.fromEntries(filteredEntries);
+
+    for (var key in orderedData.keys) {
+      final value = orderedData[key];
+      if (value is num) {
+        yData.add(FlSpot(i, value.toDouble()));
+      }
       i++;
     }
     return Center(

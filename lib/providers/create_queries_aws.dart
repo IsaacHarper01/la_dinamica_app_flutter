@@ -4,17 +4,12 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class DataStoreService {
-  
   Future<void> savePlan({
     required String type,
     required int clases,
     required double price,
   }) async {
-    final item = LocalPlan(
-      type: type,
-      clases: clases,
-      price: price,
-    );
+    final item = LocalPlan(type: type, clases: clases, price: price);
 
     try {
       await Amplify.DataStore.save(item);
@@ -35,14 +30,14 @@ class DataStoreService {
     required String? profId,
   }) async {
     final item = Pay(
-        user_id: userId,
-        amount: amount,
-        clases: clases,
-        type: type,
-        date: TemporalDate(DateTime.parse(date)),
-        client_id: dbId,
-        prof_id: profId
-        );
+      user_id: userId,
+      amount: amount,
+      clases: clases,
+      type: type,
+      date: TemporalDate(DateTime.parse(date)),
+      client_id: dbId,
+      prof_id: profId,
+    );
 
     try {
       await Amplify.DataStore.save(item);
@@ -60,10 +55,11 @@ class DataStoreService {
     required double value,
   }) async {
     final item = Metric(
-        user_id: userId,
-        metric: metric,
-        date: TemporalDate(DateTime.parse(date)),
-        value: value);
+      user_id: userId,
+      metric: metric,
+      date: TemporalDate(DateTime.parse(date)),
+      value: value,
+    );
 
     try {
       await Amplify.DataStore.save(item);
@@ -87,10 +83,10 @@ class DataStoreService {
       final students = await Amplify.DataStore.query(
         Student.classType,
         sortBy: [Student.USER_ID.descending()],
-        pagination: const QueryPagination(limit: 1,),
-        );
-      final lastNumId =  students.isNotEmpty? students.first.user_id: 0;
-      
+        pagination: const QueryPagination(limit: 1),
+      );
+      final lastNumId = students.isNotEmpty ? students.first.user_id : 0;
+
       final item = Student(
         user_id: lastNumId! + 1,
         name: name,
@@ -99,16 +95,15 @@ class DataStoreService {
         age: age,
         birthday: TemporalDate(DateTime.parse(birthday)),
         email: email,
-        image: image);
+        image: image,
+      );
 
-    await Amplify.DataStore.save(item);
+      await Amplify.DataStore.save(item);
       safePrint('✅ Alumno guardado correctamente');
       final id = item.id;
       safePrint('ID del Alumno guardado: $id');
       return item.user_id!;
-    }
-    
-    catch (e) {
+    } catch (e) {
       safePrint('❌ Error al consultar los alumnos: $e');
       rethrow;
     }
@@ -119,9 +114,9 @@ class DataStoreService {
     required String name,
     required String date,
   }) async {
-    final awsDb  = DataStoreReadService();
+    final awsDb = DataStoreReadService();
     final todayAttendance = await awsDb.getAttendanceByDate(date);
-    
+
     if (todayAttendance.isNotEmpty) {
       for (var att in todayAttendance) {
         if (att.user_id == userId) {
@@ -131,9 +126,10 @@ class DataStoreService {
       }
     }
     final item = Attendance(
-        user_id: userId,
-        name: name,
-        date: TemporalDate(DateTime.parse(date)));
+      user_id: userId,
+      name: name,
+      date: TemporalDate(DateTime.parse(date)),
+    );
 
     try {
       await Amplify.DataStore.save(item);
@@ -143,7 +139,7 @@ class DataStoreService {
       rethrow;
     }
   }
-  
+
   Future<void> saveUser({
     required String id,
     required String? clientId,
@@ -153,12 +149,12 @@ class DataStoreService {
     required bool? status,
   }) async {
     final item = User(
-        id: id,
-        db_id: clientId,
-        name: name,
-        role: role,
-        Plan: plan,
-        status: status,
+      id: id,
+      db_id: clientId,
+      name: name,
+      role: role,
+      Plan: plan,
+      status: status,
     );
 
     try {

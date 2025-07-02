@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class PreviewStudentContainer extends StatelessWidget {
@@ -17,9 +18,10 @@ class PreviewStudentContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
-    final screenHeight = isPortatil
-        ? MediaQuery.of(context).size.height
-        : MediaQuery.of(context).size.height * 2;
+    final screenHeight =
+        isPortatil
+            ? MediaQuery.of(context).size.height
+            : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Dismissible(
@@ -44,12 +46,19 @@ class PreviewStudentContainer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.file(
-                      File(image),
-                      width: screenHeight * 0.08,
-                      fit: BoxFit.cover,
-                    )),
+                  borderRadius: BorderRadius.circular(16),
+                  child: SizedBox(
+                    height: screenHeight * 0.09,
+                    width: screenHeight * 0.09,
+                    child:
+                        File(image).existsSync()
+                            ? Image.file(File(image), fit: BoxFit.cover)
+                            : Image.asset(
+                              'assets/images/default_profile.jpg',
+                              fit: BoxFit.cover,
+                            ),
+                  ),
+                ),
               ),
               Expanded(
                 child: Padding(
@@ -58,21 +67,20 @@ class PreviewStudentContainer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          name,
-                          style: TextStyle(
-                              fontSize: screenHeight * 0.025,
-                              fontWeight: FontWeight.w500),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          maxLines: 1,
+                      Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: screenHeight * 0.025,
+                          fontWeight: FontWeight.w500,
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        maxLines: 1,
                       ),
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -87,7 +95,8 @@ class PreviewStudentContainer extends StatelessWidget {
         return AlertDialog(
           title: const Text('¿Eliminar asistencia?'),
           content: const Text(
-              '¿Estás seguro de que deseas eliminar esta asistencia?'),
+            '¿Estás seguro de que deseas eliminar esta asistencia?',
+          ),
           actions: [
             TextButton(
               onPressed: () {

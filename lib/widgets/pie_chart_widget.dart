@@ -6,30 +6,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/widgets/piechart_indicator.dart'; 
+import 'package:la_dinamica_app/widgets/piechart_indicator.dart';
 
+class PieChartWidget extends ConsumerWidget {
+  final DateTime startDate;
+  final DateTime endDate;
 
-class PieChartWidget extends ConsumerWidget{
-    final DateTime startDate;
-    final DateTime endDate;
-
-    const PieChartWidget({super.key, required this.startDate, required this.endDate});
+  const PieChartWidget({
+    super.key,
+    required this.startDate,
+    required this.endDate,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
-    final today = DateTime.parse(ref.watch(dateProvider));
+    final parsedDate = DateTime.tryParse(ref.watch(dateProvider));
+    if (parsedDate == null) {
+      return const Center(child: Text('Fecha inválida'));
+    }
+
     final awsDb = DataStoreReadService();
     var n = 30;
 
-    if(startDate.toString().split(' ')[0] != endDate.toString().split(' ')[0]){
+    if (startDate.toString().split(' ')[0] !=
+        endDate.toString().split(' ')[0]) {
       n = endDate.difference(startDate).inDays;
     }
 
-    final lastdate = today.subtract(Duration(days: n));
-    
-    return FutureBuilder(
+    final lastdate = parsedDate.subtract(Duration(days: n));
+    final today = parsedDate;
 
+    return FutureBuilder(
       future: awsDb.getPaymentsRange(lastdate, today),
       builder: (BuildContext context, AsyncSnapshot<List<Pay>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -42,8 +49,7 @@ class PieChartWidget extends ConsumerWidget{
           return Center(
             child: SizedBox(
               height: 400, // or any fixed height
-              child: ChartPie(
-                data: snapshot.data!,),
+              child: ChartPie(data: snapshot.data!),
             ),
           );
         }
@@ -73,16 +79,16 @@ class ChartPie extends StatelessWidget {
       } else {
         percentages[pay.type!] = amount;
       }
-      total += amount; 
+      total += amount;
     }
 
     for (var type in percentages.keys) {
       final value = percentages[type]! / total * 100; // Calculate percentage
       final color = Color.fromRGBO(
-        random.nextInt(256), 
-        random.nextInt(256), 
-        random.nextInt(256), 
-        0.8
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+        0.8,
       );
       colors.add(color);
       sections.add(
@@ -93,55 +99,58 @@ class ChartPie extends StatelessWidget {
           radius: 40,
         ),
       );
-      }
+    }
 
-    Column Chartinfo(Map<String, double> percentages, double totalAmount, List<Color> colors) {
-      final List<String> planTypes = percentages.keys.toList(); 
+    Column chartInfo(
+      Map<String, double> percentages,
+      double totalAmount,
+      List<Color> colors,
+    ) {
+      final List<String> planTypes = percentages.keys.toList();
       final List<double> amounts = percentages.values.toList();
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children:[
+        children: [
           Text('Total: \$${totalAmount.toStringAsFixed(2)}'),
           const SizedBox(height: 20),
-          ...List.generate(
-            colors.length,
-            (index) {
-              return Indicator(
-                color: colors[index], 
-                text: '${planTypes[index]}:  \$${amounts[index].toStringAsFixed(2)}', 
-                isSquare: false);
-            }),
-        ]
+          ...List.generate(colors.length, (index) {
+            return Indicator(
+              color: colors[index],
+              text:
+                  '${planTypes[index]}:  \$${amounts[index].toStringAsFixed(2)}',
+              isSquare: false,
+            );
+          }),
+        ],
       );
     }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Ingresos por plan',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+        const Text(
+          'Ingresos por plan',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: 
-          [ 
-          SizedBox(
-            width: 400,
-            height: 300,
-            child: PieChart(PieChartData(
-            sectionsSpace: 0,
-            centerSpaceRadius: 90,
-            sections: sections,))),
-          Chartinfo(percentages, total, colors) 
-          ]
-          ),
+          children: [
+            SizedBox(
+              width: 400,
+              height: 300,
+              child: PieChart(
+                PieChartData(
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 90,
+                  sections: sections,
+                ),
+              ),
+            ),
+            chartInfo(percentages, total, colors),
+          ],
+        ),
       ],
     );
   }
 }
-
-

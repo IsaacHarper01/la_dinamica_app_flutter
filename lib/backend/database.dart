@@ -1,18 +1,18 @@
-import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../model/plan.dart';
-
 class DatabaseHelper {
-//CREATE DATABASE
+  //CREATE DATABASE
 
   Future<Database> _openDatabase() async {
     final databasepath = await getDatabasesPath();
     final path = join(databasepath, 'alumnos.db');
 
-    return openDatabase(path, onCreate: (db, version) async {
-      await db.execute('''
+    return openDatabase(
+      path,
+      onCreate: (db, version) async {
+        await db.execute('''
         CREATE TABLE General (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
@@ -24,7 +24,7 @@ class DatabaseHelper {
         image TEXT
       )
     ''');
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE Payments (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           userId INTEGER NOT NULL,
@@ -35,7 +35,7 @@ class DatabaseHelper {
           UNIQUE(userId,date,amount)
         )
       ''');
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE Metrics (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           userId INTEGER,
@@ -44,7 +44,7 @@ class DatabaseHelper {
           value REAL
         )
       ''');
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE Attendance (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           userId INTEGER NOT NULL,
@@ -54,7 +54,7 @@ class DatabaseHelper {
           UNIQUE(userId,date)
         )
       ''');
-      await db.execute('''
+        await db.execute('''
       CREATE TABLE Plans (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         type TEXT,
@@ -62,55 +62,61 @@ class DatabaseHelper {
         price FLOAT
       )
     ''');
-    }, version: 1);
+      },
+      version: 1,
+    );
   }
 
   ///INSERTS
 
-
-  Future<void> InserAttendanceData(int id, String name, String date) async {
+  Future<void> insertAttendanceData(int id, String name, String date) async {
     final db = await _openDatabase();
     final todayDate = date;
     Map<String, dynamic> row = {
       'userId': id,
       'name': name,
       'date': todayDate,
-      'status': 'Presente'
+      'status': 'Presente',
     };
     try {
       await db.insert('Attendance', row);
-    } catch (e) {}
+    } catch (e) {
+      safePrint('Registro ya existente: $e');
+    }
     await db.close();
   }
 
-  Future<int> InsertGeneralData(Map<String, dynamic> row) async {
+  Future<int> insertGeneralData(Map<String, dynamic> row) async {
     final db = await _openDatabase();
     await db.insert('General', row);
-    final data =
-        await db.query('General', where: 'name = ?', whereArgs: [row['name']]);
+    final data = await db.query(
+      'General',
+      where: 'name = ?',
+      whereArgs: [row['name']],
+    );
     final int id = data[0]['id'] as int;
     await db.close();
     return id;
   }
 
-  Future<void> InserPaymentData(Map<String, dynamic> row) async {
+  Future<void> insertPaymentData(Map<String, dynamic> row) async {
     final db = await _openDatabase();
     try {
       await db.insert('Payments', row);
     } catch (e) {
-      print('Pago ya registrado');
+      safePrint('Pago ya registrado');
     }
 
     await db.close();
   }
 
-  Future<void> InsertMetricsData(Map<String, dynamic> row) async {
+  Future<void> insertMetricsData(Map<String, dynamic> row) async {
     final db = await _openDatabase();
     await db.insert('Metrics', row);
     await db.close();
   }
 
-  Future<void> InsertPlanData(Map<String, dynamic> row) async {
+  Future<void> insertPlanData(Map<String, dynamic> row) async {
     final db = await _openDatabase();
     await db.insert('Plans', row);
     await db.close();
@@ -119,46 +125,43 @@ class DatabaseHelper {
   ///FETCH ALL DATA
 
   Future<List<Map<String, dynamic>>> fetchAttendanceRange(
-      DateTime min, DateTime max) async {
+    DateTime min,
+    DateTime max,
+  ) async {
     final db = await _openDatabase();
     final List<Map<String, dynamic>> data = await db.query(
       'Attendance',
       where: 'date BETWEEN ? AND ?',
-      whereArgs: [
-        min.toString().split(' ')[0],
-        max.toString().split(' ')[0],
-      ],
+      whereArgs: [min.toString().split(' ')[0], max.toString().split(' ')[0]],
     );
     await db.close();
     return data;
   }
 
   Future<List<Map<String, dynamic>>> fetchPaymentsRange(
-      DateTime min, DateTime max) async {
+    DateTime min,
+    DateTime max,
+  ) async {
     final db = await _openDatabase();
     final List<Map<String, dynamic>> data = await db.query(
       'Payments',
       where: 'date BETWEEN ? AND ?',
-      whereArgs: [
-        min.toString().split(' ')[0],
-        max.toString().split(' ')[0],
-      ],
+      whereArgs: [min.toString().split(' ')[0], max.toString().split(' ')[0]],
     );
     await db.close();
     return data;
   }
 
   Future<Map<String, dynamic>> fetchTotalAmountRange(
-      DateTime min, DateTime max) async {
+    DateTime min,
+    DateTime max,
+  ) async {
     final db = await _openDatabase();
     Map<String, dynamic> clasesDates = {};
     final List<Map<String, dynamic>> data = await db.query(
       'Payments',
       where: 'date BETWEEN ? AND ?',
-      whereArgs: [
-        min.toString().split(' ')[0],
-        max.toString().split(' ')[0],
-      ],
+      whereArgs: [min.toString().split(' ')[0], max.toString().split(' ')[0]],
     );
     for (var element in data) {
       String dateKey = element["date"];
@@ -203,7 +206,7 @@ class DatabaseHelper {
       'address': address,
       'ages': ages,
       'birthdays': birthdays,
-      'images': images
+      'images': images,
     });
   }
 
@@ -214,7 +217,7 @@ class DatabaseHelper {
     return data;
   }
 
-//FETCH A SINGLE DATA FROM TABLE
+  //FETCH A SINGLE DATA FROM TABLE
   Future<List<List<String>>> fetchAges(List<int> ids) async {
     final db = await _openDatabase();
     final List<String> ages = [];
@@ -228,13 +231,13 @@ class DatabaseHelper {
   }
 
   Future<Object?> fetchSimpleData(
-      String table, String field, int id, bool allfields) async {
+    String table,
+    String field,
+    int id,
+    bool allfields,
+  ) async {
     final db = await _openDatabase();
-    final data = await db.query(
-      table,
-      where: 'id LIKE ?',
-      whereArgs: [id],
-    );
+    final data = await db.query(table, where: 'id LIKE ?', whereArgs: [id]);
     if (data.isNotEmpty) {
       if (allfields) {
         return data[0]; // Returns Map<String, dynamic>
@@ -252,18 +255,19 @@ class DatabaseHelper {
     final data = await db.query(
       'Attendance',
       where: 'date LIKE ? AND status = ?',
-      whereArgs: [
-        '$today%',
-        'Presente'
-      ], // % to account for time in the string
+      whereArgs: ['$today%', 'Presente'], // % to account for time in the string
     );
 
     List<dynamic> ids = data.map((elemet) => elemet['userId']).toList();
     List<dynamic> names = data.map((element) => element['name']).toList();
     List<String?> images = [];
     for (var id in ids) {
-      final List<Map<String, dynamic>> result = await db.query('General',
-          columns: ['image'], where: 'id = ?', whereArgs: [id]);
+      final List<Map<String, dynamic>> result = await db.query(
+        'General',
+        columns: ['image'],
+        where: 'id = ?',
+        whereArgs: [id],
+      );
       if (result.isNotEmpty) {
         // If there is an image for the ID, add the image path to the list
         images.add(result[0]['image'] as String?);
@@ -293,10 +297,7 @@ class DatabaseHelper {
         'Payments',
         columns: ['amount'],
         where: 'date BETWEEN ? AND ?',
-        whereArgs: [
-          '$start%',
-          '$end%'
-        ], // % to account for time in the string
+        whereArgs: ['$start%', '$end%'], // % to account for time in the string
       );
     }
     for (var element in data) {
@@ -342,11 +343,14 @@ class DatabaseHelper {
       orderBy: 'id DESC',
       limit: 1,
     );
-    final List<Map<String, dynamic>> studentData =
-        await db.query('General', where: 'id = ?', whereArgs: [userId]);
+    final List<Map<String, dynamic>> studentData = await db.query(
+      'General',
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
     return {
       'lastPay': lastPay.isNotEmpty ? lastPay.first : {},
-      'studentData': studentData.isNotEmpty ? studentData.first : {}
+      'studentData': studentData.isNotEmpty ? studentData.first : {},
     };
   }
 
@@ -366,7 +370,7 @@ class DatabaseHelper {
     }
   }
 
-//DELETE FUNCTIONS
+  //DELETE FUNCTIONS
 
   Future<int> deleteRegister(int id, String? table) async {
     final db = await _openDatabase();
@@ -389,7 +393,7 @@ class DatabaseHelper {
   Future<void> deleteTable(String table) async {
     final db = await _openDatabase();
     db.delete(table);
-    print('Table $table deleted succesfully');
+    safePrint('Table $table deleted succesfully');
   }
 
   Future<void> deleteDB() async {
@@ -398,11 +402,11 @@ class DatabaseHelper {
 
     // Delete the database
     await deleteDatabase(path);
-    print('Database deleted');
+    safePrint('Database deleted');
   }
 
   Future<void> deleteAttendance(int id, String date) async {
-    print("Deleting attendance for userId: $id, date: $date");
+    safePrint("Deleting attendance for userId: $id, date: $date");
 
     final Database db = await _openDatabase();
     await db.transaction((txn) async {
@@ -416,8 +420,9 @@ class DatabaseHelper {
         where: 'userId = ? AND date = ?',
         whereArgs: [id, date],
       );
-      print(
-          "Attendance and Payments deleted successfully, $deletedAttendance, $deletedPayment");
+      safePrint(
+        "Attendance and Payments deleted successfully, $deletedAttendance, $deletedPayment",
+      );
     });
   }
 
@@ -428,29 +433,25 @@ class DatabaseHelper {
       "amount": 0,
       "clases": 0,
       "type": 'Cancelacion',
-      "date": date
+      "date": date,
     };
     db.insert('Payments', pay);
   }
 
   Future<void> deletePlanById(int id) async {
     final db = await _openDatabase();
-    await db.delete(
-      'plans',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete('plans', where: 'id = ?', whereArgs: [id]);
   }
 
-//UPDATE VALUES
+  //UPDATE VALUES
 
-  Future<void> updateClases(int Id, int remainingClases) async {
+  Future<void> updateClases(int id, int remainingClases) async {
     final db = await _openDatabase();
     await db.update(
       'Payments',
       {'clases': remainingClases},
       where: 'id = ?',
-      whereArgs: [Id],
+      whereArgs: [id],
     );
   }
 
@@ -474,14 +475,14 @@ class DatabaseHelper {
           'amount': cost,
           'clases': 0,
           'type': type,
-          'date': date
+          'date': date,
         };
-        await InserPaymentData(pay);
+        await insertPaymentData(pay);
         return;
       } else {
         if (lastPay['type'] != type && (lastPay['clases']) > 0) {
           var id = lastPay['id'];
-          var remainingClases = (lastPay['clases']) -1;
+          var remainingClases = (lastPay['clases']) - 1;
           await updateClases(id, remainingClases);
         } else {
           pay = {
@@ -489,9 +490,9 @@ class DatabaseHelper {
             'amount': cost,
             'clases': 0,
             'type': type,
-            'date': date
+            'date': date,
           };
-          await InserPaymentData(pay);
+          await insertPaymentData(pay);
         }
       }
     } catch (e) {
