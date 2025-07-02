@@ -1,4 +1,5 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:la_dinamica_app/models/MetricsType.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
@@ -169,4 +170,27 @@ class DataStoreService {
     }
   }
 
+  Future<void> saveMetricsType(
+    {required String name,
+     required double minValue,
+     required double maxValue,
+     required String? category,
+     required String? gymId,
+     }) 
+     async {
+    final item = MetricsType(
+      name: name,
+      min_value: minValue,
+      max_value: maxValue,
+      category: category,
+      client_id: gymId,);
+    try {
+      await Amplify.DataStore.save(item);
+      safePrint('✅ Tipo de métrica guardado correctamente');
+    }
+    catch (e) {
+      safePrint('❌ Error al guardar el tipo de métrica: $e');
+      rethrow;
+      }
+    }
 }

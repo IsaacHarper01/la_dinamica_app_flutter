@@ -23,13 +23,14 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the LocalPlan type in your schema. */
-class LocalPlan extends amplify_core.Model {
-  static const classType = const _LocalPlanModelType();
+/** This is an auto generated class representing the MetricsType type in your schema. */
+class MetricsType extends amplify_core.Model {
+  static const classType = const _MetricsTypeModelType();
   final String id;
-  final String? _type;
-  final int? _clases;
-  final double? _price;
+  final String? _name;
+  final double? _min_value;
+  final double? _max_value;
+  final String? _category;
   final String? _client_id;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -41,22 +42,26 @@ class LocalPlan extends amplify_core.Model {
   @override
   String getId() => id;
   
-  LocalPlanModelIdentifier get modelIdentifier {
-      return LocalPlanModelIdentifier(
+  MetricsTypeModelIdentifier get modelIdentifier {
+      return MetricsTypeModelIdentifier(
         id: id
       );
   }
   
-  String? get type {
-    return _type;
+  String? get name {
+    return _name;
   }
   
-  int? get clases {
-    return _clases;
+  double? get min_value {
+    return _min_value;
   }
   
-  double? get price {
-    return _price;
+  double? get max_value {
+    return _max_value;
+  }
+  
+  String? get category {
+    return _category;
   }
   
   String? get client_id {
@@ -71,14 +76,15 @@ class LocalPlan extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const LocalPlan._internal({required this.id, type, clases, price, client_id, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _client_id = client_id, _createdAt = createdAt, _updatedAt = updatedAt;
+  const MetricsType._internal({required this.id, name, min_value, max_value, category, client_id, createdAt, updatedAt}): _name = name, _min_value = min_value, _max_value = max_value, _category = category, _client_id = client_id, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory LocalPlan({String? id, String? type, int? clases, double? price, String? client_id}) {
-    return LocalPlan._internal(
+  factory MetricsType({String? id, String? name, double? min_value, double? max_value, String? category, String? client_id}) {
+    return MetricsType._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      type: type,
-      clases: clases,
-      price: price,
+      name: name,
+      min_value: min_value,
+      max_value: max_value,
+      category: category,
       client_id: client_id);
   }
   
@@ -89,11 +95,12 @@ class LocalPlan extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is LocalPlan &&
+    return other is MetricsType &&
       id == other.id &&
-      _type == other._type &&
-      _clases == other._clases &&
-      _price == other._price &&
+      _name == other._name &&
+      _min_value == other._min_value &&
+      _max_value == other._max_value &&
+      _category == other._category &&
       _client_id == other._client_id;
   }
   
@@ -104,11 +111,12 @@ class LocalPlan extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("LocalPlan {");
+    buffer.write("MetricsType {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("type=" + "$_type" + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
-    buffer.write("price=" + (_price != null ? _price!.toString() : "null") + ", ");
+    buffer.write("name=" + "$_name" + ", ");
+    buffer.write("min_value=" + (_min_value != null ? _min_value!.toString() : "null") + ", ");
+    buffer.write("max_value=" + (_max_value != null ? _max_value!.toString() : "null") + ", ");
+    buffer.write("category=" + "$_category" + ", ");
     buffer.write("client_id=" + "$_client_id" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -117,62 +125,68 @@ class LocalPlan extends amplify_core.Model {
     return buffer.toString();
   }
   
-  LocalPlan copyWith({String? type, int? clases, double? price, String? client_id}) {
-    return LocalPlan._internal(
+  MetricsType copyWith({String? name, double? min_value, double? max_value, String? category, String? client_id}) {
+    return MetricsType._internal(
       id: id,
-      type: type ?? this.type,
-      clases: clases ?? this.clases,
-      price: price ?? this.price,
+      name: name ?? this.name,
+      min_value: min_value ?? this.min_value,
+      max_value: max_value ?? this.max_value,
+      category: category ?? this.category,
       client_id: client_id ?? this.client_id);
   }
   
-  LocalPlan copyWithModelFieldValues({
-    ModelFieldValue<String?>? type,
-    ModelFieldValue<int?>? clases,
-    ModelFieldValue<double?>? price,
+  MetricsType copyWithModelFieldValues({
+    ModelFieldValue<String?>? name,
+    ModelFieldValue<double?>? min_value,
+    ModelFieldValue<double?>? max_value,
+    ModelFieldValue<String?>? category,
     ModelFieldValue<String?>? client_id
   }) {
-    return LocalPlan._internal(
+    return MetricsType._internal(
       id: id,
-      type: type == null ? this.type : type.value,
-      clases: clases == null ? this.clases : clases.value,
-      price: price == null ? this.price : price.value,
+      name: name == null ? this.name : name.value,
+      min_value: min_value == null ? this.min_value : min_value.value,
+      max_value: max_value == null ? this.max_value : max_value.value,
+      category: category == null ? this.category : category.value,
       client_id: client_id == null ? this.client_id : client_id.value
     );
   }
   
-  LocalPlan.fromJson(Map<String, dynamic> json)  
+  MetricsType.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _type = json['type'],
-      _clases = (json['clases'] as num?)?.toInt(),
-      _price = (json['price'] as num?)?.toDouble(),
+      _name = json['name'],
+      _min_value = (json['min_value'] as num?)?.toDouble(),
+      _max_value = (json['max_value'] as num?)?.toDouble(),
+      _category = json['category'],
       _client_id = json['client_id'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'client_id': _client_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'min_value': _min_value, 'max_value': _max_value, 'category': _category, 'client_id': _client_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'type': _type,
-    'clases': _clases,
-    'price': _price,
+    'name': _name,
+    'min_value': _min_value,
+    'max_value': _max_value,
+    'category': _category,
     'client_id': _client_id,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<LocalPlanModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<LocalPlanModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<MetricsTypeModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<MetricsTypeModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final TYPE = amplify_core.QueryField(fieldName: "type");
-  static final CLASES = amplify_core.QueryField(fieldName: "clases");
-  static final PRICE = amplify_core.QueryField(fieldName: "price");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
+  static final MIN_VALUE = amplify_core.QueryField(fieldName: "min_value");
+  static final MAX_VALUE = amplify_core.QueryField(fieldName: "max_value");
+  static final CATEGORY = amplify_core.QueryField(fieldName: "category");
   static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "LocalPlan";
-    modelSchemaDefinition.pluralName = "LocalPlans";
+    modelSchemaDefinition.name = "MetricsType";
+    modelSchemaDefinition.pluralName = "MetricsTypes";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -188,25 +202,31 @@ class LocalPlan extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.TYPE,
+      key: MetricsType.NAME,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.CLASES,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.PRICE,
+      key: MetricsType.MIN_VALUE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.CLIENT_ID,
+      key: MetricsType.MAX_VALUE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: MetricsType.CATEGORY,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: MetricsType.CLIENT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
@@ -227,29 +247,29 @@ class LocalPlan extends amplify_core.Model {
   });
 }
 
-class _LocalPlanModelType extends amplify_core.ModelType<LocalPlan> {
-  const _LocalPlanModelType();
+class _MetricsTypeModelType extends amplify_core.ModelType<MetricsType> {
+  const _MetricsTypeModelType();
   
   @override
-  LocalPlan fromJson(Map<String, dynamic> jsonData) {
-    return LocalPlan.fromJson(jsonData);
+  MetricsType fromJson(Map<String, dynamic> jsonData) {
+    return MetricsType.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'LocalPlan';
+    return 'MetricsType';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [LocalPlan] in your schema.
+ * of [MetricsType] in your schema.
  */
-class LocalPlanModelIdentifier implements amplify_core.ModelIdentifier<LocalPlan> {
+class MetricsTypeModelIdentifier implements amplify_core.ModelIdentifier<MetricsType> {
   final String id;
 
-  /** Create an instance of LocalPlanModelIdentifier using [id] the primary key. */
-  const LocalPlanModelIdentifier({
+  /** Create an instance of MetricsTypeModelIdentifier using [id] the primary key. */
+  const MetricsTypeModelIdentifier({
     required this.id});
   
   @override
@@ -267,7 +287,7 @@ class LocalPlanModelIdentifier implements amplify_core.ModelIdentifier<LocalPlan
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'LocalPlanModelIdentifier(id: $id)';
+  String toString() => 'MetricsTypeModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -275,7 +295,7 @@ class LocalPlanModelIdentifier implements amplify_core.ModelIdentifier<LocalPlan
       return true;
     }
     
-    return other is LocalPlanModelIdentifier &&
+    return other is MetricsTypeModelIdentifier &&
       id == other.id;
   }
   

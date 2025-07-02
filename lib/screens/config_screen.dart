@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
+import 'package:la_dinamica_app/screens/add_new_metric.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 import 'package:la_dinamica_app/widgets/section_card_widget.dart';
 
@@ -62,6 +62,26 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.add_circle_outline),
+                label: const Text('Agregar Métrica'),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => AddNewMetric()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  textStyle: textTheme.titleMedium,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               SectionCard(
                 title: 'Planes disponibles',
                 actions: [
@@ -91,7 +111,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                               onDelete: () {
                                 ref
                                     .read(planProvider.notifier)
-                                    .deletePlan(plan.id!);
+                                    .deletePlan(plan.id);
                               },
                             ),
                           ))

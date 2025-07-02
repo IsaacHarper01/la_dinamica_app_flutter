@@ -1,8 +1,18 @@
+type MetricsType @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  min_value: Float
+  max_value: Float
+  category: String
+  client_id: String
+}
+
 type LocalPlan @model @auth(rules: [{allow: public}]) {
   id: ID!
   type: String
   clases: Int
   price: Float
+  client_id: String
 }
 
 type Student @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
