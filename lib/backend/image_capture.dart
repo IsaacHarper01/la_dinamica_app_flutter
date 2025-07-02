@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
@@ -18,20 +19,23 @@ Future<String> pickAndSaveImage(String name) async {
     img.Image originalImage = img.decodeImage(imageBytes)!;
 
     // Resize the image (for example, to 300x300)
-    img.Image resizedImage =
-        img.copyResize(originalImage, width: 500, height: 600);
+    img.Image resizedImage = img.copyResize(
+      originalImage,
+      width: 500,
+      height: 600,
+    );
 
     // Get the directory to save the image
     Directory directory = await getApplicationDocumentsDirectory();
     String newPath = path.join(directory.path, '$name.jpg');
     // Save the resized image as a file
-    File resizedImageFile = File(newPath)
-      ..writeAsBytesSync(
-          img.encodeJpg(resizedImage, quality: 85)); // Save with compression
+    File _ = File(newPath)..writeAsBytesSync(
+      img.encodeJpg(resizedImage, quality: 85),
+    ); // Save with compression
 
     return newPath;
   } else {
-    print('No image selected.');
+    safePrint('No image selected.');
     return 'assets/images/f_ma11.png';
   }
 }

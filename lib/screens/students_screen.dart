@@ -5,10 +5,10 @@ import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
@@ -18,10 +18,10 @@ class StudentsScreen extends StatefulWidget {
   const StudentsScreen({super.key});
 
   @override
-  _StudentsScreenState createState() => _StudentsScreenState();
+  StudentsScreenState createState() => StudentsScreenState();
 }
 
-class _StudentsScreenState extends State<StudentsScreen> {
+class StudentsScreenState extends State<StudentsScreen> {
   late Future<List<Student>> _studentsFuture;
 
   @override
@@ -40,20 +40,21 @@ class _StudentsScreenState extends State<StudentsScreen> {
     return Scaffold(
       body: FutureBuilder<List<Student>>(
         future: _studentsFuture,
-        builder: (BuildContext context,
-            AsyncSnapshot<List<Student>> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            
-            List<dynamic> students = snapshot.data!.map((g)=> g.name).toList();
-            List<dynamic> studentsIds = snapshot.data!.map((g)=> g.user_id).toList();
-            List<int> studentsIndex =
-                List.generate(students.length, (index) => index);
+            List<dynamic> students = snapshot.data!.map((g) => g.name).toList();
+            List<dynamic> studentsIds =
+                snapshot.data!.map((g) => g.user_id).toList();
+            List<int> studentsIndex = List.generate(
+              students.length,
+              (index) => index,
+            );
             int num = students.length;
-            List<dynamic> images = snapshot.data!.map((g)=> g.image).toList();
+            List<dynamic> images = snapshot.data!.map((g) => g.image).toList();
 
             return ScrollViewContent(
               screenHeight: MediaQuery.of(context).size.height,
@@ -103,7 +104,6 @@ class ScrollViewContent extends ConsumerWidget {
   final List<int> indexList;
   final VoidCallback onAddStudent;
 
-
   void _deleteRegister(id) {
     final db = DatabaseHelper();
     db.deleteRegister(id, null);
@@ -119,7 +119,8 @@ class ScrollViewContent extends ConsumerWidget {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
           content: const Text(
-              '¿Estás seguro de que quieres eliminar este registro?'),
+            '¿Estás seguro de que quieres eliminar este registro?',
+          ),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancelar'),
@@ -159,15 +160,9 @@ class ScrollViewContent extends ConsumerWidget {
       child: Center(
         child: Column(
           children: [
-            SizedBox(
-              height: screenHeight * 0.06,
-            ),
-            SearchStudentContainer(
-              circleText: 'Total de alumnos: $numAlumnos',
-            ),
-            SizedBox(
-              height: screenHeight * 0.01,
-            ),
+            SizedBox(height: screenHeight * 0.06),
+            SearchStudentContainer(circleText: 'Total de alumnos: $numAlumnos'),
+            SizedBox(height: screenHeight * 0.01),
             Padding(
               padding: EdgeInsets.only(right: screenHeight * 0.01),
               child: Row(
@@ -190,9 +185,7 @@ class ScrollViewContent extends ConsumerWidget {
                 ],
               ),
             ),
-            SizedBox(
-              height: screenHeight * 0.01,
-            ),
+            SizedBox(height: screenHeight * 0.01),
             ...indexList.map((i) {
               return FadeInUp(
                 child: Column(
@@ -235,11 +228,12 @@ class ScrollViewContent extends ConsumerWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => StudentDetailScreen(
-                                name: students[i],
-                                id: ids[i],
-                                image: images[i],
-                              ),
+                              builder:
+                                  (context) => StudentDetailScreen(
+                                    name: students[i],
+                                    id: ids[i],
+                                    image: images[i],
+                                  ),
                             ),
                           );
                         },
@@ -248,21 +242,21 @@ class ScrollViewContent extends ConsumerWidget {
                           name: students[i],
                           id: ids[i],
                           image: images[i],
-                          backgroundColor: attendedIds.contains(ids[i])
-                              ? Colors.green.withAlpha(20)
-                              : Colors.transparent,
-                          trailingIcon: attendedIds.contains(ids[i])
-                              ? const Icon(Icons.check_circle,
-                                  color: Colors.green)
-                              : null,
+                          backgroundColor:
+                              attendedIds.contains(ids[i])
+                                  ? Colors.green.withAlpha(20)
+                                  : Colors.transparent,
+                          trailingIcon:
+                              attendedIds.contains(ids[i])
+                                  ? const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                  )
+                                  : null,
                         ),
                       ),
                     ),
-                    const Divider(
-                      height: 0,
-                      indent: 20,
-                      endIndent: 20,
-                    ),
+                    const Divider(height: 0, indent: 20, endIndent: 20),
                   ],
                 ),
               );

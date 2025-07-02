@@ -59,38 +59,50 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
-    final screenHeight = isPortatil
-        ? MediaQuery.of(context).size.height
-        : MediaQuery.of(context).size.height * 2;
-    final screenWidth = isPortatil
-        ? MediaQuery.of(context).size.width
-        : MediaQuery.of(context).size.width * 0.8;
+    final screenHeight =
+        isPortatil
+            ? MediaQuery.of(context).size.height
+            : MediaQuery.of(context).size.height * 2;
+    final screenWidth =
+        isPortatil
+            ? MediaQuery.of(context).size.width
+            : MediaQuery.of(context).size.width * 0.8;
 
     final attendedIds = ref.watch(attendedIdsProvider);
     final bool hasAttendance = attendedIds.contains(widget.id);
-    
 
     return Scaffold(
-        appBar: AppBar(title: Text(widget.name)),
-        body: FutureBuilder(
-            future: awsDb.getLastPayandStudentData(widget.id),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else {
-                if (snapshot.data['lastPay'] != null && snapshot.data['studentData'] != null) {
-                  paymentData = snapshot.data['lastPay'];
-                  studentData = snapshot.data['studentData'];
-                }
-                
-                return infoScreen(
-                    screenHeight, context, screenWidth, hasAttendance);
-              }
-            }));
+      appBar: AppBar(title: Text(widget.name)),
+      body: FutureBuilder(
+        future: awsDb.getLastPayandStudentData(widget.id),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            if (snapshot.data['lastPay'] != null &&
+                snapshot.data['studentData'] != null) {
+              paymentData = snapshot.data['lastPay'];
+              studentData = snapshot.data['studentData'];
+            }
+
+            return infoScreen(
+              screenHeight,
+              context,
+              screenWidth,
+              hasAttendance,
+            );
+          }
+        },
+      ),
+    );
   }
 
-  Widget infoScreen(double screenHeight, BuildContext context,
-      double screenWidth, bool hasAttendance) {
+  Widget infoScreen(
+    double screenHeight,
+    BuildContext context,
+    double screenWidth,
+    bool hasAttendance,
+  ) {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
 
@@ -106,11 +118,18 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   borderRadius: BorderRadius.circular(16),
                   child: Opacity(
                     opacity: 0.5,
-                    child: Image.file(
-                      File(widget.image),
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    child:
+                        File(widget.image).existsSync()
+                            ? Image.file(
+                              File(widget.image),
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            )
+                            : Image.asset(
+                              'assets/images/default_profile.jpg',
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
                   ),
                 ),
               ),
@@ -142,9 +161,9 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       widget.name,
-                      style: TextStyle(fontSize: screenHeight * 0.05),
+                      style: TextStyle(fontSize: screenHeight * 0.04),
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                      maxLines: 2,
                     ),
                   ),
                   Row(
@@ -193,9 +212,9 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                             ],
                           ),
                         ),
-                      )
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ],
@@ -204,11 +223,17 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
+              spacing: 8,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                FilledButton(
+                Expanded(
+                  child: FilledButton(
                     onPressed: () async {
-                      await db.InserAttendanceData(widget.id, widget.name, date);
+                      await db.insertAttendanceData(
+                        widget.id,
+                        widget.name,
+                        date,
+                      );
                       await db.varifyPay(widget.id, date);
                       setState(() {
                         hasAttendance = true;
@@ -221,28 +246,48 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                       );
                     },
                     style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(colorList[2])),
-                    child: const Text('Marcar Asistencia')),
-                FilledButton(
+                      backgroundColor: WidgetStateProperty.all(colorList[2]),
+                    ),
+                    child: const Text(
+                      'Marcar Asistencia',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: FilledButton(
                     onPressed: () {},
                     style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(colorList[4])),
-                    child: const Text('Pagos')),
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.push(
+                      backgroundColor: WidgetStateProperty.all(colorList[4]),
+                    ),
+                    child: const Text('Pagos'),
+                  ),
+                ),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => MetricsPage(
-                                  name: widget.name,
-                                  image: widget.image,
-                                )));
-                  },
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(colorList[3])),
-                  label: const Text('Metricas'),
-                  icon: const Icon(Icons.bar_chart_outlined),
-                )
+                          builder:
+                              (context) => MetricsPage(
+                                name: widget.name,
+                                image: widget.image,
+                              ),
+                        ),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(colorList[3]),
+                    ),
+                    label: const Text(
+                      'Metricas',
+                      maxLines: 1,
+                      overflow: TextOverflow.visible,
+                    ),
+                    icon: const Icon(Icons.bar_chart_outlined),
+                  ),
+                ),
               ],
             ),
           ),
@@ -251,11 +296,8 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Tipo de plan',
-                  style: TextStyle(fontSize: 25),
-                ),
-                Text('${paymentData.type}')
+                const Text('Tipo de plan', style: TextStyle(fontSize: 25)),
+                Text('${paymentData.type}'),
               ],
             ),
           ),
@@ -267,11 +309,13 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 Container(
                   width: screenWidth / 2.8,
                   decoration: BoxDecoration(
-                      color: isActive ? Colors.green : Colors.transparent,
-                      border: Border.all(width: 1),
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomLeft: Radius.circular(10))),
+                    color: isActive ? Colors.green : Colors.transparent,
+                    border: Border.all(width: 1),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                    ),
+                  ),
                   child: const Center(
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
@@ -282,11 +326,13 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 Container(
                   width: screenWidth / 2.8,
                   decoration: BoxDecoration(
-                      color: !isActive ? Colors.red : Colors.transparent,
-                      border: Border.all(width: 1),
-                      borderRadius: const BorderRadius.only(
-                          topRight: Radius.circular(10),
-                          bottomRight: Radius.circular(10))),
+                    color: !isActive ? Colors.red : Colors.transparent,
+                    border: Border.all(width: 1),
+                    borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(10),
+                      bottomRight: Radius.circular(10),
+                    ),
+                  ),
                   child: const Center(
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
@@ -320,24 +366,27 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   child: Text('Telefono: ${studentData.phone}'),
                 ),
                 ElevatedButton(
-                    onPressed: () {
-                      generateCredentialandSend(
-                          widget.id,
-                          widget.name,
-                          studentData.address!,
-                          studentData.phone!,
-                          studentData.age.toString(),
-                          widget.image);
-                    },
-                    child: const Text('Generar Credencial')),
+                  onPressed: () {
+                    generateCredentialandSend(
+                      widget.id,
+                      widget.name,
+                      studentData.address!,
+                      studentData.phone!,
+                      studentData.age.toString(),
+                      widget.image,
+                    );
+                  },
+                  child: const Text('Generar Credencial'),
+                ),
                 ElevatedButton(
-                    onPressed: () {
-                      db.deleteStudentPlan(widget.id, date);
-                    },
-                    child: const Text('Eliminar Plan'))
+                  onPressed: () {
+                    db.deleteStudentPlan(widget.id, date);
+                  },
+                  child: const Text('Eliminar Plan'),
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

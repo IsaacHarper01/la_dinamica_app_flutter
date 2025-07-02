@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 
-
 class AddNewPlan extends ConsumerStatefulWidget {
   const AddNewPlan({super.key});
 
@@ -13,8 +12,10 @@ class AddNewPlan extends ConsumerStatefulWidget {
 
 class _AddNewPlanState extends ConsumerState<AddNewPlan> {
   final List<String> labels = ['Tipo de plan', 'Clases', 'Precio'];
-  final List<TextEditingController> _controllers =
-      List.generate(3, (index) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+    3,
+    (index) => TextEditingController(),
+  );
 
   final _formKey = GlobalKey<FormState>(); // Clave global para el formulario
 
@@ -32,9 +33,9 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
       try {
         await ref.read(planProvider.notifier).addPlan(plan);
 
-        if (context.mounted) {
-          Navigator.pop(context, true);
-        }
+        if (!mounted) return;
+
+        Navigator.pop(context, true);
       } catch (_) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -61,10 +62,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nuevo Plan'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Nuevo Plan'), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -101,8 +99,9 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
                             style: TextStyle(color: colorScheme.onSurface),
                             decoration: InputDecoration(
                               labelText: labels[i],
-                              labelStyle:
-                                  TextStyle(color: colorScheme.onSurface),
+                              labelStyle: TextStyle(
+                                color: colorScheme.onSurface,
+                              ),
                               filled: true,
                               fillColor: colorScheme.surfaceDim,
                               border: OutlineInputBorder(
@@ -115,11 +114,13 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
                               }
                               return null;
                             },
-                            keyboardType: i == 1
-                                ? TextInputType.number
-                                : i == 2
+                            keyboardType:
+                                i == 1
+                                    ? TextInputType.number
+                                    : i == 2
                                     ? const TextInputType.numberWithOptions(
-                                        decimal: true)
+                                      decimal: true,
+                                    )
                                     : TextInputType.text,
                           ),
                         );

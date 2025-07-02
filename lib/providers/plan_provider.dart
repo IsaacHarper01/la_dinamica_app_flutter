@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 final planProvider =
     StateNotifierProvider<PlanNotifier, AsyncValue<List<LocalPlan>>>(
-  (ref) => PlanNotifier(),
-);
+      (ref) => PlanNotifier(),
+    );
 
 class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
   PlanNotifier() : super(const AsyncValue.loading()) {
@@ -20,12 +20,12 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
   DataStoreReadService dataStoreReadService = DataStoreReadService();
   DataStoreService dataStoreService = DataStoreService();
   DataStoreDeleteService dataStoreDeleteService = DataStoreDeleteService();
-  
+
   Future<void> loadPlans() async {
     try {
-      final aws_plans = await dataStoreReadService.getPlans();
-      safePrint("obtained plans from aws: $aws_plans");
-      state = AsyncValue.data(aws_plans);
+      final awsPlans = await dataStoreReadService.getPlans();
+      safePrint("obtained plans from aws: $awsPlans");
+      state = AsyncValue.data(awsPlans);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -35,8 +35,9 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
     try {
       await dataStoreService.savePlan(
         type: plan.type!,
-        clases: plan.clases!, 
-        price: plan.price!);
+        clases: plan.clases!,
+        price: plan.price!,
+      );
 
       loadPlans();
     } catch (e, st) {
