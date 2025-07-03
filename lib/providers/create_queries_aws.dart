@@ -1,5 +1,4 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:la_dinamica_app/models/MetricsType.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
@@ -19,7 +18,7 @@ class DataStoreService {
       rethrow;
     }
   }
-
+  
   Future<void> savePayment({
     required int userId,
     required double amount,
@@ -113,6 +112,8 @@ class DataStoreService {
     required int userId,
     required String name,
     required String date,
+    required String gymId,
+    required String profId,
   }) async {
     final awsDb = DataStoreReadService();
     final todayAttendance = await awsDb.getAttendanceByDate(date);
@@ -129,6 +130,8 @@ class DataStoreService {
       user_id: userId,
       name: name,
       date: TemporalDate(DateTime.parse(date)),
+      client_id: gymId,
+      prof_id: profId,
     );
 
     try {

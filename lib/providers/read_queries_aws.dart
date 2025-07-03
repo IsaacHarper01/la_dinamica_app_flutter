@@ -371,8 +371,9 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> verifyPayment(int userId, String date, User user) async {
+  Future<void> verifyPayment(int userId, String date, String gymId, String profId) async {
     try {
+      safePrint("Verificando pago para el usuario con ID: $userId en la fecha: $date");
       Pay? lastPayment = await getLastPayment(userId);
       LocalPlan? basePlan = await getSimplePlan();
       double cost = 0.0;
@@ -386,15 +387,13 @@ class DataStoreReadService {
       safePrint('Ultimo pago obtenido: $lastPayment');
       if (lastPayment == null) {
         final newPayment = Pay(
-          user_id: userId,
-          //This user ID is the student ID
+          user_id: userId, //This user ID is the student ID
           amount: cost,
           clases: 0,
           type: planType,
           date: TemporalDate(DateTime.parse(date)),
-          client_id: user.db_id,
-          //this user ID is the client ID
-          prof_id: user.id, //This user ID is the teacher ID
+          client_id: gymId, //this user ID is the client ID
+          prof_id: profId, //This user ID is the teacher ID
         );
 
         await Amplify.DataStore.save(newPayment);
@@ -414,9 +413,8 @@ class DataStoreReadService {
             clases: 0,
             type: planType,
             date: TemporalDate(DateTime.parse(date)),
-            client_id: user.db_id,
-            // this user ID is the client ID
-            prof_id: user.id, //This user ID is the teacher ID
+            client_id: gymId, // this user ID is the client ID
+            prof_id: profId, //This user ID is the teacher ID
           );
           await Amplify.DataStore.save(newPayment);
         }

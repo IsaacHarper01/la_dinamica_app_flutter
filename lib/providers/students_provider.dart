@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/student.dart';
 import 'package:la_dinamica_app/models/User.dart';
@@ -8,23 +9,16 @@ import 'package:la_dinamica_app/providers/user_provider.dart';
 
 final studentsProvider =
     StateNotifierProvider<StudentsNotifier, AsyncValue<List<Student>>>((ref) {
-      final user = ref.watch(userProvider);
-      if (user == null) {
-        // Return an empty dummy notifier to avoid crashes
-        return StudentsNotifier(ref, null);
-      }
-      return StudentsNotifier(ref, user);
+      return StudentsNotifier(ref);
     });
 
 class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   final Ref ref;
-  final User? user;
 
-  StudentsNotifier(this.ref, this.user) : super(const AsyncValue.loading());
+  StudentsNotifier(this.ref) : super(const AsyncValue.loading());
 
   Future<void> fetchAttendanceToday(String date) async {
     try {
-      if (user == null || !mounted) return;
       final awsDb = DataStoreReadService();
       final snapshot = await awsDb.getAttendanceByDate(
         date,
@@ -66,8 +60,11 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final awsDb = DataStoreService();
       final awsDb2 = DataStoreReadService();
-      await awsDb.saveAttendance(userId: studentId, name: name, date: date);
-      await awsDb2.verifyPayment(studentId, date, user!);
+      final gymid = ref.read(userProvider)?.db_id;
+      final profId = ref.read(userProvider)?.id;
+      safePrint("gymid: $gymid, profId: $profId");
+      await awsDb.saveAttendance(userId: studentId, name: name, date: date, gymId: gymid!, profId: profId!);
+      await awsDb2.verifyPayment(studentId, date, gymid, profId,); 
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {

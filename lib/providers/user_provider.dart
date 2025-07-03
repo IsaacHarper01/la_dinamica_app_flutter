@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/User.dart';
@@ -19,6 +21,7 @@ class UserNotifier extends StateNotifier<User?> {
   Future<void> initializeUser(WidgetRef ref) async {
     final awsDb = DataStoreReadService();
     final awsDb2 = DataStoreService();
+    final accountChoshen = '1'; // This should be replaced with the actual account chosen logic
 
     try {
       final cognitoUser = await Amplify.Auth.getCurrentUser();
@@ -27,8 +30,19 @@ class UserNotifier extends StateNotifier<User?> {
 
       if (await awsDb.userExists(userId)) {
         final dbUser = await awsDb.getUser(userId);
-        state = dbUser!;
-        safePrint('✅ Usuario obtenido: $dbUser');
+        final dbGym = jsonDecode(dbUser!.db_id!)[accountChoshen];
+        safePrint('GYM ID: $dbGym');
+
+        final newUser = User(
+          id: dbUser.id,
+          db_id: dbGym,
+          name: email ?? 'Unknown',
+          role: dbUser.role,
+          Plan: dbUser.Plan,
+          status: dbUser.status,
+        );
+        state = newUser;
+        safePrint('✅ Usuario obtenido: $newUser');
       } else {
         final newId = Uuid().v4();
 
@@ -40,16 +54,15 @@ class UserNotifier extends StateNotifier<User?> {
           Plan: 'free',
           status: true,
         );
+        state = newUser;
         await awsDb2.saveUser(
           id: newUser.id,
-          clientId: newUser.db_id,
+          clientId: "1:${newUser.db_id}",
           name: newUser.name,
           role: newUser.role,
           plan: newUser.Plan,
           status: newUser.status,
         );
-        safePrint('✅ Usuario creado: $newUser');
-        state = newUser;
       }
     } catch (e) {
       state = null;
