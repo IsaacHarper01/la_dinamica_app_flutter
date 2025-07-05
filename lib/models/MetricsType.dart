@@ -114,12 +114,12 @@ class MetricsType extends amplify_core.Model {
     buffer.write("MetricsType {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
-    buffer.write("min_value=" + (_min_value != null ? _min_value!.toString() : "null") + ", ");
-    buffer.write("max_value=" + (_max_value != null ? _max_value!.toString() : "null") + ", ");
+    buffer.write("min_value=" + (_min_value != null ? _min_value.toString() : "null") + ", ");
+    buffer.write("max_value=" + (_max_value != null ? _max_value.toString() : "null") + ", ");
     buffer.write("category=" + "$_category" + ", ");
     buffer.write("client_id=" + "$_client_id" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

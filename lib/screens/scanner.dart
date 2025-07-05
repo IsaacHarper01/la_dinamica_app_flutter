@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-Future<Map<String, dynamic>?> scannerQR(BuildContext context) async {
+Future<Map<String, dynamic>?> scannerQR(BuildContext context, String tenantId) async {
   // Request camera permission
   var status = await Permission.camera.request();
   final logger = Logger();
@@ -40,8 +40,8 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context) async {
 
     String name = data[1];
     final awsDb = DataStoreReadService();
-
-    if (await awsDb.checkIfStudentExists(id)) {
+    
+    if (await awsDb.checkIfStudentExists(id, tenantId)) {
       //check if student exist in General table
       logger.i('Asistencia de $name registrada con ID: $id');
       return Future.value({'id': id, 'name': name});

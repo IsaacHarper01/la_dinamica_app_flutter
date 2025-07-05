@@ -43,7 +43,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
 
     return Scaffold(
       body: FutureBuilder(
-        future: awsDb.getPlansNamesIds(),
+        future: awsDb.getPlansNamesIds(user.db_id!),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

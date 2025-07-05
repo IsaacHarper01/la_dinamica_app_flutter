@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:logger/logger.dart';
 
-class AddStudentScreen extends StatefulWidget {
+class AddStudentScreen extends ConsumerStatefulWidget {
   const AddStudentScreen({super.key});
 
   @override
-  AddStudentScreenState createState() => AddStudentScreenState();
+  ConsumerState<AddStudentScreen> createState() => AddStudentScreenState();
 }
 
-class AddStudentScreenState extends State<AddStudentScreen> {
+class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
 
@@ -55,6 +57,7 @@ class AddStudentScreenState extends State<AddStudentScreen> {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final awsDb = DataStoreService();
+      final gymId = ref.read(userProvider)!.db_id; 
 
       final data = {
         for (var i = 0; i < _controllers.length; i++)
@@ -74,6 +77,7 @@ class AddStudentScreenState extends State<AddStudentScreen> {
         birthday: data['birthday']!,
         email: data['email']!,
         image: image,
+        gymId: gymId, 
       );
 
       generateCredentialandSend(

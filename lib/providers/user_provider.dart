@@ -30,6 +30,7 @@ class UserNotifier extends StateNotifier<User?> {
 
       if (await awsDb.userExists(userId)) {
         final dbUser = await awsDb.getUser(userId);
+        safePrint('Usuario encontrado: $dbUser');
         final dbGym = jsonDecode(dbUser!.db_id!)[accountChoshen];
         safePrint('GYM ID: $dbGym');
 

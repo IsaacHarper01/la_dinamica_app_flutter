@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/average_widget.dart';
 import 'package:la_dinamica_app/widgets/days_chart_widget.dart';
 
@@ -29,6 +30,8 @@ class LineChartWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final today = DateTime.parse(ref.watch(dateProvider));
+    final tenantId = ref.read(userProvider)!.db_id!;
+
     var n = 30;
 
     if (startDate.toString().split(' ')[0] !=
@@ -40,7 +43,7 @@ class LineChartWidget extends ConsumerWidget {
     final awsDb = DataStoreReadService();
 
     return FutureBuilder(
-      future: awsDb.getTotalAmounRange(lastdate, today),
+      future: awsDb.getTotalAmounRange(lastdate, today, tenantId),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

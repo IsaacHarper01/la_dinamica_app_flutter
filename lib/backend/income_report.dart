@@ -6,14 +6,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-Future<void> generateIncomeReport(DateTime min, DateTime max) async {
+Future<void> generateIncomeReport(DateTime min, DateTime max, String tenantId) async {
   var status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
   }
   final awsDb = DataStoreReadService();
 
-  final paymentsData = await awsDb.getPaymentsRange(min, max);
+  final paymentsData = await awsDb.getPaymentsRange(min, max, tenantId);
 
   if (paymentsData.isEmpty) {
     return;

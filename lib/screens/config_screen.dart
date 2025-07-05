@@ -178,7 +178,7 @@ class PlanCard extends StatelessWidget {
                         color: colorScheme.onSurfaceVariant,
                       ),
                       Text(
-                        '\$${plan.price!.toStringAsFixed(2)}',
+                        plan.price!.toStringAsFixed(2),
                         style: textTheme.labelLarge,
                       ),
                     ],

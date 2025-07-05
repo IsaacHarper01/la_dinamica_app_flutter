@@ -1,22 +1,30 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 
-class AddNewMetric extends StatelessWidget {
-  AddNewMetric({super.key});
+class AddNewMetric extends ConsumerStatefulWidget {
+  const AddNewMetric({super.key});
+
+  @override
+  ConsumerState<AddNewMetric> createState() => _AddNewMetricState();
+}
+
+class _AddNewMetricState extends ConsumerState<AddNewMetric> {
+
   final List<String> labels = ['Nombre', 'Valor minimo', 'Valor máximo', 'Categoría'];
   final List<TextEditingController> _controllers = 
       List.generate(4, (index) => TextEditingController());
   
   final _formKey = GlobalKey<FormState>();
   final awsDB = DataStoreService();
-  
-  BuildContext? get context => null;
 
   void _registerMetric() async {
     // Verificar si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       // Recuperar texto de cada TextEditingController
+      final gymId = ref.read(userProvider)!.db_id; 
       final Map<String, dynamic> metric = {
         'name': _controllers[0].text,
         'minValue': double.parse(_controllers[1].text),
@@ -30,7 +38,7 @@ class AddNewMetric extends StatelessWidget {
           minValue: metric['minValue'], 
           maxValue: metric['maxValue'], 
           category: metric['category'], 
-          gymId: 'Isaac' // Aquí deberías pasar el ID del gimnasio actual mediante el provider
+          gymId: gymId, 
           );
           Navigator.pop(context!, true);
       } catch (e) {

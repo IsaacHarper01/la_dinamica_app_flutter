@@ -5,6 +5,7 @@ import 'package:la_dinamica_app/backend/income_report.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/line_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
 
@@ -54,10 +55,11 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
             ? MediaQuery.of(context).size.width
             : MediaQuery.of(context).size.width * 0.8;
     final awsDb = DataStoreReadService();
+    final tenantId = ref.read(userProvider)!.db_id!;
 
     return Scaffold(
       body: FutureBuilder<double>(
-        future: awsDb.getIncomeRange(startDate, endDate),
+        future: awsDb.getIncomeRange(startDate, endDate, tenantId),
         builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -66,7 +68,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
           } else {
             double result = snapshot.data!;
             final today = ref.watch(dateProvider);
-            return incomeScreen(context, screenWidth, result, today);
+            return incomeScreen(context, screenWidth, result, today, tenantId);
           }
         },
       ),
@@ -78,6 +80,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     double screenWidth,
     double result,
     String date,
+    String tenantId,
   ) {
     return Center(
       child: SingleChildScrollView(
@@ -152,7 +155,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateAttendanceReport(startDate, endDate);
+                        generateAttendanceReport(startDate, endDate, tenantId);
                       },
                       child: const Text(
                         'Reporte de asistencias',
@@ -163,7 +166,8 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateIncomeReport(startDate, endDate);
+                        generateIncomeReport(startDate, endDate, 
+                          ref.read(userProvider)!.db_id!);
                       },
                       child: const Text(
                         'Reporte de Ingresos',
@@ -222,7 +226,11 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: colorList[1], width: 1),
                 ),
-                child: PieChartWidget(startDate: startDate, endDate: endDate),
+                child: PieChartWidget(
+                  startDate: startDate, 
+                  endDate: endDate, 
+                  tenantId: tenantId,
+                ),
               ),
             ],
           ),

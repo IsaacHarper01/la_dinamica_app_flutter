@@ -3,12 +3,14 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class DataStoreService {
+
   Future<void> savePlan({
     required String type,
     required int clases,
     required double price,
+    required String gymId,
   }) async {
-    final item = LocalPlan(type: type, clases: clases, price: price);
+    final item = LocalPlan(type: type, clases: clases, price: price, client_id: gymId);
 
     try {
       await Amplify.DataStore.save(item);
@@ -77,6 +79,7 @@ class DataStoreService {
     required String birthday,
     required String email,
     required String image,
+    required String? gymId,
   }) async {
     try {
       final students = await Amplify.DataStore.query(
@@ -95,6 +98,7 @@ class DataStoreService {
         birthday: TemporalDate(DateTime.parse(birthday)),
         email: email,
         image: image,
+        client_id: gymId,
       );
 
       await Amplify.DataStore.save(item);
@@ -116,7 +120,7 @@ class DataStoreService {
     required String profId,
   }) async {
     final awsDb = DataStoreReadService();
-    final todayAttendance = await awsDb.getAttendanceByDate(date);
+    final todayAttendance = await awsDb.getAttendanceByDate(date, gymId);
 
     if (todayAttendance.isNotEmpty) {
       for (var att in todayAttendance) {

@@ -1,7 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/student.dart';
-import 'package:la_dinamica_app/models/User.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -20,9 +19,8 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   Future<void> fetchAttendanceToday(String date) async {
     try {
       final awsDb = DataStoreReadService();
-      final snapshot = await awsDb.getAttendanceByDate(
-        date,
-      ); //await db.fetchAttendanceToday(date);
+      final tenenatId = ref.read(userProvider)!.db_id;
+      final snapshot = await awsDb.getAttendanceByDate(date, tenenatId!); 
       if (snapshot.isEmpty) {
         state = const AsyncValue.data([]);
         return;
@@ -31,8 +29,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
       List<dynamic> ids = snapshot.map((g) => g.user_id).toList();
       List<dynamic> names = snapshot.map((g) => g.name).toList();
       List<dynamic> images = await awsDb.getImages(
-        snapshot.map((g) => g.user_id!).toList(),
-      );
+        snapshot.map((g) => g.user_id!).toList(), tenenatId);
 
       if (!mounted) return;
 

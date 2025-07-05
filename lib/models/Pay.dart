@@ -135,15 +135,15 @@ class Pay extends amplify_core.Model {
     buffer.write("Pay {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("composite_key=" + "$_composite_key" + ", ");
-    buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
-    buffer.write("amount=" + (_amount != null ? _amount!.toString() : "null") + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
+    buffer.write("user_id=" + (_user_id != null ? _user_id.toString() : "null") + ", ");
+    buffer.write("amount=" + (_amount != null ? _amount.toString() : "null") + ", ");
+    buffer.write("clases=" + (_clases != null ? _clases.toString() : "null") + ", ");
     buffer.write("type=" + "$_type" + ", ");
-    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
+    buffer.write("date=" + (_date != null ? _date.format() : "null") + ", ");
     buffer.write("client_id=" + "$_client_id" + ", ");
     buffer.write("prof_id=" + "$_prof_id" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

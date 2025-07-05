@@ -9,19 +9,20 @@ import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
 
-class StudentsScreen extends StatefulWidget {
+class StudentsScreen extends ConsumerStatefulWidget {
   const StudentsScreen({super.key});
 
   @override
-  StudentsScreenState createState() => StudentsScreenState();
+  ConsumerState<StudentsScreen> createState() => StudentsScreenState();
 }
 
-class StudentsScreenState extends State<StudentsScreen> {
+class StudentsScreenState extends ConsumerState<StudentsScreen> {
   late Future<List<Student>> _studentsFuture;
 
   @override
@@ -32,7 +33,8 @@ class StudentsScreenState extends State<StudentsScreen> {
 
   void _loadStudents() {
     final awsDb = DataStoreReadService();
-    _studentsFuture = awsDb.getStudents();
+    final tenantId = ref.read(userProvider)!.db_id!;
+    _studentsFuture = awsDb.getStudents(tenantId);
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class AddNewPlan extends ConsumerStatefulWidget {
   const AddNewPlan({super.key});
@@ -22,12 +23,14 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
   void _registerPlan() async {
     // Verificar si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
+      final gymId = ref.read(userProvider)!.db_id;
       // Recuperar texto de cada TextEditingController
 
       final plan = LocalPlan(
         type: _controllers[0].text,
         clases: int.parse(_controllers[1].text),
         price: double.parse(_controllers[2].text),
+        client_id: gymId,
       );
 
       try {

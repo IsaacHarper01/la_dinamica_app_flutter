@@ -5,14 +5,17 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 
 final planProvider =
     StateNotifierProvider<PlanNotifier, AsyncValue<List<LocalPlan>>>(
-      (ref) => PlanNotifier(),
+      (ref) => PlanNotifier(ref),
     );
 
 class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
-  PlanNotifier() : super(const AsyncValue.loading()) {
+  final Ref ref;
+
+  PlanNotifier(this.ref) : super(const AsyncValue.loading()) {
     loadPlans();
   }
 
@@ -22,9 +25,10 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
   DataStoreDeleteService dataStoreDeleteService = DataStoreDeleteService();
 
   Future<void> loadPlans() async {
+    final gymId = ref.read(userProvider)!.db_id;
     try {
-      final awsPlans = await dataStoreReadService.getPlans();
-      safePrint("obtained plans from aws: $awsPlans");
+      final awsPlans = await dataStoreReadService.getPlans(gymId!);
+      safePrint("obtained plans from aws: $awsPlans for gym: $gymId");
       state = AsyncValue.data(awsPlans);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -37,6 +41,7 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
         type: plan.type!,
         clases: plan.clases!,
         price: plan.price!,
+        gymId: plan.client_id!,
       );
 
       loadPlans();

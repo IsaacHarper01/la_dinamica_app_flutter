@@ -117,9 +117,9 @@ class User extends amplify_core.Model {
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("role=" + "$_role" + ", ");
     buffer.write("Plan=" + "$_Plan" + ", ");
-    buffer.write("status=" + (_status != null ? _status!.toString() : "null") + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
+    buffer.write("status=" + (_status != null ? _status.toString() : "null") + ", ");
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

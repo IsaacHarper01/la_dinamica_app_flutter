@@ -9,6 +9,7 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
 
 import '../providers/attendance_provider.dart';
@@ -74,7 +75,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.name)),
       body: FutureBuilder(
-        future: awsDb.getLastPayandStudentData(widget.id),
+        future: awsDb.getLastPayandStudentData(widget.id, ref.read(userProvider)!.db_id!),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

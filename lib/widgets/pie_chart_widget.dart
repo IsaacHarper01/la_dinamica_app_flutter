@@ -11,16 +11,19 @@ import 'package:la_dinamica_app/widgets/piechart_indicator.dart';
 class PieChartWidget extends ConsumerWidget {
   final DateTime startDate;
   final DateTime endDate;
+  final String tenantId;
 
   const PieChartWidget({
     super.key,
     required this.startDate,
     required this.endDate,
+    required this.tenantId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final parsedDate = DateTime.tryParse(ref.watch(dateProvider));
+
     if (parsedDate == null) {
       return const Center(child: Text('Fecha inválida'));
     }
@@ -37,7 +40,7 @@ class PieChartWidget extends ConsumerWidget {
     final today = parsedDate;
 
     return FutureBuilder(
-      future: awsDb.getPaymentsRange(lastdate, today),
+      future: awsDb.getPaymentsRange(lastdate, today, tenantId),
       builder: (BuildContext context, AsyncSnapshot<List<Pay>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

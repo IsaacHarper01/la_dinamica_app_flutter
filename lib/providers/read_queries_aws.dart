@@ -2,11 +2,13 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class DataStoreReadService {
-  Future<List<LocalPlan>> getPlans() async {
+
+  Future<List<LocalPlan>> getPlans(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<LocalPlan> plans = await Amplify.DataStore.query(
         LocalPlan.classType,
+        where: LocalPlan.CLIENT_ID.eq(tenantId),
       );
       safePrint('✅ Planes obtenidos correctamente');
       return plans;
@@ -16,13 +18,17 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<List<String>>> getPlansNamesIds() async {
+  Future<List<List<String>>> getPlansNamesIds(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<LocalPlan> plans = await Amplify.DataStore.query(
         LocalPlan.classType,
+        where: LocalPlan.CLIENT_ID.eq(tenantId),
       );
-      List<Student> general = await Amplify.DataStore.query(Student.classType);
+      List<Student> general = await Amplify.DataStore.query(
+        Student.classType,
+        where: Student.CLIENT_ID.eq(tenantId),
+        );
 
       List<String> names = [];
       List<String> ids = [];
@@ -46,10 +52,13 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Pay>> getPayments() async {
+  Future<List<Pay>> getPayments(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Pay> payments = await Amplify.DataStore.query(Pay.classType);
+      List<Pay> payments = await Amplify.DataStore.query(
+        Pay.classType,
+        where: Pay.CLIENT_ID.eq(tenantId),
+        );
       safePrint('✅ Pagos obtenidos correctamente');
       return payments;
     } catch (e) {
@@ -61,11 +70,13 @@ class DataStoreReadService {
   Future<List<Pay>> getPaymentsRange(
     DateTime startDate,
     DateTime endDate,
+    String tenantId,
   ) async {
     try {
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
-        where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)),
+        where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)) 
+            .and(Pay.CLIENT_ID.eq(tenantId)),
       );
       safePrint('✅ Pagos obtenidos correctamente');
       return payments;
@@ -75,15 +86,17 @@ class DataStoreReadService {
     }
   }
 
-  Future<Map<String, dynamic>> getLastPayandStudentData(int userId) async {
+  Future<Map<String, dynamic>> getLastPayandStudentData(int userId, String tenantId) async {
     try {
       List<Student> general = await Amplify.DataStore.query(
         Student.classType,
-        where: Student.USER_ID.eq(userId),
+        where: Student.USER_ID.eq(userId)
+          .and(Student.CLIENT_ID.eq(tenantId)),
       );
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
-        where: Pay.USER_ID.eq(userId),
+        where: Pay.USER_ID.eq(userId) 
+            .and(Pay.CLIENT_ID.eq(tenantId)),
         sortBy: [Pay.DATE.descending()],
       );
 
@@ -105,13 +118,14 @@ class DataStoreReadService {
     }
   }
 
-  Future<double> getIncomeRange(DateTime startDate, DateTime endDate) async {
+  Future<double> getIncomeRange(DateTime startDate, DateTime endDate, String tenantId) async {
     double totalIncome = 0.0;
     try {
       // Consultar los datos almacenados en DataStore
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
-        where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)),
+        where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)) 
+            .and(Pay.CLIENT_ID.eq(tenantId)),
       );
       if (payments.isEmpty) {
         safePrint(
@@ -131,18 +145,20 @@ class DataStoreReadService {
     }
   }
   
-  Future<List<Map<String, dynamic>>?> getTotalAmounRange(DateTime startDate,DateTime endDate) async {
+  Future<List<Map<String, dynamic>>?> getTotalAmounRange(DateTime startDate,DateTime endDate, String tenantId) async {
     Map<String, dynamic> clasesDates = {};
     Map<String, dynamic> studentsPerDay = {};
 
     try {
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
-        where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)),
+        where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)) 
+            .and(Pay.CLIENT_ID.eq(tenantId)),
       );
       List<Attendance> students = await Amplify.DataStore.query(
         Attendance.classType,
-        where: Attendance.DATE.between(TemporalDate(startDate),TemporalDate(endDate),),
+        where: Attendance.DATE.between(TemporalDate(startDate),TemporalDate(endDate)) 
+            .and(Attendance.CLIENT_ID.eq(tenantId)),
         );
 
       if (payments.isNotEmpty) {
@@ -183,10 +199,13 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Metric>> getMetrics() async {
+  Future<List<Metric>> getMetrics(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Metric> metrics = await Amplify.DataStore.query(Metric.classType);
+      List<Metric> metrics = await Amplify.DataStore.query(
+        Metric.classType,
+        where: Metric.CLIENT_ID.eq(tenantId),
+      );
       safePrint('✅ Metricas obtenidas correctamente');
       return metrics;
     } catch (e) {
@@ -195,10 +214,13 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Student>> getStudents() async {
+  Future<List<Student>> getStudents(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
-      List<Student> general = await Amplify.DataStore.query(Student.classType);
+      List<Student> general = await Amplify.DataStore.query(
+        Student.classType,
+        where: Student.CLIENT_ID.eq(tenantId),
+        );
       safePrint('✅ Alumnos obtenidos correctamente');
       return general;
     } catch (e) {
@@ -207,12 +229,13 @@ class DataStoreReadService {
     }
   }
 
-  Future<bool> checkIfStudentExists(int id) async {
+  Future<bool> checkIfStudentExists(int id, String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Student> general = await Amplify.DataStore.query(
         Student.classType,
-        where: Student.USER_ID.eq(id),
+        where: Student.USER_ID.eq(id) 
+            .and(Student.CLIENT_ID.eq(tenantId)),
       );
       if (general.isNotEmpty) {
         safePrint('✅ El alumno con ID $id existe');
@@ -227,15 +250,16 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<List<String>>> getAgesandAddress(List<int> ids) async {
+  Future<List<List<String>>> getAgesandAddress(List<int> ids, String tenantId) async {
     try {
       List<Student> general = [];
       for (var id in ids) {
         general.addAll(
           await Amplify.DataStore.query(
             Student.classType,
-            where: Student.USER_ID.eq(id),
-          ),
+            where: Student.USER_ID.eq(id)
+              .and(Student.CLIENT_ID.eq(tenantId)),
+          )
         );
       }
       List<String> ages = [];
@@ -257,11 +281,12 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Attendance>> getAttendance() async {
+  Future<List<Attendance>> getAttendance(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Attendance> attendance = await Amplify.DataStore.query(
         Attendance.classType,
+        where: Attendance.CLIENT_ID.eq(tenantId),
       );
       safePrint('✅ Asistencias obtenidas correctamente');
       return attendance;
@@ -271,11 +296,12 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Attendance>> getAttendanceByDate(String date) async {
+  Future<List<Attendance>> getAttendanceByDate(String date, String tenantId) async {
     try {
       List<Attendance> attendance = await Amplify.DataStore.query(
         Attendance.classType,
-        where: Attendance.DATE.eq(date),
+        where: Attendance.DATE.eq(date) 
+            .and(Attendance.CLIENT_ID.eq(tenantId)),
       );
       return attendance;
     } catch (e) {
@@ -287,14 +313,13 @@ class DataStoreReadService {
   Future<List<Attendance>> getAttendanceRange(
     DateTime startDate,
     DateTime endDate,
+    String tenantId,
   ) async {
     try {
       List<Attendance> attendance = await Amplify.DataStore.query(
         Attendance.classType,
-        where: Attendance.DATE.between(
-          TemporalDate(startDate),
-          TemporalDate(endDate),
-        ),
+        where: Attendance.DATE.between(TemporalDate(startDate),TemporalDate(endDate),) 
+            .and(Attendance.CLIENT_ID.eq(tenantId)),
       );
       safePrint('✅ Asistencias obtenidas correctamente');
       return attendance;
@@ -304,14 +329,16 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<String?>> getImages(List<int> ids) async {
+  Future<List<String?>> getImages(List<int> ids, String tenantId) async {
     try {
       List<Student> general = [];
       for (var id in ids) {
         general.addAll(
           await Amplify.DataStore.query(
             Student.classType,
-            where: Student.USER_ID.eq(id),
+            where: Student.USER_ID.eq(id) 
+                .and(Student.CLIENT_ID.eq(tenantId)
+                )
           ),
         );
       }
@@ -332,12 +359,13 @@ class DataStoreReadService {
     }
   }
 
-  Future<LocalPlan?> getSimplePlan() async {
+  Future<LocalPlan?> getSimplePlan(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<LocalPlan> plans = await Amplify.DataStore.query(
         LocalPlan.classType,
-        where: LocalPlan.CLASES.eq(1),
+        where: LocalPlan.CLASES.eq(1) 
+            .and(LocalPlan.CLIENT_ID.eq(tenantId)),
       );
       safePrint('✅ Planes obtenidos correctamente');
       if (plans.isNotEmpty) {
@@ -351,12 +379,13 @@ class DataStoreReadService {
     }
   }
 
-  Future<Pay?> getLastPayment(int userId) async {
+  Future<Pay?> getLastPayment(int userId, String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
-        where: Pay.USER_ID.eq(userId),
+        where: Pay.USER_ID.eq(userId)  
+            .and(Pay.CLIENT_ID.eq(tenantId)),
         sortBy: [Pay.DATE.descending()],
       );
       safePrint('✅ Pagos obtenidos correctamente');
@@ -371,11 +400,11 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> verifyPayment(int userId, String date, String gymId, String profId) async {
+  Future<void> verifyPayment(int userId, String date, String tenantId, String profId) async {
     try {
       safePrint("Verificando pago para el usuario con ID: $userId en la fecha: $date");
-      Pay? lastPayment = await getLastPayment(userId);
-      LocalPlan? basePlan = await getSimplePlan();
+      Pay? lastPayment = await getLastPayment(userId, tenantId);
+      LocalPlan? basePlan = await getSimplePlan(tenantId);
       double cost = 0.0;
       String planType = 'Clase Unica';
 
@@ -392,7 +421,7 @@ class DataStoreReadService {
           clases: 0,
           type: planType,
           date: TemporalDate(DateTime.parse(date)),
-          client_id: gymId, //this user ID is the client ID
+          client_id: tenantId, //this user ID is the client ID
           prof_id: profId, //This user ID is the teacher ID
         );
 
@@ -413,7 +442,7 @@ class DataStoreReadService {
             clases: 0,
             type: planType,
             date: TemporalDate(DateTime.parse(date)),
-            client_id: gymId, // this user ID is the client ID
+            client_id: tenantId, // this user ID is the client ID
             prof_id: profId, //This user ID is the teacher ID
           );
           await Amplify.DataStore.save(newPayment);

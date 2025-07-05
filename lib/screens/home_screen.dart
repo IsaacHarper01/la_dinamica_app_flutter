@@ -39,7 +39,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> registerAssistance(BuildContext context) async {
-    final result = await scannerQR(context);
+    final result = await scannerQR(context, user!.db_id!);
 
     if (result == null || result.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(

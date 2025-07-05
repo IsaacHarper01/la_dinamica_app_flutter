@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 Future<void> generateAttendanceReport(
   DateTime startDate,
   DateTime endDate,
+  String tenantId,
 ) async {
   // Solicitar permiso de almacenamiento
   var status = await Permission.storage.status;
@@ -19,7 +20,7 @@ Future<void> generateAttendanceReport(
   // Obtener los datos de asistencia desde la base de datos
   final awsDb = DataStoreReadService();
 
-  final attendanceData = await awsDb.getAttendanceRange(startDate, endDate);
+  final attendanceData = await awsDb.getAttendanceRange(startDate, endDate, tenantId);
 
   // Si no hay datos, salir
   if (attendanceData.isEmpty) {
@@ -31,7 +32,7 @@ Future<void> generateAttendanceReport(
     ids.add(row.user_id!);
   }
 
-  final agesAndAddress = await awsDb.getAgesandAddress(ids);
+  final agesAndAddress = await awsDb.getAgesandAddress(ids, tenantId);
 
   List<List<String>> csvData = [
     ['Id del Alumno', 'Nombre', 'Edad', 'Localidad', 'Fecha'],
