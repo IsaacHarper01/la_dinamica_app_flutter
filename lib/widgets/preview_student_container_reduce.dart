@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/providers/storageS3.dart';
 
 class PreviewStudentContainerReduce extends StatelessWidget {
   final String name;
@@ -39,12 +40,12 @@ class PreviewStudentContainerReduce extends StatelessWidget {
         .of(context)
         .size
         .width;
-    final file = File(image);
+    final awsS3 = Storages3();
 
-    return FutureBuilder<bool>(
-      future: file.exists(),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        final exists = snapshot.data ?? false;
+    return FutureBuilder<String?>(
+      future: awsS3.getImageUrl(image),
+      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+        final imageUrl = snapshot.data ?? "";
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -65,7 +66,7 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     child:
                     Image.network(
-                        jsonDecode(image)['imageUrl'],
+                        imageUrl,
                         width: screenHeight * 0.06,
                         fit: BoxFit.cover,
                         loadingBuilder: (context, child, loadingProgress) {

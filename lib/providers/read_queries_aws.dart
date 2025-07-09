@@ -1,5 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/storageS3.dart';
 
 class DataStoreReadService {
 
@@ -87,35 +88,39 @@ class DataStoreReadService {
   }
 
   Future<Map<String, dynamic>> getLastPayandStudentData(int userId, String tenantId) async {
+    dynamic studentData;
+    dynamic lastPay;
+
     try {
       List<Student> general = await Amplify.DataStore.query(
         Student.classType,
         where: Student.USER_ID.eq(userId)
-          .and(Student.CLIENT_ID.eq(tenantId)),
-      );
+          .and(Student.CLIENT_ID.eq(tenantId)),);
+      
+      final awsS3 = Storages3(); 
+      String? imageName = general.first.image;
+      studentData = general.first.copyWith(image: await awsS3.getImageUrl(imageName!));
+
+    } catch (e) {
+      safePrint('❌ Error al obtener los datos del usuario: $e'); 
+    }
+    try{
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
         where: Pay.USER_ID.eq(userId) 
             .and(Pay.CLIENT_ID.eq(tenantId)),
-        sortBy: [Pay.DATE.descending()],
-      );
+        sortBy: [Pay.DATE.descending()],);
+        lastPay = payments.first;
 
-      if (general.isEmpty || payments.isEmpty) {
-        safePrint('❌ No se encontraron datos para el usuario con ID $userId');
-        return {};
-      }
-      safePrint('Payments: $payments');
-
-      Map<String, dynamic> result = {
-        'lastPay': payments.first,
-        'studentData': general.first,
-      };
-      safePrint('✅ Datos obtenidos correctamente');
-      return result;
-    } catch (e) {
-      safePrint('❌ Error al obtener los datos del usuario: $e');
-      rethrow;
+    }catch(e){
+      safePrint('❌ Error al obtener el ultimo pago del usuario: $e');
     }
+      
+      Map<String, dynamic> result = {
+        'lastPay': lastPay,
+        'studentData': studentData,
+      };
+      return result;
   }
 
   Future<double> getIncomeRange(DateTime startDate, DateTime endDate, String tenantId) async {

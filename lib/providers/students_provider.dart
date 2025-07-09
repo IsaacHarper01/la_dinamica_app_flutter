@@ -32,7 +32,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
       List<dynamic> names = snapshot.map((g) => g.name).toList();
       List<dynamic> images = await awsS3.getImages(
         snapshot.map((g) => g.user_id!).toList(), tenenatId);
-
+      safePrint("IMAGES: $images");
       if (!mounted) return;
 
       if (ids.isEmpty || names.isEmpty || images.isEmpty) {

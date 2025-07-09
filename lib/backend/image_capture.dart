@@ -38,15 +38,6 @@ Future<String?> pickAndSaveImage(String name, String tenantId) async {
     // Upload the image to S3
 
     String? newPath = await storage.uploadFile(tempFile, name, tenantId);
-
-    // // Get the directory to save the image
-    // Directory directory = await getApplicationDocumentsDirectory();
-    // String newPath = path.join(directory.path, '$name.jpg');
-    // // Save the resized image as a file
-    // File _ = File(newPath)..writeAsBytesSync(
-    //   img.encodeJpg(resizedImage, quality: 85),
-    // ); // Save with compression
-
     
     return newPath;
   } else {

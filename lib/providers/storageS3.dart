@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -16,9 +15,8 @@ Future<String?> uploadFile(File file, String name, String tenantId) async {
       path: StoragePath.fromString(newPath),
     ).result;
     safePrint('Uploaded file: ${result.uploadedItem.path}');
-    final urlpath = await getImageUrl(result.uploadedItem.path);
-    String image = '{"imagePath":"${result.uploadedItem.path}","imageUrl":"$urlpath"}'; 
-    return image;
+ 
+    return result.uploadedItem.path;
   } on StorageException catch (e) {
     safePrint(e.message);
     return null;
@@ -61,10 +59,11 @@ Future<List<String?>> getImages(List<int> ids, String tenantId) async {
           ),
         );
       }
-      List<String> images = [];
+      List<String?> images = [];
       if (general.isNotEmpty) {
         for (var student in general) {
-          images.add(jsonDecode(student.image!)['imageUrl']);
+          final imageUrl = await getImageUrl(student.image!);
+          images.add(imageUrl);
         }
         safePrint('✅ Imagenes obtenidas correctamente');
         return images;

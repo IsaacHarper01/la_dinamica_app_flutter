@@ -20,9 +20,8 @@ Future<void> generateCredentialandSend(
 ) async {
   // 1. Generate the QR code widget
   final awsStorage = Storages3();
-  final awsImagePath = jsonDecode(photo)['imagePath'];
   final qrCodeData = '$id,$name,$address,$number,$age';
-  final Uint8List photoBytes = await awsStorage.downloadFile(awsImagePath); 
+  final Uint8List photoBytes = await awsStorage.downloadFile(photo); 
   final ByteData wallpaperData = await rootBundle.load(
     'assets/images/fondo6.jpg',
   );

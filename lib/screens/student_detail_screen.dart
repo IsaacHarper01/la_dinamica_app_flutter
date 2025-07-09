@@ -1,7 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
@@ -41,6 +38,8 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     clases: 0,
     type: 'Desconocido',
     date: TemporalDate(DateTime.now()),
+    client_id: '',
+    prof_id: '',
   );
 
   Student studentData = Student(
@@ -49,7 +48,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     address: 'Desconocido',
     phone: 'Desconocido',
     age: 0,
-    image: '',
+    image: 'assets/images/default_profile.jpg',
   );
 
   bool isActive = true;
@@ -81,10 +80,11 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            if (snapshot.data['lastPay'] != null &&
-                snapshot.data['studentData'] != null) {
-              paymentData = snapshot.data['lastPay'];
+            if (snapshot.data['studentData'] != null) {
               studentData = snapshot.data['studentData'];
+            }
+            if (snapshot.data['lastPay'] != null){
+              paymentData = snapshot.data['lastPay'];
             }
 
             return infoScreen(
@@ -107,7 +107,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   ) {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
-
+    safePrint(widget.image);
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -122,7 +122,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                     opacity: 0.5,
                     child:
                             Image.network(
-                              jsonDecode(widget.image)['imageUrl'],
+                              studentData.image!,
                               width: double.infinity,
                               fit: BoxFit.cover,
                               loadingBuilder: (context, child, loadingProgress) {
