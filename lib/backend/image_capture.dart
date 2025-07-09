@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
+import 'package:la_dinamica_app/providers/storageS3.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
-Future<String> pickAndSaveImage(String name) async {
+
+Future<String?> pickAndSaveImage(String name, String tenantId) async {
   final picker = ImagePicker();
+  final storage = Storages3();
   final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
   if (pickedFile != null) {
@@ -25,17 +28,29 @@ Future<String> pickAndSaveImage(String name) async {
       height: 600,
     );
 
-    // Get the directory to save the image
-    Directory directory = await getApplicationDocumentsDirectory();
-    String newPath = path.join(directory.path, '$name.jpg');
-    // Save the resized image as a file
-    File _ = File(newPath)..writeAsBytesSync(
-      img.encodeJpg(resizedImage, quality: 85),
-    ); // Save with compression
+    final compressedBytes = img.encodeJpg(resizedImage, quality: 85);
 
+    // Save to temp file before upload
+    final tempDir = await getTemporaryDirectory();
+    final tempPath = path.join(tempDir.path, name);
+    final tempFile = await File(tempPath).writeAsBytes(compressedBytes);
+
+    // Upload the image to S3
+
+    String? newPath = await storage.uploadFile(tempFile, name, tenantId);
+
+    // // Get the directory to save the image
+    // Directory directory = await getApplicationDocumentsDirectory();
+    // String newPath = path.join(directory.path, '$name.jpg');
+    // // Save the resized image as a file
+    // File _ = File(newPath)..writeAsBytesSync(
+    //   img.encodeJpg(resizedImage, quality: 85),
+    // ); // Save with compression
+
+    
     return newPath;
   } else {
     safePrint('No image selected.');
-    return 'assets/images/f_ma11.png';
+    return 'assets/images/default_profile.jpg'; // Default image path
   }
 }

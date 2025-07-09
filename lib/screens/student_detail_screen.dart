@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:amplify_datastore/amplify_datastore.dart';
@@ -120,16 +121,21 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   child: Opacity(
                     opacity: 0.5,
                     child:
-                        File(widget.image).existsSync()
-                            ? Image.file(
-                              File(widget.image),
+                            Image.network(
+                              jsonDecode(widget.image)['imageUrl'],
                               width: double.infinity,
                               fit: BoxFit.cover,
-                            )
-                            : Image.asset(
-                              'assets/images/default_profile.jpg',
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(child: CircularProgressIndicator());
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/default_profile.jpg',
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                );
+                              },
                             ),
                   ),
                 ),

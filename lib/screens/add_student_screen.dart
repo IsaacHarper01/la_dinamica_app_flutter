@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
@@ -17,7 +19,7 @@ class AddStudentScreen extends ConsumerStatefulWidget {
 class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
-
+  
   // Crear un controlador para cada campo de texto
   final List<TextEditingController> _controllers = List.generate(
     6,
@@ -66,8 +68,8 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       logger.i('Datos del formulario: $data');
 
       // Insertar los valores en la base de datos y generar el archivo PDF
-      final image = await pickAndSaveImage(data['name']!);
-      data['image'] = image;
+      final image = await pickAndSaveImage(data['name']!, gymId!);
+      data['image'] = image!;
 
       final id = await awsDb.saveGeneral(
         name: data['name']!,

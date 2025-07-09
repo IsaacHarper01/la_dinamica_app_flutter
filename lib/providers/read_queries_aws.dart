@@ -221,6 +221,7 @@ class DataStoreReadService {
         Student.classType,
         where: Student.CLIENT_ID.eq(tenantId),
         );
+        
       safePrint('✅ Alumnos obtenidos correctamente');
       return general;
     } catch (e) {
@@ -325,36 +326,6 @@ class DataStoreReadService {
       return attendance;
     } catch (e) {
       safePrint('❌ Error al obtener las asistencias: $e');
-      rethrow;
-    }
-  }
-
-  Future<List<String?>> getImages(List<int> ids, String tenantId) async {
-    try {
-      List<Student> general = [];
-      for (var id in ids) {
-        general.addAll(
-          await Amplify.DataStore.query(
-            Student.classType,
-            where: Student.USER_ID.eq(id) 
-                .and(Student.CLIENT_ID.eq(tenantId)
-                )
-          ),
-        );
-      }
-      List<String> images = [];
-      if (general.isNotEmpty) {
-        for (var student in general) {
-          images.add(student.image!);
-        }
-        safePrint('✅ Imagenes obtenidas correctamente');
-        return images;
-      } else {
-        safePrint('❌ No se encontró el alumno con el ID proporcionado');
-        return [];
-      }
-    } catch (e) {
-      safePrint(' Error al obtener las imagenes: $e');
       rethrow;
     }
   }

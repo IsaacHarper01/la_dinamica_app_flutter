@@ -10,6 +10,7 @@ import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
+import 'package:la_dinamica_app/widgets/test_button.dart';
 
 import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
@@ -80,7 +81,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     final studentsState = ref.watch(studentsProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: const [CalendarButton(), SignOutButton()]),
+      appBar: AppBar(actions: const [CalendarButton(), SignOutButton(), TestButton()]),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),

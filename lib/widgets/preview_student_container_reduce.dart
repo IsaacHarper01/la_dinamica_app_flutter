@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -63,17 +64,22 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child:
-                    exists
-                        ? Image.file(
-                      File(image),
-                      width: screenHeight * 0.06,
-                      fit: BoxFit.cover,
-                    )
-                        : Image.asset(
-                      'assets/images/default_profile.jpg',
-                      width: screenHeight * 0.06,
-                      fit: BoxFit.cover,
-                    ),
+                    Image.network(
+                        jsonDecode(image)['imageUrl'],
+                        width: screenHeight * 0.06,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator());
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/default_profile.jpg',
+                            width: screenHeight * 0.06,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
                   ),
                 ),
                 Expanded(

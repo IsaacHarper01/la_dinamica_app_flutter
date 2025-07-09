@@ -1,5 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -25,12 +26,13 @@ void main() async {
 Future<void> _configureAmplify() async {
   final datastorePlugin = AmplifyDataStore(modelProvider: ModelProvider.instance);
   final apiPlugin = AmplifyAPI();
+  final storage = AmplifyStorageS3();
+  final auth = AmplifyAuthCognito();
 
   if (!Amplify.isConfigured) {
     try {
 
-      await Amplify.addPlugins([datastorePlugin, apiPlugin]);
-      await Amplify.addPlugin(AmplifyAuthCognito());
+      await Amplify.addPlugins([datastorePlugin, apiPlugin, storage, auth]);
       await Amplify.configure(amplifyconfig);
       safePrint('✅ Amplify configurado correctamente');
     } on AmplifyAlreadyConfiguredException {

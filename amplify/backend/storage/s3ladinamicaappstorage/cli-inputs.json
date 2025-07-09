@@ -1,0 +1,12 @@
+{
+  "resourceName": "s3ladinamicaappstorage",
+  "bucketName": "ladinamicaapp-storage",
+  "policyUUID": "9824671b",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "READ",
+    "CREATE_AND_UPDATE",
+    "DELETE"
+  ]
+}

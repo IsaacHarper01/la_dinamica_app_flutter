@@ -1,8 +1,9 @@
-import 'dart:io';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/services.dart';
+import 'package:la_dinamica_app/providers/storageS3.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -18,9 +19,10 @@ Future<void> generateCredentialandSend(
   String photo,
 ) async {
   // 1. Generate the QR code widget
+  final awsStorage = Storages3();
+  final awsImagePath = jsonDecode(photo)['imagePath'];
   final qrCodeData = '$id,$name,$address,$number,$age';
-  final File photoFile = File(photo);
-  final Uint8List photoBytes = await photoFile.readAsBytes();
+  final Uint8List photoBytes = await awsStorage.downloadFile(awsImagePath); 
   final ByteData wallpaperData = await rootBundle.load(
     'assets/images/fondo6.jpg',
   );

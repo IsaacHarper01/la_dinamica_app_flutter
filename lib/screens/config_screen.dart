@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_metric.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 import 'package:la_dinamica_app/widgets/section_card_widget.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../widgets/theme_selector_widget.dart';
 
@@ -21,6 +23,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
   Widget build(BuildContext context) {
     final plansState = ref.watch(planProvider);
     final themeMode = ref.watch(themeNotifierProvider);
+    final user = ref.watch(userProvider);
     final colorScheme = ColorScheme.of(context);
     final textTheme = TextTheme.of(context);
 
@@ -80,6 +83,23 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                   ),
                 ),
               ),
+              if (user!.role == "owner") ...[
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.person_add_alt_1_rounded),
+                  label: const Text('Agregar Profesor'),
+                  onPressed: ()=> _showQrCodeDialog(context, "{db_id:${user.db_id},role:profesor}"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    textStyle: textTheme.titleMedium,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 24),
               SectionCard(
                 title: 'Planes disponibles',
@@ -124,6 +144,46 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
     );
   }
 }
+
+void _showQrCodeDialog(BuildContext context, String dataToEncode){
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: const EdgeInsets.all(24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Al escanear este código estás dando acceso a tu base de datos',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: 250,
+              height: 250,
+              child: QrImageView(
+                      data: dataToEncode, 
+                      size: 200,
+                      backgroundColor: Colors.white,
+                      ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.close),
+              label: const Text('Cerrar'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
 class PlanCard extends StatelessWidget {
   final LocalPlan plan;

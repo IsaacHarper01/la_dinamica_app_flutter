@@ -141,17 +141,17 @@ class Student extends amplify_core.Model {
     
     buffer.write("Student {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("user_id=" + (_user_id != null ? _user_id.toString() : "null") + ", ");
+    buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("address=" + "$_address" + ", ");
-    buffer.write("age=" + (_age != null ? _age.toString() : "null") + ", ");
+    buffer.write("age=" + (_age != null ? _age!.toString() : "null") + ", ");
     buffer.write("phone=" + "$_phone" + ", ");
-    buffer.write("birthday=" + (_birthday != null ? _birthday.format() : "null") + ", ");
+    buffer.write("birthday=" + (_birthday != null ? _birthday!.format() : "null") + ", ");
     buffer.write("email=" + "$_email" + ", ");
     buffer.write("image=" + "$_image" + ", ");
     buffer.write("client_id=" + "$_client_id" + ", ");
-    buffer.write("createdAt=" + (_createdAt != null ? _createdAt.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt.format() : "null"));
+    buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 class PreviewStudentContainer extends StatelessWidget {
@@ -51,12 +49,20 @@ class PreviewStudentContainer extends StatelessWidget {
                     height: screenHeight * 0.09,
                     width: screenHeight * 0.09,
                     child:
-                        File(image).existsSync()
-                            ? Image.file(File(image), fit: BoxFit.cover)
-                            : Image.asset(
-                              'assets/images/default_profile.jpg',
-                              fit: BoxFit.cover,
-                            ),
+                        Image.network(
+                            image,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(child: CircularProgressIndicator());
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/default_profile.jpg',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          )
                   ),
                 ),
               ),

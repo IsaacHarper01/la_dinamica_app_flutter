@@ -4,6 +4,7 @@ import 'package:la_dinamica_app/model/student.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/storageS3.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 final studentsProvider =
@@ -19,6 +20,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   Future<void> fetchAttendanceToday(String date) async {
     try {
       final awsDb = DataStoreReadService();
+      final awsS3 = Storages3();
       final tenenatId = ref.read(userProvider)!.db_id;
       final snapshot = await awsDb.getAttendanceByDate(date, tenenatId!); 
       if (snapshot.isEmpty) {
@@ -28,7 +30,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
 
       List<dynamic> ids = snapshot.map((g) => g.user_id).toList();
       List<dynamic> names = snapshot.map((g) => g.name).toList();
-      List<dynamic> images = await awsDb.getImages(
+      List<dynamic> images = await awsS3.getImages(
         snapshot.map((g) => g.user_id!).toList(), tenenatId);
 
       if (!mounted) return;
