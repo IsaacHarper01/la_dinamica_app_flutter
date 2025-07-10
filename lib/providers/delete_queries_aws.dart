@@ -27,65 +27,65 @@ class DataStoreDeleteService {
     }
   }
 
-Future<void> deleteStudentByID(int id) async {
-    try {
-      List<Student> students = await Amplify.DataStore.query(
-        Student.classType,
-        where: Student.USER_ID.eq(id),
-      );
-      if (students.isNotEmpty) {
-        for (var student in students) {
-          await Amplify.DataStore.delete(student);
+  Future<void> deleteStudentByID(int id) async {
+      try {
+        List<Student> students = await Amplify.DataStore.query(
+          Student.classType,
+          where: Student.USER_ID.eq(id),
+        );
+        if (students.isNotEmpty) {
+          for (var student in students) {
+            await Amplify.DataStore.delete(student);
+          }
+          safePrint('✅ Alumno eliminado correctamente');
+        } else {
+          safePrint('❌ No se encontró el Alumno con el ID proporcionado');
         }
-        safePrint('✅ Alumno eliminado correctamente');
-      } else {
-        safePrint('❌ No se encontró el Alumno con el ID proporcionado');
+      } catch (e) {
+        safePrint('❌ Error al eliminar Alumno: $e');
+        rethrow;
       }
-    } catch (e) {
-      safePrint('❌ Error al eliminar Alumno: $e');
-      rethrow;
     }
-  }
 
-Future<void> deleteAttendanceByID(int id, String date) async {
-    try {
-      List<Attendance> attendance = await Amplify.DataStore.query(
-        Attendance.classType,
-        where: Attendance.USER_ID.eq(id),
-        sortBy: [Attendance.DATE.descending()],
-      );
-      List<Pay> payments = await Amplify.DataStore.query(
-        Pay.classType,
-        where: Pay.USER_ID.eq(id),
-        sortBy: [Pay.DATE.descending()],
-      );
-
-      if (attendance.isNotEmpty) {
-          await Amplify.DataStore.delete(attendance.last);
-
-      safePrint('✅ Asistencia eliminada correctamente');
-      } 
-
-      Pay? lastPayment = payments.isNotEmpty ? payments.last : null;
-
-      if(lastPayment != null) {
-        List<LocalPlan> plan = await Amplify.DataStore.query(
-        LocalPlan.classType,
-        where: LocalPlan.TYPE.eq(lastPayment.type),
+  Future<void> deleteAttendanceByID(int id, String date) async {
+      try {
+        List<Attendance> attendance = await Amplify.DataStore.query(
+          Attendance.classType,
+          where: Attendance.USER_ID.eq(id),
+          sortBy: [Attendance.DATE.descending()],
+        );
+        List<Pay> payments = await Amplify.DataStore.query(
+          Pay.classType,
+          where: Pay.USER_ID.eq(id),
+          sortBy: [Pay.DATE.descending()],
         );
 
-        if (plan.first.clases! > lastPayment.clases!  && lastPayment.date!.format() != date){
-          Pay updatedPayment = lastPayment.copyWith(clases: lastPayment.clases! + 1);
-          await Amplify.DataStore.save(updatedPayment);
-        } else {
-          await Amplify.DataStore.delete(lastPayment);
-        }
-      } 
-      
-    } catch (e) {
-      safePrint('❌ Error al eliminar la Asistencia: $e');
-      rethrow;
+        if (attendance.isNotEmpty) {
+            await Amplify.DataStore.delete(attendance.last);
+
+        safePrint('✅ Asistencia eliminada correctamente');
+        } 
+
+        Pay? lastPayment = payments.isNotEmpty ? payments.last : null;
+
+        if(lastPayment != null) {
+          List<LocalPlan> plan = await Amplify.DataStore.query(
+          LocalPlan.classType,
+          where: LocalPlan.TYPE.eq(lastPayment.type),
+          );
+
+          if (plan.first.clases! > lastPayment.clases!  && lastPayment.date!.format() != date){
+            Pay updatedPayment = lastPayment.copyWith(clases: lastPayment.clases! + 1);
+            await Amplify.DataStore.save(updatedPayment);
+          } else {
+            await Amplify.DataStore.delete(lastPayment);
+          }
+        } 
+        
+      } catch (e) {
+        safePrint('❌ Error al eliminar la Asistencia: $e');
+        rethrow;
+      }
     }
-  }
 
 }

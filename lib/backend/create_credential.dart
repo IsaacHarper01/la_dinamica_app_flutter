@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -17,10 +16,12 @@ Future<void> generateCredentialandSend(
   String number,
   String age,
   String photo,
+  String dbId,
+
 ) async {
   // 1. Generate the QR code widget
   final awsStorage = Storages3();
-  final qrCodeData = '$id,$name,$address,$number,$age';
+  final qrCodeData = '{"action":"attendance","id":$id,"name":"$name","address":"$address","phone":"$number","age":"$age"}';
   final Uint8List photoBytes = await awsStorage.downloadFile(photo); 
   final ByteData wallpaperData = await rootBundle.load(
     'assets/images/fondo6.jpg',

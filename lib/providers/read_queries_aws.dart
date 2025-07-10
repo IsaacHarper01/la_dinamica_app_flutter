@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/storageS3.dart';
@@ -469,6 +471,23 @@ class DataStoreReadService {
       return null;
     } catch (e) {
       safePrint('❌ Error getting user: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateUser(Map<String, dynamic> newValues, User oldUser) async {
+
+      User? newUser = await getUser(oldUser.id);
+      
+      Map<String,dynamic> databases = jsonDecode(newUser!.db_id!);
+      databases[(databases.length+1).toString()] = newValues['db_id'];
+      newUser.copyWith(db_id: jsonEncode(databases));
+
+      try {
+      await Amplify.DataStore.save(newUser);
+      safePrint('✅ Usuario guardado correctamente');
+    } catch (e) {
+      safePrint('❌ Error al guardar el usuario: $e');
       rethrow;
     }
   }

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:la_dinamica_app/models/User.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -25,28 +28,34 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context, String tenantId) a
   }
 
   try {
-    List<String> data = scannedCode.split(',');
-    if (data.length < 5) {
-      logger.e("Formato de datos incorrecto: $scannedCode");
-      return null;
-    }
-
-    int id = int.tryParse(data[0]) ?? -1;
-
-    if (id == -1) {
-      logger.e("ID no válido: ${data[0]}");
-      return null;
-    }
-
-    String name = data[1];
+    Map<String, dynamic> info = jsonDecode(scannedCode);
     final awsDb = DataStoreReadService();
-    
-    if (await awsDb.checkIfStudentExists(id, tenantId)) {
-      //check if student exist in General table
-      logger.i('Asistencia de $name registrada con ID: $id');
-      return Future.value({'id': id, 'name': name});
-    } else {
-      logger.i('Alumno no encontrado');
+
+    if (info['action']=='attendance'){
+        int id = info['id'] ?? -1;
+
+        if (id == -1) {
+          logger.e("ID no válido: ${info['id']}");
+          return null;
+        }
+
+        String name = info['name'];
+        
+        
+        if (await awsDb.checkIfStudentExists(id, tenantId)) {
+          //check if student exist in General table
+          logger.i('Asistencia de $name registrada con ID: $id');
+          return Future.value({'action':'attendance','id': id, 'name': name});
+        } else {
+          logger.i('Alumno no encontrado');
+          return null;
+        }
+      }
+    else if(info['action']=='profesor'){
+       String tenantId = info['db_id'];
+       return Future.value({'action':'profesor','tenantId':tenantId});
+    }
+    else{
       return null;
     }
   } catch (e) {

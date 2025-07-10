@@ -88,7 +88,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.person_add_alt_1_rounded),
                   label: const Text('Agregar Profesor'),
-                  onPressed: ()=> _showQrCodeDialog(context, "{db_id:${user.db_id},role:profesor}"),
+                  onPressed: ()=> _showQrCodeDialog(context, '{"db_id":"${user.db_id}","action":"profesor"}'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,

@@ -71,11 +71,12 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
     final attendedIds = ref.watch(attendedIdsProvider);
     final bool hasAttendance = attendedIds.contains(widget.id);
+    final tenantId = ref.read(userProvider)!.db_id!;
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.name)),
       body: FutureBuilder(
-        future: awsDb.getLastPayandStudentData(widget.id, ref.read(userProvider)!.db_id!),
+        future: awsDb.getLastPayandStudentData(widget.id, tenantId),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -107,7 +108,8 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   ) {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
-    safePrint(widget.image);
+    final tenantId = ref.read(userProvider)!.db_id!;
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -381,6 +383,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                       studentData.phone!,
                       studentData.age.toString(),
                       widget.image,
+                      tenantId,
                     );
                   },
                   child: const Text('Generar Credencial'),

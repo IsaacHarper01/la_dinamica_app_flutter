@@ -89,6 +89,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
         data['phone']!,
         data['age']!,
         image,
+        gymId,
       );
 
       if (!mounted) return;

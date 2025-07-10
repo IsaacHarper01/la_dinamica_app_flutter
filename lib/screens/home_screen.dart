@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +8,11 @@ import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/models/User.dart';
 
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
-import 'package:la_dinamica_app/widgets/test_button.dart';
 
 import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
@@ -41,6 +43,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> registerAssistance(BuildContext context) async {
     final result = await scannerQR(context, user!.db_id!);
+    final aws = DataStoreReadService();
 
     if (result == null || result.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,19 +55,26 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       safePrint("No se escanearon datos o hubo un error");
       return;
     }
-
-    final id = result['id'];
-    final name = result['name'];
-
-    await ref
+    if (result['action']== 'attencance'){
+      
+      final id = result['id'];
+      final name = result['name'];
+      await ref
         .read(studentsProvider.notifier)
         .insertAttendance(id, name, selectedDate);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Asistencia registrada'),
-        backgroundColor: Colors.green,
-      ),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Asistencia registrada'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+    if (result['action']=='profesor'){
+        aws.updateUser(result, user!);
+    }
+    
+
+    
   }
 
   @override
@@ -81,7 +91,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     final studentsState = ref.watch(studentsProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: const [CalendarButton(), SignOutButton(), TestButton()]),
+      appBar: AppBar(actions: const [CalendarButton(), SignOutButton()]),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),
