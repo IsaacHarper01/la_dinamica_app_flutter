@@ -21,7 +21,8 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final awsDb = DataStoreReadService();
       final awsS3 = Storages3();
-      final tenenatId = ref.read(userProvider)!.db_id;
+      final user = await ref.watch(userProvider.future);
+      final tenenatId = user.db_id;
       final snapshot = await awsDb.getAttendanceByDate(date, tenenatId!); 
       if (snapshot.isEmpty) {
         state = const AsyncValue.data([]);
@@ -59,8 +60,9 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final awsDb = DataStoreService();
       final awsDb2 = DataStoreReadService();
-      final gymid = ref.read(userProvider)?.db_id;
-      final profId = ref.read(userProvider)?.id;
+      final user = await ref.watch(userProvider.future);
+      final gymid = user.db_id;
+      final profId = user.id;
       safePrint("gymid: $gymid, profId: $profId");
       await awsDb.saveAttendance(userId: studentId, name: name, date: date, gymId: gymid!, profId: profId!);
       await awsDb2.verifyPayment(studentId, date, gymid, profId,); 

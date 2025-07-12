@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:la_dinamica_app/backend/income_report.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/models/User.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
@@ -55,11 +56,14 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
             ? MediaQuery.of(context).size.width
             : MediaQuery.of(context).size.width * 0.8;
     final awsDb = DataStoreReadService();
-    final tenantId = ref.read(userProvider)!.db_id!;
+    final userAsync = ref.watch(userProvider);
 
-    return Scaffold(
+    return userAsync.when(
+      loading:()=> Scaffold(body: Center(child: CircularProgressIndicator(),),),
+      error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
+      data: (userAsync) => Scaffold(
       body: FutureBuilder<double>(
-        future: awsDb.getIncomeRange(startDate, endDate, tenantId),
+        future: awsDb.getIncomeRange(startDate, endDate, userAsync.db_id!),
         builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -68,10 +72,11 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
           } else {
             double result = snapshot.data!;
             final today = ref.watch(dateProvider);
-            return incomeScreen(context, screenWidth, result, today, tenantId);
+            return incomeScreen(context, screenWidth, result, today, userAsync);
           }
         },
       ),
+      )
     );
   }
 
@@ -80,7 +85,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     double screenWidth,
     double result,
     String date,
-    String tenantId,
+    User user,
   ) {
     return Center(
       child: SingleChildScrollView(
@@ -155,7 +160,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateAttendanceReport(startDate, endDate, tenantId);
+                        generateAttendanceReport(startDate, endDate, user.db_id!);
                       },
                       child: const Text(
                         'Reporte de asistencias',
@@ -166,8 +171,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateIncomeReport(startDate, endDate, 
-                          ref.read(userProvider)!.db_id!);
+                        generateIncomeReport(startDate, endDate, user.db_id!);
                       },
                       child: const Text(
                         'Reporte de Ingresos',
@@ -218,7 +222,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: colorList[1], width: 1),
                 ),
-                child: LineChartWidget(startDate: startDate, endDate: endDate),
+                child: LineChartWidget(startDate: startDate, endDate: endDate, user: user),
               ),
               const SizedBox(height: 20),
               Container(
@@ -229,7 +233,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 child: PieChartWidget(
                   startDate: startDate, 
                   endDate: endDate, 
-                  tenantId: tenantId,
+                  tenantId: user.db_id!,
                 ),
               ),
             ],

@@ -23,7 +23,8 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
   void _registerPlan() async {
     // Verificar si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
-      final gymId = ref.read(userProvider)!.db_id;
+      final user = await ref.watch(userProvider.future);
+      final gymId = user.db_id;
       // Recuperar texto de cada TextEditingController
 
       final plan = LocalPlan(

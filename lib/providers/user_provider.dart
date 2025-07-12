@@ -7,18 +7,14 @@ import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:uuid/uuid.dart';
 
-final userProvider = StateNotifierProvider<UserNotifier, User?>(
-  (ref) => UserNotifier(),
+final userProvider = AsyncNotifierProvider<UserNotifier, User>(
+  UserNotifier.new,
 );
 
-class UserNotifier extends StateNotifier<User?> {
-  UserNotifier() : super(null);
-
-  void setUser(User user) {
-    state = user;
-  }
-
-  Future<void> initializeUser(WidgetRef ref) async {
+class UserNotifier extends AsyncNotifier<User> {
+  
+  @override
+  Future<User> build() async {
     final awsDb = DataStoreReadService();
     final awsDb2 = DataStoreService();
     final accountChoshen = '1'; // This should be replaced with the actual account chosen logic
@@ -42,8 +38,8 @@ class UserNotifier extends StateNotifier<User?> {
           Plan: dbUser.Plan,
           status: dbUser.status,
         );
-        state = newUser;
         safePrint('✅ Usuario obtenido: $newUser');
+        return newUser;
       } else {
         final newId = Uuid().v4();
 
@@ -55,7 +51,7 @@ class UserNotifier extends StateNotifier<User?> {
           Plan: 'free',
           status: true,
         );
-        state = newUser;
+        
         await awsDb2.saveUser(
           id: newUser.id,
           clientId: "1:${newUser.db_id}",
@@ -64,11 +60,17 @@ class UserNotifier extends StateNotifier<User?> {
           plan: newUser.Plan,
           status: newUser.status,
         );
+        return newUser;
       }
     } catch (e) {
-      state = null;
       safePrint('❌ Error al obtener el usuario actual: $e');
-      return;
+      throw Exception("Error al cargar el usuario");
     }
   }
+
+  void setUser(User user) {
+    state = AsyncValue.data(user);
+  }
+
+  
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/models/User.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -30,7 +31,7 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context, String tenantId) a
   try {
     Map<String, dynamic> info = jsonDecode(scannedCode);
     final awsDb = DataStoreReadService();
-
+    safePrint('INFO DECODED: $info');
     if (info['action']=='attendance'){
         int id = info['id'] ?? -1;
 

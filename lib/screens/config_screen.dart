@@ -23,7 +23,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
   Widget build(BuildContext context) {
     final plansState = ref.watch(planProvider);
     final themeMode = ref.watch(themeNotifierProvider);
-    final user = ref.watch(userProvider);
+    final userAsync = ref.watch(userProvider);
     final colorScheme = ColorScheme.of(context);
     final textTheme = TextTheme.of(context);
 
@@ -43,7 +43,10 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
       body: plansState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text('Error: $e')),
-        data: (planes) => Padding(
+        data: (planes) => userAsync.when(
+          loading:() =>  Center(child: CircularProgressIndicator(),),
+          error: (error, stackTrace) => Center(child: Text("Error al cargar usuario $error"),),
+          data: (userAsync) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
           child: ListView(
             children: [
@@ -83,12 +86,12 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                   ),
                 ),
               ),
-              if (user!.role == "owner") ...[
+              if (userAsync.role == "owner") ...[
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.person_add_alt_1_rounded),
                   label: const Text('Agregar Profesor'),
-                  onPressed: ()=> _showQrCodeDialog(context, '{"db_id":"${user.db_id}","action":"profesor"}'),
+                  onPressed: ()=> _showQrCodeDialog(context, '{"db_id":"${userAsync.db_id}","action":"profesor"}'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
@@ -140,6 +143,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
             ],
           ),
         ),
+        )
       ),
     );
   }

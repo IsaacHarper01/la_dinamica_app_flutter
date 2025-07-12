@@ -478,13 +478,16 @@ class DataStoreReadService {
   Future<void> updateUser(Map<String, dynamic> newValues, User oldUser) async {
 
       User? newUser = await getUser(oldUser.id);
-      
+      safePrint("oldUser: $oldUser");
+      safePrint("NewUser: $newUser");
+      safePrint('NEW VALUES : $newValues');
       Map<String,dynamic> databases = jsonDecode(newUser!.db_id!);
-      databases[(databases.length+1).toString()] = newValues['db_id'];
-      newUser.copyWith(db_id: jsonEncode(databases));
+      databases[(databases.length+1).toString()] = newValues['tenantId'];
+      safePrint("databases: $databases");
+      User updatedUser = newUser.copyWith(db_id: jsonEncode(databases));
 
       try {
-      await Amplify.DataStore.save(newUser);
+      await Amplify.DataStore.save(updatedUser);
       safePrint('✅ Usuario guardado correctamente');
     } catch (e) {
       safePrint('❌ Error al guardar el usuario: $e');

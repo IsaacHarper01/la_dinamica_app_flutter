@@ -59,7 +59,8 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final awsDb = DataStoreService();
-      final gymId = ref.read(userProvider)!.db_id; 
+      final user = await ref.watch(userProvider.future);
+      final gymId = user.db_id; 
 
       final data = {
         for (var i = 0; i < _controllers.length; i++)

@@ -24,7 +24,8 @@ class _AddNewMetricState extends ConsumerState<AddNewMetric> {
     // Verificar si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       // Recuperar texto de cada TextEditingController
-      final gymId = ref.read(userProvider)!.db_id; 
+      final user = await ref.watch(userProvider.future);
+      final gymId = user.db_id; 
       final Map<String, dynamic> metric = {
         'name': _controllers[0].text,
         'minValue': double.parse(_controllers[1].text),

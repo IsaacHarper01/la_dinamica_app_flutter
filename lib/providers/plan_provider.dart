@@ -25,7 +25,8 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
   DataStoreDeleteService dataStoreDeleteService = DataStoreDeleteService();
 
   Future<void> loadPlans() async {
-    final gymId = ref.read(userProvider)!.db_id;
+    final user = await ref.watch(userProvider.future);
+    final gymId = user.db_id;
     try {
       final awsPlans = await dataStoreReadService.getPlans(gymId!);
       safePrint("obtained plans from aws: $awsPlans for gym: $gymId");

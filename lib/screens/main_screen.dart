@@ -27,15 +27,6 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     ConfigScreen(),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(userProvider.notifier).initializeUser(ref);
-    });
-  }
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -49,7 +40,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final screenHeight =
         MediaQuery.of(context).size.height * (isPortrait ? 1 : 2);
 
-    return Scaffold(
+    final userAsync = ref.watch(userProvider);
+
+    return userAsync.when(
+      loading: ()=> Scaffold(body: CircularProgressIndicator(),),
+      error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
+      data: (userAsync) => Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
         color: colorList[0],
@@ -85,8 +81,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   ),
                 );
               }).toList(),
+          ),
         ),
-      ),
+      )
     );
   }
 }

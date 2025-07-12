@@ -71,12 +71,15 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
     final attendedIds = ref.watch(attendedIdsProvider);
     final bool hasAttendance = attendedIds.contains(widget.id);
-    final tenantId = ref.read(userProvider)!.db_id!;
+    final userAsync = ref.watch(userProvider);
 
-    return Scaffold(
+    return userAsync.when(
+      loading: () => Scaffold(body: Center(child: CircularProgressIndicator(),),),
+      error: (error, stackTrace) => Scaffold(body: Center(child: Text("Error al cargar Usuario $error"),),),
+      data: (userAsync) => Scaffold(
       appBar: AppBar(title: Text(widget.name)),
       body: FutureBuilder(
-        future: awsDb.getLastPayandStudentData(widget.id, tenantId),
+        future: awsDb.getLastPayandStudentData(widget.id, userAsync.db_id!),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -87,16 +90,17 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             if (snapshot.data['lastPay'] != null){
               paymentData = snapshot.data['lastPay'];
             }
-
             return infoScreen(
               screenHeight,
               context,
               screenWidth,
               hasAttendance,
+              userAsync
             );
           }
         },
       ),
+      ) 
     );
   }
 
@@ -105,10 +109,11 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     BuildContext context,
     double screenWidth,
     bool hasAttendance,
+    User user,
   ) {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
-    final tenantId = ref.read(userProvider)!.db_id!;
+    final tenantId = user.db_id!;
 
     return SingleChildScrollView(
       child: Column(

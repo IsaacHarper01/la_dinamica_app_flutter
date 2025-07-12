@@ -27,7 +27,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class HomeScreenState extends ConsumerState<HomeScreen> {
   late String selectedDate;
-  late User? user;
   
   @override
   void initState() {
@@ -35,14 +34,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Defer execution to avoid modifying state during widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      user = ref.read(userProvider);
       selectedDate = ref.read(dateProvider);
       ref.read(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
     });
   }
 
   Future<void> registerAssistance(BuildContext context) async {
-    final result = await scannerQR(context, user!.db_id!);
+    final user = await ref.watch(userProvider.future);
+    final result = await scannerQR(context, user.db_id!);
     final aws = DataStoreReadService();
 
     if (result == null || result.isEmpty) {
@@ -72,9 +71,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     if (result['action']=='profesor'){
         aws.updateUser(result, user!);
     }
-    
-
-    
   }
 
   @override

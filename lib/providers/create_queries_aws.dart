@@ -54,12 +54,16 @@ class DataStoreService {
     required String metric,
     required String date,
     required double value,
+    required String tenantId,
+    required String profId,
   }) async {
     final item = Metric(
       user_id: userId,
       metric: metric,
       date: TemporalDate(DateTime.parse(date)),
       value: value,
+      client_id: tenantId,
+      prof_id: profId,
     );
 
     try {
@@ -84,6 +88,7 @@ class DataStoreService {
     try {
       final students = await Amplify.DataStore.query(
         Student.classType,
+        where: Student.CLIENT_ID.eq(gymId),
         sortBy: [Student.USER_ID.descending()],
         pagination: const QueryPagination(limit: 1),
       );

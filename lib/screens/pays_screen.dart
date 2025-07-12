@@ -35,13 +35,12 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
     final isDarkMode = themeMode == ThemeMode.dark;
 
     final String date = ref.watch(dateProvider);
-    final User? user = ref.watch(userProvider);
+    final user = ref.watch(userProvider);
 
-    if (user == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return Scaffold(
+    return user.when(
+      loading:()=> Scaffold(body: CircularProgressIndicator(),), 
+      error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
+      data: (user) => Scaffold(
       body: FutureBuilder(
         future: awsDb.getPlansNamesIds(user.db_id!),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -76,6 +75,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
           }
         },
       ),
+    ) 
     );
   }
 }

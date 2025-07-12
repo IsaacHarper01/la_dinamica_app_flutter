@@ -23,7 +23,7 @@ class StudentsScreen extends ConsumerStatefulWidget {
 }
 
 class StudentsScreenState extends ConsumerState<StudentsScreen> {
-  late Future<List<Student>> _studentsFuture;
+  Future<List<Student>>? _studentsFuture;
 
   @override
   void initState() {
@@ -31,57 +31,55 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
     _loadStudents();
   }
 
-  void _loadStudents() {
-    final awsDb = DataStoreReadService();
-    final tenantId = ref.read(userProvider)!.db_id!;
-    _studentsFuture = awsDb.getStudents(tenantId);
+  void _loadStudents() async {
+    final user = await ref.read(userProvider.future);
+    setState(() {
+      _studentsFuture = DataStoreReadService().getStudents(user.db_id!);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<List<Student>>(
-        future: _studentsFuture,
-        builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            List<dynamic> students = snapshot.data!.map((g) => g.name).toList();
-            List<dynamic> studentsIds =
-                snapshot.data!.map((g) => g.user_id).toList();
-            List<int> studentsIndex = List.generate(
-              students.length,
-              (index) => index,
-            );
-            int num = students.length;
-            List<dynamic> images = snapshot.data!.map((g) => g.image).toList();
+    final screenHeight = MediaQuery.of(context).size.height;
 
-            return ScrollViewContent(
-              screenHeight: MediaQuery.of(context).size.height,
-              students: students,
-              numAlumnos: num,
-              indexList: studentsIndex,
-              ids: studentsIds,
-              images: images,
-              onAddStudent: () {
-                _loadStudents(); // Vuelve a cargar la lista de estudiantes
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddStudentScreen(),
-                  ),
-                ).then((_) {
-                  setState(() {
-                    _loadStudents();
-                  });
-                });
-              },
-            );
-          }
-        },
-      ),
+    if (_studentsFuture == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return FutureBuilder<List<Student>>(
+      future: _studentsFuture,
+      builder: (BuildContext context, AsyncSnapshot<List<Student>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          final students = snapshot.data!;
+          final names = students.map((g) => g.name).toList();
+          final ids = students.map((g) => g.user_id).toList();
+          final images = students.map((g) => g.image).toList();
+          final indexList = List.generate(students.length, (index) => index);
+
+          return ScrollViewContent(
+            screenHeight: screenHeight,
+            students: names,
+            numAlumnos: students.length,
+            indexList: indexList,
+            ids: ids,
+            images: images,
+            onAddStudent: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddStudentScreen(),
+                ),
+              ).then((_) {
+                _loadStudents(); // Recarga después de agregar
+              });
+            },
+          );
+        }
+      },
     );
   }
 }
