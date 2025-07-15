@@ -32,6 +32,7 @@ class User extends amplify_core.Model {
   final String? _role;
   final String? _Plan;
   final bool? _status;
+  final String? _permissions;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -68,6 +69,10 @@ class User extends amplify_core.Model {
     return _status;
   }
   
+  String? get permissions {
+    return _permissions;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -76,16 +81,17 @@ class User extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const User._internal({required this.id, db_id, name, role, Plan, status, createdAt, updatedAt}): _db_id = db_id, _name = name, _role = role, _Plan = Plan, _status = status, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, db_id, name, role, Plan, status, permissions, createdAt, updatedAt}): _db_id = db_id, _name = name, _role = role, _Plan = Plan, _status = status, _permissions = permissions, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({String? id, String? db_id, String? name, String? role, String? Plan, bool? status}) {
+  factory User({String? id, String? db_id, String? name, String? role, String? Plan, bool? status, String? permissions}) {
     return User._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       db_id: db_id,
       name: name,
       role: role,
       Plan: Plan,
-      status: status);
+      status: status,
+      permissions: permissions);
   }
   
   bool equals(Object other) {
@@ -101,7 +107,8 @@ class User extends amplify_core.Model {
       _name == other._name &&
       _role == other._role &&
       _Plan == other._Plan &&
-      _status == other._status;
+      _status == other._status &&
+      _permissions == other._permissions;
   }
   
   @override
@@ -118,6 +125,7 @@ class User extends amplify_core.Model {
     buffer.write("role=" + "$_role" + ", ");
     buffer.write("Plan=" + "$_Plan" + ", ");
     buffer.write("status=" + (_status != null ? _status!.toString() : "null") + ", ");
+    buffer.write("permissions=" + "$_permissions" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -125,14 +133,15 @@ class User extends amplify_core.Model {
     return buffer.toString();
   }
   
-  User copyWith({String? db_id, String? name, String? role, String? Plan, bool? status}) {
+  User copyWith({String? db_id, String? name, String? role, String? Plan, bool? status, String? permissions}) {
     return User._internal(
       id: id,
       db_id: db_id ?? this.db_id,
       name: name ?? this.name,
       role: role ?? this.role,
       Plan: Plan ?? this.Plan,
-      status: status ?? this.status);
+      status: status ?? this.status,
+      permissions: permissions ?? this.permissions);
   }
   
   User copyWithModelFieldValues({
@@ -140,7 +149,8 @@ class User extends amplify_core.Model {
     ModelFieldValue<String?>? name,
     ModelFieldValue<String?>? role,
     ModelFieldValue<String?>? Plan,
-    ModelFieldValue<bool?>? status
+    ModelFieldValue<bool?>? status,
+    ModelFieldValue<String?>? permissions
   }) {
     return User._internal(
       id: id,
@@ -148,7 +158,8 @@ class User extends amplify_core.Model {
       name: name == null ? this.name : name.value,
       role: role == null ? this.role : role.value,
       Plan: Plan == null ? this.Plan : Plan.value,
-      status: status == null ? this.status : status.value
+      status: status == null ? this.status : status.value,
+      permissions: permissions == null ? this.permissions : permissions.value
     );
   }
   
@@ -159,11 +170,12 @@ class User extends amplify_core.Model {
       _role = json['role'],
       _Plan = json['Plan'],
       _status = json['status'],
+      _permissions = json['permissions'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'db_id': _db_id, 'name': _name, 'role': _role, 'Plan': _Plan, 'status': _status, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'db_id': _db_id, 'name': _name, 'role': _role, 'Plan': _Plan, 'status': _status, 'permissions': _permissions, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -173,6 +185,7 @@ class User extends amplify_core.Model {
     'role': _role,
     'Plan': _Plan,
     'status': _status,
+    'permissions': _permissions,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -184,6 +197,7 @@ class User extends amplify_core.Model {
   static final ROLE = amplify_core.QueryField(fieldName: "role");
   static final PLAN = amplify_core.QueryField(fieldName: "Plan");
   static final STATUS = amplify_core.QueryField(fieldName: "status");
+  static final PERMISSIONS = amplify_core.QueryField(fieldName: "permissions");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "User";
     modelSchemaDefinition.pluralName = "Users";
@@ -229,6 +243,12 @@ class User extends amplify_core.Model {
       key: User.STATUS,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: User.PERMISSIONS,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

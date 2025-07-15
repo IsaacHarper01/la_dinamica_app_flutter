@@ -342,7 +342,7 @@ void assignedPlan({
     clases: int.parse(clases[planIndex]),
     type: plansType[planIndex],
     date: date,
-    dbId: jsonDecode(user.db_id!)['1'],
+    dbId: user.db_id,
     profId: user.id,
   );
 

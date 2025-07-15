@@ -66,6 +66,7 @@ type User @model @auth(rules: [{allow: public, operations: [create, read, update
   role: String
   Plan: String
   status: Boolean
+  permissions: AWSJSON
 }
 
 type AppPlan @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {

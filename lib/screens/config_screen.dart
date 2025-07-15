@@ -6,6 +6,7 @@ import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_metric.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
+import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/widgets/section_card_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -91,7 +92,17 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.person_add_alt_1_rounded),
                   label: const Text('Agregar Profesor'),
-                  onPressed: ()=> _showQrCodeDialog(context, '{"db_id":"${userAsync.db_id}","action":"profesor"}'),
+                  onPressed: () async{
+                    final permissions = await Navigator.push<Map<String, bool>>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PermissionsScreen(),
+                            ),
+                          );
+                    if (permissions != null) {
+                      _showQrCodeDialog(context, '{"db_id":"${userAsync.db_id}","action":"profesor","permissions":$permissions}');
+                    }
+                  } ,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
