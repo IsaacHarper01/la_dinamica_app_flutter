@@ -42,7 +42,6 @@ class UserNotifier extends AsyncNotifier<User> {
         return newUser;
       } else {
         final newId = Uuid().v4();
-
         final newUser = User(
           id: userId,
           db_id: newId,

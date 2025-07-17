@@ -13,11 +13,12 @@ class SearchStudentContainer extends StatelessWidget {
     final screenHeight = isPortatil
         ? MediaQuery.of(context).size.height
         : MediaQuery.of(context).size.height * 2;
+    final themeMode = Theme.of(context);
+    final isDark = themeMode.brightness == Brightness.dark;
 
     return Container(
       height: screenHeight * 0.16,
       width: double.infinity,
-      decoration: BoxDecoration(color: colorList[8]),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -48,7 +49,7 @@ class SearchStudentContainer extends StatelessWidget {
                     borderSide: BorderSide(color: colorList[7]),
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
                   ),
-                  fillColor: colorList[3],
+                  fillColor: isDark ? colorList[3] : colorList[5],
                   filled: true,
                   hintText: 'Nombre',
                   hintStyle: TextStyle(

@@ -103,9 +103,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
                   isDarkMode
-                      ? 'assets/images/f_ma11.png'
-                      : 'assets/images/f_ma18.png',
-                  height: isDarkMode ? screenHeight * 0.2 : screenHeight * 0.3,
+                      ? 'assets/images/f_ma18.png'
+                      : 'assets/images/f_ma11.png',
+                  height: isDarkMode ? screenHeight * 0.2 : screenHeight * 0.1,
                   fit: BoxFit.cover,
                 ),
               ),

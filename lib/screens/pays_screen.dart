@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
@@ -163,6 +161,7 @@ Widget paymentBox(
                                       fillColor: Colors.white,
                                       border: OutlineInputBorder(),
                                     ),
+                                    dropdownColor: Theme.of(context).colorScheme.secondary,
                                     value:
                                         (nameIndex < names.length)
                                             ? names[nameIndex]
@@ -182,9 +181,7 @@ Widget paymentBox(
                                             value: value,
                                             child: Text(
                                               value,
-                                              overflow:
-                                                  TextOverflow
-                                                      .ellipsis, // Limitar a 15 caracteres y agregar "..."
+                                              overflow: TextOverflow.ellipsis, // Limitar a 15 caracteres y agregar "..."
                                             ),
                                           );
                                         }).toList(),
@@ -227,6 +224,7 @@ Widget paymentBox(
                                       fillColor: Colors.white,
                                       border: OutlineInputBorder(),
                                     ),
+                                    dropdownColor: Theme.of(context).colorScheme.secondary,
                                     value:
                                         (planIndex < plansType.length)
                                             ? plansType[planIndex]
@@ -243,7 +241,9 @@ Widget paymentBox(
                                           (String value) {
                                             return DropdownMenuItem<String>(
                                               value: value,
-                                              child: Text(value),
+                                              child: Text(
+                                                value,
+                                                ),
                                             );
                                           },
                                         ).toList(),
