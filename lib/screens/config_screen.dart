@@ -87,7 +87,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                   ),
                 ),
               ),
-              if (userAsync.role == "owner") ...[
+              if (userAsync.permissions == "admin") ...[
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.person_add_alt_1_rounded),
@@ -100,7 +100,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                             ),
                           );
                     if (permissions != null) {
-                      _showQrCodeDialog(context, '{"db_id":"${userAsync.db_id}","action":"profesor","permissions":$permissions}');
+                      _showQrCodeDialog(context, '{"db_id":"${userAsync.tenantId}","action":"profesor","permissions":$permissions}');
                     }
                   } ,
                   style: ElevatedButton.styleFrom(

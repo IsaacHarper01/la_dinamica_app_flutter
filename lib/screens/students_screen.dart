@@ -34,7 +34,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
   void _loadStudents() async {
     final user = await ref.read(userProvider.future);
     setState(() {
-      _studentsFuture = DataStoreReadService().getStudents(user.db_id!);
+      _studentsFuture = DataStoreReadService().getStudents(user.tenantId);
     });
   }
 

@@ -2,7 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/models/User.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/widgets/average_widget.dart';
@@ -11,7 +11,7 @@ import 'package:la_dinamica_app/widgets/days_chart_widget.dart';
 class LineChartWidget extends ConsumerWidget {
   final DateTime startDate;
   final DateTime endDate;
-  final User user;
+  final UserLocal user;
 
   const LineChartWidget({
     super.key,
@@ -32,7 +32,7 @@ class LineChartWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final today = DateTime.parse(ref.watch(dateProvider));
-    final tenantId = user.db_id!;
+    final tenantId = user.tenantId;
 
     var n = 30;
 

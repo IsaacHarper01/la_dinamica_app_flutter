@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:la_dinamica_app/backend/income_report.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/User.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -63,7 +64,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
       error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
       data: (userAsync) => Scaffold(
       body: FutureBuilder<double>(
-        future: awsDb.getIncomeRange(startDate, endDate, userAsync.db_id!),
+        future: awsDb.getIncomeRange(startDate, endDate, userAsync.tenantId),
         builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -85,7 +86,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     double screenWidth,
     double result,
     String date,
-    User user,
+    UserLocal user,
   ) {
     return Center(
       child: SingleChildScrollView(
@@ -160,7 +161,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateAttendanceReport(startDate, endDate, user.db_id!);
+                        generateAttendanceReport(startDate, endDate, user.tenantId);
                       },
                       child: const Text(
                         'Reporte de asistencias',
@@ -171,7 +172,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateIncomeReport(startDate, endDate, user.db_id!);
+                        generateIncomeReport(startDate, endDate, user.tenantId);
                       },
                       child: const Text(
                         'Reporte de Ingresos',
@@ -233,7 +234,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 child: PieChartWidget(
                   startDate: startDate, 
                   endDate: endDate, 
-                  tenantId: user.db_id!,
+                  tenantId: user.tenantId,
                 ),
               ),
             ],

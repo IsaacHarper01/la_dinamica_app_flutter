@@ -1,3 +1,16 @@
+type UserAccess @model @auth(rules: [{allow: public}]) {
+  id: ID!
+
+  user_id: ID! @index
+  tenant_id: ID! @index
+
+  permissions: String
+  status: Boolean
+
+  user: User @belongsTo(fields: ["user_id"])
+  tenant: Tenant @belongsTo(fields: ["tenant_id"])
+}
+
 type MetricsType @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String
@@ -60,13 +73,9 @@ type Attendance @model @auth(rules: [{allow: public, operations: [create, read, 
 }
 
 type User @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  db_id: AWSJSON
-  name: String
-  role: String
-  Plan: String
-  status: Boolean
-  permissions: AWSJSON
+  user_id: ID! @primaryKey
+  name: String!
+  access: [UserAccess] @hasMany(fields: ["user_id"])
 }
 
 type AppPlan @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -75,10 +84,11 @@ type AppPlan @model @auth(rules: [{allow: public, operations: [create, read, upd
   price: Float
 }
 
-type Client @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
+type Tenant @model @auth(rules: [{allow: public}]) {
+  tenant_id: ID! @primaryKey
   name: String!
+  status: Boolean
   plan: String
-  status: String
+  who_access: [UserAccess] @hasMany(fields: ["tenant_id"])
 }
  

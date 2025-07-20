@@ -22,29 +22,31 @@
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'AppPlan.dart';
 import 'Attendance.dart';
-import 'Client.dart';
 import 'LocalPlan.dart';
 import 'Metric.dart';
 import 'MetricsType.dart';
 import 'Pay.dart';
 import 'Student.dart';
+import 'Tenant.dart';
 import 'User.dart';
+import 'UserAccess.dart';
 
 export 'AppPlan.dart';
 export 'Attendance.dart';
-export 'Client.dart';
 export 'LocalPlan.dart';
 export 'Metric.dart';
 export 'MetricsType.dart';
 export 'Pay.dart';
 export 'Student.dart';
+export 'Tenant.dart';
 export 'User.dart';
+export 'UserAccess.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "d0c0a30c509280e4a755fac321ac0944";
+  String version = "70af450f4f41fac644ab21a2f4ccf4ec";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Client.schema, LocalPlan.schema, Metric.schema, MetricsType.schema, Pay.schema, Student.schema, User.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, LocalPlan.schema, Metric.schema, MetricsType.schema, Pay.schema, Student.schema, Tenant.schema, User.schema, UserAccess.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -57,8 +59,6 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return AppPlan.classType;
       case "Attendance":
         return Attendance.classType;
-      case "Client":
-        return Client.classType;
       case "LocalPlan":
         return LocalPlan.classType;
       case "Metric":
@@ -69,8 +69,12 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Pay.classType;
       case "Student":
         return Student.classType;
+      case "Tenant":
+        return Tenant.classType;
       case "User":
         return User.classType;
+      case "UserAccess":
+        return UserAccess.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

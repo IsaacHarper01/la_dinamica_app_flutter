@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
@@ -40,7 +41,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
       error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
       data: (user) => Scaffold(
       body: FutureBuilder(
-        future: awsDb.getPlansNamesIds(user.db_id!),
+        future: awsDb.getPlansNamesIds(user.tenantId),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -91,7 +92,7 @@ Widget paymentBox(
   BuildContext context,
   bool isDarkMode,
   String date,
-  User? user,
+  UserLocal user,
   bool isPortrait,
 ) {
   return Center(
@@ -332,7 +333,7 @@ void assignedPlan({
   required List<String> clases,
   required List<String> plansType,
   required String date,
-  required User user,
+  required UserLocal user,
   required BuildContext context,
 }) {
   final awsDb = DataStoreService();
@@ -342,8 +343,8 @@ void assignedPlan({
     clases: int.parse(clases[planIndex]),
     type: plansType[planIndex],
     date: date,
-    dbId: user.db_id,
-    profId: user.id,
+    dbId: user.tenantId,
+    profId: user.userId,
   );
 
   ScaffoldMessenger.of(context).showSnackBar(

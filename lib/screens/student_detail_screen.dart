@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -79,7 +80,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
       data: (userAsync) => Scaffold(
       appBar: AppBar(title: Text(widget.name)),
       body: FutureBuilder(
-        future: awsDb.getLastPayandStudentData(widget.id, userAsync.db_id!),
+        future: awsDb.getLastPayandStudentData(widget.id, userAsync.tenantId),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -109,11 +110,11 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     BuildContext context,
     double screenWidth,
     bool hasAttendance,
-    User user,
+    UserLocal user,
   ) {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
-    final tenantId = user.db_id!;
+    final tenantId = user.tenantId;
 
     return SingleChildScrollView(
       child: Column(

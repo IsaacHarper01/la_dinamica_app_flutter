@@ -24,12 +24,14 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'package:collection/collection.dart';
 
 
-/** This is an auto generated class representing the User type in your schema. */
-class User extends amplify_core.Model {
-  static const classType = const _UserModelType();
-  final String? _user_id;
+/** This is an auto generated class representing the Tenant type in your schema. */
+class Tenant extends amplify_core.Model {
+  static const classType = const _TenantModelType();
+  final String? _tenant_id;
   final String? _name;
-  final List<UserAccess>? _access;
+  final bool? _status;
+  final String? _plan;
+  final List<UserAccess>? _who_access;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -40,10 +42,10 @@ class User extends amplify_core.Model {
   @override
   String getId() => modelIdentifier.serializeAsString();
   
-  UserModelIdentifier get modelIdentifier {
+  TenantModelIdentifier get modelIdentifier {
     try {
-      return UserModelIdentifier(
-        user_id: _user_id!
+      return TenantModelIdentifier(
+        tenant_id: _tenant_id!
       );
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
@@ -55,9 +57,9 @@ class User extends amplify_core.Model {
     }
   }
   
-  String get user_id {
+  String get tenant_id {
     try {
-      return _user_id!;
+      return _tenant_id!;
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
           amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -81,8 +83,16 @@ class User extends amplify_core.Model {
     }
   }
   
-  List<UserAccess>? get access {
-    return _access;
+  bool? get status {
+    return _status;
+  }
+  
+  String? get plan {
+    return _plan;
+  }
+  
+  List<UserAccess>? get who_access {
+    return _who_access;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -93,13 +103,15 @@ class User extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const User._internal({required user_id, required name, access, createdAt, updatedAt}): _user_id = user_id, _name = name, _access = access, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Tenant._internal({required tenant_id, required name, status, plan, who_access, createdAt, updatedAt}): _tenant_id = tenant_id, _name = name, _status = status, _plan = plan, _who_access = who_access, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({required String user_id, required String name, List<UserAccess>? access}) {
-    return User._internal(
-      user_id: user_id,
+  factory Tenant({required String tenant_id, required String name, bool? status, String? plan, List<UserAccess>? who_access}) {
+    return Tenant._internal(
+      tenant_id: tenant_id,
       name: name,
-      access: access != null ? List<UserAccess>.unmodifiable(access) : access);
+      status: status,
+      plan: plan,
+      who_access: who_access != null ? List<UserAccess>.unmodifiable(who_access) : who_access);
   }
   
   bool equals(Object other) {
@@ -109,10 +121,12 @@ class User extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is User &&
-      _user_id == other._user_id &&
+    return other is Tenant &&
+      _tenant_id == other._tenant_id &&
       _name == other._name &&
-      DeepCollectionEquality().equals(_access, other._access);
+      _status == other._status &&
+      _plan == other._plan &&
+      DeepCollectionEquality().equals(_who_access, other._who_access);
   }
   
   @override
@@ -122,9 +136,11 @@ class User extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("User {");
-    buffer.write("user_id=" + "$_user_id" + ", ");
+    buffer.write("Tenant {");
+    buffer.write("tenant_id=" + "$_tenant_id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
+    buffer.write("status=" + (_status != null ? _status!.toString() : "null") + ", ");
+    buffer.write("plan=" + "$_plan" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -132,36 +148,44 @@ class User extends amplify_core.Model {
     return buffer.toString();
   }
   
-  User copyWith({String? name, List<UserAccess>? access}) {
-    return User._internal(
-      user_id: user_id,
+  Tenant copyWith({String? name, bool? status, String? plan, List<UserAccess>? who_access}) {
+    return Tenant._internal(
+      tenant_id: tenant_id,
       name: name ?? this.name,
-      access: access ?? this.access);
+      status: status ?? this.status,
+      plan: plan ?? this.plan,
+      who_access: who_access ?? this.who_access);
   }
   
-  User copyWithModelFieldValues({
+  Tenant copyWithModelFieldValues({
     ModelFieldValue<String>? name,
-    ModelFieldValue<List<UserAccess>?>? access
+    ModelFieldValue<bool?>? status,
+    ModelFieldValue<String?>? plan,
+    ModelFieldValue<List<UserAccess>?>? who_access
   }) {
-    return User._internal(
-      user_id: user_id,
+    return Tenant._internal(
+      tenant_id: tenant_id,
       name: name == null ? this.name : name.value,
-      access: access == null ? this.access : access.value
+      status: status == null ? this.status : status.value,
+      plan: plan == null ? this.plan : plan.value,
+      who_access: who_access == null ? this.who_access : who_access.value
     );
   }
   
-  User.fromJson(Map<String, dynamic> json)  
-    : _user_id = json['user_id'],
+  Tenant.fromJson(Map<String, dynamic> json)  
+    : _tenant_id = json['tenant_id'],
       _name = json['name'],
-      _access = json['access']  is Map
-        ? (json['access']['items'] is List
-          ? (json['access']['items'] as List)
+      _status = json['status'],
+      _plan = json['plan'],
+      _who_access = json['who_access']  is Map
+        ? (json['who_access']['items'] is List
+          ? (json['who_access']['items'] as List)
               .where((e) => e != null)
               .map((e) => UserAccess.fromJson(new Map<String, dynamic>.from(e)))
               .toList()
           : null)
-        : (json['access'] is List
-          ? (json['access'] as List)
+        : (json['who_access'] is List
+          ? (json['who_access'] as List)
               .where((e) => e?['serializedData'] != null)
               .map((e) => UserAccess.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
@@ -170,59 +194,75 @@ class User extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'user_id': _user_id, 'name': _name, 'access': _access?.map((UserAccess? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'tenant_id': _tenant_id, 'name': _name, 'status': _status, 'plan': _plan, 'who_access': _who_access?.map((UserAccess? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
-    'user_id': _user_id,
+    'tenant_id': _tenant_id,
     'name': _name,
-    'access': _access,
+    'status': _status,
+    'plan': _plan,
+    'who_access': _who_access,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<UserModelIdentifier>();
-  static final USER_ID = amplify_core.QueryField(fieldName: "user_id");
+  static final amplify_core.QueryModelIdentifier<TenantModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<TenantModelIdentifier>();
+  static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
   static final NAME = amplify_core.QueryField(fieldName: "name");
-  static final ACCESS = amplify_core.QueryField(
-    fieldName: "access",
+  static final STATUS = amplify_core.QueryField(fieldName: "status");
+  static final PLAN = amplify_core.QueryField(fieldName: "plan");
+  static final WHO_ACCESS = amplify_core.QueryField(
+    fieldName: "who_access",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'UserAccess'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "User";
-    modelSchemaDefinition.pluralName = "Users";
+    modelSchemaDefinition.name = "Tenant";
+    modelSchemaDefinition.pluralName = "Tenants";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.PUBLIC,
         operations: const [
           amplify_core.ModelOperation.CREATE,
-          amplify_core.ModelOperation.READ,
           amplify_core.ModelOperation.UPDATE,
-          amplify_core.ModelOperation.DELETE
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
         ])
     ];
     
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["user_id"], name: null)
+      amplify_core.ModelIndex(fields: const ["tenant_id"], name: null)
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: User.USER_ID,
+      key: Tenant.TENANT_ID,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: User.NAME,
+      key: Tenant.NAME,
       isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Tenant.STATUS,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Tenant.PLAN,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: User.ACCESS,
+      key: Tenant.WHO_ACCESS,
       isRequired: false,
       ofModelName: 'UserAccess',
-      associatedKey: UserAccess.USER
+      associatedKey: UserAccess.TENANT
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -241,34 +281,34 @@ class User extends amplify_core.Model {
   });
 }
 
-class _UserModelType extends amplify_core.ModelType<User> {
-  const _UserModelType();
+class _TenantModelType extends amplify_core.ModelType<Tenant> {
+  const _TenantModelType();
   
   @override
-  User fromJson(Map<String, dynamic> jsonData) {
-    return User.fromJson(jsonData);
+  Tenant fromJson(Map<String, dynamic> jsonData) {
+    return Tenant.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'User';
+    return 'Tenant';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [User] in your schema.
+ * of [Tenant] in your schema.
  */
-class UserModelIdentifier implements amplify_core.ModelIdentifier<User> {
-  final String user_id;
+class TenantModelIdentifier implements amplify_core.ModelIdentifier<Tenant> {
+  final String tenant_id;
 
-  /** Create an instance of UserModelIdentifier using [user_id] the primary key. */
-  const UserModelIdentifier({
-    required this.user_id});
+  /** Create an instance of TenantModelIdentifier using [tenant_id] the primary key. */
+  const TenantModelIdentifier({
+    required this.tenant_id});
   
   @override
   Map<String, dynamic> serializeAsMap() => (<String, dynamic>{
-    'user_id': user_id
+    'tenant_id': tenant_id
   });
   
   @override
@@ -281,7 +321,7 @@ class UserModelIdentifier implements amplify_core.ModelIdentifier<User> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'UserModelIdentifier(user_id: $user_id)';
+  String toString() => 'TenantModelIdentifier(tenant_id: $tenant_id)';
   
   @override
   bool operator ==(Object other) {
@@ -289,11 +329,11 @@ class UserModelIdentifier implements amplify_core.ModelIdentifier<User> {
       return true;
     }
     
-    return other is UserModelIdentifier &&
-      user_id == other.user_id;
+    return other is TenantModelIdentifier &&
+      tenant_id == other.tenant_id;
   }
   
   @override
   int get hashCode =>
-    user_id.hashCode;
+    tenant_id.hashCode;
 }

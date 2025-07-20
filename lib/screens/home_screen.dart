@@ -41,7 +41,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> registerAssistance(BuildContext context) async {
     final user = await ref.watch(userProvider.future);
-    final result = await scannerQR(context, user.db_id!);
+    final result = await scannerQR(context, user.tenantId);
     final aws = DataStoreReadService();
 
     if (result == null || result.isEmpty) {
@@ -69,7 +69,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       );
     }
     if (result['action']=='profesor'){
-        aws.updateUser(result, user!);
+        //aws.updateUser(result, user!);
     }
   }
 

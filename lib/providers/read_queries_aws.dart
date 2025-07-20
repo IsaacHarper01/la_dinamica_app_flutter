@@ -438,7 +438,7 @@ class DataStoreReadService {
     try {
       final users = await Amplify.DataStore.query(
         User.classType,
-        where: User.ID.eq(userId),
+        where: User.USER_ID.eq(userId),
       );
       return users.isNotEmpty;
     } catch (e) {
@@ -447,24 +447,11 @@ class DataStoreReadService {
     }
   }
 
-  Future<bool> clientExists(String userId) async {
-    try {
-      final clients = await Amplify.DataStore.query(
-        Client.classType,
-        where: Client.ID.eq(userId),
-      );
-      return clients.isNotEmpty;
-    } catch (e) {
-      safePrint('❌ Error checking client: $e');
-      return false;
-    }
-  }
-
   Future<User?> getUser(String userId) async {
     try {
       final users = await Amplify.DataStore.query(
         User.classType,
-        where: User.ID.eq(userId),
+        where: User.USER_ID.eq(userId),
       );
       if (users.isNotEmpty) return users.first;
       safePrint('⚠️ User not found with ID: $userId');
@@ -477,37 +464,20 @@ class DataStoreReadService {
 
   Future<void> updateUser(Map<String, dynamic> newValues, User oldUser) async {
 
-      User? newUser = await getUser(oldUser.id);
-      safePrint("oldUser: $oldUser");
-      safePrint("NewUser: $newUser");
-      safePrint('NEW VALUES : $newValues');
-      Map<String,dynamic> databases = jsonDecode(newUser!.db_id!);
-      databases[(databases.length+1).toString()] = newValues['tenantId'];
-      safePrint("databases: $databases");
-      User updatedUser = newUser.copyWith(db_id: jsonEncode(databases));
-
-      try {
-      await Amplify.DataStore.save(updatedUser);
-      safePrint('✅ Usuario guardado correctamente');
-    } catch (e) {
-      safePrint('❌ Error al guardar el usuario: $e');
-      rethrow;
-    }
+     
   }
 
-  Future<Client?> getClient(String userId) async {
+  Future<UserAccess?> getUserAccess(String userId) async {
     try {
-      final clients = await Amplify.DataStore.query(
-        Client.classType,
-        where: Client.ID.eq(userId),
+      final userAccess = await Amplify.DataStore.query(
+        UserAccess.classType,
+        where: UserAccess.USER.eq(userId)
       );
-      if (clients.isNotEmpty) {
-        return clients.first;
-      } else {
-        return null;
-      }
+      if (userAccess.isNotEmpty) return userAccess.first;
+      safePrint('⚠️ User access not found for user ID: $userId');
+      return null;
     } catch (e) {
-      safePrint('❌ Error getting client: $e');
+      safePrint('❌ Error getting user access: $e');
       rethrow;
     }
   }

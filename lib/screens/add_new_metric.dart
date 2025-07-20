@@ -25,7 +25,7 @@ class _AddNewMetricState extends ConsumerState<AddNewMetric> {
     if (_formKey.currentState?.validate() ?? false) {
       // Recuperar texto de cada TextEditingController
       final user = await ref.watch(userProvider.future);
-      final gymId = user.db_id; 
+      final gymId = user.tenantId; 
       final Map<String, dynamic> metric = {
         'name': _controllers[0].text,
         'minValue': double.parse(_controllers[1].text),
