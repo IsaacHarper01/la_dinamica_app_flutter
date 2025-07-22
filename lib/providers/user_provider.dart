@@ -22,14 +22,12 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
       final cognitoUser = await Amplify.Auth.getCurrentUser();
       final userId = cognitoUser.userId;
       final email = cognitoUser.signInDetails.toJson()['username'] as String;
-                            //write a code to add the UserAccess only the first time the user logs in
+                            
       if (await awsDb.userExists(userId)) {
 
         final dbUser = await awsDb.getUser(userId);
- 
         final userAccess = await awsDb.getUserAccess(dbUser!.user_id); //this gets the first userAccess but I have to chosen by the account chosen value
            
-
         final newUser = UserLocal(
           userId: dbUser.user_id,
           tenantId: userAccess!.tenant!.tenant_id,
@@ -43,7 +41,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         return newUser;
       } else {
         final newTenantId = Uuid().v4();
-        final schoolName = "La Dinámica"; //change this to the actual school name logic
+        final schoolName = "La Dinámica Gym"; //change this to the actual school name logic
         final plan = "Free";
         final status = true;
         

@@ -34,8 +34,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Defer execution to avoid modifying state during widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      selectedDate = ref.read(dateProvider);
-      ref.read(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
+      selectedDate = ref.watch(dateProvider);
+      ref.watch(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
     });
   }
 
@@ -68,8 +68,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }
-    if (result['action']=='profesor'){
-        //aws.updateUser(result, user!);
+    if (result['action']=='newAccess'){
+        aws.giveUserAccess(result["tenant_id"], result["permissions"], user);
     }
   }
 
@@ -87,7 +87,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     final studentsState = ref.watch(studentsProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: const [CalendarButton(), SignOutButton()]),
+      appBar: AppBar(actions: const [SignOutButton(), SizedBox(width: 500),CalendarButton(),]),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/storageS3.dart';
 
@@ -462,9 +463,52 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> updateUser(Map<String, dynamic> newValues, User oldUser) async {
+  Future<Tenant?> getTenant(String tenantId) async {
+    try {
+      final tenants = await Amplify.DataStore.query(
+        Tenant.classType,
+        where: Tenant.TENANT_ID.eq(tenantId),
+      );
+      if (tenants.isNotEmpty) return tenants.first;
+      safePrint('⚠️ Tenant not found with ID: $tenantId');
+      return null;
+    } catch (e) {
+      safePrint('❌ Error getting tenant: $e');
+      rethrow;
+    }
+  }
 
-     
+  Future<User> userLocalAdapter(UserLocal user) async{
+    try{
+      final newUser = User(
+        user_id: user.userId,
+        name: user.name,
+      );
+      return newUser;
+    }catch(e){
+      safePrint('❌ Error converting UserLocal to User: $e');
+      rethrow;
+    }
+  }
+  
+  Future<void> giveUserAccess(String tenantId, String permissions, UserLocal user) async {
+    try{
+    final tenant = await getTenant(tenantId);
+    if (tenant != null) {
+        final newUser = await userLocalAdapter(user);
+        final userAccess = UserAccess(
+          user: newUser,
+          tenant: tenant,
+          permissions: permissions,
+          status: true,
+        );
+        await Amplify.DataStore.save(userAccess);
+        safePrint('✅ Usuario con ID ${user.userId} ha sido dado acceso al tenant con ID $tenantId con permisos: $permissions');
+    }
+    }catch (e) {
+      safePrint('❌ Error giving user access: $e');
+      rethrow;
+    }
   }
 
   Future<UserAccess?> getUserAccess(String userId) async {
@@ -481,4 +525,5 @@ class DataStoreReadService {
       rethrow;
     }
   }
+
 }
