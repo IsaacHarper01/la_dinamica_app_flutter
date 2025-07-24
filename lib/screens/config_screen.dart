@@ -100,7 +100,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                             ),
                           );
                     if (permissions != null) {
-                      _showQrCodeDialog(context, '{"action":"newAccess","tenant_id":${userAsync.tenantId},"permissions":$permissions}');
+                      _showQrCodeDialog(context, '{"action":"newAccess","tenant_id":"${userAsync.tenantId}","permissions":"$permissions"}');
                     }
                   } ,
                   style: ElevatedButton.styleFrom(

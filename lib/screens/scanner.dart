@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:la_dinamica_app/models/User.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -52,9 +51,9 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context, String tenantId) a
           return null;
         }
       }
-    else if(info['action']=='profesor'){
-       String tenantId = info['db_id'];
-       return Future.value({'action':'profesor','tenantId':tenantId});
+    else if(info['action']=='newAccess'){
+       String tenantId = info['tenant_id'];
+       return Future.value({'action':info["action"],'tenant_id':tenantId, 'permissions': info['permissions']});
     }
     else{
       return null;

@@ -511,13 +511,13 @@ class DataStoreReadService {
     }
   }
 
-  Future<UserAccess?> getUserAccess(String userId) async {
+  Future<List<UserAccess>?> getUserAccess(String userId) async {
     try {
       final userAccess = await Amplify.DataStore.query(
         UserAccess.classType,
         where: UserAccess.USER.eq(userId)
       );
-      if (userAccess.isNotEmpty) return userAccess.first;
+      if (userAccess.isNotEmpty) return userAccess;
       safePrint('⚠️ User access not found for user ID: $userId');
       return null;
     } catch (e) {

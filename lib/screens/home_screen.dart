@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +11,7 @@ import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
+import 'package:la_dinamica_app/widgets/select_school_widget.dart';
 
 import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
@@ -27,11 +26,12 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class HomeScreenState extends ConsumerState<HomeScreen> {
   late String selectedDate;
-  
+  User? user;
+
   @override
   void initState() {
     super.initState();
-
+    
     // Defer execution to avoid modifying state during widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       selectedDate = ref.watch(dateProvider);
@@ -43,7 +43,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     final user = await ref.watch(userProvider.future);
     final result = await scannerQR(context, user.tenantId);
     final aws = DataStoreReadService();
-
+    safePrint("RESULTADO DEL SCANNER: $result");
     if (result == null || result.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -87,7 +87,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     final studentsState = ref.watch(studentsProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: const [SignOutButton(), SizedBox(width: 500),CalendarButton(),]),
+      appBar: AppBar(actions: const [SignOutButton(), SizedBox(width: 235),SelectSchoolWidget(), SizedBox(width: 235), CalendarButton(),]),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),

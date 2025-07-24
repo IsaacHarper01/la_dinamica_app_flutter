@@ -10,7 +10,7 @@ class CalendarButton extends ConsumerWidget {
     final selectedDate = ref.watch(dateProvider);
 
     return IconButton(
-      icon: const Icon(Icons.calendar_today),
+      icon: Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.primary),
       onPressed: () async {
         final picked = await showDatePicker(
           context: context,
