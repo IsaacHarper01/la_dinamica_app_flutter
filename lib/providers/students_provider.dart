@@ -73,10 +73,10 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     }
   }
 
-  Future<void> deleteAttendance(int studentId, String date) async {
+  Future<void> deleteAttendance(int studentId, String date, String tenantId) async {
     try {
       final awsDb = DataStoreDeleteService();
-      await awsDb.deleteAttendanceByID(studentId, date);
+      await awsDb.deleteAttendanceByID(studentId, date, tenantId);
       await fetchAttendanceToday(date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);

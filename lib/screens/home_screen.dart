@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/User.dart';
 
 import 'package:la_dinamica_app/providers/date_provider.dart';
@@ -26,7 +27,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class HomeScreenState extends ConsumerState<HomeScreen> {
   late String selectedDate;
-  User? user;
+  UserLocal? user;
 
   @override
   void initState() {
@@ -35,15 +36,16 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     // Defer execution to avoid modifying state during widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       selectedDate = ref.watch(dateProvider);
+      user = ref.watch(userProvider).value;
       ref.watch(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
     });
   }
 
   Future<void> registerAssistance(BuildContext context) async {
-    final user = await ref.watch(userProvider.future);
-    final result = await scannerQR(context, user.tenantId);
+    
+    final result = await scannerQR(context, user!.tenantId);
     final aws = DataStoreReadService();
-    safePrint("RESULTADO DEL SCANNER: $result");
+
     if (result == null || result.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -69,7 +71,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       );
     }
     if (result['action']=='newAccess'){
-        aws.giveUserAccess(result["tenant_id"], result["permissions"], user);
+        aws.giveUserAccess(result["tenant_id"], result["permissions"], user!);
     }
   }
 
@@ -81,13 +83,17 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         isPortrait
             ? MediaQuery.of(context).size.height
             : MediaQuery.of(context).size.height * 2;
+    final screenWidth = 
+        isPortrait
+            ? MediaQuery.of(context).size.width
+            : MediaQuery.of(context).size.width * 2;
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
     final studentsState = ref.watch(studentsProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: const [SignOutButton(), SizedBox(width: 235),SelectSchoolWidget(), SizedBox(width: 235), CalendarButton(),]),
+      appBar: AppBar(actions: [SignOutButton(), SizedBox(width: screenWidth*0.3),SelectSchoolWidget(), SizedBox(width: screenWidth*0.39), CalendarButton(),]),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),
@@ -138,6 +144,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                                       .deleteAttendance(
                                         student.id,
                                         ref.watch(dateProvider),
+                                        user!.tenantId,
                                       );
                                 },
                               ),

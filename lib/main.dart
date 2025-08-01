@@ -31,7 +31,6 @@ Future<void> _configureAmplify() async {
 
   if (!Amplify.isConfigured) {
     try {
-
       await Amplify.addPlugins([datastorePlugin, apiPlugin, storage, auth]);
       await Amplify.configure(amplifyconfig);
       safePrint('✅ Amplify configurado correctamente');

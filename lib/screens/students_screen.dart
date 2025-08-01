@@ -1,8 +1,8 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
@@ -24,6 +24,8 @@ class StudentsScreen extends ConsumerStatefulWidget {
 
 class StudentsScreenState extends ConsumerState<StudentsScreen> {
   Future<List<Student>>? _studentsFuture;
+  UserLocal? user;
+  String? selectedDate;
 
   @override
   void initState() {
@@ -32,9 +34,12 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
   }
 
   void _loadStudents() async {
-    final user = await ref.read(userProvider.future);
+    final _user = await ref.read(userProvider.future);
+    final _date = ref.read(dateProvider);
     setState(() {
-      _studentsFuture = DataStoreReadService().getStudents(user.tenantId);
+      user = _user;
+      selectedDate = _date;
+      _studentsFuture = DataStoreReadService().getStudents(user!.tenantId);
     });
   }
 
@@ -67,6 +72,8 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
             indexList: indexList,
             ids: ids,
             images: images,
+            user: user!,
+            date: selectedDate!,
             onAddStudent: () {
               Navigator.push(
                 context,
@@ -94,6 +101,8 @@ class ScrollViewContent extends ConsumerWidget {
     required this.ids,
     required this.images,
     required this.onAddStudent,
+    required this.user,
+    required this.date,
   });
 
   final double screenHeight;
@@ -103,12 +112,12 @@ class ScrollViewContent extends ConsumerWidget {
   final int numAlumnos;
   final List<int> indexList;
   final VoidCallback onAddStudent;
+  final UserLocal user;
+  final String date;
 
-  void _deleteRegister(id) {
-    final db = DatabaseHelper();
-    db.deleteRegister(id, null);
+  void _deleteAttendance(id,date,tenantId) {
     final awsDb = DataStoreDeleteService();
-    awsDb.deleteStudentByID(id);
+    awsDb.deleteAttendanceByID(id, date, tenantId);
   }
 
   void handleDeleteDash(context, i) async {
@@ -119,7 +128,7 @@ class ScrollViewContent extends ConsumerWidget {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
           content: const Text(
-            '¿Estás seguro de que quieres eliminar este registro?',
+            '¿Estás seguro de que quieres eliminar esta asistencia?',
           ),
           actions: <Widget>[
             TextButton(
@@ -141,10 +150,10 @@ class ScrollViewContent extends ConsumerWidget {
 
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      _deleteRegister(ids[i]);
+      _deleteAttendance(ids[i], date ,user.tenantId);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Registro Eliminado'),
+          content: Text('Asistencia Eliminada'),
           backgroundColor: Colors.red,
         ),
       );

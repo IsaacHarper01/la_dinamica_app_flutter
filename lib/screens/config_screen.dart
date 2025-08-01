@@ -213,7 +213,7 @@ class PlanCard extends StatelessWidget {
     final textTheme = TextTheme.of(context);
 
     return Card(
-      elevation: 2,
+      elevation: 10,
       color: colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(

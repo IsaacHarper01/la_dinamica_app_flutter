@@ -18,7 +18,7 @@ class MetricsPage extends StatefulWidget {
 
 class _MetricsPageState extends State<MetricsPage> {
   late String title;
-  late String photo;
+  String photo = "assets/images/default_profile.jpg";
 
   @override
   void initState() {
@@ -46,10 +46,8 @@ class _MetricsPageState extends State<MetricsPage> {
         children: [
           const SizedBox(height: 20),
           Container(
-            //Student photo and Calendar Cointainer
             height: 400,
             color: const Color.fromRGBO(35, 55, 69, 1.0),
-            //provisional ELIMINAR!!!
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +62,18 @@ class _MetricsPageState extends State<MetricsPage> {
                         borderRadius: BorderRadius.circular(40),
                         child: Opacity(
                           opacity: 0.7,
-                          child: Image.file(File(photo), fit: BoxFit.cover),
+                          child: Image.network(photo,fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return const Center(child: CircularProgressIndicator());
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/default_profile.jpg',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
                         ),
                       ),
                     ),

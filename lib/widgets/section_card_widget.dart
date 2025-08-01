@@ -18,7 +18,7 @@ class SectionCard extends StatelessWidget {
     final textTheme = TextTheme.of(context);
 
     return Card(
-      elevation: 3,
+      elevation: 5,
       color: colorScheme.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(

@@ -7,9 +7,11 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
+import 'package:la_dinamica_app/widgets/student_info_profile.dart';
 
 import '../providers/attendance_provider.dart';
 
@@ -56,6 +58,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
   final DatabaseHelper db = DatabaseHelper();
   final awsDb = DataStoreReadService();
+  final awsDelete = DataStoreDeleteService();
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +118,47 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
     final tenantId = user.tenantId;
+
+    void handleDeleteDash(context, id) async {
+    // Mostrar un cuadro de diálogo para confirmar la eliminación
+    bool? shouldDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Eliminación'),
+          content: const Text(
+            '¿Estás seguro de que quieres eliminar a este alumno?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(false); // Retornar false si cancela
+              },
+            ),
+            TextButton(
+              child: const Text('Eliminar'),
+              onPressed: () {
+                Navigator.of(context).pop(true); // Retornar true si confirma
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    // Si el usuario confirma, eliminar el registro
+    if (shouldDelete == true) {
+      awsDelete.deleteStudentByID(id, tenantId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registro Eliminado'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context); // Volver a la pantalla anterior
+    }
+  }
 
     return SingleChildScrollView(
       child: Column(
@@ -243,30 +287,17 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               children: [
                 Expanded(
                   child: FilledButton(
-                    onPressed: () async {
-                      await db.insertAttendanceData(
-                        widget.id,
-                        widget.name,
-                        date,
-                      );
-                      await db.varifyPay(widget.id, date);
-                      setState(() {
-                        hasAttendance = true;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Asistencia Registrada'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
+                    onPressed: (){
+                      handleDeleteDash(context, widget.id);
                     },
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(colorList[2]),
+                      backgroundColor: WidgetStateProperty.all(colorList[4]),
                     ),
                     child: const Text(
-                      'Marcar Asistencia',
+                      'Eliminar Registro',
                       textAlign: TextAlign.center,
                     ),
+                    
                   ),
                 ),
                 Expanded(
@@ -287,13 +318,13 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                           builder:
                               (context) => MetricsPage(
                                 name: widget.name,
-                                image: widget.image,
+                                image: studentData.image!,
                               ),
                         ),
                       );
                     },
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(colorList[3]),
+                      backgroundColor: WidgetStateProperty.all(colorList[4]),
                     ),
                     label: const Text(
                       'Metricas',
@@ -364,23 +395,9 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Clases faltantes: ${paymentData.clases}'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('ID: ${widget.id}'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Fecha del ultimo pago: ${paymentData.date}'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Telefono: ${studentData.phone}'),
-                ),
-                ElevatedButton(
+                InfoCard(id: widget.id, clases: paymentData.clases!, payDate: paymentData.date.toString(), phone: studentData.phone!),
+                const SizedBox(height: 10),
+                FilledButton.icon(
                   onPressed: () {
                     generateCredentialandSend(
                       widget.id,
@@ -392,13 +409,19 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                       tenantId,
                     );
                   },
-                  child: const Text('Generar Credencial'),
+                  label: const Text('Generar Credencial'),
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(colorList[4]),
+                    ),
                 ),
-                ElevatedButton(
+                FilledButton.icon(
                   onPressed: () {
                     db.deleteStudentPlan(widget.id, date);
                   },
-                  child: const Text('Eliminar Plan'),
+                  label: const Text('Eliminar Plan'),
+                  style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(colorList[4]),
+                    ),
                 ),
               ],
             ),
