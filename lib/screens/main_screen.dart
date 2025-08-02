@@ -6,6 +6,7 @@ import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/config_screen.dart';
 import 'package:la_dinamica_app/screens/earn_screen.dart';
 import 'package:la_dinamica_app/screens/home_screen.dart';
+import 'package:la_dinamica_app/screens/new_evaluation_screen.dart';
 import 'package:la_dinamica_app/screens/pays_screen.dart';
 import 'package:la_dinamica_app/screens/students_screen.dart';
 
@@ -25,6 +26,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     EarnScreen(),
     PaysScreen(),
     ConfigScreen(),
+    NewEvaluationScreen(),
   ];
 
   void _onItemTapped(int index) {

@@ -11,13 +11,32 @@ type UserAccess @model @auth(rules: [{allow: public}]) {
   tenant: Tenant @belongsTo(fields: ["tenant_id"])
 }
 
-type MetricsType @model @auth(rules: [{allow: public}]) {
+type Evaluations @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String
-  min_value: Float
-  max_value: Float
-  category: String
-  client_id: String
+  tenant_id: String
+  who_access: [JoinMetric] @hasMany(fields: ["id"])
+}
+
+type Metric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String!
+  tenant_id: ID!
+  description: String
+  metric_type: String
+
+  access: [JoinMetric] @hasMany(fields: ["id"])
+}
+
+type JoinMetric @model @auth(rules: [{allow: public}]) {
+  id: ID!
+
+  metric_id: ID! @index
+  evaluation_id: ID! @index
+  tenant_id: ID
+
+  metric: Metric @belongsTo(fields: ["metric_id"])
+  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
 }
 
 type LocalPlan @model @auth(rules: [{allow: public}]) {
@@ -49,16 +68,6 @@ type Pay @model @auth(rules: [{allow: public, operations: [create, read, update,
   clases: Int
   type: String
   date: AWSDate
-  client_id: String
-  prof_id: String
-}
-
-type Metric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  user_id: Int
-  metric: String
-  date: AWSDate
-  value: Float
   client_id: String
   prof_id: String
 }

@@ -33,18 +33,7 @@ class _AddNewMetricState extends ConsumerState<AddNewMetric> {
         'category': _controllers[3].text.isNotEmpty ? _controllers[3].text : null,
       };
 
-      try{
-        await awsDB.saveMetricsType(
-          name: metric['name'], 
-          minValue: metric['minValue'], 
-          maxValue: metric['maxValue'], 
-          category: metric['category'], 
-          gymId: gymId, 
-          );
-          Navigator.pop(context!, true);
-      } catch (e) {
-        safePrint('❌ Error al guardar la métrica: $e');
-      }
+    
     }}
 
   @override

@@ -49,32 +49,6 @@ class DataStoreService {
     }
   }
 
-  Future<void> saveMetric({
-    required int userId,
-    required String metric,
-    required String date,
-    required double value,
-    required String tenantId,
-    required String profId,
-  }) async {
-    final item = Metric(
-      user_id: userId,
-      metric: metric,
-      date: TemporalDate(DateTime.parse(date)),
-      value: value,
-      client_id: tenantId,
-      prof_id: profId,
-    );
-
-    try {
-      await Amplify.DataStore.save(item);
-      safePrint('✅ Metrica guardado correctamente');
-    } catch (e) {
-      safePrint('❌ Error al guardar Metrica: $e');
-      rethrow;
-    }
-  }
-
   Future<int> saveGeneral({
     required String name,
     required String address,
@@ -210,29 +184,5 @@ class DataStoreService {
       rethrow;
     }
   }
-
-  Future<void> saveMetricsType(
-    {required String name,
-     required double minValue,
-     required double maxValue,
-     required String? category,
-     required String? gymId,
-     }) 
-     async {
-    final item = MetricsType(
-      name: name,
-      min_value: minValue,
-      max_value: maxValue,
-      category: category,
-      client_id: gymId,);
-    try {
-      await Amplify.DataStore.save(item);
-      safePrint('✅ Tipo de métrica guardado correctamente');
-    }
-    catch (e) {
-      safePrint('❌ Error al guardar el tipo de métrica: $e');
-      rethrow;
-      }
-    }
 
 }

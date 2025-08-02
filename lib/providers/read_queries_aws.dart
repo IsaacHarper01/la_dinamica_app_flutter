@@ -207,21 +207,6 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Metric>> getMetrics(String tenantId) async {
-    try {
-      // Consultar los datos almacenados en DataStore
-      List<Metric> metrics = await Amplify.DataStore.query(
-        Metric.classType,
-        where: Metric.CLIENT_ID.eq(tenantId),
-      );
-      safePrint('✅ Metricas obtenidas correctamente');
-      return metrics;
-    } catch (e) {
-      safePrint('❌ Error al obtener las Metricas: $e');
-      rethrow;
-    }
-  }
-
   Future<List<Student>> getStudents(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
