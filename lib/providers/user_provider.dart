@@ -11,7 +11,6 @@ final userProvider = AsyncNotifierProvider<UserNotifier, UserLocal>(
 );
 
 class UserNotifier extends AsyncNotifier<UserLocal> {
-  
   @override
   Future<UserLocal> build() async {
     final awsDb = DataStoreReadService();
@@ -21,12 +20,13 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
       final cognitoUser = await Amplify.Auth.getCurrentUser();
       final userId = cognitoUser.userId;
       final email = cognitoUser.signInDetails.toJson()['username'] as String;
-                            
-      if (await awsDb.userExists(userId)) {
 
+      if (await awsDb.userExists(userId)) {
         final dbUser = await awsDb.getUser(userId);
-        final userAccess = await awsDb.getUserAccess(dbUser!.user_id); //this gets the first userAccess but I have to chosen by the account chosen value
-           
+        final userAccess = await awsDb.getUserAccess(
+          dbUser!.user_id,
+        ); //this gets the first userAccess but I have to chosen by the account chosen value
+
         final newUser = UserLocal(
           userId: dbUser.user_id,
           tenantId: userAccess!.first.tenant!.tenant_id,
@@ -35,19 +35,20 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           permissions: userAccess.first.permissions!,
           plan: userAccess.first.tenant!.plan!,
           status: userAccess.first.tenant!.status!,
-          userAccess: userAccess, 
+          userAccess: userAccess,
         );
-        safePrint('✅ Usuario cargado correctamente: ${newUser.userId}, ${newUser.tenantId}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}');
+        safePrint(
+          '✅ Usuario cargado correctamente: ${newUser.userId}, ${newUser.tenantId}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
+        );
         return newUser;
       } else {
         final newTenantId = Uuid().v4();
-        final schoolName = "La Dinámica Gym"; //change this to the actual school name logic
+        final schoolName =
+            "La Dinámica Gym"; //change this to the actual school name logic
         final plan = "Free";
         final status = true;
-        
-        final user = User(
-          user_id: userId, 
-          name: email,);
+
+        final user = User(user_id: userId, name: email);
 
         final tenant = Tenant(
           tenant_id: newTenantId,
@@ -62,10 +63,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           permissions: 'admin', // Default permissions
           status: true,
         );
-        await awsDb2.saveUser(
-          id: userId,
-          name: email,
-        );
+        await awsDb2.saveUser(id: userId, name: email);
         await awsDb2.saveTenant(
           tenantId: newTenantId,
           name: schoolName,
@@ -78,16 +76,17 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           permissions: 'admin', // Default permissions
           status: true,
         );
-        
+
         final newUser = UserLocal(
           userId: userId,
           tenantId: newTenantId,
           name: email,
           schoolname: schoolName,
-          permissions: 'admin', // Default permissions
+          permissions: 'admin',
+          // Default permissions
           plan: plan,
           status: status,
-          userAccess: [userAccess], 
+          userAccess: [userAccess],
         );
 
         return newUser;
@@ -123,7 +122,9 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         status: status ?? currentUser.status,
       );
       state = AsyncValue.data(updatedUser);
-      safePrint('✅ Usuario actualizado: ${updatedUser.userId}, ${updatedUser.tenantId}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}');
+      safePrint(
+        '✅ Usuario actualizado: ${updatedUser.userId}, ${updatedUser.tenantId}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}',
+      );
     }
   }
 }
