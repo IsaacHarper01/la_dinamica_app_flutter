@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/screens/add_students_evaluation.dart';
 
 class NewMetricsPage extends StatefulWidget {
   const NewMetricsPage({super.key});
@@ -58,7 +59,14 @@ class _MetricsPageState extends State<NewMetricsPage> {
                   label: const Text('Nueva SubPrueba'),
                 ),
                 ElevatedButton.icon(
-                  onPressed: (){},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExamStudentSelectionPage(),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.arrow_forward),
                   label: const Text('Aplicar'),
                 ),
