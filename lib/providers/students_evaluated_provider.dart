@@ -2,22 +2,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
 final selectedStudentsProvider =
-    StateNotifierProvider<SelectedStudentsNotifier, Set<String>>((ref) {
+    StateNotifierProvider<SelectedStudentsNotifier, Set<int>>((ref) {
   return SelectedStudentsNotifier();
 });
 
-class SelectedStudentsNotifier extends StateNotifier<Set<String>> {
+class SelectedStudentsNotifier extends StateNotifier<Set<int>> {
   SelectedStudentsNotifier() : super({});
 
-  void toggle(String id) {
+  void toggle(int id) {
     if (state.contains(id)) {
       state = {...state}..remove(id);
     } else {
-      state = {...state, id};
+      state = {...state, id}; 
     }
   }
 
-  void add(String id) => state = {...state, id};
-  void remove(String id) => state = {...state}..remove(id);
+  void add(int id) => state = {...state, id};
+  void remove(int id) => state = {...state}..remove(id);
   void clear() => state = {};
 }

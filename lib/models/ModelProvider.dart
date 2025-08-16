@@ -23,10 +23,10 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'AppPlan.dart';
 import 'Attendance.dart';
 import 'Evaluations.dart';
-import 'JoinMetric.dart';
+import 'JointMetric.dart';
 import 'LocalPlan.dart';
-import 'Metric.dart';
 import 'Pay.dart';
+import 'SingleMetric.dart';
 import 'Student.dart';
 import 'Tenant.dart';
 import 'User.dart';
@@ -35,10 +35,10 @@ import 'UserAccess.dart';
 export 'AppPlan.dart';
 export 'Attendance.dart';
 export 'Evaluations.dart';
-export 'JoinMetric.dart';
+export 'JointMetric.dart';
 export 'LocalPlan.dart';
-export 'Metric.dart';
 export 'Pay.dart';
+export 'SingleMetric.dart';
 export 'Student.dart';
 export 'Tenant.dart';
 export 'User.dart';
@@ -46,9 +46,9 @@ export 'UserAccess.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "d5360514f2e3cf4bd765dc3cbbfbc536";
+  String version = "76d99b0b898199265ddd0255d2544677";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Evaluations.schema, JoinMetric.schema, LocalPlan.schema, Metric.schema, Pay.schema, Student.schema, Tenant.schema, User.schema, UserAccess.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Evaluations.schema, JointMetric.schema, LocalPlan.schema, Pay.schema, SingleMetric.schema, Student.schema, Tenant.schema, User.schema, UserAccess.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -63,14 +63,14 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Attendance.classType;
       case "Evaluations":
         return Evaluations.classType;
-      case "JoinMetric":
-        return JoinMetric.classType;
+      case "JointMetric":
+        return JointMetric.classType;
       case "LocalPlan":
         return LocalPlan.classType;
-      case "Metric":
-        return Metric.classType;
       case "Pay":
         return Pay.classType;
+      case "SingleMetric":
+        return SingleMetric.classType;
       case "Student":
         return Student.classType;
       case "Tenant":

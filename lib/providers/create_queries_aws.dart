@@ -185,4 +185,51 @@ class DataStoreService {
     }
   }
 
+  Future<Evaluations> saveEvaluation({
+  required String name,
+  required String gymId,
+}) async {
+  final evaluation = Evaluations(
+    name: name,
+    tenant_id: gymId,
+  );
+
+  await Amplify.DataStore.save(evaluation);
+  safePrint('✅ Evaluation saved: ${evaluation.id}, ${evaluation.name}');
+  return evaluation;
+}
+
+  Future<SingleMetric> saveMetric({
+  required String name,
+  required String tenantId,
+  required String description,
+  required String type,
+}) async {
+  final metric = SingleMetric(
+    name: name,
+    tenant_id: tenantId,
+    description: description,
+    metric_type: type,
+  );
+
+  await Amplify.DataStore.save(metric);
+  safePrint('✅ Metric saved: ${metric.id}, ${metric.name}');
+  return metric;
+}
+
+  Future<JointMetric> saveJoinedMetric({
+  required SingleMetric metric,
+  required Evaluations evaluation,
+  required String tenantId,
+}) async {
+  final joinMetric = JointMetric(
+    metric: metric,          // Pass the object
+    evaluation: evaluation,  // Pass the object
+    tenant_id: tenantId,
+  );
+
+  await Amplify.DataStore.save(joinMetric);
+  safePrint('✅ JointMetric saved: ${joinMetric.id}');
+  return joinMetric;
+}
 }

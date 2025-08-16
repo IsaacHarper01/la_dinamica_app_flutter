@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/providers/storageS3.dart';
 
 class PreviewStudentContainerReduce extends StatelessWidget {
@@ -93,9 +94,9 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                         Flexible(
                           child: Text(
                             name,
-                            style: TextStyle(
-                              fontSize: screenHeight * 0.022,
-                              fontWeight: FontWeight.w500,
+                            style: GoogleFonts.gochiHand(
+                              fontSize: screenHeight * 0.03,
+                              color: Colors.white,
                             ),
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
@@ -104,7 +105,10 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                         ),
                         Text(
                           'ID: $id',
-                          style: TextStyle(fontSize: screenHeight * 0.015),
+                          style: GoogleFonts.gochiHand(
+                            fontSize: screenHeight * 0.017,
+                            color: Colors.white70,
+                          ),
                         ),
                       ],
                     ),

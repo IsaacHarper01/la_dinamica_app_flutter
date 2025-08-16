@@ -25,23 +25,46 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class HomeScreenState extends ConsumerState<HomeScreen> {
-  late String selectedDate;
   UserLocal? user;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    
+
     // Defer execution to avoid modifying state during widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      selectedDate = ref.watch(dateProvider);
-      user = ref.watch(userProvider).value;
-      ref.watch(studentsProvider.notifier).fetchAttendanceToday(selectedDate);
+      user = ref.read(userProvider).value;
+
+      if (user != null) {
+        ref
+            .watch(studentsProvider.notifier)
+            .fetchAttendanceToday(ref.read(dateProvider));
+      }
+    });
+
+    // Escucha cualquier cambio en el userProvider y dateProvider
+    // ref.listen(attendanceRefreshProvider, (prev, next) {
+    //   final (user, date) = next;
+    //   if (user != null) {
+    //     ref.read(studentsProvider.notifier).fetchAttendanceToday(date);
+    //   }
+    // });
+
+    _searchController.addListener(() {
+      ref.read(searchTermProvider.notifier).state = _searchController.text;
     });
   }
 
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> registerAssistance(BuildContext context) async {
-    
+    final currentDate = ref.read(dateProvider);
     final result = await scannerQR(context, user!.tenantId);
     final aws = DataStoreReadService();
 
@@ -55,13 +78,12 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       safePrint("No se escanearon datos o hubo un error");
       return;
     }
-    if (result['action']== 'attencance'){
-      
+    if (result['action'] == 'attencance') {
       final id = result['id'];
       final name = result['name'];
       await ref
-        .read(studentsProvider.notifier)
-        .insertAttendance(id, name, selectedDate);
+          .read(studentsProvider.notifier)
+          .insertAttendance(id, name, currentDate);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Asistencia registrada'),
@@ -69,9 +91,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }
-    if (result['action']=='newAccess'){
-        aws.giveUserAccess(result["tenant_id"], result["permissions"], user!);
+    if (result['action'] == 'newAccess') {
+      aws.giveUserAccess(result["tenant_id"], result["permissions"], user!);
     }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(searchTermProvider.notifier).state = '';
   }
 
   @override
@@ -82,7 +109,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         isPortrait
             ? MediaQuery.of(context).size.height
             : MediaQuery.of(context).size.height * 2;
-    final screenWidth = 
+    final screenWidth =
         isPortrait
             ? MediaQuery.of(context).size.width
             : MediaQuery.of(context).size.width * 2;
@@ -90,78 +117,152 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     final isDarkMode = themeMode == ThemeMode.dark;
 
     final studentsState = ref.watch(studentsProvider);
+    final userState = ref.watch(userProvider);
+    final filteredStudents = ref.watch(filteredStudentsProvider);
+    final allStudents = studentsState.asData?.value ?? [];
+    final searchTerm = ref.watch(searchTermProvider);
 
     return Scaffold(
-      appBar: AppBar(actions: [SignOutButton(), SizedBox(width: screenWidth*0.3),SelectSchoolWidget(), SizedBox(width: screenWidth*0.39), CalendarButton(),]),
+      appBar: AppBar(
+        actions: [
+          SignOutButton(),
+          SizedBox(width: screenWidth * 0.3),
+          SelectSchoolWidget(),
+          SizedBox(width: screenWidth * 0.39),
+          CalendarButton(),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
         child: const Icon(Icons.qr_code_scanner_outlined),
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      body: studentsState.when(
+      body: userState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Error: $error')),
-        data: (students) {
-          if (students.isEmpty) {
-            return Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  isDarkMode
-                      ? 'assets/images/f_ma18.png'
-                      : 'assets/images/f_ma11.png',
-                  height: isDarkMode ? screenHeight * 0.2 : screenHeight * 0.1,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            );
-          }
+        data:
+            (user) => studentsState.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(child: Text('Error: $error')),
+              data: (students) {
+                if (students.isEmpty) {
+                  return Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        isDarkMode
+                            ? 'assets/images/f_ma18.png'
+                            : 'assets/images/f_ma11.png',
+                        height:
+                            isDarkMode
+                                ? screenHeight * 0.2
+                                : screenHeight * 0.1,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                }
 
-          return SingleChildScrollView(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: screenHeight * 0.06),
-                  SearchStudentContainer(
-                    circleText: 'Asistencias de hoy: ${students.length}',
-                  ),
-                  SizedBox(height: screenHeight * 0.01),
-                  Column(
-                    children:
-                        students.asMap().entries.map((entry) {
-                          Student student = entry.value;
+                return SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: screenHeight * 0.06),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Buscar por ID o nombre...',
+                              prefixIcon: const Icon(Icons.search),
+                              suffixIcon:
+                                  searchTerm.isNotEmpty
+                                      ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: _clearSearch,
+                                      )
+                                      : null,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              filled: true,
+                              fillColor: Theme.of(context).colorScheme.surface,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: screenHeight * 0.06),
+                        SearchStudentContainer(
+                          circleText:
+                              searchTerm.isEmpty
+                                  ? 'Asistencias de hoy: ${allStudents.length}'
+                                  : 'Mostrando: ${filteredStudents.length} de ${allStudents.length}',
+                        ),
+                        SizedBox(height: screenHeight * 0.01),
+                        if (filteredStudents.isEmpty && searchTerm.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 64,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withAlpha(128),
+                                ),
+                                Text(
+                                  'No se encontraron estudiantes\ncon el término: "$searchTerm"',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          Column(
+                            children:
+                                filteredStudents.asMap().entries.map((entry) {
+                                  Student student = entry.value;
 
-                          return Column(
-                            children: [
-                              PreviewStudentContainer(
-                                name: student.name,
-                                image: student.image,
-                                onDismissed: () {
-                                  ref
-                                      .read(studentsProvider.notifier)
-                                      .deleteAttendance(
-                                        student.id,
-                                        ref.watch(dateProvider),
-                                        user!.tenantId,
-                                      );
-                                },
-                              ),
-                              const Divider(
-                                height: 0,
-                                indent: 20,
-                                endIndent: 20,
-                              ),
-                            ],
-                          );
-                        }).toList(),
+                                  return Column(
+                                    children: [
+                                      PreviewStudentContainer(
+                                        name: student.name,
+                                        image: student.image,
+                                        onDismissed: () {
+                                          ref
+                                              .read(studentsProvider.notifier)
+                                              .deleteAttendance(
+                                                student.id,
+                                                ref.read(dateProvider),
+                                                user.tenantId,
+                                              );
+                                        },
+                                      ),
+                                      const Divider(
+                                        height: 0,
+                                        indent: 20,
+                                        endIndent: 20,
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                          ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
       ),
     );
   }
 }
+

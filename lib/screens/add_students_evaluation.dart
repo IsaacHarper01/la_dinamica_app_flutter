@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/Student.dart';
@@ -38,19 +39,6 @@ class _ExamStudentSelectionPageState extends ConsumerState<ExamStudentSelectionP
       selectedDate = _date;
       _studentsFuture = DataStoreReadService().getStudents(user!.tenantId);
     });
-  }
-
-  void _startExam(List<Student> students) {
-    final selected = students.where((s) => _selectedStudentIds.contains(s.id)).toList();
-
-    if (selected.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('⚠️ Select at least one student')),
-      );
-      return;
-    }
-
-    debugPrint('🧪 Starting exam with ${selected.length} students');
   }
 
   @override
@@ -91,7 +79,7 @@ class _ExamStudentSelectionPageState extends ConsumerState<ExamStudentSelectionP
 }
 
 class Scroll extends ConsumerWidget {
-  const Scroll({
+  Scroll({
     super.key,
     required this.screenHeight,
     required this.students,
@@ -104,7 +92,7 @@ class Scroll extends ConsumerWidget {
 
   final double screenHeight;
   final List<dynamic> students;
-  final List<dynamic> ids;
+  List<dynamic> ids;
   final List<dynamic> images;
   final List<int> indexList;
   final UserLocal user;
@@ -112,86 +100,113 @@ class Scroll extends ConsumerWidget {
 
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedStudents = ref.watch(selectedStudentsProvider);
+Widget build(BuildContext context, WidgetRef ref) {
+  final selectedStudents = ref.watch(selectedStudentsProvider);
 
-    return SingleChildScrollView(
-      child: Center(
-        child: Column(
-          children: [
-            SizedBox(height: screenHeight * 0.06),
-        
-            ...indexList.map((i) {
-              return FadeInUp(
-                child: Column(
-                  children: [
-                    Dismissible(
-                      key: Key(ids[i].toString()),
-                      // Llave única para cada elemento
-                      background: Container(
-                        color: const Color.fromARGB(255, 102, 165, 104),
-                        alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(left: 20),
-                        child: const Icon(Icons.add_task, color: Colors.white),
-                      ),
-                      confirmDismiss: (direction) async {
-                        if (direction == DismissDirection.startToEnd) {
-                          ref
-                              .read(selectedStudentsProvider.notifier)
-                              .toggle(ids[i]);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Alumno agregado a la lista'),
-                              backgroundColor: Colors.green,
+  void startExam() {
+    if (selectedStudents.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('⚠️ Selecciona al menos un alumno')),
+      );
+      return;
+    }
+    
+    debugPrint('🧪 Iniciando prueba con ${selectedStudents.length} alumnos');
+  }
+
+  return SafeArea(
+    child: Scaffold(
+      body: Column(
+        children: [
+          SizedBox(height: screenHeight * 0.02),
+          Text(
+            'Selecciona los alumnos para la prueba',
+            style: GoogleFonts.mulish(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: screenHeight * 0.08),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: indexList.length,
+              itemBuilder: (context, i) {
+                return FadeInUp(
+                  child: Column(
+                    children: [
+                      Dismissible(
+                        key: Key(ids[i].toString()),
+                        background: Container(
+                          color: const Color.fromARGB(255, 102, 165, 104),
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 20),
+                          child: const Icon(Icons.add_task, color: Colors.white),
+                        ),
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.startToEnd) {
+                            ref.read(selectedStudentsProvider.notifier)
+                                .toggle(ids[i]);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Alumno agregado a la lista'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          } else if (direction == DismissDirection.endToStart) {
+                            ref.read(selectedStudentsProvider.notifier)
+                                .remove(ids[i]);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Alumno eliminado de la lista'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          }
+                          return false;
+                        },
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            splashColor: colorList[6],
+                            child: PreviewStudentContainerReduce(
+                              name: students[i],
+                              id: ids[i],
+                              image: images[i],
+                              backgroundColor: selectedStudents.contains(ids[i])
+                                  ? Colors.green.withAlpha(30)
+                                  : Colors.transparent,
+                              trailingIcon: selectedStudents.contains(ids[i])
+                                  ? const Icon(Icons.check_circle, color: Colors.green)
+                                  : null,
                             ),
-                          );
-                        } 
-                        return false;
-                      },
-
-                      child: Material(
-                        color: Colors.transparent, // so it doesn't override your background
-                        child: InkWell(
-                          splashColor: colorList[6],
-                          child: PreviewStudentContainerReduce(
-                            name: students[i],
-                            id: ids[i],
-                            image: images[i],
-                            backgroundColor:
-                                selectedStudents.contains(ids[i])
-                                    ? Colors.green.withAlpha(20)
-                                    : Colors.transparent,
-                            trailingIcon:
-                                selectedStudents.contains(ids[i])
-                                    ? const Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                      )
-                                    : null,
                           ),
                         ),
                       ),
-                    ),
-                    const Divider(height: 0, indent: 20, endIndent: 20),
-                  ],
-                ),
-              );
-            }),
-          ],
-        ),
+                      const Divider(height: 0, indent: 20, endIndent: 20),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton.icon(
+              onPressed: startExam,
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Iniciar Prueba'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+              ),
+            ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+ }
 }
 
-// Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: ElevatedButton.icon(
-//                 onPressed: () {},
-//                 icon: const Icon(Icons.play_arrow),
-//                 label: const Text('Iniciar Prueba'),
-//                 style: ElevatedButton.styleFrom(
-//                   minimumSize: const Size.fromHeight(50),
-//                 ),
-//               ),
-//             ),

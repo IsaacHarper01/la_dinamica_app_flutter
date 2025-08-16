@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 
 class InfoCard extends StatelessWidget {
@@ -41,8 +42,8 @@ class InfoCard extends StatelessWidget {
                     children: [
                       Icon(Icons.person),
                       Text(
-                          'ID:   $id',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          ' ID:   $id',
+                          style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold)
                         ),
                     ],
                   ),
@@ -60,8 +61,8 @@ class InfoCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.class_),
-                      Text('Clases restantes:    $clases',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      Text(' Clases restantes:    $clases',
+                      style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold))
                     ],
                   ),
                 ),
@@ -77,8 +78,8 @@ class InfoCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.calendar_today),
-                      Text('Fecha del ultimo pago:    $payDate',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      Text(' Fecha del ultimo pago:    $payDate',
+                      style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold),),
                     ],
                   ),
                 ),
@@ -94,8 +95,8 @@ class InfoCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.phone),
-                      Text('Telefono:    $phone',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      Text(' Telefono:    $phone',
+                      style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold),),
                     ],
                   ),
                 ),

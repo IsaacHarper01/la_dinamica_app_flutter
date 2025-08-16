@@ -2,6 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -68,13 +69,13 @@ infocharts(alldata, n, linegraph){
         children: [
           const SizedBox(height: 20),
           Text('Analisis de los ultimos $n días',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+            style: GoogleFonts.michroma(color: Colors.white)),
           const SizedBox(height: 25),
           Row(
             children: [
               Column(children: [
-                const Text('Ingresos por día',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                Text('Ingresos por día',
+                style: GoogleFonts.michroma(fontSize: 12),
               ),
               SizedBox(
                 width: 210, 
@@ -96,8 +97,8 @@ infocharts(alldata, n, linegraph){
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(children: [
-                const Text('Estudiantes por día',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                Text('Estudiantes por día',
+                style: GoogleFonts.michroma(fontSize: 12),
               ),
               SizedBox(
                 width: 210, 

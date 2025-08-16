@@ -15,28 +15,7 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String
   tenant_id: String
-  who_access: [JoinMetric] @hasMany(fields: ["id"])
-}
-
-type Metric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  name: String!
-  tenant_id: ID!
-  description: String
-  metric_type: String
-
-  access: [JoinMetric] @hasMany(fields: ["id"])
-}
-
-type JoinMetric @model @auth(rules: [{allow: public}]) {
-  id: ID!
-
-  metric_id: ID! @index
-  evaluation_id: ID! @index
-  tenant_id: ID
-
-  metric: Metric @belongsTo(fields: ["metric_id"])
-  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
+  who_access: [JointMetric] @hasMany(fields: ["id"])
 }
 
 type LocalPlan @model @auth(rules: [{allow: public}]) {
@@ -101,3 +80,23 @@ type Tenant @model @auth(rules: [{allow: public}]) {
   who_access: [UserAccess] @hasMany(fields: ["tenant_id"])
 }
  
+type SingleMetric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String!
+  tenant_id: ID!
+  description: String
+  metric_type: String
+
+  access: [JointMetric] @hasMany(fields: ["id"])
+}
+
+type JointMetric @model @auth(rules: [{allow: public}]) {
+  id: ID!
+
+  metric_id: ID! @index
+  evaluation_id: ID! @index
+  tenant_id: ID
+
+  metric: SingleMetric @belongsTo(fields: ["metric_id"])
+  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
+}

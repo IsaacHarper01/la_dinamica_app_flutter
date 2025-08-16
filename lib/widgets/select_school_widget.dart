@@ -10,48 +10,53 @@ class SelectSchoolWidget extends ConsumerStatefulWidget {
   ConsumerState<SelectSchoolWidget> createState() => _SelectSchoolState();
 }
 
-class _SelectSchoolState extends ConsumerState<SelectSchoolWidget>{
-  
+class _SelectSchoolState extends ConsumerState<SelectSchoolWidget> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-  
+
     return IconButton(
-      onPressed: (){
+      onPressed: () {
         user.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => Center(child: Text('Error: $error')),
-          data:(user) => showCupertinoModalPopup(
-          context: context,
-          builder: (context) {
-            return CupertinoActionSheet(
-              title: const Text('Selecciona una escuela'),
-              actions: [
-                ...user.userAccess.map((access) {
-                  return CupertinoActionSheetAction(
-                    onPressed: () {
-                      ref.read(userProvider.notifier).updateUser(
-                        tenantId: access.tenant!.tenant_id,
-                        schoolname: access.tenant!.name,
-                        permissions: access.permissions!,
-                        plan: access.tenant!.plan!,
-                      );
-                      Navigator.pop(context);
-                    },
-                    child: Text(access.tenant!.name),
+          data:
+              (user) => showCupertinoModalPopup(
+                context: context,
+                builder: (context) {
+                  return CupertinoActionSheet(
+                    title: const Text('Selecciona una escuela'),
+                    actions: [
+                      ...user.userAccess.map((access) {
+                        return CupertinoActionSheetAction(
+                          onPressed: () {
+                            ref
+                                .read(userProvider.notifier)
+                                .updateUser(
+                                  tenantId: access.tenant!.tenant_id,
+                                  schoolname: access.tenant!.name,
+                                  permissions: access.permissions!,
+                                  plan: access.tenant!.plan!,
+                                );
+                            Navigator.pop(context);
+                          },
+                          child: Text(access.tenant!.name),
+                        );
+                      }),
+                    ],
+                    cancelButton: CupertinoActionSheetAction(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar'),
+                    ),
                   );
-                }),
-              ],
-              cancelButton: CupertinoActionSheetAction(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
+                },
               ),
-            );
-          },
-        )
-      );
-    }, 
-    icon: Icon(Icons.assignment_ind_outlined, color: Theme.of(context).colorScheme.primary)
+        );
+      },
+      icon: Icon(
+        Icons.assignment_ind_outlined,
+        color: Theme.of(context).colorScheme.primary,
+      ),
     );
   }
 }

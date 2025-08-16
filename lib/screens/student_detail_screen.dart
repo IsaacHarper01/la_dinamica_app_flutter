@@ -1,6 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/database.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -220,7 +221,10 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       widget.name,
-                      style: TextStyle(fontSize: screenHeight * 0.04),
+                      style: GoogleFonts.gochiHand(
+                        fontSize: screenHeight * 0.05,
+                        color: Colors.white,
+                      ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -244,7 +248,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                                 ),
                                 Text(
                                   '${studentData.address}',
-                                  style: const TextStyle(color: Colors.white),
+                                  style: GoogleFonts.gochiHand(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -266,7 +270,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                               ),
                               Text(
                                 '${studentData.age} años',
-                                style: const TextStyle(color: Colors.white),
+                                style: GoogleFonts.gochiHand(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -342,8 +346,8 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Tipo de plan', style: TextStyle(fontSize: 25)),
-                Text('${paymentData.type}'),
+                Text('Tipo de plan', style: GoogleFonts.gochiHand(fontSize: 30, fontWeight: FontWeight.bold)),
+                Text('${paymentData.type}', style: GoogleFonts.gochiHand(fontSize: 20)),
               ],
             ),
           ),

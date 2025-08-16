@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 
 class AverageWidget extends StatelessWidget {
@@ -32,11 +33,11 @@ class AverageWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [ 
-            Text(title1, style: const TextStyle(color: Colors.white,fontSize: 16,fontWeight: FontWeight.normal,)),
-            Text(title2, style: const TextStyle(color: Colors.white,fontSize: 10,fontWeight: FontWeight.normal,)),
+            Text(title1, style: GoogleFonts.gochiHand(fontSize: 16)),
+            Text(title2, style: GoogleFonts.gochiHand(fontSize: 10)),
           ]),
           const SizedBox(width: 30),
-          Text(average, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold,)),
+          Text(average, style: GoogleFonts.gochiHand(color: Colors.white, fontSize: 16)),
         ],),
       ),
     );

@@ -23,12 +23,12 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the JoinMetric type in your schema. */
-class JoinMetric extends amplify_core.Model {
-  static const classType = const _JoinMetricModelType();
+/** This is an auto generated class representing the JointMetric type in your schema. */
+class JointMetric extends amplify_core.Model {
+  static const classType = const _JointMetricModelType();
   final String id;
   final String? _tenant_id;
-  final Metric? _metric;
+  final SingleMetric? _metric;
   final Evaluations? _evaluation;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -40,8 +40,8 @@ class JoinMetric extends amplify_core.Model {
   @override
   String getId() => id;
   
-  JoinMetricModelIdentifier get modelIdentifier {
-      return JoinMetricModelIdentifier(
+  JointMetricModelIdentifier get modelIdentifier {
+      return JointMetricModelIdentifier(
         id: id
       );
   }
@@ -50,7 +50,7 @@ class JoinMetric extends amplify_core.Model {
     return _tenant_id;
   }
   
-  Metric? get metric {
+  SingleMetric? get metric {
     return _metric;
   }
   
@@ -66,10 +66,10 @@ class JoinMetric extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const JoinMetric._internal({required this.id, tenant_id, metric, evaluation, createdAt, updatedAt}): _tenant_id = tenant_id, _metric = metric, _evaluation = evaluation, _createdAt = createdAt, _updatedAt = updatedAt;
+  const JointMetric._internal({required this.id, tenant_id, metric, evaluation, createdAt, updatedAt}): _tenant_id = tenant_id, _metric = metric, _evaluation = evaluation, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory JoinMetric({String? id, String? tenant_id, Metric? metric, Evaluations? evaluation}) {
-    return JoinMetric._internal(
+  factory JointMetric({String? id, String? tenant_id, SingleMetric? metric, Evaluations? evaluation}) {
+    return JointMetric._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       tenant_id: tenant_id,
       metric: metric,
@@ -83,7 +83,7 @@ class JoinMetric extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is JoinMetric &&
+    return other is JointMetric &&
       id == other.id &&
       _tenant_id == other._tenant_id &&
       _metric == other._metric &&
@@ -97,7 +97,7 @@ class JoinMetric extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("JoinMetric {");
+    buffer.write("JointMetric {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
     buffer.write("metric=" + (_metric != null ? _metric!.toString() : "null") + ", ");
@@ -109,20 +109,20 @@ class JoinMetric extends amplify_core.Model {
     return buffer.toString();
   }
   
-  JoinMetric copyWith({String? tenant_id, Metric? metric, Evaluations? evaluation}) {
-    return JoinMetric._internal(
+  JointMetric copyWith({String? tenant_id, SingleMetric? metric, Evaluations? evaluation}) {
+    return JointMetric._internal(
       id: id,
       tenant_id: tenant_id ?? this.tenant_id,
       metric: metric ?? this.metric,
       evaluation: evaluation ?? this.evaluation);
   }
   
-  JoinMetric copyWithModelFieldValues({
+  JointMetric copyWithModelFieldValues({
     ModelFieldValue<String?>? tenant_id,
-    ModelFieldValue<Metric?>? metric,
+    ModelFieldValue<SingleMetric?>? metric,
     ModelFieldValue<Evaluations?>? evaluation
   }) {
-    return JoinMetric._internal(
+    return JointMetric._internal(
       id: id,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       metric: metric == null ? this.metric : metric.value,
@@ -130,13 +130,13 @@ class JoinMetric extends amplify_core.Model {
     );
   }
   
-  JoinMetric.fromJson(Map<String, dynamic> json)  
+  JointMetric.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _tenant_id = json['tenant_id'],
       _metric = json['metric'] != null
         ? json['metric']['serializedData'] != null
-          ? Metric.fromJson(new Map<String, dynamic>.from(json['metric']['serializedData']))
-          : Metric.fromJson(new Map<String, dynamic>.from(json['metric']))
+          ? SingleMetric.fromJson(new Map<String, dynamic>.from(json['metric']['serializedData']))
+          : SingleMetric.fromJson(new Map<String, dynamic>.from(json['metric']))
         : null,
       _evaluation = json['evaluation'] != null
         ? json['evaluation']['serializedData'] != null
@@ -159,18 +159,18 @@ class JoinMetric extends amplify_core.Model {
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<JoinMetricModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<JoinMetricModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<JointMetricModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<JointMetricModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
   static final METRIC = amplify_core.QueryField(
     fieldName: "metric",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Metric'));
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'SingleMetric'));
   static final EVALUATION = amplify_core.QueryField(
     fieldName: "evaluation",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Evaluations'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "JoinMetric";
-    modelSchemaDefinition.pluralName = "JoinMetrics";
+    modelSchemaDefinition.name = "JointMetric";
+    modelSchemaDefinition.pluralName = "JointMetrics";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -184,27 +184,27 @@ class JoinMetric extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["metric_id"], name: "joinMetricsByMetric_id"),
-      amplify_core.ModelIndex(fields: const ["evaluation_id"], name: "joinMetricsByEvaluation_id")
+      amplify_core.ModelIndex(fields: const ["metric_id"], name: "jointMetricsByMetric_id"),
+      amplify_core.ModelIndex(fields: const ["evaluation_id"], name: "jointMetricsByEvaluation_id")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: JoinMetric.TENANT_ID,
+      key: JointMetric.TENANT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: JoinMetric.METRIC,
+      key: JointMetric.METRIC,
       isRequired: false,
       targetNames: ['metric_id'],
-      ofModelName: 'Metric'
+      ofModelName: 'SingleMetric'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: JoinMetric.EVALUATION,
+      key: JointMetric.EVALUATION,
       isRequired: false,
       targetNames: ['evaluation_id'],
       ofModelName: 'Evaluations'
@@ -226,29 +226,29 @@ class JoinMetric extends amplify_core.Model {
   });
 }
 
-class _JoinMetricModelType extends amplify_core.ModelType<JoinMetric> {
-  const _JoinMetricModelType();
+class _JointMetricModelType extends amplify_core.ModelType<JointMetric> {
+  const _JointMetricModelType();
   
   @override
-  JoinMetric fromJson(Map<String, dynamic> jsonData) {
-    return JoinMetric.fromJson(jsonData);
+  JointMetric fromJson(Map<String, dynamic> jsonData) {
+    return JointMetric.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'JoinMetric';
+    return 'JointMetric';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [JoinMetric] in your schema.
+ * of [JointMetric] in your schema.
  */
-class JoinMetricModelIdentifier implements amplify_core.ModelIdentifier<JoinMetric> {
+class JointMetricModelIdentifier implements amplify_core.ModelIdentifier<JointMetric> {
   final String id;
 
-  /** Create an instance of JoinMetricModelIdentifier using [id] the primary key. */
-  const JoinMetricModelIdentifier({
+  /** Create an instance of JointMetricModelIdentifier using [id] the primary key. */
+  const JointMetricModelIdentifier({
     required this.id});
   
   @override
@@ -266,7 +266,7 @@ class JoinMetricModelIdentifier implements amplify_core.ModelIdentifier<JoinMetr
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'JoinMetricModelIdentifier(id: $id)';
+  String toString() => 'JointMetricModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -274,7 +274,7 @@ class JoinMetricModelIdentifier implements amplify_core.ModelIdentifier<JoinMetr
       return true;
     }
     
-    return other is JoinMetricModelIdentifier &&
+    return other is JointMetricModelIdentifier &&
       id == other.id;
   }
   

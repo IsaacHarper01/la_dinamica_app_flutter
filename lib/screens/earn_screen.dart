@@ -4,7 +4,7 @@ import 'package:la_dinamica_app/backend/attendance_report.dart';
 import 'package:la_dinamica_app/backend/income_report.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/models/User.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
@@ -97,7 +97,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 35),
-              const Text('Seleccione un periodo'),
+              Text('Seleccione un periodo',style: GoogleFonts.michroma()),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -119,11 +119,11 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                     },
                     child: Text(
                       "Inicio: ${startDate.month}/${startDate.day}/${startDate.year}",
-                      style: const TextStyle(color: Colors.white),
+                      style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
                     ),
                   ),
                   const SizedBox(width: 20),
-                  const Text('A'),
+                  Text('A', style: GoogleFonts.michroma(),),
                   const SizedBox(width: 20), // Espaciado entre botones
                   // Botón de Fecha de Final
                   FilledButton(
@@ -145,7 +145,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                     },
                     child: Text(
                       "Final: ${endDate.month}/${endDate.day}/${endDate.year}",
-                      style: const TextStyle(color: Colors.white),
+                      style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
                     ),
                   ),
                 ],
@@ -153,7 +153,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
               const SizedBox(
                 height: 10,
               ), // Espaciado entre los botones y el gráfico
-              const Text('Generar reportes en csv'),
+              Text('Generar reportes en csv', style: GoogleFonts.michroma()),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -197,15 +197,15 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                     children: [
                       Text(
                         'Datos de la fecha Actual: $date',
-                        style: const TextStyle(color: Colors.white),
+                        style: GoogleFonts.michroma(color: Colors.white),
                       ),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          const Text(
+                          Text(
                             'Ingresos: ',
-                            style: TextStyle(color: Colors.white),
+                            style: GoogleFonts.michroma(color: Colors.white),
                           ),
                           Text(
                             '\$${result.toString()}',
