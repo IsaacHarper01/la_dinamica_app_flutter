@@ -511,4 +511,31 @@ class DataStoreReadService {
     }
   }
 
+  Future<List<Evaluations>> getEvaluations(String tenantId) async {
+    try {
+      final evaluations = await Amplify.DataStore.query(
+        Evaluations.classType,
+        where: Evaluations.TENANT_ID.eq(tenantId),
+      );
+      safePrint('✅ Evaluaciones obtenidas correctamente');
+      return evaluations;
+    } catch (e) {
+      safePrint('❌ Error al obtener las evaluaciones: $e');
+      rethrow;
+    }
+  }
+   
+  Future<List<JointMetric>> getJointMetrics(String tenantId, Evaluations exam) async {
+    try {
+      final jointMetrics = await Amplify.DataStore.query(
+        JointMetric.classType,
+        where: JointMetric.TENANT_ID.eq(tenantId).and(JointMetric.EVALUATION.eq(exam.id)),
+      );
+      safePrint('✅ Métricas conjuntas obtenidas correctamente ${jointMetrics.first.metric!.name}');
+      return jointMetrics;
+    } catch (e) {
+      safePrint('❌ Error al obtener las métricas conjuntas: $e');
+      rethrow;
+    }
+  }
 }

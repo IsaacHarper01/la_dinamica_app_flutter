@@ -1,6 +1,12 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
+import 'package:la_dinamica_app/models/Evaluations.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_metrics_screen.dart';
+import 'package:la_dinamica_app/widgets/view_exams_box.dart';
 
 class NewEvaluationScreen extends ConsumerStatefulWidget{
   const NewEvaluationScreen({super.key});
@@ -10,8 +16,35 @@ class NewEvaluationScreen extends ConsumerStatefulWidget{
 }
 
 class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
+  UserLocal? user;
+  List<Evaluations>? _evaluations;
+
+  @override
+  void initState() {
+    super.initState();
+    loadExamns();  
+  }
+  
+  Future<void> loadExamns() async {
+    final _user = await ref.read(userProvider.future);
+    setState(() {
+      user = _user;
+    });
+    final awsDb = DataStoreReadService();
+    final exams = await awsDb.getEvaluations(user!.tenantId);
+    setState(() {
+      _evaluations = exams;
+    });
+    safePrint("Exámenes cargados: $_evaluations");
+  }
+
   @override
   Widget build(BuildContext context) {
+    
+    if (_evaluations == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nueva Evaluación'),
@@ -42,22 +75,7 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
               ),
             Text("Crear nueva prueba"),
             SizedBox(height: 40),
-            SizedBox(
-              width: 400,
-              height: 400,
-              child: DecoratedBox(decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3), // changes position of shadow
-                  ),
-                ],
-              )),
-            ) 
+            ViewExamsBox(evaluations: _evaluations, user: user), 
               ]
         ),
       ),  

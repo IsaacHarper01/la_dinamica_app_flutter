@@ -14,5 +14,5 @@ const appMenuItmes = <MenuItem>[
   MenuItem(title: 'Ingresos', link: '/earn', icon: Icons.shopify_rounded),
   MenuItem(title: 'Pagos', link: 'pay', icon: Icons.payments_rounded),
   MenuItem(title: 'Ajustes', link: 'profile', icon: Icons.manage_accounts_rounded),
-  MenuItem(title: 'Evaluación', link: 'evaluation', icon: Icons.edit_rounded),
+  MenuItem(title: 'Evaluar', link: 'evaluation', icon: Icons.edit_rounded),
 ];
