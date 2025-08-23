@@ -511,7 +511,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Evaluations>> getEvaluations(String tenantId) async {
+  Future<List<Evaluations>?> getEvaluations(String tenantId) async {
     try {
       final evaluations = await Amplify.DataStore.query(
         Evaluations.classType,
@@ -525,7 +525,7 @@ class DataStoreReadService {
     }
   }
    
-  Future<List<JointMetric>> getJointMetrics(String tenantId, Evaluations exam) async {
+  Future<List<JointMetric>?> getJointMetrics(String tenantId, Evaluations exam) async {
     try {
       final jointMetrics = await Amplify.DataStore.query(
         JointMetric.classType,
@@ -538,4 +538,19 @@ class DataStoreReadService {
       rethrow;
     }
   }
+
+  Future<List<JoinSubMetric>?> getJoinSubMetrics(String tenantId, SingleMetric metric) async {
+    try {
+      final joinSubMetrics = await Amplify.DataStore.query(
+        JoinSubMetric.classType,
+        where: JoinSubMetric.TENANT_ID.eq(tenantId).and(JoinSubMetric.METRIC.eq(metric.id)),
+      );
+      safePrint('✅ Submétricas obtenidas correctamente');
+      return joinSubMetrics;
+    } catch (e) {
+      safePrint('❌ Error al obtener las submétricas: $e');
+      rethrow;
+    }
+  }
+
 }

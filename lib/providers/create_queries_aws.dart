@@ -232,4 +232,41 @@ class DataStoreService {
   safePrint('✅ JointMetric saved: ${joinMetric.id}');
   return joinMetric;
 }
+
+  Future<SubMetric> saveSubMetric({
+  required String name,
+  required String tenantId,
+  String? description,
+  String? metricType,
+}) async {
+  final submetric = SubMetric(
+    name: name,
+    tenant_id: tenantId,
+    description: description,
+    metric_type: metricType,
+  );
+
+await Amplify.DataStore.save(submetric);
+  safePrint('✅ SubMetric saved: ${submetric.id}');
+  return submetric;
 }
+
+Future<JoinSubMetric> saveJoinSubMetric({
+  required SingleMetric metric,
+  required SubMetric submetric,
+  required String tenantId,
+}) async {
+  final join = JoinSubMetric(
+    metric: metric,
+    submetric: submetric,
+    tenant_id: tenantId,
+  );
+
+  await Amplify.DataStore.save(join);
+  safePrint('✅ JoinSubMetric saved: Metric=${metric.id}, SubMetric=${submetric.id}');
+  return join;
+}
+
+
+}
+

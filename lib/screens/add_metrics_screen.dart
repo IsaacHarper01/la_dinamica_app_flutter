@@ -56,27 +56,71 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
     return;
   }
 
-  // Save evaluation first
+  // Save the evaluation first
   final evaluation = await awsDb.saveEvaluation(
     name: examName,
     gymId: user.tenantId,
   );
 
-  // Save metrics and join them
+  SingleMetric? currentParentMetric;
+
   for (var metric in _metrics) {
-    final metricObject = await awsDb.saveMetric(
-      name: metric._metricController.text,
-      tenantId: user.tenantId,
-      description: metric._descriptionController.text,
-      type: metric._selectedOption,
-    );
-    await awsDb.saveJoinedMetric(
-      metric: metricObject,
-      evaluation: evaluation,
-      tenantId: user.tenantId,
-    );
+    if (metric.isSubmetric) {
+      // Validation: ensure there is a parent metric
+      if (currentParentMetric == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('⚠️ Submétrica sin métrica padre')),
+        );
+        return;
+      }
+
+      safePrint('🔗 Guardando submétrica: ${metric._metricController.text}, ${metric._descriptionController.text}, ${metric._selectedOption}');
+      final submetricObject = await awsDb.saveSubMetric(
+        name: metric._metricController.text,
+        tenantId: user.tenantId,
+        description: metric._descriptionController.text,
+        metricType: metric._selectedOption,
+      );
+
+      // Link submetric to its parent metric
+      await awsDb.saveJoinSubMetric(
+        metric: currentParentMetric,
+        submetric: submetricObject,
+        tenantId: user.tenantId,
+      );
+
+      safePrint('✅ Submétrica guardada: ${submetricObject.name} (Padre: ${currentParentMetric.name})');
+    } else {
+      // Save the parent metric
+      final metricObject = await awsDb.saveMetric(
+        name: metric._metricController.text,
+        tenantId: user.tenantId,
+        description: metric._descriptionController.text,
+        type: metric._selectedOption,
+      );
+
+      // Update current parent metric
+      currentParentMetric = metricObject;
+
+      // Link parent metric to evaluation
+      await awsDb.saveJoinedMetric(
+        metric: metricObject,
+        evaluation: evaluation,
+        tenantId: user.tenantId,
+      );
+
+      safePrint('✅ Métrica guardada: ${metricObject.name}');
+    }
   }
+
+  // Reset parent metric
+  currentParentMetric = null;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('✅ Datos guardados correctamente')),
+  );
 }
+
 
   @override
   Widget build(BuildContext context) {

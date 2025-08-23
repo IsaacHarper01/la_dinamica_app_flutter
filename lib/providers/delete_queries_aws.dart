@@ -3,12 +3,12 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class DataStoreDeleteService {
   // Método para eliminar un plan por ID
-  Future<void> deletePlanById(String planId) async {
+  Future<void> deletePlanById(String planId, String tenantID) async {
     try {
       // Hacemos una consulta para encontrar el plan por su ID
       List<LocalPlan> plans = await Amplify.DataStore.query(
         LocalPlan.classType,
-        where: LocalPlan.ID.eq(planId),
+        where: LocalPlan.ID.eq(planId).and(LocalPlan.CLIENT_ID.eq(tenantID)),
       );
 
       // Verificamos si se encontró el plan
@@ -87,5 +87,31 @@ class DataStoreDeleteService {
         rethrow;
       }
     }
+
+  Future<void> deleteExamn(Evaluations exam, String tenantId) async {
+    try {
+      final metrics = await Amplify.DataStore.query(
+        JointMetric.classType,
+        where: JointMetric.EVALUATION.eq(exam.id).and(JointMetric.TENANT_ID.eq(tenantId)),
+      );
+      for (var metric in metrics) {
+        final submetrics = await Amplify.DataStore.query(
+        JoinSubMetric.classType,
+        where: JoinSubMetric.TENANT_ID.eq(tenantId).and(JoinSubMetric.METRIC.eq(metric.id)));
+        await Amplify.DataStore.delete(metric);
+        await Amplify.DataStore.delete(metric.metric!);
+        for (var submetric in submetrics) {
+          await Amplify.DataStore.delete(submetric);
+          await Amplify.DataStore.delete(submetric.submetric!);
+        }
+      }
+      await Amplify.DataStore.delete(exam);
+      safePrint('✅ Examen eliminado correctamente');
+
+    } catch (e) {
+      safePrint('❌ Error al eliminar el examen: $e');
+      rethrow;
+    }
+  }
 
 }

@@ -24,16 +24,15 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'package:collection/collection.dart';
 
 
-/** This is an auto generated class representing the SingleMetric type in your schema. */
-class SingleMetric extends amplify_core.Model {
-  static const classType = const _SingleMetricModelType();
+/** This is an auto generated class representing the SubMetric type in your schema. */
+class SubMetric extends amplify_core.Model {
+  static const classType = const _SubMetricModelType();
   final String id;
   final String? _name;
   final String? _tenant_id;
   final String? _description;
   final String? _metric_type;
-  final List<JointMetric>? _access;
-  final List<JoinSubMetric>? _who_access;
+  final List<JoinSubMetric>? _access;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -44,8 +43,8 @@ class SingleMetric extends amplify_core.Model {
   @override
   String getId() => id;
   
-  SingleMetricModelIdentifier get modelIdentifier {
-      return SingleMetricModelIdentifier(
+  SubMetricModelIdentifier get modelIdentifier {
+      return SubMetricModelIdentifier(
         id: id
       );
   }
@@ -84,12 +83,8 @@ class SingleMetric extends amplify_core.Model {
     return _metric_type;
   }
   
-  List<JointMetric>? get access {
+  List<JoinSubMetric>? get access {
     return _access;
-  }
-  
-  List<JoinSubMetric>? get who_access {
-    return _who_access;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -100,17 +95,16 @@ class SingleMetric extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const SingleMetric._internal({required this.id, required name, required tenant_id, description, metric_type, access, who_access, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _description = description, _metric_type = metric_type, _access = access, _who_access = who_access, _createdAt = createdAt, _updatedAt = updatedAt;
+  const SubMetric._internal({required this.id, required name, required tenant_id, description, metric_type, access, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _description = description, _metric_type = metric_type, _access = access, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory SingleMetric({String? id, required String name, required String tenant_id, String? description, String? metric_type, List<JointMetric>? access, List<JoinSubMetric>? who_access}) {
-    return SingleMetric._internal(
+  factory SubMetric({String? id, required String name, required String tenant_id, String? description, String? metric_type, List<JoinSubMetric>? access}) {
+    return SubMetric._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
       tenant_id: tenant_id,
       description: description,
       metric_type: metric_type,
-      access: access != null ? List<JointMetric>.unmodifiable(access) : access,
-      who_access: who_access != null ? List<JoinSubMetric>.unmodifiable(who_access) : who_access);
+      access: access != null ? List<JoinSubMetric>.unmodifiable(access) : access);
   }
   
   bool equals(Object other) {
@@ -120,14 +114,13 @@ class SingleMetric extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is SingleMetric &&
+    return other is SubMetric &&
       id == other.id &&
       _name == other._name &&
       _tenant_id == other._tenant_id &&
       _description == other._description &&
       _metric_type == other._metric_type &&
-      DeepCollectionEquality().equals(_access, other._access) &&
-      DeepCollectionEquality().equals(_who_access, other._who_access);
+      DeepCollectionEquality().equals(_access, other._access);
   }
   
   @override
@@ -137,7 +130,7 @@ class SingleMetric extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("SingleMetric {");
+    buffer.write("SubMetric {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
@@ -150,37 +143,34 @@ class SingleMetric extends amplify_core.Model {
     return buffer.toString();
   }
   
-  SingleMetric copyWith({String? name, String? tenant_id, String? description, String? metric_type, List<JointMetric>? access, List<JoinSubMetric>? who_access}) {
-    return SingleMetric._internal(
+  SubMetric copyWith({String? name, String? tenant_id, String? description, String? metric_type, List<JoinSubMetric>? access}) {
+    return SubMetric._internal(
       id: id,
       name: name ?? this.name,
       tenant_id: tenant_id ?? this.tenant_id,
       description: description ?? this.description,
       metric_type: metric_type ?? this.metric_type,
-      access: access ?? this.access,
-      who_access: who_access ?? this.who_access);
+      access: access ?? this.access);
   }
   
-  SingleMetric copyWithModelFieldValues({
+  SubMetric copyWithModelFieldValues({
     ModelFieldValue<String>? name,
     ModelFieldValue<String>? tenant_id,
     ModelFieldValue<String?>? description,
     ModelFieldValue<String?>? metric_type,
-    ModelFieldValue<List<JointMetric>?>? access,
-    ModelFieldValue<List<JoinSubMetric>?>? who_access
+    ModelFieldValue<List<JoinSubMetric>?>? access
   }) {
-    return SingleMetric._internal(
+    return SubMetric._internal(
       id: id,
       name: name == null ? this.name : name.value,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       description: description == null ? this.description : description.value,
       metric_type: metric_type == null ? this.metric_type : metric_type.value,
-      access: access == null ? this.access : access.value,
-      who_access: who_access == null ? this.who_access : who_access.value
+      access: access == null ? this.access : access.value
     );
   }
   
-  SingleMetric.fromJson(Map<String, dynamic> json)  
+  SubMetric.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _name = json['name'],
       _tenant_id = json['tenant_id'],
@@ -190,24 +180,11 @@ class SingleMetric extends amplify_core.Model {
         ? (json['access']['items'] is List
           ? (json['access']['items'] as List)
               .where((e) => e != null)
-              .map((e) => JointMetric.fromJson(new Map<String, dynamic>.from(e)))
+              .map((e) => JoinSubMetric.fromJson(new Map<String, dynamic>.from(e)))
               .toList()
           : null)
         : (json['access'] is List
           ? (json['access'] as List)
-              .where((e) => e?['serializedData'] != null)
-              .map((e) => JointMetric.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
-              .toList()
-          : null),
-      _who_access = json['who_access']  is Map
-        ? (json['who_access']['items'] is List
-          ? (json['who_access']['items'] as List)
-              .where((e) => e != null)
-              .map((e) => JoinSubMetric.fromJson(new Map<String, dynamic>.from(e)))
-              .toList()
-          : null)
-        : (json['who_access'] is List
-          ? (json['who_access'] as List)
               .where((e) => e?['serializedData'] != null)
               .map((e) => JoinSubMetric.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
@@ -216,7 +193,7 @@ class SingleMetric extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'description': _description, 'metric_type': _metric_type, 'access': _access?.map((JointMetric? e) => e?.toJson()).toList(), 'who_access': _who_access?.map((JoinSubMetric? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'description': _description, 'metric_type': _metric_type, 'access': _access?.map((JoinSubMetric? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -226,12 +203,11 @@ class SingleMetric extends amplify_core.Model {
     'description': _description,
     'metric_type': _metric_type,
     'access': _access,
-    'who_access': _who_access,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<SingleMetricModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SingleMetricModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<SubMetricModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SubMetricModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
@@ -239,13 +215,10 @@ class SingleMetric extends amplify_core.Model {
   static final METRIC_TYPE = amplify_core.QueryField(fieldName: "metric_type");
   static final ACCESS = amplify_core.QueryField(
     fieldName: "access",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JointMetric'));
-  static final WHO_ACCESS = amplify_core.QueryField(
-    fieldName: "who_access",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JoinSubMetric'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "SingleMetric";
-    modelSchemaDefinition.pluralName = "SingleMetrics";
+    modelSchemaDefinition.name = "SubMetric";
+    modelSchemaDefinition.pluralName = "SubMetrics";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -261,41 +234,34 @@ class SingleMetric extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: SingleMetric.NAME,
+      key: SubMetric.NAME,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: SingleMetric.TENANT_ID,
+      key: SubMetric.TENANT_ID,
       isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: SingleMetric.DESCRIPTION,
+      key: SubMetric.DESCRIPTION,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: SingleMetric.METRIC_TYPE,
+      key: SubMetric.METRIC_TYPE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: SingleMetric.ACCESS,
-      isRequired: false,
-      ofModelName: 'JointMetric',
-      associatedKey: JointMetric.METRIC
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: SingleMetric.WHO_ACCESS,
+      key: SubMetric.ACCESS,
       isRequired: false,
       ofModelName: 'JoinSubMetric',
-      associatedKey: JoinSubMetric.METRIC
+      associatedKey: JoinSubMetric.SUBMETRIC
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -314,29 +280,29 @@ class SingleMetric extends amplify_core.Model {
   });
 }
 
-class _SingleMetricModelType extends amplify_core.ModelType<SingleMetric> {
-  const _SingleMetricModelType();
+class _SubMetricModelType extends amplify_core.ModelType<SubMetric> {
+  const _SubMetricModelType();
   
   @override
-  SingleMetric fromJson(Map<String, dynamic> jsonData) {
-    return SingleMetric.fromJson(jsonData);
+  SubMetric fromJson(Map<String, dynamic> jsonData) {
+    return SubMetric.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'SingleMetric';
+    return 'SubMetric';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [SingleMetric] in your schema.
+ * of [SubMetric] in your schema.
  */
-class SingleMetricModelIdentifier implements amplify_core.ModelIdentifier<SingleMetric> {
+class SubMetricModelIdentifier implements amplify_core.ModelIdentifier<SubMetric> {
   final String id;
 
-  /** Create an instance of SingleMetricModelIdentifier using [id] the primary key. */
-  const SingleMetricModelIdentifier({
+  /** Create an instance of SubMetricModelIdentifier using [id] the primary key. */
+  const SubMetricModelIdentifier({
     required this.id});
   
   @override
@@ -354,7 +320,7 @@ class SingleMetricModelIdentifier implements amplify_core.ModelIdentifier<Single
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'SingleMetricModelIdentifier(id: $id)';
+  String toString() => 'SubMetricModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -362,7 +328,7 @@ class SingleMetricModelIdentifier implements amplify_core.ModelIdentifier<Single
       return true;
     }
     
-    return other is SingleMetricModelIdentifier &&
+    return other is SubMetricModelIdentifier &&
       id == other.id;
   }
   

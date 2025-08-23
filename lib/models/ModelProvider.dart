@@ -23,11 +23,13 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'AppPlan.dart';
 import 'Attendance.dart';
 import 'Evaluations.dart';
+import 'JoinSubMetric.dart';
 import 'JointMetric.dart';
 import 'LocalPlan.dart';
 import 'Pay.dart';
 import 'SingleMetric.dart';
 import 'Student.dart';
+import 'SubMetric.dart';
 import 'Tenant.dart';
 import 'User.dart';
 import 'UserAccess.dart';
@@ -35,20 +37,22 @@ import 'UserAccess.dart';
 export 'AppPlan.dart';
 export 'Attendance.dart';
 export 'Evaluations.dart';
+export 'JoinSubMetric.dart';
 export 'JointMetric.dart';
 export 'LocalPlan.dart';
 export 'Pay.dart';
 export 'SingleMetric.dart';
 export 'Student.dart';
+export 'SubMetric.dart';
 export 'Tenant.dart';
 export 'User.dart';
 export 'UserAccess.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "76d99b0b898199265ddd0255d2544677";
+  String version = "80fbb8249d927a88172a884b2881769e";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Evaluations.schema, JointMetric.schema, LocalPlan.schema, Pay.schema, SingleMetric.schema, Student.schema, Tenant.schema, User.schema, UserAccess.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Evaluations.schema, JoinSubMetric.schema, JointMetric.schema, LocalPlan.schema, Pay.schema, SingleMetric.schema, Student.schema, SubMetric.schema, Tenant.schema, User.schema, UserAccess.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -63,6 +67,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Attendance.classType;
       case "Evaluations":
         return Evaluations.classType;
+      case "JoinSubMetric":
+        return JoinSubMetric.classType;
       case "JointMetric":
         return JointMetric.classType;
       case "LocalPlan":
@@ -73,6 +79,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return SingleMetric.classType;
       case "Student":
         return Student.classType;
+      case "SubMetric":
+        return SubMetric.classType;
       case "Tenant":
         return Tenant.classType;
       case "User":

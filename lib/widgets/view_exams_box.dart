@@ -3,15 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/models/Evaluations.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/screens/exam_detail_screen.dart';
 
 class ViewExamsBox extends ConsumerStatefulWidget{
   final List<Evaluations>? evaluations;
-  final UserLocal? user;
-
+  final UserLocal user;
 
   const ViewExamsBox({
     super.key,
@@ -25,7 +24,8 @@ class ViewExamsBox extends ConsumerStatefulWidget{
 
 class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
   Evaluations? selectedExamId;
-  final awsDb = DataStoreReadService(); 
+  final awsDb = DataStoreReadService();
+  final awsDelete = DataStoreDeleteService(); 
   List<JointMetric>? examMetrics;
 
   void handleDeleteExam(Evaluations exam) async{
@@ -53,7 +53,7 @@ class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
   },
     );
     if (shouldDelete == true) {
-      //aws.deleteExamn() I have to implement this method
+      awsDelete.deleteExamn(exam, widget.user.tenantId);//aws.deleteExamn() I have to implement this method
       debugPrint("Examen eliminado: ${exam.name}");
     } else {
       debugPrint("Eliminación cancelada");
@@ -96,7 +96,6 @@ class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
                       setState(() {
                         selectedExamId = exam;
                       });
-                      // Aquí puedes hacer algo con el examen seleccionado
                       debugPrint("Selected exam: ${exam.name}");
                     },
                   ),
@@ -108,13 +107,14 @@ class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
                   if (selectedExamId != null){
                     final selectedExam = widget.evaluations?.firstWhere((exam) => exam == selectedExamId);
                     debugPrint("Proceeding with exam: ${selectedExam?.name}");
-                    examMetrics = await awsDb.getJointMetrics(widget.user!.tenantId, selectedExam!);
+                    examMetrics = await awsDb.getJointMetrics(widget.user.tenantId, selectedExam!);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => ExamDetailScreen(
                           exam: selectedExam,
-                          metrics: examMetrics,
+                          metrics: examMetrics!,
+                          user: widget.user,
                         ),
                       ),
                     );

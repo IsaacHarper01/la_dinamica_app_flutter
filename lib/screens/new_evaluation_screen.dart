@@ -75,7 +75,7 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
               ),
             Text("Crear nueva prueba"),
             SizedBox(height: 40),
-            ViewExamsBox(evaluations: _evaluations, user: user), 
+            ViewExamsBox(evaluations: _evaluations, user: user!), 
               ]
         ),
       ),  

@@ -6,6 +6,7 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_evaluated_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
@@ -13,14 +14,16 @@ import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 
 
 class ExamStudentSelectionPage extends ConsumerStatefulWidget {
-  const ExamStudentSelectionPage({super.key});
+  
+  const ExamStudentSelectionPage({
+    super.key,
+    });
 
   @override
   ConsumerState<ExamStudentSelectionPage> createState() => _ExamStudentSelectionPageState();
 }
 
 class _ExamStudentSelectionPageState extends ConsumerState<ExamStudentSelectionPage> {
-  final Set<String> _selectedStudentIds = {};
   Future<List<Student>>? _studentsFuture;
   UserLocal? user;
   String? selectedDate;
@@ -65,7 +68,8 @@ class _ExamStudentSelectionPageState extends ConsumerState<ExamStudentSelectionP
 
           return Scroll(
             screenHeight: screenHeight,
-            students: names,
+            students: students,
+            names: names,
             indexList: indexList,
             ids: ids,
             images: images,
@@ -83,6 +87,7 @@ class Scroll extends ConsumerWidget {
     super.key,
     required this.screenHeight,
     required this.students,
+    required this.names,
     required this.indexList,
     required this.ids,
     required this.images,
@@ -91,7 +96,8 @@ class Scroll extends ConsumerWidget {
   });
 
   final double screenHeight;
-  final List<dynamic> students;
+  final List<Student> students;
+  final List<dynamic> names;
   List<dynamic> ids;
   final List<dynamic> images;
   final List<int> indexList;
@@ -110,7 +116,9 @@ Widget build(BuildContext context, WidgetRef ref) {
       );
       return;
     }
-    
+    ref.read(examProvider.notifier).addStudents(
+      students.where((student) => selectedStudents.contains(student.user_id)).toList()
+    );
     debugPrint('🧪 Iniciando prueba con ${selectedStudents.length} alumnos');
   }
 
@@ -172,7 +180,7 @@ Widget build(BuildContext context, WidgetRef ref) {
                           child: InkWell(
                             splashColor: colorList[6],
                             child: PreviewStudentContainerReduce(
-                              name: students[i],
+                              name: names[i],
                               id: ids[i],
                               image: images[i],
                               backgroundColor: selectedStudents.contains(ids[i])
@@ -195,7 +203,7 @@ Widget build(BuildContext context, WidgetRef ref) {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton.icon(
-              onPressed: startExam,
+              onPressed: () => startExam(),
               icon: const Icon(Icons.play_arrow),
               label: const Text('Iniciar Prueba'),
               style: ElevatedButton.styleFrom(

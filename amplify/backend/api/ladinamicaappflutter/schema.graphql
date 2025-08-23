@@ -88,6 +88,7 @@ type SingleMetric @model @auth(rules: [{allow: public, operations: [create, read
   metric_type: String
 
   access: [JointMetric] @hasMany(fields: ["id"])
+  who_access: [JoinSubMetric] @hasMany(fields: ["id"])
 }
 
 type JointMetric @model @auth(rules: [{allow: public}]) {
@@ -100,3 +101,25 @@ type JointMetric @model @auth(rules: [{allow: public}]) {
   metric: SingleMetric @belongsTo(fields: ["metric_id"])
   evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
 }
+
+type SubMetric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String!
+  tenant_id: ID!
+  description: String
+  metric_type: String
+
+  access: [JoinSubMetric] @hasMany(fields: ["id"])
+}
+
+type JoinSubMetric @model @auth(rules: [{allow: public}]) {
+  id: ID!
+
+  metric_id: ID! @index
+  submetric_id: ID! @index
+  tenant_id: ID
+
+  submetric: SubMetric @belongsTo(fields: ["submetric_id"])
+  metric: SingleMetric @belongsTo(fields: ["metric_id"])
+}
+
