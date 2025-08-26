@@ -4,6 +4,7 @@ class ExamState {
   final List<Student> students;
   final Map<String, List<String>> metrics;
   final Map<String, String?> descriptions;
+  final Map<String, String> types;
   final Map<String, Map<String, Map<String, double>>> grades;
   final String actualState;
 
@@ -11,6 +12,7 @@ class ExamState {
     this.students = const [],
     this.metrics = const {},
     this.descriptions = const {},
+    this.types = const {},
     this.grades = const {},
     this.actualState = '',
   });
@@ -19,6 +21,7 @@ class ExamState {
     List<Student>? students,
     Map<String, List<String>>? metrics,
     Map<String, String?>? descriptions,
+    Map<String, String>? types,
     Map<String, Map<String, Map<String, double>>>? grades,
     String? actualState,
   }) {
@@ -26,6 +29,7 @@ class ExamState {
       students: students ?? this.students,
       metrics: metrics ?? this.metrics,
       descriptions: descriptions ?? this.descriptions,
+      types: types ?? this.types,
       grades: grades ?? this.grades,
       actualState: actualState ?? this.actualState,
     );

@@ -108,11 +108,11 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
     final screenHeight =
         isPortrait
             ? MediaQuery.of(context).size.height
-            : MediaQuery.of(context).size.height * 2;
+            : MediaQuery.of(context).size.height * 1.2;
     final screenWidth =
         isPortrait
             ? MediaQuery.of(context).size.width
-            : MediaQuery.of(context).size.width * 2;
+            : MediaQuery.of(context).size.width * 1.2;
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
@@ -128,7 +128,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           SignOutButton(),
           SizedBox(width: screenWidth * 0.3),
           SelectSchoolWidget(),
-          SizedBox(width: screenWidth * 0.39),
+          SizedBox(width: screenWidth * 0.35),
           CalendarButton(),
         ],
       ),

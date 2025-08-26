@@ -30,6 +30,7 @@ class ExamDetailScreen extends ConsumerStatefulWidget{
 class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
   final Map<String, List<String>>? examDetails = {};
   final Map<String, String?> examDescriptions = {};
+  final Map<String, String> examTypes = {};
   final List<MetricCard> examCards = [];
   // examState will be accessed in the build method using ref.watch(examProvider)
 
@@ -47,17 +48,20 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
     final awsDb = DataStoreReadService();
 
     for (var joinmetric in widget.metrics){
-      examDescriptions[joinmetric.metric!.name] = joinmetric.metric!.description;
       final submetrics = await awsDb.getJoinSubMetrics(widget.user.tenantId, joinmetric.metric!);
-      if (submetrics != null) {
+      if (submetrics.isNotEmpty) {
         setState(() {
           examDetails![joinmetric.metric!.name] = submetrics.map((e) => e.submetric!.name).toList();
           for (var submetric in submetrics) {
             examDescriptions[submetric.submetric!.name] = submetric.submetric!.description;
+            examTypes[submetric.submetric!.name] = submetric.submetric!.metric_type!;
           }
         });
       } else {
-        safePrint("No se encontraron métricas para ${joinmetric.metric!.name}");
+        examDetails![joinmetric.metric!.name] = [];
+        examDescriptions[joinmetric.metric!.name] = joinmetric.metric!.description;
+        examTypes[joinmetric.metric!.name] = joinmetric.metric!.metric_type!;
+        safePrint("No se encontraron Submétricas para ${joinmetric.metric!.name}");
       }
     }
     for (var entry in examDetails!.entries) {
@@ -101,6 +105,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                   onPressed: () {
                     ref.read(examProvider.notifier).setMetrics(examDetails!);
                     ref.read(examProvider.notifier).setDescriptions(examDescriptions);
+                    ref.read(examProvider.notifier).setTypes(examTypes);
                     ref.read(examProvider.notifier).setActualState(examDetails!.keys.first);
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) => ExamStudentSelectionPage())

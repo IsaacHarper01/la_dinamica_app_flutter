@@ -539,7 +539,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<JoinSubMetric>?> getJoinSubMetrics(String tenantId, SingleMetric metric) async {
+  Future<List<JoinSubMetric>> getJoinSubMetrics(String tenantId, SingleMetric metric) async {
     try {
       final joinSubMetrics = await Amplify.DataStore.query(
         JoinSubMetric.classType,

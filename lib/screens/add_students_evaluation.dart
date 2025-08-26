@@ -10,6 +10,7 @@ import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_evaluated_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/widgets/grade_registration.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 
 
@@ -120,6 +121,9 @@ Widget build(BuildContext context, WidgetRef ref) {
       students.where((student) => selectedStudents.contains(student.user_id)).toList()
     );
     debugPrint('🧪 Iniciando prueba con ${selectedStudents.length} alumnos');
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) => GradeRegistrationScreen(),
+    ));
   }
 
   return SafeArea(

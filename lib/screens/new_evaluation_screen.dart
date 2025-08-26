@@ -6,6 +6,7 @@ import 'package:la_dinamica_app/models/Evaluations.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_metrics_screen.dart';
+import 'package:la_dinamica_app/screens/students_screen.dart';
 import 'package:la_dinamica_app/widgets/view_exams_box.dart';
 
 class NewEvaluationScreen extends ConsumerStatefulWidget{
@@ -49,34 +50,36 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
       appBar: AppBar(
         title: const Text('Nueva Evaluación'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const NewMetricsPage()),);
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // ⬅️ Big rounded corners
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const NewMetricsPage()),);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20), // ⬅️ Big rounded corners
+                    ),
+                    minimumSize: const Size(400, 200), // ⬅️ Square shape
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    padding: EdgeInsets.zero, // remove internal padding
                   ),
-                  minimumSize: const Size(400, 200), // ⬅️ Square shape
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  padding: EdgeInsets.zero, // remove internal padding
+                  child: const Icon(
+                    Icons.add,
+                    size: 40, // 
+                    color: Colors.white,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.add,
-                  size: 40, // 
-                  color: Colors.white,
-                ),
-              ),
-            Text("Crear nueva prueba"),
-            SizedBox(height: 40),
-            ViewExamsBox(evaluations: _evaluations, user: user!), 
-              ]
+              Text("Crear nueva prueba"),
+              SizedBox(height: 40),
+              ViewExamsBox(evaluations: _evaluations, user: user!), 
+                ]
+          ),
         ),
       ),  
     );

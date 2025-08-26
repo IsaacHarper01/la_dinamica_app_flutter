@@ -29,6 +29,10 @@ class ExamNotifier extends Notifier<ExamState> {
     state = state.copyWith(descriptions: descriptions);
   }
 
+  void setTypes(Map<String, String> types) {
+    state = state.copyWith(types: types);
+  }
+
   void setGrade({
     required String studentId,
     required String metricName,
