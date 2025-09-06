@@ -103,10 +103,12 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    safePrint("Exam Details: $examDetails");
                     ref.read(examProvider.notifier).setMetrics(examDetails!);
+                    ref.read(examProvider.notifier).setEvalname(widget.exam);
                     ref.read(examProvider.notifier).setDescriptions(examDescriptions);
                     ref.read(examProvider.notifier).setTypes(examTypes);
-                    ref.read(examProvider.notifier).setActualState(examDetails!.keys.first);
+                    ref.read(examProvider.notifier).setActualState(examDetails!.values.first.isNotEmpty ? examDetails!.values.first.first : examDetails!.keys.first );
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) => ExamStudentSelectionPage())
                       );

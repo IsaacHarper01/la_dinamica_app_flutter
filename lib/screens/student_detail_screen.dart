@@ -9,6 +9,7 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
+import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
@@ -119,6 +120,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
     final tenantId = user.tenantId;
+    final imageUrl = ref.watch(studentImageProvider(studentData.image!));
 
     void handleDeleteDash(context, id) async {
     // Mostrar un cuadro de diálogo para confirmar la eliminación
@@ -173,23 +175,32 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   borderRadius: BorderRadius.circular(16),
                   child: Opacity(
                     opacity: 0.5,
-                    child:
-                            Image.network(
-                              studentData.image!,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return const Center(child: CircularProgressIndicator());
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/images/default_profile.jpg',
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                );
-                              },
-                            ),
+                    child: imageUrl.when(
+                      data: (url) => Image.network(
+                        url ?? "",
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/default_profile.jpg',
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      ),
+                      loading: () => SizedBox(
+                        width: screenHeight * 0.06,
+                        height: screenHeight * 0.06,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      error: (_, __) => Image.asset(
+                        'assets/images/default_profile.jpg',
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -16,6 +16,7 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
   name: String
   tenant_id: String
   who_access: [JointMetric] @hasMany(fields: ["id"])
+  grades: [Grades] @hasMany(indexName: "byEvaluation", fields: ["id"])
 }
 
 type LocalPlan @model @auth(rules: [{allow: public}]) {
@@ -37,6 +38,7 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   email: String
   image: String
   client_id: String
+  grades: [Grades] @hasMany(indexName: "byStudent", fields: ["id"])
 }
 
 type Pay @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -123,3 +125,15 @@ type JoinSubMetric @model @auth(rules: [{allow: public}]) {
   metric: SingleMetric @belongsTo(fields: ["metric_id"])
 }
 
+type Grades @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  studentID: ID! @index(name: "byStudent")
+  evaluationID: ID! @index(name: "byEvaluation")
+  date: AWSDate
+  prof_id: String
+  tenant_id: ID
+  grades: AWSJSON
+
+  student: Student @belongsTo(fields: ["studentID"])
+  evaluation: Evaluations @belongsTo(fields: ["evaluationID"])
+}

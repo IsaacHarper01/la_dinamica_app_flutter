@@ -21,6 +21,7 @@
 
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
+import 'package:collection/collection.dart';
 
 
 /** This is an auto generated class representing the Student type in your schema. */
@@ -36,6 +37,7 @@ class Student extends amplify_core.Model {
   final String? _email;
   final String? _image;
   final String? _client_id;
+  final List<Grades>? _grades;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -88,6 +90,10 @@ class Student extends amplify_core.Model {
     return _client_id;
   }
   
+  List<Grades>? get grades {
+    return _grades;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -96,9 +102,9 @@ class Student extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Student._internal({required this.id, user_id, name, address, age, phone, birthday, email, image, client_id, createdAt, updatedAt}): _user_id = user_id, _name = name, _address = address, _age = age, _phone = phone, _birthday = birthday, _email = email, _image = image, _client_id = client_id, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Student._internal({required this.id, user_id, name, address, age, phone, birthday, email, image, client_id, grades, createdAt, updatedAt}): _user_id = user_id, _name = name, _address = address, _age = age, _phone = phone, _birthday = birthday, _email = email, _image = image, _client_id = client_id, _grades = grades, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Student({String? id, int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id}) {
+  factory Student({String? id, int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id, List<Grades>? grades}) {
     return Student._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       user_id: user_id,
@@ -109,7 +115,8 @@ class Student extends amplify_core.Model {
       birthday: birthday,
       email: email,
       image: image,
-      client_id: client_id);
+      client_id: client_id,
+      grades: grades != null ? List<Grades>.unmodifiable(grades) : grades);
   }
   
   bool equals(Object other) {
@@ -129,7 +136,8 @@ class Student extends amplify_core.Model {
       _birthday == other._birthday &&
       _email == other._email &&
       _image == other._image &&
-      _client_id == other._client_id;
+      _client_id == other._client_id &&
+      DeepCollectionEquality().equals(_grades, other._grades);
   }
   
   @override
@@ -157,7 +165,7 @@ class Student extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Student copyWith({int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id}) {
+  Student copyWith({int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id, List<Grades>? grades}) {
     return Student._internal(
       id: id,
       user_id: user_id ?? this.user_id,
@@ -168,7 +176,8 @@ class Student extends amplify_core.Model {
       birthday: birthday ?? this.birthday,
       email: email ?? this.email,
       image: image ?? this.image,
-      client_id: client_id ?? this.client_id);
+      client_id: client_id ?? this.client_id,
+      grades: grades ?? this.grades);
   }
   
   Student copyWithModelFieldValues({
@@ -180,7 +189,8 @@ class Student extends amplify_core.Model {
     ModelFieldValue<amplify_core.TemporalDate?>? birthday,
     ModelFieldValue<String?>? email,
     ModelFieldValue<String?>? image,
-    ModelFieldValue<String?>? client_id
+    ModelFieldValue<String?>? client_id,
+    ModelFieldValue<List<Grades>?>? grades
   }) {
     return Student._internal(
       id: id,
@@ -192,7 +202,8 @@ class Student extends amplify_core.Model {
       birthday: birthday == null ? this.birthday : birthday.value,
       email: email == null ? this.email : email.value,
       image: image == null ? this.image : image.value,
-      client_id: client_id == null ? this.client_id : client_id.value
+      client_id: client_id == null ? this.client_id : client_id.value,
+      grades: grades == null ? this.grades : grades.value
     );
   }
   
@@ -207,11 +218,24 @@ class Student extends amplify_core.Model {
       _email = json['email'],
       _image = json['image'],
       _client_id = json['client_id'],
+      _grades = json['grades']  is Map
+        ? (json['grades']['items'] is List
+          ? (json['grades']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => Grades.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['grades'] is List
+          ? (json['grades'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => Grades.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'user_id': _user_id, 'name': _name, 'address': _address, 'age': _age, 'phone': _phone, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'client_id': _client_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'user_id': _user_id, 'name': _name, 'address': _address, 'age': _age, 'phone': _phone, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'client_id': _client_id, 'grades': _grades?.map((Grades? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -225,6 +249,7 @@ class Student extends amplify_core.Model {
     'email': _email,
     'image': _image,
     'client_id': _client_id,
+    'grades': _grades,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -240,6 +265,9 @@ class Student extends amplify_core.Model {
   static final EMAIL = amplify_core.QueryField(fieldName: "email");
   static final IMAGE = amplify_core.QueryField(fieldName: "image");
   static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
+  static final GRADES = amplify_core.QueryField(
+    fieldName: "grades",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Grades'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Student";
     modelSchemaDefinition.pluralName = "Students";
@@ -309,6 +337,13 @@ class Student extends amplify_core.Model {
       key: Student.CLIENT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: Student.GRADES,
+      isRequired: false,
+      ofModelName: 'Grades',
+      associatedKey: Grades.STUDENT
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

@@ -10,7 +10,7 @@ import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_evaluated_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:la_dinamica_app/widgets/grade_registration.dart';
+import 'package:la_dinamica_app/screens/grade_registration_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 
 

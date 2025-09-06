@@ -99,11 +99,7 @@ class DataStoreReadService {
         Student.classType,
         where: Student.USER_ID.eq(userId)
           .and(Student.CLIENT_ID.eq(tenantId)),);
-      
-      final awsS3 = Storages3(); 
-      String? imageName = general.first.image;
-      studentData = general.first.copyWith(image: await awsS3.getImageUrl(imageName!));
-
+      studentData = general.first;
     } catch (e) {
       safePrint('❌ Error al obtener los datos del usuario: $e'); 
     }

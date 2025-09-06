@@ -251,7 +251,7 @@ await Amplify.DataStore.save(submetric);
   return submetric;
 }
 
-Future<JoinSubMetric> saveJoinSubMetric({
+  Future<JoinSubMetric> saveJoinSubMetric({
   required SingleMetric metric,
   required SubMetric submetric,
   required String tenantId,
@@ -267,6 +267,24 @@ Future<JoinSubMetric> saveJoinSubMetric({
   return join;
 }
 
+  Future<Grades> saveGrade({
+    required Student student,
+    required Evaluations evaluation,
+    required String grades,
+    required String tenantId,
+    required String profId,
+  }) async {
+    final grade = Grades(
+      student: student,
+      evaluation: evaluation,
+      grades: grades,
+      date: TemporalDate(DateTime.now()),
+      tenant_id: tenantId,
+      prof_id: profId,
+    );
 
+    await Amplify.DataStore.save(grade);
+    safePrint('✅ Grades saved: ${grade.id}, Value: ${grade.grades}');
+    return grade;
+  }
 }
-

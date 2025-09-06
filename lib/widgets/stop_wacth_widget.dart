@@ -1,30 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/widgets.dart';
+import 'package:la_dinamica_app/providers/stop_watch_provider.dart';
 
-class   StopwatchWidget extends StatefulWidget {
-  const StopwatchWidget({super.key});
-
-  @override
-  State<StopwatchWidget> createState() => _StopwatchWidgetState();
-}
-
-class _StopwatchWidgetState extends State<StopwatchWidget> {
-  late Stopwatch _stopwatch;
+class StopwatchNotifier extends StateNotifier<String> {
+  final Stopwatch _stopwatch = Stopwatch();
   late final Ticker _ticker;
-  String actualTime = "00:00:00.00";
 
-  @override
-  void initState() {
-    super.initState();
-    _stopwatch = Stopwatch();
+  StopwatchNotifier() : super("00:00:00.00") {
     _ticker = Ticker(_onTick)..start();
   }
 
   void _onTick(Duration elapsed) {
     if (_stopwatch.isRunning) {
-      setState(() {});
+      state = _formatTime(_stopwatch.elapsedMilliseconds);
     }
+  }
+
+  void startStop() {
+    if (_stopwatch.isRunning) {
+      _stopwatch.stop();
+    } else {
+      _stopwatch.start();
+    }
+  }
+
+  void reset() {
+    _stopwatch.reset();
+    state = "00:00:00.00";
+  }
+
+  String get currentTime => _formatTime(_stopwatch.elapsedMilliseconds);
+
+  String _formatTime(int milliseconds) {
+    final hundreds = (milliseconds / 10).truncate() % 100;
+    final seconds = (milliseconds / 1000).truncate() % 60;
+    final minutes = (milliseconds / (1000 * 60)).truncate() % 60;
+    final hours = (milliseconds / (1000 * 60 * 60)).truncate();
+
+    final hoursStr = hours.toString().padLeft(2, '0');
+    final minutesStr = minutes.toString().padLeft(2, '0');
+    final secondsStr = seconds.toString().padLeft(2, '0');
+    final hundredsStr = hundreds.toString().padLeft(2, '0');
+
+    return "$hoursStr:$minutesStr:$secondsStr.$hundredsStr";
   }
 
   @override
@@ -32,59 +51,47 @@ class _StopwatchWidgetState extends State<StopwatchWidget> {
     _ticker.dispose();
     super.dispose();
   }
+}
 
-  String _formatTime(int milliseconds) {
-    final int hundreds = (milliseconds / 10).truncate() % 100;
-    final int seconds = (milliseconds / 1000).truncate() % 60;
-    final int minutes = (milliseconds / (1000 * 60)).truncate() % 60;
-    final int hours = (milliseconds / (1000 * 60 * 60)).truncate();
-
-    final String hoursStr = (hours).toString().padLeft(2, '0');
-    final String minutesStr = (minutes).toString().padLeft(2, '0');
-    final String secondsStr = (seconds).toString().padLeft(2, '0');
-    final String hundredsStr = (hundreds).toString().padLeft(2, '0');
-
-    final String formattedTime = "$hoursStr:$minutesStr:$secondsStr.$hundredsStr";
-    return formattedTime;
-  }
+class StopwatchWidget extends ConsumerWidget {
+  const StopwatchWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final time = ref.watch(stopwatchProvider);
+    final notifier = ref.read(stopwatchProvider.notifier);
+    final Orientation orientation = MediaQuery
+        .of(context)
+        .orientation;
+    final bool isPortatil = orientation == Orientation.portrait;
+    final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          _formatTime(_stopwatch.elapsedMilliseconds),
-          style: const TextStyle(fontSize: 48.0, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  if (_stopwatch.isRunning) {
-                    _stopwatch.stop();
-                  } else {
-                    _stopwatch.start();
-                  }
-                });
-              },
-              child: Text(_stopwatch.isRunning ? 'Pausar' : 'Iniciar'),
-            ),
-            const SizedBox(width: 20),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _stopwatch.reset();
-                });
-              },
-              child: const Text('Reiniciar'),
-            ),
-          ],
-        ),
-      ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            time,
+            style: TextStyle(fontSize: screenHeight * 0.03, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: notifier.startStop,
+                child: Text(ref.read(stopwatchProvider.notifier)._stopwatch.isRunning
+                    ? 'Pausar'
+                    : 'Iniciar'),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: notifier.reset,
+                child: const Text('Reiniciar'),
+              ),
+            ],
+          ),
+        ],
     );
   }
 }

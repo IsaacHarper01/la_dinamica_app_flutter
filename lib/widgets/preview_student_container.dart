@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 
-class PreviewStudentContainer extends StatelessWidget {
+class PreviewStudentContainer extends ConsumerWidget {
   final String name;
   final String image;
   final Function()? onDismissed;
@@ -13,14 +15,12 @@ class PreviewStudentContainer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
-    final screenHeight =
-        isPortatil
-            ? MediaQuery.of(context).size.height
-            : MediaQuery.of(context).size.height * 2;
+    final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
+    final imageUrl = ref.watch(studentImageProvider(image));
 
     return Dismissible(
       key: UniqueKey(),
@@ -48,21 +48,32 @@ class PreviewStudentContainer extends StatelessWidget {
                   child: SizedBox(
                     height: screenHeight * 0.09,
                     width: screenHeight * 0.09,
-                    child:
-                        Image.network(
-                            image,
+                    child: imageUrl.when(
+                      data: (url) => Image.network(
+                        url ?? "",
+                        width: screenHeight * 0.06,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/default_profile.jpg',
+                            width: screenHeight * 0.06,
                             fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(child: CircularProgressIndicator());
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                'assets/images/default_profile.jpg',
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          )
+                          );
+                        },
+                      ),
+                      loading: () => SizedBox(
+                        width: screenHeight * 0.06,
+                        height: screenHeight * 0.06,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      error: (_, __) => Image.asset(
+                        'assets/images/default_profile.jpg',
+                        width: screenHeight * 0.06,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
               ),

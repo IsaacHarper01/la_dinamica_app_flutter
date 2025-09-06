@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_dinamica_app/providers/storageS3.dart';
+import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 
-class PreviewStudentContainerReduce extends StatelessWidget {
+class PreviewStudentContainerReduce extends ConsumerWidget{
   final String name;
   final int id;
   final String image;
@@ -19,31 +20,14 @@ class PreviewStudentContainerReduce extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Orientation orientation = MediaQuery
         .of(context)
         .orientation;
     final bool isPortatil = orientation == Orientation.portrait;
-    final screenHeight =
-    isPortatil
-        ? MediaQuery
-        .of(context)
-        .size
-        .height
-        : MediaQuery
-        .of(context)
-        .size
-        .height * 2;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    final awsS3 = Storages3();
-
-    return FutureBuilder<String?>(
-      future: awsS3.getImageUrl(image),
-      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-        final imageUrl = snapshot.data ?? "";
+    final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final imageUrl = ref.watch(studentImageProvider(image));
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -63,14 +47,11 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child:
-                    Image.network(
-                        imageUrl,
+                    imageUrl.when(
+                      data: (url) => Image.network(
+                        url ?? "",
                         width: screenHeight * 0.06,
                         fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(child: CircularProgressIndicator());
-                        },
                         errorBuilder: (context, error, stackTrace) {
                           return Image.asset(
                             'assets/images/default_profile.jpg',
@@ -78,7 +59,20 @@ class PreviewStudentContainerReduce extends StatelessWidget {
                             fit: BoxFit.cover,
                           );
                         },
-                      )
+                      ),
+                      loading: () => SizedBox(
+                        width: screenHeight * 0.06,
+                        height: screenHeight * 0.06,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      error: (_, __) => Image.asset(
+                        'assets/images/default_profile.jpg',
+                        width: screenHeight * 0.06,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -132,7 +126,5 @@ class PreviewStudentContainerReduce extends StatelessWidget {
             ),
           ),
         );
-      },
-    );
-  }
+  }  
 }
