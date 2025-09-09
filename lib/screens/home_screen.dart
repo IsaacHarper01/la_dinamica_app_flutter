@@ -12,6 +12,7 @@ import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 import 'package:la_dinamica_app/widgets/select_school_widget.dart';
+import 'package:la_dinamica_app/widgets/students_number_home.dart';
 
 import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
@@ -169,6 +170,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(height: screenHeight * 0.06),
+                        Center(
+                          child: StudentsNumberHome(studentsNumber: "Asistencias: ${allStudents.length}"),
+                        ),
+                        SizedBox(height: screenHeight * 0.03),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: TextField(
@@ -190,13 +195,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                               fillColor: Theme.of(context).colorScheme.surface,
                             ),
                           ),
-                        ),
-                        SizedBox(height: screenHeight * 0.06),
-                        SearchStudentContainer(
-                          circleText:
-                              searchTerm.isEmpty
-                                  ? 'Asistencias de hoy: ${allStudents.length}'
-                                  : 'Mostrando: ${filteredStudents.length} de ${allStudents.length}',
                         ),
                         SizedBox(height: screenHeight * 0.01),
                         if (filteredStudents.isEmpty && searchTerm.isNotEmpty)

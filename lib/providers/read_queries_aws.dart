@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/storageS3.dart';
 
 class DataStoreReadService {
 
@@ -548,5 +545,35 @@ class DataStoreReadService {
       rethrow;
     }
   }
+
+  Future<Grades?> getLastExam(String tenantId, String studentId) async{
+    try {
+      final grades = await Amplify.DataStore.query(
+        Grades.classType,
+        where: Grades.STUDENT.eq(studentId).and(Grades.TENANT_ID.eq(tenantId)));
+      return(grades.last);
+    } catch (e) {
+      safePrint("Error al obtener calificaciones");
+      return null;
+    }
+  }
+
+  Future<List<Grades>> getRangeExams(String tenantId, String studentId, DateTime start, DateTime end) async{
+    try {
+      final grades = await Amplify.DataStore.query(
+        Grades.classType,
+        where:Grades.DATE.between(
+          TemporalDate(start), 
+          TemporalDate(end)).
+          and(Grades.STUDENT.eq(studentId).
+          and(Grades.TENANT_ID.eq(tenantId))));
+      return(grades);
+
+    } catch (e) {
+      safePrint("Error al obtener calificaciones");
+      rethrow;
+    }
+  }
+
 
 }

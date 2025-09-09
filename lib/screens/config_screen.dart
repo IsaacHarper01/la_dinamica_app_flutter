@@ -4,7 +4,6 @@ import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:la_dinamica_app/screens/add_new_metric.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/widgets/section_card_widget.dart';
@@ -56,26 +55,6 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 label: const Text('Habilitar vencimiento'),
                 onPressed: () {
                   // Aquí puedes implementar la lógica para habilitar el vencimiento de planes
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: colorScheme.onPrimary,
-                  textStyle: textTheme.titleMedium,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add_circle_outline),
-                label: const Text('Agregar Métrica'),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => AddNewMetric()),
-                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,

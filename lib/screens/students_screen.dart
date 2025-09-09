@@ -14,6 +14,7 @@ import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/search_student_container.dart';
+import 'package:la_dinamica_app/widgets/students_number_home.dart';
 
 class StudentsScreen extends ConsumerStatefulWidget {
   const StudentsScreen({super.key});
@@ -170,7 +171,7 @@ class ScrollViewContent extends ConsumerWidget {
         child: Column(
           children: [
             SizedBox(height: screenHeight * 0.06),
-            SearchStudentContainer(circleText: 'Total de alumnos: $numAlumnos'),
+            StudentsNumberHome(studentsNumber: "Total de alumnos: $numAlumnos"),
             SizedBox(height: screenHeight * 0.01),
             Padding(
               padding: EdgeInsets.only(right: screenHeight * 0.01),

@@ -1,42 +1,58 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/widgets/calendar_widget.dart';
-import 'package:time_range_picker/time_range_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
+import 'package:la_dinamica_app/models/Grades.dart';
+import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/widgets/buttons_menu_metrics.dart';
 
-class MetricsPage extends StatefulWidget {
+
+class MetricsPage extends ConsumerStatefulWidget {
+  final String studentId;
   final String name;
   final String image;
 
-  const MetricsPage({super.key, required this.name, required this.image});
+  const MetricsPage({super.key, required this.studentId ,required this.name, required this.image});
 
   @override
-  State<MetricsPage> createState() => _MetricsPageState();
+  ConsumerState<MetricsPage> createState() => _MetricsPageState();
 }
 
-class _MetricsPageState extends State<MetricsPage> {
+class _MetricsPageState extends ConsumerState<MetricsPage> {
   late String title;
   String photo = "assets/images/default_profile.jpg";
+  UserLocal? user;
+  Grades? grades;
 
   @override
   void initState() {
     super.initState();
     title = widget.name;
     photo = widget.image;
+    loadData();
+  }
+
+  void loadData() async{
+    final _user = await ref.read(userProvider.future);
+    final selectedRange = ref.read(selectedDateProviderMetrics);
+    final aws = DataStoreReadService();
+    setState(() {
+      user = _user;
+    });
+    grades = await aws.getLastExam(user!.tenantId, widget.studentId);
+    safePrint("Calificaciones obtenidas para el estudiante ${widget.studentId} son: $grades");
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime? selectedDate;
-    TimeRange? selectedRange;
-    final List<String> metricas = ['velocidad', 'fuerza', 'resistencia'];
-    final List<String> tipoDeMetrica = [
-      'examen',
-      'evaluacion_mensual',
-      'evaluacion_diaria',
-    ];
-    String? selectedValue = 'velocidad';
-
+    final imageUrl = ref.watch(studentImageProvider(widget.image));
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isPortatil = orientation == Orientation.portrait;
+    final screenHeight =isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
+    
     return Scaffold(
       appBar: AppBar(title: Center(child: Text(title))),
       backgroundColor: const Color.fromRGBO(6, 20, 27, 1.0),
@@ -60,30 +76,33 @@ class _MetricsPageState extends State<MetricsPage> {
                         borderRadius: BorderRadius.circular(40),
                         child: Opacity(
                           opacity: 0.7,
-                          child: Image.network(photo,fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return const Center(child: CircularProgressIndicator());
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/images/default_profile.jpg',
-                                  fit: BoxFit.cover,
-                                );
-                              },
-                            ),
+                          child: imageUrl.when(
+                      data: (url) => Image.network(
+                        url ?? "",
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/default_profile.jpg',
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      ),
+                      loading: () => SizedBox(
+                        width: screenHeight * 0.06,
+                        height: screenHeight * 0.06,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
                         ),
                       ),
-                    ),
-                    FilledButton.icon(
-                      onPressed: () {},
-                      label: const Text(
-                        'Agregar Metrica',
-                        style: TextStyle(color: Colors.white),
+                      error: (_, __) => Image.asset(
+                        'assets/images/default_profile.jpg',
+                        width: double.infinity,
+                        fit: BoxFit.cover,
                       ),
-                      icon: const Icon(Icons.plus_one, color: Colors.white),
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                    ),
+                        ),
                       ),
                     ),
                   ],
@@ -95,18 +114,12 @@ class _MetricsPageState extends State<MetricsPage> {
                     color: const Color.fromRGBO(74, 92, 106, 1.0),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: SingleChildScrollView(
-                      child: SizedBox(
-                        child: CalendarTimeRangePicker(
-                          onSelectionChanged: (date, range) {
-                            setState(() {
-                              selectedDate = date;
-                              selectedRange = range;
-                              safePrint('RANGO SELECIONADO: $selectedRange');
-                            });
-                          },
+                  child: Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          child: ButtonsMenu(options: ["Último Examen","Último mes","Último Año","Todo"])
                         ),
                       ),
                     ),
@@ -117,20 +130,6 @@ class _MetricsPageState extends State<MetricsPage> {
           ),
           Column(
             children: [
-              SizedBox(
-                height: 50,
-                width: 500,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    FilledButton(
-                      onPressed: () {},
-                      child: const Text("Velocidad"),
-                    ),
-                    FilledButton(onPressed: () {}, child: const Text("Examen")),
-                  ],
-                ),
-              ),
               Container(
                 //Main Charts container
                 height: 330,

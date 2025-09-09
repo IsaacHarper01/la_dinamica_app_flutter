@@ -62,7 +62,7 @@ Future<List<String?>> getImages(List<int> ids, String tenantId) async {
       List<String?> images = [];
       if (general.isNotEmpty) {
         for (var student in general) {
-          final imageUrl = await getImageUrl(student.image!);
+          final imageUrl = student.image!;
           images.add(imageUrl);
         }
         safePrint('✅ Imagenes obtenidas correctamente');
