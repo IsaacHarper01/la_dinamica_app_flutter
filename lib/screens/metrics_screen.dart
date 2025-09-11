@@ -7,7 +7,8 @@ import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:la_dinamica_app/widgets/buttons_menu_metrics.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/bar_grades_indicator.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/buttons_menu_metrics.dart';
 
 
 class MetricsPage extends ConsumerStatefulWidget {
@@ -137,20 +138,18 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Container(
-                      height: 280,
-                      width: 300,
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(74, 92, 106, 1.0),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    Container(
-                      height: 280,
-                      width: 330,
-                      decoration: BoxDecoration(
-                        color: const Color.fromRGBO(74, 92, 106, 1.0),
-                        borderRadius: BorderRadius.circular(20),
+                    SizedBox(
+                      height: 300,
+                      width: 400,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 12),
+                            StatBar(label: "Top Speed", filled: 8),
+                            SizedBox(height: 12),
+                            StatBar(label: "Parkour", filled: 9),
+                          ],
+                        ),
                       ),
                     ),
                   ],
