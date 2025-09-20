@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -415,26 +417,96 @@ class DataStoreReadService {
 
   Future<bool> userExists(String userId) async {
     try {
-      final users = await Amplify.DataStore.query(
-        User.classType,
-        where: User.USER_ID.eq(userId),
+      const listUsers = '''
+        query ListUsers(\$filter: ModelUserFilterInput) {
+          listUsers(filter: \$filter) {
+            items {
+              user_id
+            }
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: listUsers,
+        variables: {
+          "filter": {
+            "user_id": {"eq": userId}
+          }
+        },
       );
-      return users.isNotEmpty;
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.errors.isNotEmpty) {
+        safePrint('❌ GraphQL errors: ${response.errors}');
+        return false;
+      }
+
+      final data = response.data;
+      if (data == null) return false;
+
+      final decoded = jsonDecode(data);
+      final items = decoded['listUsers']['items'] as List<dynamic>;
+
+      return items.isNotEmpty;
     } catch (e) {
-      safePrint('❌ Error checking user: $e');
+      safePrint('❌ Error checking user via GraphQL: $e');
       return false;
     }
   }
 
   Future<User?> getUser(String userId) async {
     try {
-      final users = await Amplify.DataStore.query(
-        User.classType,
-        where: User.USER_ID.eq(userId),
+      final request = GraphQLRequest<String>(
+        document: '''
+        query GetUser(\$user_id: ID!) {
+          getUser(user_id: \$user_id) {
+            user_id
+            name
+            createdAt
+            updatedAt
+            access {
+              items {
+                id
+                user_id
+                tenant_id
+                permissions
+                status
+                createdAt
+                updatedAt
+              }
+            }
+          }
+        }
+      ''',
+        variables: { 'user_id': userId },
       );
-      if (users.isNotEmpty) return users.first;
-      safePrint('⚠️ User not found with ID: $userId');
-      return null;
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.errors.isNotEmpty) {
+        safePrint('❌ GraphQL errors: ${response.errors}');
+        return null;
+      }
+
+      if (response.data == null) {
+        safePrint('⚠️ User not found with ID: $userId');
+        return null;
+      }
+
+      final data = jsonDecode(response.data!);
+      final userJson = data['getUser'];
+
+      if (userJson == null) {
+        safePrint('⚠️ User not found with ID: $userId');
+        return null;
+      }
+
+      // Convert JSON back into your Amplify-generated User model
+      final user = User.fromJson(Map<String, dynamic>.from(userJson));
+
+      return user;
     } catch (e) {
       safePrint('❌ Error getting user: $e');
       rethrow;
@@ -575,5 +647,6 @@ class DataStoreReadService {
     }
   }
 
-
 }
+
+

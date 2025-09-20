@@ -6,8 +6,9 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/students_evaluated_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/widgets/exam/set_base10_widget.dart';
 import 'package:la_dinamica_app/widgets/preview_text_student_container.dart';
-import 'package:la_dinamica_app/widgets/stop_wacth_widget.dart';
+import 'package:la_dinamica_app/widgets/exam/stop_wacth_widget.dart';
 import 'package:la_dinamica_app/widgets/test_name_description_box.dart';
 
 class GradeRegistrationScreen extends ConsumerStatefulWidget{
@@ -44,7 +45,7 @@ Future<void> loadUser() async{
     final currentTest = examState.actualState;
 
     for (var i = 0; i < students.length; i++) {
-      final grade = controllers[i].text.isNotEmpty ? controllers[i].text : "0";
+      final grade = controllers[i].text.isNotEmpty ? controllers[i].text  : "0.0";
 
       ref.read(examProvider.notifier).setGrade(
             studentId: students[i].user_id.toString(),
@@ -74,6 +75,8 @@ Future<void> loadUser() async{
               SizedBox(height: 20,),
               if (types[currentTest] == "Tiempo") ...[
                 StopwatchWidget(),
+                SizedBox(height: 10),
+                SetBase10Widget(),
                 SizedBox(height: 20),
               ],
           
@@ -115,6 +118,9 @@ Future<void> loadUser() async{
                   saveGrades();
                   safePrint("actual provider state: ${ref.read(examProvider.notifier).state.grades}");
                   ref.read(examProvider.notifier).setActualState(tests[(tests.indexOf(currentTest) + 1) % tests.length]);
+                  for (var controller in controllers) {
+                    controller.clear();
+                  }
                   }             
                 },
                 child: const Icon(Icons.arrow_circle_right),

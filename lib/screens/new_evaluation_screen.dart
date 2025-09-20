@@ -6,8 +6,7 @@ import 'package:la_dinamica_app/models/Evaluations.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_metrics_screen.dart';
-import 'package:la_dinamica_app/screens/students_screen.dart';
-import 'package:la_dinamica_app/widgets/view_exams_box.dart';
+import 'package:la_dinamica_app/widgets/exam/view_exams_box.dart';
 
 class NewEvaluationScreen extends ConsumerStatefulWidget{
   const NewEvaluationScreen({super.key});

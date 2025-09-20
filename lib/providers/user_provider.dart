@@ -20,12 +20,12 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
       final cognitoUser = await Amplify.Auth.getCurrentUser();
       final userId = cognitoUser.userId;
       final email = cognitoUser.signInDetails.toJson()['username'] as String;
-
+      safePrint("Comprobando existencia de usuario: $userId");
       if (await awsDb.userExists(userId)) {
         final dbUser = await awsDb.getUser(userId);
         final userAccess = await awsDb.getUserAccess(
           dbUser!.user_id,
-        ); //this gets the first userAccess but I have to chosen by the account chosen value
+        ); 
 
         final newUser = UserLocal(
           userId: dbUser.user_id,
@@ -39,6 +39,9 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         );
         safePrint(
           '✅ Usuario cargado correctamente: ${newUser.userId}, ${newUser.tenantId}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
+        );
+        safePrint(
+          '🔑 UserAccess cargado: ${userAccess.map((ua) => ua.id).join(', ')}',
         );
         return newUser;
       } else {

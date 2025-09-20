@@ -31,6 +31,9 @@ class Grades extends amplify_core.Model {
   final String? _prof_id;
   final String? _tenant_id;
   final String? _grades;
+  final String? _types;
+  final String? _examTree;
+  final String? _totals;
   final Student? _student;
   final Evaluations? _evaluation;
   final amplify_core.TemporalDateTime? _createdAt;
@@ -65,6 +68,18 @@ class Grades extends amplify_core.Model {
     return _grades;
   }
   
+  String? get types {
+    return _types;
+  }
+  
+  String? get examTree {
+    return _examTree;
+  }
+  
+  String? get totals {
+    return _totals;
+  }
+  
   Student? get student {
     return _student;
   }
@@ -81,15 +96,18 @@ class Grades extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Grades._internal({required this.id, date, prof_id, tenant_id, grades, student, evaluation, createdAt, updatedAt}): _date = date, _prof_id = prof_id, _tenant_id = tenant_id, _grades = grades, _student = student, _evaluation = evaluation, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Grades._internal({required this.id, date, prof_id, tenant_id, grades, types, examTree, totals, student, evaluation, createdAt, updatedAt}): _date = date, _prof_id = prof_id, _tenant_id = tenant_id, _grades = grades, _types = types, _examTree = examTree, _totals = totals, _student = student, _evaluation = evaluation, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Grades({String? id, amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, Student? student, Evaluations? evaluation}) {
+  factory Grades({String? id, amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? examTree, String? totals, Student? student, Evaluations? evaluation}) {
     return Grades._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       date: date,
       prof_id: prof_id,
       tenant_id: tenant_id,
       grades: grades,
+      types: types,
+      examTree: examTree,
+      totals: totals,
       student: student,
       evaluation: evaluation);
   }
@@ -107,6 +125,9 @@ class Grades extends amplify_core.Model {
       _prof_id == other._prof_id &&
       _tenant_id == other._tenant_id &&
       _grades == other._grades &&
+      _types == other._types &&
+      _examTree == other._examTree &&
+      _totals == other._totals &&
       _student == other._student &&
       _evaluation == other._evaluation;
   }
@@ -124,6 +145,9 @@ class Grades extends amplify_core.Model {
     buffer.write("prof_id=" + "$_prof_id" + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
     buffer.write("grades=" + "$_grades" + ", ");
+    buffer.write("types=" + "$_types" + ", ");
+    buffer.write("examTree=" + "$_examTree" + ", ");
+    buffer.write("totals=" + "$_totals" + ", ");
     buffer.write("student=" + (_student != null ? _student!.toString() : "null") + ", ");
     buffer.write("evaluation=" + (_evaluation != null ? _evaluation!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
@@ -133,13 +157,16 @@ class Grades extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Grades copyWith({amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, Student? student, Evaluations? evaluation}) {
+  Grades copyWith({amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? examTree, String? totals, Student? student, Evaluations? evaluation}) {
     return Grades._internal(
       id: id,
       date: date ?? this.date,
       prof_id: prof_id ?? this.prof_id,
       tenant_id: tenant_id ?? this.tenant_id,
       grades: grades ?? this.grades,
+      types: types ?? this.types,
+      examTree: examTree ?? this.examTree,
+      totals: totals ?? this.totals,
       student: student ?? this.student,
       evaluation: evaluation ?? this.evaluation);
   }
@@ -149,6 +176,9 @@ class Grades extends amplify_core.Model {
     ModelFieldValue<String?>? prof_id,
     ModelFieldValue<String?>? tenant_id,
     ModelFieldValue<String?>? grades,
+    ModelFieldValue<String?>? types,
+    ModelFieldValue<String?>? examTree,
+    ModelFieldValue<String?>? totals,
     ModelFieldValue<Student?>? student,
     ModelFieldValue<Evaluations?>? evaluation
   }) {
@@ -158,6 +188,9 @@ class Grades extends amplify_core.Model {
       prof_id: prof_id == null ? this.prof_id : prof_id.value,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       grades: grades == null ? this.grades : grades.value,
+      types: types == null ? this.types : types.value,
+      examTree: examTree == null ? this.examTree : examTree.value,
+      totals: totals == null ? this.totals : totals.value,
       student: student == null ? this.student : student.value,
       evaluation: evaluation == null ? this.evaluation : evaluation.value
     );
@@ -169,6 +202,9 @@ class Grades extends amplify_core.Model {
       _prof_id = json['prof_id'],
       _tenant_id = json['tenant_id'],
       _grades = json['grades'],
+      _types = json['types'],
+      _examTree = json['examTree'],
+      _totals = json['totals'],
       _student = json['student'] != null
         ? json['student']['serializedData'] != null
           ? Student.fromJson(new Map<String, dynamic>.from(json['student']['serializedData']))
@@ -183,7 +219,7 @@ class Grades extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'date': _date?.format(), 'prof_id': _prof_id, 'tenant_id': _tenant_id, 'grades': _grades, 'student': _student?.toJson(), 'evaluation': _evaluation?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'date': _date?.format(), 'prof_id': _prof_id, 'tenant_id': _tenant_id, 'grades': _grades, 'types': _types, 'examTree': _examTree, 'totals': _totals, 'student': _student?.toJson(), 'evaluation': _evaluation?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -192,6 +228,9 @@ class Grades extends amplify_core.Model {
     'prof_id': _prof_id,
     'tenant_id': _tenant_id,
     'grades': _grades,
+    'types': _types,
+    'examTree': _examTree,
+    'totals': _totals,
     'student': _student,
     'evaluation': _evaluation,
     'createdAt': _createdAt,
@@ -204,6 +243,9 @@ class Grades extends amplify_core.Model {
   static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
   static final GRADES = amplify_core.QueryField(fieldName: "grades");
+  static final TYPES = amplify_core.QueryField(fieldName: "types");
+  static final EXAMTREE = amplify_core.QueryField(fieldName: "examTree");
+  static final TOTALS = amplify_core.QueryField(fieldName: "totals");
   static final STUDENT = amplify_core.QueryField(
     fieldName: "student",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Student'));
@@ -252,6 +294,24 @@ class Grades extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Grades.GRADES,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Grades.TYPES,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Grades.EXAMTREE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Grades.TOTALS,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));

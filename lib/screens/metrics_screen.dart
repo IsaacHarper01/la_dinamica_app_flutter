@@ -132,7 +132,6 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
           Column(
             children: [
               Container(
-                //Main Charts container
                 height: 330,
                 color: const Color.fromRGBO(17, 33, 45, 1.0),
                 child: Row(

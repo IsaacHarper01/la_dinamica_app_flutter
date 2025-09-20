@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/stop_watch_provider.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/circle_total_grade.dart';
 
-class PreviewStudentContainerText extends ConsumerWidget {
+class PreviewStudentContainerText extends ConsumerStatefulWidget {
   final String type;
   final String name;
   final int id;
@@ -21,9 +23,17 @@ class PreviewStudentContainerText extends ConsumerWidget {
     required this.backgroundColor,
     required this.controller,
   });
-  
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PreviewStudentContainerText> createState() => _PreviewStudentContainerTextState();
+}
+
+class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentContainerText> {
+  double base10amount = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final ref = this.ref;
     final Orientation orientation = MediaQuery
         .of(context)
         .orientation;
@@ -31,9 +41,11 @@ class PreviewStudentContainerText extends ConsumerWidget {
     final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
     
-    final imageUrl = ref.watch(studentImageProvider(image));
-    
-    final textDecorator = type == "Tiempo"
+    final imageUrl = ref.watch(studentImageProvider(widget.image));
+    final state = ref.watch(examProvider);
+    final base10Conversion = state.objetives.containsKey(state.actualState) && state.penalties.containsKey(state.actualState);
+
+    final textDecorator = widget.type == "Tiempo"
         ? "Tiempo (s)"
         : "Calificación(0-10)";
     return Padding(
@@ -44,7 +56,7 @@ class PreviewStudentContainerText extends ConsumerWidget {
         height: screenHeight * 0.07,
         width: screenWidth,
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: widget.backgroundColor,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -95,7 +107,7 @@ class PreviewStudentContainerText extends ConsumerWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        name,
+                        widget.name,
                         style: GoogleFonts.gochiHand(
                           fontSize: screenHeight * 0.03,
                           color: Colors.white,
@@ -106,7 +118,7 @@ class PreviewStudentContainerText extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'ID: $id',
+                      'ID: ${widget.id}',
                       style: GoogleFonts.gochiHand(
                         fontSize: screenHeight * 0.017,
                         color: Colors.white70,
@@ -116,7 +128,7 @@ class PreviewStudentContainerText extends ConsumerWidget {
                 ),
               ),
             ),
-            type == "Tiempo"
+            widget.type == "Tiempo"
                 ? Expanded(
                   flex: 1,
                   child: ElevatedButton(
@@ -124,19 +136,37 @@ class PreviewStudentContainerText extends ConsumerWidget {
                       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     onPressed: (){
-                      controller.text = ref.read(stopwatchProvider.notifier).currentTime;
+                      widget.controller.text = ref.read(stopwatchProvider.notifier).currentTime;
+                      if (base10Conversion){
+                        setState(() {
+                          base10amount = ref.read(examProvider.notifier).calculateConversion(widget.controller.text)!;
+                        });
+                        ref.read(examProvider.notifier).setConversion(studentId: widget.id.toString(), base10: base10amount);
+                      }
                     }, 
                     child: Text('Detener',style: GoogleFonts.gochiHand(fontSize: 13),)),)
                 : const SizedBox(width: 20),
             Expanded(
               flex: 1,
               child: TextField(
-                controller: controller,
+                controller: widget.controller,
                 decoration: InputDecoration(labelText: textDecorator,border: OutlineInputBorder(),),
               ),
-            )
+            ),
+            base10Conversion ? Expanded(
+              flex: 1,
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CustomPaint(
+                  painter: CircleTotalGrade(percent: base10amount, strokeWidth: 6),
+                  child: Center(
+                    child: Text(base10amount.toStringAsFixed(1) , style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                ),
+              )
+            ) : const SizedBox(width: 5),
           ],
-          
         ),
       ),
     );

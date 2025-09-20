@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/exam_state.dart';
 import 'package:la_dinamica_app/models/Evaluations.dart';
@@ -40,6 +41,16 @@ class ExamNotifier extends Notifier<ExamState> {
     state = state.copyWith(types: types);
   }
 
+  void setObjetives(Map<String, dynamic> objetives){
+    state = state.copyWith(objetives: objetives);
+    safePrint("OBJETIVES: ${state.objetives.toString()}");
+  }
+
+  void setPenalties(Map<String, dynamic> penalties){
+    state = state.copyWith(penalties: penalties);
+    safePrint("PENALTIES: ${state.penalties.toString()}");
+  }
+
   void disposeAll(){
     state = ExamState();
   }
@@ -57,8 +68,101 @@ class ExamNotifier extends Notifier<ExamState> {
     state = state.copyWith(grades: newGrades);
   }
 
+  void setConversion({required studentId, required base10}){
+    final newConversions = Map<String, Map<String, double>>.from(state.conversions);
+
+    newConversions.putIfAbsent(state.actualState, () => {});
+    newConversions[state.actualState]![studentId] = base10;
+    state = state.copyWith(conversions: newConversions);
+
+    safePrint("CONVERSIONS: ${state.conversions.toString()}");
+  }
+
   double? getGrade(String studentId, String metricName) {
     return state.grades[studentId]?[metricName];
+  }
+
+  double? calculateConversion(String amount){
+    if (state.types[state.actualState] == "Tiempo"){
+      final duration = stringToTime(amount);
+      final objetive = stringToTime(state.objetives[state.actualState].substring(1));
+      final penalty = stringToTime(state.penalties[state.actualState]);
+      String comparator = state.objetives[state.actualState][0];
+      safePrint("DURATION: $duration, OBJETIVE: $objetive, PENALTY: $penalty, COMPARATOR: $comparator");
+
+      if (comparator == "<"){
+        if (duration <= objetive){
+          return 10.0;
+        } else{
+          final ratio = (duration - objetive).inMilliseconds/ penalty.inMilliseconds;
+          return 10.0 - (ratio) ;
+        } 
+      } else if (comparator == ">"){
+        if (duration >= objetive){
+          return 10.0;
+        } else{
+          double ratio = (objetive - duration).inMilliseconds/ penalty.inMilliseconds;
+          return 10.0 - (ratio);
+        } 
+      }
+      else{
+        safePrint("Error in comparator");
+        return null;
+      }
+    }else{
+      safePrint("Error in actual state for conversion");
+      return null;
+    }
+  }
+
+  Duration stringToTime(String timeString) {
+    //Time should be in format HH:MM:SS:MS("00:00:00.00")
+    final parts = timeString.split(':');
+    final secondsParts = parts[2].split('.');
+    final seconds = int.parse(secondsParts[0]);
+    final milliseconds = int.parse(secondsParts[1]);
+
+    return Duration(
+      hours:int.parse(parts[0]),
+      minutes: int.parse(parts[1]),
+      seconds: seconds,
+      milliseconds: milliseconds*10,
+    );
+  }
+
+  Map<String, dynamic> calculateTotals(Student student){
+    Map<String, dynamic> totals = {};
+    for(var metric in state.metrics.keys){ 
+      int submetrics = state.metrics[metric]?.length ?? 0;
+      dynamic total = 0.0;
+      if (submetrics > 0){
+        for(var submetric in state.metrics[metric]!){
+          if(state.types[submetric]=="Base10"){
+            total += double.parse(state.grades[student.user_id.toString()]?[submetric]);
+          }else if(state.conversions[submetric] != null){
+            total += state.conversions[submetric]?[student.user_id.toString()] ?? 0.0;
+          } else{
+            total += 0.0;
+            submetrics -= 1;
+          }
+        }
+        if (submetrics == 0) {
+          totals[metric] = state.grades[student.user_id.toString()]![metric];
+        } else {
+          totals[metric] = total/submetrics;//it is not working
+        }
+      } else{
+          if(state.types[metric]=="Base10"){
+            total = state.grades[student.user_id.toString()]![metric];
+          }else if(state.conversions[metric] != null){
+            total = state.conversions[metric]![student.user_id.toString()];
+          } else{
+            total = state.grades[student.user_id.toString()]![metric];
+          }
+        }
+      totals[metric] = total;
+    }
+    return totals;
   }
 
   void uploadGrades(String tenantId, String profId){
@@ -67,7 +171,10 @@ class ExamNotifier extends Notifier<ExamState> {
       aws.saveGrade(
         student: student, 
         evaluation: state.eval, 
-        grades: jsonEncode(state.grades[(student.user_id).toString()]), 
+        grades: jsonEncode(state.grades[(student.user_id).toString()]),
+        types: jsonEncode(state.types), 
+        examTree: jsonEncode(state.metrics),
+        totals: jsonEncode(calculateTotals(student)),
         tenantId: tenantId, 
         profId: profId);
     }

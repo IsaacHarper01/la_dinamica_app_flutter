@@ -133,6 +133,9 @@ type Grades @model @auth(rules: [{allow: public, operations: [create, read, upda
   prof_id: String
   tenant_id: ID
   grades: AWSJSON
+  types: AWSJSON
+  examTree: AWSJSON
+  totals: AWSJSON
 
   student: Student @belongsTo(fields: ["studentID"])
   evaluation: Evaluations @belongsTo(fields: ["evaluationID"])
