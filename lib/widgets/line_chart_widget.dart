@@ -34,7 +34,10 @@ class LineChartWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final today = DateTime.parse(ref.watch(dateProvider));
     final tenantId = user.tenantId;
-
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isPortatil = orientation == Orientation.portrait;
+    final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
+    
     var n = 30;
 
     if (startDate.toString().split(' ')[0] !=
@@ -51,13 +54,13 @@ class LineChartWidget extends ConsumerWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else {
-                return infocharts(snapshot.data, n, linechart);
+                return infocharts(screenWidth ,snapshot.data, n, linechart);
               }
             }
           );
   }
 
-infocharts(alldata, n, linegraph){
+infocharts(screenWidth, alldata, n, linegraph){
     final inconmeData = alldata[0];
     final studentData = alldata[1];
 
@@ -73,19 +76,19 @@ infocharts(alldata, n, linegraph){
           const SizedBox(height: 25),
           Row(
             children: [
-              Column(children: [
-                Text('Ingresos por día',
-                style: GoogleFonts.michroma(fontSize: 12),
-              ),
+              Column(
+                children: [
+                  Text('Ingresos por día',
+                  style: GoogleFonts.michroma(fontSize: 11),
+                  ),
+                  SizedBox(
+                    width: screenWidth * 0.37, 
+                    height: 200, 
+                    child: DaysChartWidget(values: incomePerDay['values']),
+                    ),]
+                  ,),
               SizedBox(
-                width: 210, 
-                height: 200, 
-                child: DaysChartWidget(values: incomePerDay['values']),
-                ),
-              ],),
-              const Spacer(),
-              SizedBox(
-                width: 450, 
+                width: screenWidth * 0.58, 
                 height: 350, 
                 child: linegraph(inconmeData, n),
               ),
@@ -93,26 +96,26 @@ infocharts(alldata, n, linegraph){
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(children: [
-                Text('Estudiantes por día',
-                style: GoogleFonts.michroma(fontSize: 12),
-              ),
-              SizedBox(
-                width: 210, 
-                height: 200,
-                child: DaysChartWidget(values: studentsPerDay['values']),
+              Expanded(
+                child: Column(children: [
+                  Text('Estudiantes por día',
+                  style: GoogleFonts.michroma(fontSize: 11),
                 ),
-              ]
+                SizedBox( 
+                  height: 200,
+                  child: DaysChartWidget(values: studentsPerDay['values']),
+                  ),
+                ]
+                ),
               ),
-              
-              Column(children: [
-                AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
-                const SizedBox(height: 20),
-                AverageWidget(average: "\$${incomePerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
-                ]),
+              Expanded(
+                child: Column(children: [
+                  AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
+                  const SizedBox(height: 20),
+                  AverageWidget(average: "\$${incomePerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
+                  ]),
+              ),
             ],
           )
         ],

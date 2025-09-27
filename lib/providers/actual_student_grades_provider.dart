@@ -9,14 +9,8 @@ class GradeNotifier extends Notifier<StudentGrades> {
     return StudentGrades();
   }
 
-  void setGrades(Grades grades){
-    state = state.copyWith(actualGrades: [grades]);
-  }
-  void setTypes(Map<String, String> types){
-    state = state.copyWith(types: types);
-  }
-  void setExamTree(Map<String, String> examTree){
-    state = state.copyWith(examTree: examTree);
+  void setGrades(List<Grades> grades){
+    state = state.copyWith(actualGrades: grades);
   }
 }
 

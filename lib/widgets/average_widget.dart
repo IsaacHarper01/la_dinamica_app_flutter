@@ -16,28 +16,29 @@ class AverageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isPortatil = orientation == Orientation.portrait;
+    final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
+    
     return Center(
       child: Container(
         height: 50,
-        width: 350,
         decoration: BoxDecoration(
           color: colorList[2],
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-          const Icon(Icons.analytics_outlined, color: Colors.white, size: 30),
-          const SizedBox(width: 10),
+          const Icon(Icons.analytics_outlined, color: Colors.white),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [ 
-            Text(title1, style: GoogleFonts.gochiHand(fontSize: 16)),
-            Text(title2, style: GoogleFonts.gochiHand(fontSize: 10)),
+            Text(title1, style: GoogleFonts.gochiHand()),
+            Text(title2, style: GoogleFonts.gochiHand()),
           ]),
-          const SizedBox(width: 30),
-          Text(average, style: GoogleFonts.gochiHand(color: Colors.white, fontSize: 16)),
+          Text(average, style: GoogleFonts.gochiHand(color: Colors.white)),
         ],),
       ),
     );

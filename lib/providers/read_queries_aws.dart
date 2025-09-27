@@ -618,12 +618,12 @@ class DataStoreReadService {
     }
   }
 
-  Future<Grades?> getLastExam(String tenantId, String studentId) async{
+  Future<List<Grades>?> getLastExam(String tenantId, String studentId) async{
     try {
       final grades = await Amplify.DataStore.query(
         Grades.classType,
         where: Grades.STUDENT.eq(studentId).and(Grades.TENANT_ID.eq(tenantId)));
-      return(grades.last);
+      return(grades);
     } catch (e) {
       safePrint("Error al obtener calificaciones");
       return null;

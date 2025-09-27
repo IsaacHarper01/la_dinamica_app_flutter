@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
@@ -21,6 +22,9 @@ class ConfigScreen extends ConsumerStatefulWidget {
 class _ConfigScreenState extends ConsumerState<ConfigScreen> {
   @override
   Widget build(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+    final bool isPortatil = orientation == Orientation.portrait;
+    final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
     final plansState = ref.watch(planProvider);
     final themeMode = ref.watch(themeNotifierProvider);
     final userAsync = ref.watch(userProvider);
@@ -98,21 +102,22 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 title: 'Planes disponibles',
                 actions: [
                   OutlinedButton.icon(
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const AddNewPlan()),
-                      );
-                      if (result == true) {
-                        ref.read(planProvider.notifier).loadPlans();
-                      }
-                    },
-                    icon: const Icon(Icons.add_circle_outline),
-                    label: const Text('Nuevo Plan'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: colorScheme.onPrimaryContainer,
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AddNewPlan()),
+                        );
+                        if (result == true) {
+                          ref.read(planProvider.notifier).loadPlans();
+                        }
+                      },
+                      icon: const Icon(Icons.add_circle_outline),
+                      label: Center(child: const Text('Nuevo Plan')),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: colorScheme.onPrimaryContainer,
+                        maximumSize: Size((screenWidth * 0.3), 40),
+                      ),
                     ),
-                  ),
                 ],
                 child: Column(
                   children: planes

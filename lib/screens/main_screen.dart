@@ -70,13 +70,13 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                       Icon(
                         item.icon,
                         color: isSelected ? colorList[4] : colorList[5],
-                        size: screenHeight * 0.020,
+                        size: screenHeight * 0.018,
                       ),
                       Text(
                         item.title,
                         style: TextStyle(
                           color: isSelected ? colorList[4] : colorList[5],
-                          fontSize: screenHeight * 0.015,
+                          fontSize: screenHeight * 0.013,
                         ),
                       ),
                     ],

@@ -8,7 +8,7 @@ import 'package:la_dinamica_app/widgets/tilted_square_graph.dart';
 class StatBar extends ConsumerStatefulWidget {
   
   final String label;
-  final int filled;
+  final double filled;
   final int total;
 
   const StatBar({
@@ -23,9 +23,10 @@ class StatBar extends ConsumerStatefulWidget {
 }
 
 class _StatBarState extends ConsumerState <StatBar> {
-
+  
   @override
   Widget build(BuildContext context) {
+    final filledRounded = double.parse(widget.filled.toStringAsFixed(2));
     return Row(
       children: [
         SizedBox(
@@ -41,7 +42,7 @@ class _StatBarState extends ConsumerState <StatBar> {
               Color color;
               bool glow = false;
 
-              if (index < widget.filled) {
+              if (index < filledRounded) {
                 if (index < 5) {
                   color = const Color.fromARGB(255, 23, 126, 95);
                 } else {
@@ -78,13 +79,13 @@ class _StatBarState extends ConsumerState <StatBar> {
           width: 50,
           child: CustomPaint(
             painter: CircleTotalGrade(
-              percent: widget.total == 0 ? 0 : (widget.filled / widget.total),
+              percent: widget.total == 0 ? 0 : (filledRounded / widget.total),
               strokeWidth: 6,
             ),
             // optional child to show the numeric value centered
             child: Center(
               child: Text(
-                '${widget.filled}',
+                '$filledRounded',
                 style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
               ),
             ),

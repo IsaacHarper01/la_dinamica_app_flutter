@@ -5,8 +5,13 @@ import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
 
 class ButtonsMenu extends ConsumerWidget {
   final List<String> options;
+  final double screenWidth;
 
-  const ButtonsMenu({super.key, required this.options});
+  const ButtonsMenu({
+    super.key, 
+    required this.options,
+    required this.screenWidth
+    });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,7 +29,7 @@ class ButtonsMenu extends ConsumerWidget {
           },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 6),
-            height: 60,
+            height: screenWidth * 0.1,
             decoration: BoxDecoration(
               color: isSelected
                   ? Theme.of(context).colorScheme.primary

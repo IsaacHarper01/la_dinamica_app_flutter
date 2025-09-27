@@ -134,6 +134,7 @@ class ExamNotifier extends Notifier<ExamState> {
     Map<String, dynamic> totals = {};
     for(var metric in state.metrics.keys){ 
       int submetrics = state.metrics[metric]?.length ?? 0;
+      safePrint("Calculating total for metric: $metric with $submetrics submetrics");
       dynamic total = 0.0;
       if (submetrics > 0){
         for(var submetric in state.metrics[metric]!){
@@ -142,25 +143,27 @@ class ExamNotifier extends Notifier<ExamState> {
           }else if(state.conversions[submetric] != null){
             total += state.conversions[submetric]?[student.user_id.toString()] ?? 0.0;
           } else{
-            total += 0.0;
             submetrics -= 1;
           }
         }
+        safePrint("Total for metric $metric: $total");
         if (submetrics == 0) {
-          totals[metric] = state.grades[student.user_id.toString()]![metric];
+          safePrint( "submetric for $submetrics");
+          totals[metric] = (state.grades[student.user_id.toString()]![metric]).toString();
         } else {
-          totals[metric] = total/submetrics;//it is not working
+          safePrint("Average for metric $metric: ${total/submetrics}");
+          totals[metric] = (total/submetrics).toString();
         }
       } else{
+        safePrint("No submetrics for $metric");
           if(state.types[metric]=="Base10"){
-            total = state.grades[student.user_id.toString()]![metric];
+            totals[metric] = (state.grades[student.user_id.toString()]![metric]).toString();
           }else if(state.conversions[metric] != null){
-            total = state.conversions[metric]![student.user_id.toString()];
+            totals[metric] = (state.conversions[metric]![student.user_id.toString()]).toString();
           } else{
-            total = state.grades[student.user_id.toString()]![metric];
+            totals[metric] = (state.grades[student.user_id.toString()]![metric]).toString();
           }
         }
-      totals[metric] = total;
     }
     return totals;
   }

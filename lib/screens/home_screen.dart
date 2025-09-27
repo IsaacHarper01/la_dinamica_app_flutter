@@ -125,13 +125,18 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          SignOutButton(),
-          SizedBox(width: screenWidth * 0.3),
-          SelectSchoolWidget(),
-          SizedBox(width: screenWidth * 0.35),
-          CalendarButton(),
-        ],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SignOutButton(),
+            Expanded(
+              child: Center(
+                child: SelectSchoolWidget(),
+              ) 
+            ),
+            CalendarButton(),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => registerAssistance(context),
@@ -152,12 +157,12 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(
                         isDarkMode
-                            ? 'assets/images/f_ma18.png'
-                            : 'assets/images/f_ma11.png',
+                            ? 'assets/images/f_ma11.png'
+                            : 'assets/images/f_ma18.png',
                         height:
                             isDarkMode
-                                ? screenHeight * 0.2
-                                : screenHeight * 0.1,
+                                ? screenHeight * 0.1
+                                : screenHeight * 0.2,
                         fit: BoxFit.cover,
                       ),
                     ),
