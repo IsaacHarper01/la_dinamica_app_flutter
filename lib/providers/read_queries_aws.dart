@@ -223,6 +223,7 @@ class DataStoreReadService {
       List<Student> general = await Amplify.DataStore.query(
         Student.classType,
         where: Student.CLIENT_ID.eq(tenantId),
+        sortBy: [Student.USER_ID.ascending()],
         );
         
       safePrint('✅ Alumnos obtenidos correctamente');

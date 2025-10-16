@@ -64,7 +64,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         final userAccess = UserAccess(
           user: user,
           tenant: tenant,
-          permissions: '{"deleteStudents": true, "watchIncome": true, "setPlans": true, "setEvaluations": true, "deletePayments": true, "addProfesor": true}', // Default permissions
+          permissions: '{"deleteStudents": true, "watchIncome": true, "setPlans": true, "setEvaluations": true, "deletePayments": true, "addProfesor": true, "editPast": true}', // Default permissions
           status: true,
         );
         await awsDb2.saveUser(id: userId, name: name);
@@ -77,7 +77,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         await awsDb2.saveUserAccess(
           user: user,
           tenant: tenant,
-          permissions: {'deleteStudents': true, 'watchIncome': true, 'setPlans': true, 'setEvaluations': true, 'deletePayments': true, "addProfesor": true}, // Default permissions
+          permissions: {'deleteStudents': true, 'watchIncome': true, 'setPlans': true, 'setEvaluations': true, 'deletePayments': true, "addProfesor": true, "editPast": true}, // Default permissions
           status: true,
         );
 
@@ -86,7 +86,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           tenant: tenant,
           name: email,
           schoolname: nameSchool,
-          permissions: {'deleteStudents': true, 'watchIncome': true, 'setPlans': true, 'setEvaluations': true, 'deletePayments': true, "addProfesor": true},
+          permissions: {'deleteStudents': true, 'watchIncome': true, 'setPlans': true, 'setEvaluations': true, 'deletePayments': true, "addProfesor": true, "editPast": true},
           // Default permissions
           plan: plan,
           status: status,

@@ -142,7 +142,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                 child: SelectSchoolWidget(),
               ) 
             ),
-            CalendarButton(),
+            user!.permissions["editPast"] == true ?
+            CalendarButton() : SizedBox()
           ],
         ),
       ),

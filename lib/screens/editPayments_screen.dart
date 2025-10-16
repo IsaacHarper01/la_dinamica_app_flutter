@@ -175,7 +175,7 @@ class PayCard extends StatelessWidget {
             },
               itemBuilder:
                   (context) => [
-                    permision ?
+                    if(permision)...[
                     const PopupMenuItem<String>(
                       value: 'delete',
                       child: Row(
@@ -185,7 +185,7 @@ class PayCard extends StatelessWidget {
                           Text('Eliminar'),
                         ],
                       ),
-                    ):
+                    )],
                     const PopupMenuItem<String>(
                       value: 'edit',
                       child: Row(

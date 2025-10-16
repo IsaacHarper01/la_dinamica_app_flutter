@@ -15,6 +15,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   bool setEvaluations = false;
   bool deletePayments = false;
   bool addProfesor = false;
+  bool editPast = false;
   
   @override
   Widget build(BuildContext context) {
@@ -56,6 +57,11 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               value: addProfesor,
               onChanged: (value) => setState(() => addProfesor = value),
             ),
+            SwitchListTile(
+              title: const Text('Editar registros pasados'),
+              value: editPast,
+              onChanged: (value) => setState(() => editPast = value),
+            ),
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -73,6 +79,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                       'setEvaluations': setEvaluations,
                       'deletePayments': deletePayments,
                       'addProfesor' : addProfesor,
+                      'editPast': editPast,
                     };
                     Navigator.pop(context, permissions);
                   },

@@ -147,7 +147,7 @@ void _showQrCodeDialog(BuildContext context, String dataToEncode){
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Al escanear este código estás dando acceso a tu base de datos',
+              'Este código contiene tu identificador de profesor para solicitar nuevos accesos',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -244,7 +244,7 @@ class PlanCard extends StatelessWidget {
                 ],
               ),
             ),
-            permission ?
+            if(permission)...[
             PopupMenuButton<String>(
               onSelected: (value) async {
                 if (value == 'delete') {
@@ -287,7 +287,7 @@ class PlanCard extends StatelessWidget {
                       ),
                     ),
                   ],
-            ): Container(),
+            ),]
           ],
         ),
       ),
