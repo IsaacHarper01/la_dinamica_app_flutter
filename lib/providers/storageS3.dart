@@ -23,6 +23,19 @@ Future<String?> uploadFile(File file, String name, String tenantId) async {
   }
 }
 
+Future<String?> updateImage(File file, String path)async{
+  try {
+    final result = await Amplify.Storage.uploadFile(
+      localFile: AWSFilePlatform.fromFile(file),
+      path: StoragePath.fromString(path),).result;
+    safePrint('Updated file: ${result.uploadedItem.path}');
+    return result.uploadedItem.path;
+  } on StorageException catch (e) {
+    safePrint(e.message);
+    return null;
+    }
+  }
+
 Future<String?> getImageUrl(String fileName) async {
   try {
     final result = await Amplify.Storage.getUrl(

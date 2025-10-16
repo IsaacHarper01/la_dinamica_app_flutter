@@ -23,7 +23,7 @@
     }
   },
   "auth": {
-    "ladinamicaappflutter": {
+    "ladinamicaappflutter0199681f": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -32,10 +32,7 @@
           "SMS"
         ],
         "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [
-            "REQUIRES_LOWERCASE",
-            "REQUIRES_NUMBERS"
-          ],
+          "passwordPolicyCharacters": [],
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [

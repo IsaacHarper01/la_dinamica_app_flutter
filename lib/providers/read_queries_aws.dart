@@ -92,6 +92,7 @@ class DataStoreReadService {
   Future<Map<String, dynamic>> getLastPayandStudentData(int userId, String tenantId) async {
     dynamic studentData;
     dynamic lastPay;
+    dynamic debts;
 
     try {
       List<Student> general = await Amplify.DataStore.query(
@@ -108,8 +109,20 @@ class DataStoreReadService {
         where: Pay.USER_ID.eq(userId) 
             .and(Pay.CLIENT_ID.eq(tenantId)),
         sortBy: [Pay.DATE.descending()],);
-        lastPay = payments.first;
+        lastPay = payments.last;
 
+    }catch(e){
+      safePrint('❌ Error al obtener el ultimo pago del usuario: $e');
+    }
+
+    try{
+      List<Pay> debtPays = await Amplify.DataStore.query(
+        Pay.classType,
+        where: Pay.USER_ID.eq(userId) 
+            .and(Pay.CLIENT_ID.eq(tenantId))
+            .and(Pay.DEBT.eq(true))
+        );
+      debts = debtPays;
     }catch(e){
       safePrint('❌ Error al obtener el ultimo pago del usuario: $e');
     }
@@ -117,6 +130,7 @@ class DataStoreReadService {
       Map<String, dynamic> result = {
         'lastPay': lastPay,
         'studentData': studentData,
+        'debts' : debts,
       };
       return result;
   }
@@ -130,6 +144,7 @@ class DataStoreReadService {
         where: Pay.DATE.between(TemporalDate(startDate), TemporalDate(endDate)) 
             .and(Pay.CLIENT_ID.eq(tenantId)),
       );
+
       if (payments.isEmpty) {
         safePrint(
           '❌ No se encontraron ingresos en el rango de fechas proporcionado',
@@ -355,13 +370,27 @@ class DataStoreReadService {
       }
     } catch (e) {
       safePrint('❌ Error al obtener los pagos: $e');
-      rethrow;
+      return null;
+    }
+  }
+
+  Future<List<Pay>?> getLastTenPayments(int userId, String tenaniId)async{
+    try{
+      List<Pay> payments = await Amplify.DataStore.query(
+        Pay.classType,
+        where: Pay.USER_ID.eq(userId).and(Pay.CLIENT_ID.eq(tenaniId)),
+        sortBy: [Pay.DATE.descending()],
+        pagination: const QueryPagination.firstPage(),
+        );
+        return payments;
+    }catch(e){
+      safePrint('❌ Error al obtener los ultimos 10 pagos: $e');
+      return null;
     }
   }
 
   Future<void> verifyPayment(int userId, String date, String tenantId, String profId) async {
     try {
-      safePrint("Verificando pago para el usuario con ID: $userId en la fecha: $date");
       Pay? lastPayment = await getLastPayment(userId, tenantId);
       LocalPlan? basePlan = await getSimplePlan(tenantId);
       double cost = 0.0;
@@ -371,8 +400,6 @@ class DataStoreReadService {
         cost = basePlan.price!;
         planType = basePlan.type!;
       }
-      safePrint('Plan base obtenido: $basePlan');
-      safePrint('Ultimo pago obtenido: $lastPayment');
       if (lastPayment == null) {
         final newPayment = Pay(
           user_id: userId, //This user ID is the student ID
@@ -382,18 +409,15 @@ class DataStoreReadService {
           date: TemporalDate(DateTime.parse(date)),
           client_id: tenantId, //this user ID is the client ID
           prof_id: profId, //This user ID is the teacher ID
+          debt: false,
         );
 
         await Amplify.DataStore.save(newPayment);
-        return;
       } else {
         if (lastPayment.type != planType && (lastPayment.clases!) > 0) {
           var remainingClases = (lastPayment.clases!) - 1;
           Pay newPayment = lastPayment.copyWith(clases: remainingClases);
-          await Amplify.DataStore.delete(lastPayment);
           await Amplify.DataStore.save(newPayment);
-          safePrint('Pago actualizado con clases restantes: $remainingClases');
-          return;
         } else {
           final newPayment = Pay(
             user_id: userId,
@@ -541,19 +565,18 @@ class DataStoreReadService {
     }
   }
   
-  Future<void> giveUserAccess(String tenantId, String permissions, UserLocal user) async {
+  Future<void> giveUserAccess(Tenant tenant, String permissions, String userid) async {
     try{
-    final tenant = await getTenant(tenantId);
-    if (tenant != null) {
-        final newUser = await userLocalAdapter(user);
+    final user = await getUser(userid);
+    if (user != null) {
         final userAccess = UserAccess(
-          user: newUser,
+          user: user,
           tenant: tenant,
           permissions: permissions,
           status: true,
         );
         await Amplify.DataStore.save(userAccess);
-        safePrint('✅ Usuario con ID ${user.userId} ha sido dado acceso al tenant con ID $tenantId con permisos: $permissions');
+        safePrint('✅ Usuario con ID ${user.user_id} ha sido dado acceso al tenant con ID ${tenant.tenant_id} con permisos: $permissions');
     }
     }catch (e) {
       safePrint('❌ Error giving user access: $e');
@@ -562,19 +585,61 @@ class DataStoreReadService {
   }
 
   Future<List<UserAccess>?> getUserAccess(String userId) async {
-    try {
-      final userAccess = await Amplify.DataStore.query(
-        UserAccess.classType,
-        where: UserAccess.USER.eq(userId)
-      );
-      if (userAccess.isNotEmpty) return userAccess;
+  const graphQLDocument = '''
+    query GetUserAccessByUserId(\$userId: ID!) {
+      listUserAccesses(filter: { user_id: { eq: \$userId } }) {
+        items {
+          id
+          user_id
+          tenant_id
+          permissions
+          status
+          user {
+            user_id
+            name
+          }
+          tenant {
+            tenant_id
+            name
+            plan
+            status
+          }
+        }
+      }
+    }
+  ''';
+
+  try {
+    final request = GraphQLRequest<String>(
+      document: graphQLDocument,
+      variables: {'userId': userId},
+    );
+
+    final response = await Amplify.API.query(request: request).response;
+
+    if (response.errors.isNotEmpty) {
+      safePrint('❌ GraphQL Errors: ${response.errors}');
+      return null;
+    }
+
+    final data = jsonDecode(response.data!) as Map<String, dynamic>;
+    final items = data['listUserAccesses']?['items'] as List?;
+    
+    if (items == null || items.isEmpty) {
       safePrint('⚠️ User access not found for user ID: $userId');
       return null;
-    } catch (e) {
-      safePrint('❌ Error getting user access: $e');
-      rethrow;
     }
+
+    // Convert each map to a UserAccess model using fromJson
+    final userAccessList = items
+        .map((item) => UserAccess.fromJson(Map<String, dynamic>.from(item)))
+        .toList();
+    return userAccessList;
+  } catch (e) {
+    safePrint('❌ Error getting user access: $e');
+    return null;
   }
+}
 
   Future<List<Evaluations>?> getEvaluations(String tenantId) async {
     try {
@@ -623,7 +688,7 @@ class DataStoreReadService {
       final grades = await Amplify.DataStore.query(
         Grades.classType,
         where: Grades.STUDENT.eq(studentId).and(Grades.TENANT_ID.eq(tenantId)));
-      return(grades);
+      return([grades.last]);
     } catch (e) {
       safePrint("Error al obtener calificaciones");
       return null;
@@ -640,13 +705,11 @@ class DataStoreReadService {
           and(Grades.STUDENT.eq(studentId).
           and(Grades.TENANT_ID.eq(tenantId))));
       return(grades);
-
     } catch (e) {
       safePrint("Error al obtener calificaciones");
       rethrow;
     }
   }
-
 }
 
 

@@ -26,8 +26,8 @@ class CustomScaffold extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/images/f_ma18.png',
-                  height: 300,
+                  'assets/images/f_ma11.png',
+                  height: 200,
                   fit: BoxFit.cover,
                 ),
                 const SizedBox(height: 10),

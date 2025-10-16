@@ -13,7 +13,6 @@ import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
-import 'package:la_dinamica_app/widgets/search_student_container.dart';
 import 'package:la_dinamica_app/widgets/students_number_home.dart';
 
 class StudentsScreen extends ConsumerStatefulWidget {
@@ -40,7 +39,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
     setState(() {
       user = _user;
       selectedDate = _date;
-      _studentsFuture = DataStoreReadService().getStudents(user!.tenantId);
+      _studentsFuture = DataStoreReadService().getStudents(user!.tenant.tenant_id);
     });
   }
 
@@ -151,7 +150,7 @@ class ScrollViewContent extends ConsumerWidget {
 
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      _deleteAttendance(ids[i], date ,user.tenantId);
+      _deleteAttendance(ids[i], date ,user.tenant.tenant_id);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Asistencia Eliminada'),

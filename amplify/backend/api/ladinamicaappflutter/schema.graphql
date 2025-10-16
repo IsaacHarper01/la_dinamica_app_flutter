@@ -38,7 +38,9 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   email: String
   image: String
   client_id: String
+  
   grades: [Grades] @hasMany(indexName: "byStudent", fields: ["id"])
+  debts: [Debt] @hasMany(indexName: "debtByStudent", fields: ["id"])
 }
 
 type Pay @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -51,6 +53,7 @@ type Pay @model @auth(rules: [{allow: public, operations: [create, read, update,
   date: AWSDate
   client_id: String
   prof_id: String
+  debt: Boolean
 }
 
 type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -139,4 +142,13 @@ type Grades @model @auth(rules: [{allow: public, operations: [create, read, upda
 
   student: Student @belongsTo(fields: ["studentID"])
   evaluation: Evaluations @belongsTo(fields: ["evaluationID"])
+}
+
+type Debt @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  studentID: ID! @index(name: "debtByStudent")
+  tenant_id: ID
+  price: Float
+  
+  student: Student @belongsTo(fields: ["studentID"])
 }

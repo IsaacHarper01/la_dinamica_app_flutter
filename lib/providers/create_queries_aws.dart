@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -38,6 +40,7 @@ class DataStoreService {
       date: TemporalDate(DateTime.parse(date)),
       client_id: dbId,
       prof_id: profId,
+      debt: false,
     );
 
     try {
@@ -144,13 +147,13 @@ class DataStoreService {
   }
 
   Future<void> saveUserAccess({
-    required String permissions,
+    required Map<String, bool> permissions,
     required bool status,
     required Tenant tenant,
     required User user,
   }) async {
     final item = UserAccess(
-      permissions: permissions,
+      permissions: jsonEncode(permissions),
       status: status,
       tenant: tenant,
       user: user,
@@ -293,4 +296,12 @@ await Amplify.DataStore.save(submetric);
     safePrint('✅ Grades saved: ${grade.id}, Value: ${grade.grades}');
     return grade;
   }
+
+  Future<void> markDebtStatus({
+    required Pay pay,
+    required bool status,
+    })async{
+      final newPay = pay.copyWith(debt:status);
+      Amplify.DataStore.save(newPay);
+    }
 }

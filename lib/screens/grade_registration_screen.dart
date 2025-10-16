@@ -110,7 +110,7 @@ Future<void> loadUser() async{
                 onPressed: () {
                 if ((tests.indexOf(currentTest) + 1) % tests.length == 0){
                   saveGrades();
-                  ref.read(examProvider.notifier).uploadGrades(user!.tenantId, user!.userId);
+                  ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
                   ref.read(examProvider.notifier).disposeAll();
                   ref.read(selectedStudentsProvider.notifier).clear();
                   Navigator.pop(context);

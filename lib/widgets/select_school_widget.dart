@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class SelectSchoolWidget extends ConsumerStatefulWidget {
@@ -28,16 +32,20 @@ class _SelectSchoolState extends ConsumerState<SelectSchoolWidget> {
                     title: const Text('Selecciona una escuela'),
                     actions: [
                       ...user.userAccess.map((access) {
+                        final permissions = Map<String, bool>.from(
+                          jsonDecode(access.permissions!),
+                        ); 
                         return CupertinoActionSheetAction(
                           onPressed: () {
                             ref
                                 .read(userProvider.notifier)
                                 .updateUser(
-                                  tenantId: access.tenant!.tenant_id,
+                                  tenant: access.tenant!,
                                   schoolname: access.tenant!.name,
-                                  permissions: access.permissions!,
+                                  permissions: permissions,
                                   plan: access.tenant!.plan!,
                                 );
+                            ref.read(studentsProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
                             Navigator.pop(context);
                           },
                           child: Text(access.tenant!.name),

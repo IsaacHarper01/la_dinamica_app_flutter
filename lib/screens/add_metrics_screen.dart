@@ -2,7 +2,6 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
@@ -59,7 +58,7 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
   // Save the evaluation first
   final evaluation = await awsDb.saveEvaluation(
     name: examName,
-    gymId: user.tenantId,
+    gymId: user.tenant.tenant_id,
   );
 
   SingleMetric? currentParentMetric;
@@ -77,7 +76,7 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
       safePrint('🔗 Guardando submétrica: ${metric._metricController.text}, ${metric._descriptionController.text}, ${metric._selectedOption}');
       final submetricObject = await awsDb.saveSubMetric(
         name: metric._metricController.text,
-        tenantId: user.tenantId,
+        tenantId: user.tenant.tenant_id,
         description: metric._descriptionController.text,
         metricType: metric._selectedOption,
       );
@@ -86,7 +85,7 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
       await awsDb.saveJoinSubMetric(
         metric: currentParentMetric,
         submetric: submetricObject,
-        tenantId: user.tenantId,
+        tenantId: user.tenant.tenant_id,
       );
 
       safePrint('✅ Submétrica guardada: ${submetricObject.name} (Padre: ${currentParentMetric.name})');
@@ -94,7 +93,7 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
       // Save the parent metric
       final metricObject = await awsDb.saveMetric(
         name: metric._metricController.text,
-        tenantId: user.tenantId,
+        tenantId: user.tenant.tenant_id,
         description: metric._descriptionController.text,
         type: metric._selectedOption,
       );
@@ -106,7 +105,7 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
       await awsDb.saveJoinedMetric(
         metric: metricObject,
         evaluation: evaluation,
-        tenantId: user.tenantId,
+        tenantId: user.tenant.tenant_id,
       );
 
       safePrint('✅ Métrica guardada: ${metricObject.name}');
@@ -157,33 +156,41 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _addMetric,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Nueva Prueba'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: _addSubmetric,
-                  icon: const Icon(Icons.subdirectory_arrow_right),
-                  label: const Text('Nueva SubPrueba'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    saveData(userAsync);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ExamStudentSelectionPage(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.arrow_forward),
-                  label: const Text('Aplicar'),
-                ),
-              ],
+            SizedBox(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Flexible(
+                    child: ElevatedButton.icon(
+                      onPressed: _addMetric,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Nueva Prueba'),
+                    ),
+                  ),
+                  Flexible(
+                    child: ElevatedButton.icon(
+                      onPressed: _addSubmetric,
+                      icon: const Icon(Icons.subdirectory_arrow_right),
+                      label: const Text('Nueva SubPrueba'),
+                    ),
+                  ),
+                  Flexible(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        saveData(userAsync);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExamStudentSelectionPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text('Aplicar'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -207,47 +214,50 @@ class _MetricForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: isSubmetric ? 32.0 : 0,
-        bottom: 16.0,
-      ),
-      child: Row(
-        children: [
-          Flexible(
-            flex: 1,
-            child: TextField(
-              controller: _metricController,
-              decoration: 
-                isSubmetric ? InputDecoration(labelText: 'SubPrueba',border: OutlineInputBorder()): InputDecoration(labelText: 'Prueba',border: OutlineInputBorder()),
+    return SizedBox(
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: isSubmetric ? 20.0 : 0,
+          bottom: 16.0,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: TextField(
+                controller: _metricController,
+                decoration: InputDecoration(
+                  labelText: isSubmetric ? 'SubPrueba' : 'Prueba',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
-          ),
-          Flexible(
-            flex: 3,
-            child: TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Descripción', border: OutlineInputBorder()),
+            Expanded(
+              flex: 3,
+              child: TextField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Descripción',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
-          ),
-          Flexible(
-            flex: 1,
-            child: DropdownButtonFormField<String>(
-              focusColor: colorList[4],
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-              value: _selectedOption,
-              items: _dropdownOptions
-                  .map((option) =>
-                      DropdownMenuItem(value: option, child: Text(option)))
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  _selectedOption = value;
-                }
-              },
+            Expanded(
+              flex: 2,
+              child: DropdownButtonFormField<String>(
+                decoration: const InputDecoration(border: OutlineInputBorder()),
+                value: _selectedOption,
+                items: _dropdownOptions
+                    .map((option) =>
+                        DropdownMenuItem(value: option, child: Text(option)))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) _selectedOption = value;
+                },
+              ),
             ),
-          )
-        ],
-
+          ],
+        ),
       ),
     );
   }

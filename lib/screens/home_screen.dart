@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 import 'package:la_dinamica_app/widgets/select_school_widget.dart';
@@ -16,7 +19,6 @@ import 'package:la_dinamica_app/widgets/students_number_home.dart';
 
 import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
-import '../widgets/search_student_container.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -25,18 +27,15 @@ class HomeScreen extends ConsumerStatefulWidget {
   HomeScreenState createState() => HomeScreenState();
 }
 
-class HomeScreenState extends ConsumerState<HomeScreen> {
+class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObserver{
   UserLocal? user;
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
-    // Defer execution to avoid modifying state during widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       user = ref.read(userProvider).value;
-
       if (user != null) {
         ref
             .watch(studentsProvider.notifier)
@@ -44,29 +43,22 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       }
     });
 
-    // Escucha cualquier cambio en el userProvider y dateProvider
-    // ref.listen(attendanceRefreshProvider, (prev, next) {
-    //   final (user, date) = next;
-    //   if (user != null) {
-    //     ref.read(studentsProvider.notifier).fetchAttendanceToday(date);
-    //   }
-    // });
-
     _searchController.addListener(() {
       ref.read(searchTermProvider.notifier).state = _searchController.text;
     });
   }
 
-
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   Future<void> registerAssistance(BuildContext context) async {
     final currentDate = ref.read(dateProvider);
-    final result = await scannerQR(context, user!.tenantId);
+    final result = await scannerQR(context, user!.tenant.tenant_id);
+    safePrint('QR Result: $result');
     final aws = DataStoreReadService();
 
     if (result == null || result.isEmpty) {
@@ -92,8 +84,26 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }
-    if (result['action'] == 'newAccess') {
-      aws.giveUserAccess(result["tenant_id"], result["permissions"], user!);
+    if (result['action'] == 'newAccess' && user!.permissions['addProfesor']==true) {
+      final permissions = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const PermissionsScreen(),
+        ),
+      );
+      safePrint('Permisos otorgados: $permissions');
+      aws.giveUserAccess(user!.tenant, jsonEncode(permissions), result['profID']);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+      content: Text('Profesor añadido correctamente'),
+      backgroundColor: Colors.green,
+      ),);
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+      content: Text('Permiso Denegado'),
+      backgroundColor: Colors.red,
+      ));
     }
   }
 
@@ -104,16 +114,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    user = ref.watch(userProvider).value;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortrait = orientation == Orientation.portrait;
     final screenHeight =
         isPortrait
             ? MediaQuery.of(context).size.height
             : MediaQuery.of(context).size.height * 1.2;
-    final screenWidth =
-        isPortrait
-            ? MediaQuery.of(context).size.width
-            : MediaQuery.of(context).size.width * 1.2;
+
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
@@ -161,8 +169,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                             : 'assets/images/f_ma18.png',
                         height:
                             isDarkMode
-                                ? screenHeight * 0.1
-                                : screenHeight * 0.2,
+                                ? screenHeight * 0.2
+                                : screenHeight * 0.1,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -245,7 +253,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
                                               .deleteAttendance(
                                                 student.id,
                                                 ref.read(dateProvider),
-                                                user.tenantId,
+                                                user.tenant.tenant_id,
                                               );
                                         },
                                       ),

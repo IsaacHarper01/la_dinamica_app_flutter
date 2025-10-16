@@ -15,11 +15,11 @@
       "api": {
         "ladinamicaappflutter": {}
       },
-      "auth": {
-        "ladinamicaappflutter": {}
-      },
       "storage": {
         "s3ladinamicaappstorage": {}
+      },
+      "auth": {
+        "ladinamicaappflutter0199681f": {}
       }
     }
   }

@@ -27,7 +27,7 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
 
   Future<void> loadPlans() async {
     final user = await ref.watch(userProvider.future);
-    final gymId = user.tenantId;
+    final gymId = user.tenant.tenant_id;
     try {
       
       final awsPlans = await dataStoreReadService.getPlans(gymId);
@@ -56,7 +56,7 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
   Future<void> deletePlan(String id) async {
     final user = await ref.watch(userProvider.future);
     try {
-      await dataStoreDeleteService.deletePlanById(id, user.tenantId);
+      await dataStoreDeleteService.deletePlanById(id, user.tenant.tenant_id);
       loadPlans();
     } catch (e, st) {
       state = AsyncValue.error(e, st);

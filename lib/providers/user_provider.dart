@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
@@ -15,47 +17,46 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
   Future<UserLocal> build() async {
     final awsDb = DataStoreReadService();
     final awsDb2 = DataStoreService();
+    final Map<String, String> userAtributes;  
 
     try {
-      final cognitoUser = await Amplify.Auth.getCurrentUser();
-      final userId = cognitoUser.userId;
-      final email = cognitoUser.signInDetails.toJson()['username'] as String;
+      final attributes = await Amplify.Auth.fetchUserAttributes();
+      userAtributes = {for (var attr in attributes) attr.userAttributeKey.toString(): attr.value};
+      final userId = userAtributes['sub']!;
+      final email = userAtributes['email']!;
       safePrint("Comprobando existencia de usuario: $userId");
+      safePrint("Detalles de inicio de sesión: $userAtributes");
       if (await awsDb.userExists(userId)) {
         final dbUser = await awsDb.getUser(userId);
-        final userAccess = await awsDb.getUserAccess(
-          dbUser!.user_id,
-        ); 
-
+        final userAccess = await awsDb.getUserAccess(dbUser!.user_id,); 
+        final Map<String, bool> decodedPermisions = Map<String, bool>.from(jsonDecode(userAccess!.first.permissions!));
         final newUser = UserLocal(
           userId: dbUser.user_id,
-          tenantId: userAccess!.first.tenant!.tenant_id,
-          name: dbUser.name,
+          tenant: userAccess.first.tenant!,
+          name: userAccess.first.user!.name,
           schoolname: userAccess.first.tenant!.name,
-          permissions: userAccess.first.permissions!,
+          permissions: decodedPermisions,
           plan: userAccess.first.tenant!.plan!,
           status: userAccess.first.tenant!.status!,
           userAccess: userAccess,
         );
         safePrint(
-          '✅ Usuario cargado correctamente: ${newUser.userId}, ${newUser.tenantId}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
+          '✅ Usuario cargado correctamente: ${newUser.userId}, ${newUser.tenant}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
         );
-        safePrint(
-          '🔑 UserAccess cargado: ${userAccess.map((ua) => ua.id).join(', ')}',
-        );
+
         return newUser;
       } else {
+        final name = userAtributes['name']!;
+        final nameSchool = userAtributes['nickname']!;
         final newTenantId = Uuid().v4();
-        final schoolName =
-            "La Dinámica Gym"; //change this to the actual school name logic
         final plan = "Free";
         final status = true;
 
-        final user = User(user_id: userId, name: email);
+        final user = User(user_id: userId, name: name);
 
         final tenant = Tenant(
           tenant_id: newTenantId,
-          name: schoolName,
+          name: nameSchool,
           plan: plan,
           status: status,
         );
@@ -63,29 +64,29 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         final userAccess = UserAccess(
           user: user,
           tenant: tenant,
-          permissions: 'admin', // Default permissions
+          permissions: '{"deleteStudents": true, "watchIncome": true, "setPlans": true, "setEvaluations": true, "deletePayments": true, "addProfesor": true}', // Default permissions
           status: true,
         );
-        await awsDb2.saveUser(id: userId, name: email);
+        await awsDb2.saveUser(id: userId, name: name);
         await awsDb2.saveTenant(
           tenantId: newTenantId,
-          name: schoolName,
+          name: nameSchool,
           plan: plan,
           status: status,
         );
         await awsDb2.saveUserAccess(
           user: user,
           tenant: tenant,
-          permissions: 'admin', // Default permissions
+          permissions: {'deleteStudents': true, 'watchIncome': true, 'setPlans': true, 'setEvaluations': true, 'deletePayments': true, "addProfesor": true}, // Default permissions
           status: true,
         );
 
         final newUser = UserLocal(
           userId: userId,
-          tenantId: newTenantId,
+          tenant: tenant,
           name: email,
-          schoolname: schoolName,
-          permissions: 'admin',
+          schoolname: nameSchool,
+          permissions: {'deleteStudents': true, 'watchIncome': true, 'setPlans': true, 'setEvaluations': true, 'deletePayments': true, "addProfesor": true},
           // Default permissions
           plan: plan,
           status: status,
@@ -107,9 +108,9 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
   void updateUser({
     String? userId,
     String? name,
-    String? tenantId,
+    Tenant? tenant,
     String? schoolname,
-    String? permissions,
+    Map<String, bool>? permissions,
     String? plan,
     bool? status,
   }) {
@@ -118,7 +119,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
       final updatedUser = currentUser.copyWith(
         userId: userId ?? currentUser.userId,
         name: name ?? currentUser.name,
-        tenantId: tenantId ?? currentUser.tenantId,
+        tenant: tenant ?? currentUser.tenant,
         schoolname: schoolname ?? currentUser.schoolname,
         permissions: permissions ?? currentUser.permissions,
         plan: plan ?? currentUser.plan,
@@ -126,7 +127,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
       );
       state = AsyncValue.data(updatedUser);
       safePrint(
-        '✅ Usuario actualizado: ${updatedUser.userId}, ${updatedUser.tenantId}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}',
+        '✅ Usuario actualizado: ${updatedUser.userId}, ${updatedUser.tenant}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}',
       );
     }
   }

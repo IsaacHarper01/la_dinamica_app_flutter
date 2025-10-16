@@ -1,4 +1,3 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
@@ -70,21 +69,12 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                   ),
                 ),
               ),
-              if (userAsync.permissions == "admin") ...[
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
-                  icon: const Icon(Icons.person_add_alt_1_rounded),
-                  label: const Text('Agregar Profesor'),
+                  icon: const Icon(Icons.qr_code),
+                  label: const Text('QR para nuevo acceso'),
                   onPressed: () async{
-                    final permissions = await Navigator.push<Map<String, bool>>(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const PermissionsScreen(),
-                            ),
-                          );
-                    if (permissions != null) {
-                      _showQrCodeDialog(context, '{"action":"newAccess","tenant_id":"${userAsync.tenantId}","permissions":"$permissions"}');
-                    }
+                      _showQrCodeDialog(context, '{"action":"newAccess","profID":"${userAsync.userId}"}');
                   } ,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
@@ -96,13 +86,15 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                     ),
                   ),
                 ),
-              ],
+
               const SizedBox(height: 24),
               SectionCard(
                 title: 'Planes disponibles',
                 actions: [
+                  userAsync.permissions["setPlans"]! ?
                   OutlinedButton.icon(
-                      onPressed: () async {
+                      onPressed: () 
+                      async {
                         final result = await Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const AddNewPlan()),
@@ -117,7 +109,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                         foregroundColor: colorScheme.onPrimaryContainer,
                         maximumSize: Size((screenWidth * 0.3), 40),
                       ),
-                    ),
+                    ): Container(),
                 ],
                 child: Column(
                   children: planes
@@ -125,6 +117,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 6.0),
                             child: PlanCard(
                               plan: plan,
+                              permission: userAsync.permissions["setPlans"]!,
                               onDelete: () {
                                 ref
                                     .read(planProvider.notifier)
@@ -187,8 +180,14 @@ void _showQrCodeDialog(BuildContext context, String dataToEncode){
 class PlanCard extends StatelessWidget {
   final LocalPlan plan;
   final VoidCallback onDelete;
+  final bool permission;
 
-  const PlanCard({super.key, required this.plan, required this.onDelete});
+  const PlanCard({
+    super.key, 
+    required this.plan, 
+    required this.onDelete,
+    required this.permission,
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +244,7 @@ class PlanCard extends StatelessWidget {
                 ],
               ),
             ),
+            permission ?
             PopupMenuButton<String>(
               onSelected: (value) async {
                 if (value == 'delete') {
@@ -287,7 +287,7 @@ class PlanCard extends StatelessWidget {
                       ),
                     ),
                   ],
-            ),
+            ): Container(),
           ],
         ),
       ),

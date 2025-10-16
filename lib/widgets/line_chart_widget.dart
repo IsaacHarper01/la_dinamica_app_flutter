@@ -33,7 +33,7 @@ class LineChartWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final today = DateTime.parse(ref.watch(dateProvider));
-    final tenantId = user.tenantId;
+    final tenantId = user.tenant.tenant_id;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
@@ -183,20 +183,20 @@ infocharts(screenWidth, alldata, n, linegraph){
   
   Map<String, dynamic> getCountPerDay(data){ //this function could be used for both income and students
     List<double> values = [0,0,0,0,0,0,0]; // [LU, MA, MI, JU, VI, SA, DO]
+    int aux = 0;
 
     data.forEach((dateStr, earning) {
       final date = DateTime.parse(dateStr);
       final day = date.weekday;
-      safePrint("day: $day, earning: $earning");
       values[day - 1] += earning;
+      aux += 1;
     });
-    int aux = 0;
+    
     double sum = 0.0;
 
     for (var i = 0; i < values.length; i++) {
       if (values[i] != 0) {
         sum += values[i];
-        aux +=1;
       }
     }
     final average = sum / aux;

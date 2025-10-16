@@ -62,9 +62,10 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     return userAsync.when(
       loading:()=> Scaffold(body: Center(child: CircularProgressIndicator(),),),
       error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
-      data: (userAsync) => Scaffold(
+      data: (userAsync) => userAsync.permissions['watchIncome']! ?
+      Scaffold(
       body: FutureBuilder<double>(
-        future: awsDb.getIncomeRange(startDate, endDate, userAsync.tenantId),
+        future: awsDb.getIncomeRange(startDate, endDate, userAsync.tenant.tenant_id),
         builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -77,6 +78,9 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
           }
         },
       ),
+      ): Scaffold(
+        body: Center(child: 
+          Text('No tienes acceso a esta sección')) 
       )
     );
   }
@@ -99,56 +103,55 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
               const SizedBox(height: 35),
               Text('Seleccione un periodo',style: GoogleFonts.michroma()),
               const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Botón de Fecha de Inicio
-                  FilledButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(colorList[2]),
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            8.0,
-                          ), // Ajusta el valor según lo que desees
+              SizedBox(
+                width: screenWidth,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      flex: 5,
+                      child: FilledButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(colorList[2]),
+                          shape: WidgetStatePropertyAll(
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                          ),
+                        ),
+                        onPressed: () => _selectDate(context, true),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "Inicio: ${startDate.month}/${startDate.day}/${startDate.year}",
+                            style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
+                          ),
                         ),
                       ),
                     ),
-                    onPressed: () {
-                      _selectDate(context, true); // true para fecha de inicio
-                    },
-                    child: Text(
-                      "Inicio: ${startDate.month}/${startDate.day}/${startDate.year}",
-                      style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Text('A', style: GoogleFonts.michroma(),),
-                  const SizedBox(width: 20), // Espaciado entre botones
-                  // Botón de Fecha de Final
-                  FilledButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(colorList[2]),
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            8.0,
-                          ), // Ajusta el valor según lo que desees
+                    const SizedBox(width: 8),
+                    Text('A', style: GoogleFonts.michroma(),),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      flex: 5,
+                      child: FilledButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(colorList[2]),
+                          shape: WidgetStatePropertyAll(
+                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                          ),
+                        ),
+                        onPressed: () => _selectDate(context, false),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            "Final: ${endDate.month}/${endDate.day}/${endDate.year}",
+                            style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
+                          ),
                         ),
                       ),
                     ),
-                    onPressed: () {
-                      _selectDate(
-                        context,
-                        false,
-                      ); // false para fecha de finalización
-                    },
-                    child: Text(
-                      "Final: ${endDate.month}/${endDate.day}/${endDate.year}",
-                      style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 10,
@@ -161,7 +164,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateAttendanceReport(startDate, endDate, user.tenantId);
+                        generateAttendanceReport(startDate, endDate, user.tenant.tenant_id);
                       },
                       child: const Text(
                         'Reporte de asistencias',
@@ -172,7 +175,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   Flexible(
                     child: ElevatedButton(
                       onPressed: () {
-                        generateIncomeReport(startDate, endDate, user.tenantId);
+                        generateIncomeReport(startDate, endDate, user.tenant.tenant_id);
                       },
                       child: const Text(
                         'Reporte de Ingresos',
@@ -204,7 +207,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Text(
-                            'Ingresos: ',
+                            'Ingresos de hoy: ',
                             style: GoogleFonts.michroma(color: Colors.white),
                           ),
                           Text(
@@ -227,6 +230,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
               ),
               const SizedBox(height: 20),
               Container(
+                width: screenWidth,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: colorList[1], width: 1),
@@ -234,7 +238,8 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 child: PieChartWidget(
                   startDate: startDate, 
                   endDate: endDate, 
-                  tenantId: user.tenantId,
+                  tenantId: user.tenant.tenant_id,
+                  screenWidth: screenWidth,
                 ),
               ),
             ],

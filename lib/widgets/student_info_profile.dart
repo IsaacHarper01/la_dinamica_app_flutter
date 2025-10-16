@@ -7,6 +7,7 @@ class InfoCard extends StatelessWidget {
   final int clases;
   final String payDate;
   final String phone;
+  final double totalDebt;
 
   const InfoCard({
     super.key,
@@ -14,13 +15,14 @@ class InfoCard extends StatelessWidget {
     required this.clases,
     required this.payDate,
     required this.phone,
+    required this.totalDebt,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 500,
-      height: 300,
+      height: 400,
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -96,6 +98,23 @@ class InfoCard extends StatelessWidget {
                     children: [
                       Icon(Icons.phone),
                       Text(' Telefono:    $phone',
+                      style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold),),
+                    ],
+                  ),
+                ),
+              ),
+            Card(
+                elevation: 3,
+                shadowColor: colorList[5],
+                color: colorList[2],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.money_off_rounded),
+                      Text('Adeudos:    $totalDebt',
                       style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold),),
                     ],
                   ),

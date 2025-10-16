@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -41,7 +40,7 @@ class _PaysScreenState extends ConsumerState<PaysScreen> {
       error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
       data: (user) => Scaffold(
       body: FutureBuilder(
-        future: awsDb.getPlansNamesIds(user.tenantId),
+        future: awsDb.getPlansNamesIds(user.tenant.tenant_id),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -296,7 +295,7 @@ Widget paymentBox(
                                   context: context,
                                   costs: costs,
                                   date: date,
-                                  user: user!,
+                                  user: user,
                                   nameIndex: int.parse(
                                     ids[nameIndexNotifier.value],
                                   ),
@@ -343,8 +342,8 @@ void assignedPlan({
     clases: int.parse(clases[planIndex]),
     type: plansType[planIndex],
     date: date,
-    dbId: user.tenantId,
-    profId: user.userId,
+    dbId: user.tenant.tenant_id,
+    profId: user.name,
   );
 
   ScaffoldMessenger.of(context).showSnackBar(

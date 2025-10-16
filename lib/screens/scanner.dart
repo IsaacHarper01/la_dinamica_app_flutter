@@ -52,8 +52,8 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context, String tenantId) a
         }
       }
     else if(info['action']=='newAccess'){
-       String tenantId = info['tenant_id'];
-       return Future.value({'action':info["action"],'tenant_id':tenantId, 'permissions': info['permissions']});
+       String profId = info['profID'];
+       return Future.value({'action':info["action"],'profID':profId});
     }
     else{
       return null;

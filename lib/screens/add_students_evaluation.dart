@@ -41,7 +41,7 @@ class _ExamStudentSelectionPageState extends ConsumerState<ExamStudentSelectionP
     setState(() {
       user = _user;
       selectedDate = _date;
-      _studentsFuture = DataStoreReadService().getStudents(user!.tenantId);
+      _studentsFuture = DataStoreReadService().getStudents(user!.tenant.tenant_id);
     });
   }
 

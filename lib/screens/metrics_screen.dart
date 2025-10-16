@@ -6,9 +6,7 @@ import 'package:la_dinamica_app/models/Grades.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:la_dinamica_app/widgets/metrics_screen/bar_grades_indicator.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/buttons_menu_metrics.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/total_grades.dart';
 
@@ -41,12 +39,11 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
 
   void loadData() async{
     final _user = await ref.read(userProvider.future);
-    final selectedRange = ref.read(selectedDateProviderMetrics);
     final aws = DataStoreReadService();
     setState(() {
       user = _user;
     });
-    grades = await aws.getLastExam(user!.tenantId, widget.studentId);
+    grades = await aws.getLastExam(user!.tenant.tenant_id, widget.studentId);
     if(grades != null){
       ref.read(studentGradesProvider.notifier).setGrades(grades!);
     }
@@ -133,7 +130,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
               children: [
                 SizedBox(
                   height: 330,
-                  child: grades == null
+                  child: grades!.length == 0
                       ? const Center(
                           child: Text(
                             "No hay calificaciones disponibles",

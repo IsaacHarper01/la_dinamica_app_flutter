@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/students_provider.dart';
 
 class CalendarButton extends ConsumerWidget {
   const CalendarButton({super.key});
@@ -21,6 +22,7 @@ class CalendarButton extends ConsumerWidget {
 
         if (picked != null) {
           ref.read(dateProvider.notifier).state = picked.toString().split(' ')[0];
+          ref.read(studentsProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
         }
       },
     );

@@ -48,7 +48,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
     final awsDb = DataStoreReadService();
 
     for (var joinmetric in widget.metrics){
-      final submetrics = await awsDb.getJoinSubMetrics(widget.user.tenantId, joinmetric.metric!);
+      final submetrics = await awsDb.getJoinSubMetrics(widget.user.tenant.tenant_id, joinmetric.metric!);
       if (submetrics.isNotEmpty) {
         setState(() {
           examDetails![joinmetric.metric!.name] = submetrics.map((e) => e.submetric!.name).toList();

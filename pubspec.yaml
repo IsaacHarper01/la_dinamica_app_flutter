@@ -38,6 +38,7 @@ dependencies:
   table_calendar: ^3.0.9
   time_range_picker: ^2.0.0
   aws_common: ^0.7.8
+  flutter_native_splash: ^2.4.6
 
 
 dev_dependencies:
@@ -58,6 +59,14 @@ flutter:
     - assets/images/default_profile.jpg
     - assets/images/f_ma11.png
     - assets/images/f_ma18.png
+
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+  background_color: "#d4e4ed"
+  image: assets/images/f_ma11.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see

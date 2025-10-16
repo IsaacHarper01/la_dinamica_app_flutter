@@ -114,4 +114,23 @@ class DataStoreDeleteService {
     }
   }
 
+  Future<void> deletePaymentByID(String id, String tenantId) async {
+      try {
+        List<Pay> payments = await Amplify.DataStore.query(
+          Pay.classType,
+          where: Pay.ID.eq(id).and(Pay.CLIENT_ID.eq(tenantId)),
+        );
+        if (payments.isNotEmpty) {
+          for (var payment in payments) {
+            await Amplify.DataStore.delete(payment);
+          }
+          safePrint('✅ Pago eliminado correctamente');
+        } else {
+          safePrint('❌ No se encontró el Pago con el ID proporcionado');
+        }
+      } catch (e) {
+        safePrint('❌ Error al eliminar Pago: $e');
+      }
+    }
+
 }

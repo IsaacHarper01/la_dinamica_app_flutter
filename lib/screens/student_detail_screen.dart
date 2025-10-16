@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/database.dart';
+import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -12,6 +13,7 @@ import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/screens/editPayments_screen.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
 import 'package:la_dinamica_app/widgets/student_info_profile.dart';
 
@@ -57,6 +59,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   );
 
   bool isActive = true;
+  List<Pay>? debts;
 
   final DatabaseHelper db = DatabaseHelper();
   final awsDb = DataStoreReadService();
@@ -85,7 +88,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
       data: (userAsync) => Scaffold(
       appBar: AppBar(title: Text(widget.name)),
       body: FutureBuilder(
-        future: awsDb.getLastPayandStudentData(widget.id, userAsync.tenantId),
+        future: awsDb.getLastPayandStudentData(widget.id, userAsync.tenant.tenant_id),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -95,6 +98,9 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             }
             if (snapshot.data['lastPay'] != null){
               paymentData = snapshot.data['lastPay'];
+            }
+            if(snapshot.data['debts'] != null){
+              debts = snapshot.data['debts'];
             }
             return infoScreen(
               screenHeight,
@@ -119,15 +125,16 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   ) {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
-    final tenantId = user.tenantId;
+    final tenantId = user.tenant.tenant_id;
     final imageUrl = ref.watch(studentImageProvider(studentData.image!));
 
-    void handleDeleteDash(context, id) async {
-    // Mostrar un cuadro de diálogo para confirmar la eliminación
+    void handleDeleteDash(context, id, bool permision) async {
     bool? shouldDelete = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return 
+        permision ?
+        AlertDialog(
           title: const Text('Confirmar Eliminación'),
           content: const Text(
             '¿Estás seguro de que quieres eliminar a este alumno?',
@@ -146,6 +153,19 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               },
             ),
           ],
+        ): AlertDialog(
+          title: const Text('Permiso Denegado'),
+          content: const Text(
+            'No tienes permiso para eliminar a este alumno. Contacta al administrador.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop(false); // Retornar false al cerrar
+              },
+            ),
+          ],
         );
       },
     );
@@ -161,6 +181,16 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
       );
       Navigator.pop(context); // Volver a la pantalla anterior
     }
+  }
+
+  double calculateTotalDebt(){
+    var total = 0.0;
+    if(debts != null){
+      for(var debt in debts!){
+        total += debt.amount!;
+      }
+    }
+    return total;
   }
 
     return SingleChildScrollView(
@@ -242,9 +272,31 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   ),
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
+                       Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: colorList[1],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.fmd_good_rounded,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    '${studentData.address}',
+                                    style: GoogleFonts.gochiHand(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
                           decoration: BoxDecoration(
                             color: colorList[1],
                             borderRadius: BorderRadius.circular(10),
@@ -254,39 +306,37 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                             child: Row(
                               children: [
                                 const Icon(
-                                  Icons.fmd_good_rounded,
+                                  Icons.directions_walk_rounded,
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  '${studentData.address}',
+                                  '${studentData.age} años',
                                   style: GoogleFonts.gochiHand(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: colorList[1],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.directions_walk_rounded,
-                                color: Colors.white,
-                              ),
-                              Text(
-                                '${studentData.age} años',
-                                style: GoogleFonts.gochiHand(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      Expanded(
+                        flex: 3,
+                        child: SizedBox()),
+                      Expanded(child: IconButton(
+                        onPressed: () async{
+                          await pickAndSaveImage(widget.image, tenantId, true).then((newPath) {
+                            if (newPath != null) {
+                              setState(() {
+                                studentData = studentData.copyWith(image: newPath);
+                              });
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.camera_alt_outlined, color: Colors.white,),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(colorList[1]),
+                          shape: WidgetStateProperty.all(const CircleBorder()),
+                          )
+                        )
+                      )
                     ],
                   ),
                 ],
@@ -303,7 +353,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 Expanded(
                   child: FilledButton(
                     onPressed: (){
-                      handleDeleteDash(context, widget.id);
+                      handleDeleteDash(context, widget.id, user.permissions['deleteStudents'] ?? false);
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[4]),
@@ -317,7 +367,18 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 ),
                 Expanded(
                   child: FilledButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => EditpaymentsScreen(
+                                student: studentData,
+                                user: user,
+                              ),
+                        ),
+                      );
+                    },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[4]),
                     ),
@@ -411,7 +472,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                InfoCard(id: widget.id, clases: paymentData.clases!, payDate: paymentData.date.toString(), phone: studentData.phone!),
+                InfoCard(id: widget.id, clases: paymentData.clases!, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
                 const SizedBox(height: 10),
                 FilledButton.icon(
                   onPressed: () {

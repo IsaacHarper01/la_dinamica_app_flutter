@@ -53,7 +53,7 @@ class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
   },
     );
     if (shouldDelete == true) {
-      awsDelete.deleteExamn(exam, widget.user.tenantId);//aws.deleteExamn() I have to implement this method
+      awsDelete.deleteExamn(exam, widget.user.tenant.tenant_id);//aws.deleteExamn() I have to implement this method
       debugPrint("Examen eliminado: ${exam.name}");
     } else {
       debugPrint("Eliminación cancelada");
@@ -107,7 +107,7 @@ class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
                   if (selectedExamId != null){
                     final selectedExam = widget.evaluations?.firstWhere((exam) => exam == selectedExamId);
                     debugPrint("Proceeding with exam: ${selectedExam?.name}");
-                    examMetrics = await awsDb.getJointMetrics(widget.user.tenantId, selectedExam!);
+                    examMetrics = await awsDb.getJointMetrics(widget.user.tenant.tenant_id, selectedExam!);
                     Navigator.push(
                       context,
                       MaterialPageRoute(

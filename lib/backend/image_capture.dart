@@ -8,7 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 
-Future<String?> pickAndSaveImage(String name, String tenantId) async {
+Future<String?> pickAndSaveImage(String name, String tenantId, bool takeAgain) async {
   final picker = ImagePicker();
   final storage = Storages3();
   final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -32,12 +32,14 @@ Future<String?> pickAndSaveImage(String name, String tenantId) async {
 
     // Save to temp file before upload
     final tempDir = await getTemporaryDirectory();
-    final tempPath = path.join(tempDir.path, name);
+    final tempPath = takeAgain ? path.join(tempDir.path, "tempPhoto") : path.join(tempDir.path, name);
     final tempFile = await File(tempPath).writeAsBytes(compressedBytes);
 
     // Upload the image to S3
 
-    String? newPath = await storage.uploadFile(tempFile, name, tenantId);
+    String? newPath = takeAgain ? 
+       await storage.updateImage(tempFile, name) :
+       await storage.uploadFile(tempFile, name, tenantId);
     
     return newPath;
   } else {

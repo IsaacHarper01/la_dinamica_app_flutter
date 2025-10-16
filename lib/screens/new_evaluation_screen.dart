@@ -31,7 +31,7 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
       user = _user;
     });
     final awsDb = DataStoreReadService();
-    final exams = await awsDb.getEvaluations(user!.tenantId);
+    final exams = await awsDb.getEvaluations(user!.tenant.tenant_id);
     setState(() {
       _evaluations = exams;
     });
@@ -54,6 +54,7 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              user!.permissions["setEvaluations"]! ?
               ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -73,7 +74,7 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
                     size: 40, // 
                     color: Colors.white,
                   ),
-                ),
+                ):
               Text("Crear nueva prueba"),
               SizedBox(height: 40),
               ViewExamsBox(evaluations: _evaluations, user: user!), 

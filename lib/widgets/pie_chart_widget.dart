@@ -13,12 +13,14 @@ class PieChartWidget extends ConsumerWidget {
   final DateTime startDate;
   final DateTime endDate;
   final String tenantId;
+  final double screenWidth;
 
   const PieChartWidget({
     super.key,
     required this.startDate,
     required this.endDate,
     required this.tenantId,
+    required this.screenWidth,
   });
 
   @override
@@ -53,7 +55,7 @@ class PieChartWidget extends ConsumerWidget {
           return Center(
             child: SizedBox(
               height: 400, // or any fixed height
-              child: ChartPie(data: snapshot.data!),
+              child: ChartPie(data: snapshot.data!, screenWidth: screenWidth),
             ),
           );
         }
@@ -64,8 +66,13 @@ class PieChartWidget extends ConsumerWidget {
 
 class ChartPie extends StatelessWidget {
   final List<Pay> data;
+  final double screenWidth;
 
-  const ChartPie({super.key, required this.data});
+  const ChartPie({
+    super.key,
+    required this.data,
+    required this.screenWidth,
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -140,18 +147,19 @@ class ChartPie extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 400,
-              height: 300,
-              child: PieChart(
-                PieChartData(
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 90,
-                  sections: sections,
+            Expanded(
+              child: SizedBox(
+                height: 300,
+                child: PieChart(
+                  PieChartData(
+                    sectionsSpace: 0,
+                    centerSpaceRadius: screenWidth * 0.1,
+                    sections: sections,
+                  ),
                 ),
               ),
             ),
-            chartInfo(percentages, total, colors),
+            Expanded(child: chartInfo(percentages, total, colors)),
           ],
         ),
       ],

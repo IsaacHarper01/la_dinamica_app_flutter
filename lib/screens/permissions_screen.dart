@@ -12,6 +12,9 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   bool deleteStudents = false;
   bool watchIncome = false;
   bool setPlans = false;
+  bool setEvaluations = false;
+  bool deletePayments = false;
+  bool addProfesor = false;
   
   @override
   Widget build(BuildContext context) {
@@ -38,6 +41,21 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               value: setPlans,
               onChanged: (value) => setState(() => setPlans = value),
             ),
+            SwitchListTile(
+              title: const Text('Añadir Evaluaciones'),
+              value: setEvaluations,
+              onChanged: (value) => setState(() => setEvaluations = value),
+            ),
+            SwitchListTile(
+              title: const Text('Eliminar pagos'),
+              value: deletePayments,
+              onChanged: (value) => setState(() => deletePayments = value),
+            ),
+            SwitchListTile(
+              title: const Text('Agregar profesores'),
+              value: addProfesor,
+              onChanged: (value) => setState(() => addProfesor = value),
+            ),
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -46,16 +64,20 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Cancelar'),
                 ),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () {
                     final permissions = {
                       'deleteStudents': deleteStudents,
                       'watchIncome': watchIncome,
                       'setPlans': setPlans,
+                      'setEvaluations': setEvaluations,
+                      'deletePayments': deletePayments,
+                      'addProfesor' : addProfesor,
                     };
                     Navigator.pop(context, permissions);
                   },
-                  child: const Text('Aceptar'),
+                  label: const Text('Agregar profesor'),
+                  icon: const Icon(Icons.person_add_outlined),
                 ),
               ],
             )

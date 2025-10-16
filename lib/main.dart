@@ -33,6 +33,7 @@ Future<void> _configureAmplify() async {
     try {
       await Amplify.addPlugins([datastorePlugin, apiPlugin, storage, auth]);
       await Amplify.configure(amplifyconfig);
+      //await Amplify.DataStore.clear();
       safePrint('✅ Amplify configurado correctamente');
     } on AmplifyAlreadyConfiguredException {
       safePrint('⚠️ Amplify ya estaba configurado');
@@ -63,12 +64,12 @@ class MyApp extends ConsumerWidget {
               footer: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Don\'t have an account?'),
+                  const Text('No tienes una cuenta?'),
                   TextButton(
                     onPressed: () => state.changeStep(
                       AuthenticatorStep.signUp,
                     ),
-                    child: const Text('Sign Up'),
+                    child: const Text('Crear cuenta'),
                   ),
                 ],
               ),
@@ -82,12 +83,12 @@ class MyApp extends ConsumerWidget {
               footer: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Already have an account?'),
+                  const Text('Ya tienes una cuenta?'),
                   TextButton(
                     onPressed: () => state.changeStep(
                       AuthenticatorStep.signIn,
                     ),
-                    child: const Text('Sign In'),
+                    child: const Text('Entrar'),
                   ),
                 ],
               ),

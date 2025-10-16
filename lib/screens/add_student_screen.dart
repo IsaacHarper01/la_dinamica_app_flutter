@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
@@ -20,23 +18,20 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
   
-  // Crear un controlador para cada campo de texto
   final List<TextEditingController> _controllers = List.generate(
     6,
     (index) => TextEditingController(),
   );
 
-  // Lista de nombres personalizados para cada campo
   final List<String> _fieldNames = [
     'Nombre',
     'Localidad',
     'Teléfono',
     'Edad',
-    'Fecha de nacimiento',
+    'Fecha de nacimiento(yyyy-mm-dd)',
     'Correo Electrónico',
   ];
 
-  //La lista de las etiquetas y los nombres en la base de datos difieren por lo que hice otra variable
   final List<String> _namesdb = [
     'name',
     'address',
@@ -48,19 +43,29 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
 
   @override
   void dispose() {
-    // Liberar los controladores cuando no se necesiten más
     for (var controller in _controllers) {
       controller.dispose();
     }
     super.dispose();
   }
 
+  bool checkDateFormat(String date) {
+        final regex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+        if (!regex.hasMatch(date)) return false;
+        try {
+          DateTime.parse(date);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
   void _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final awsDb = DataStoreService();
       final user = await ref.watch(userProvider.future);
-      final gymId = user.tenantId; 
+      final gymId = user.tenant.tenant_id; 
 
       final data = {
         for (var i = 0; i < _controllers.length; i++)
@@ -68,8 +73,19 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       };
       logger.i('Datos del formulario: $data');
 
+      if(checkDateFormat(data['birthday']!) == false){
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Formato de fecha incorrecto. Use yyyy-mm-dd'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       // Insertar los valores en la base de datos y generar el archivo PDF
-      final image = await pickAndSaveImage(data['name']!, gymId!);
+      final image = await pickAndSaveImage(data['name']!, gymId, false);
       data['image'] = image!;
 
       final id = await awsDb.saveGeneral(
