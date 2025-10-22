@@ -33,7 +33,7 @@ Future<void> _configureAmplify() async {
     try {
       await Amplify.addPlugins([datastorePlugin, apiPlugin, storage, auth]);
       await Amplify.configure(amplifyconfig);
-      //await Amplify.DataStore.clear();
+
       safePrint('✅ Amplify configurado correctamente');
     } on AmplifyAlreadyConfiguredException {
       safePrint('⚠️ Amplify ya estaba configurado');

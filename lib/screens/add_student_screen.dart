@@ -159,11 +159,11 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.network(
-                          'https://i.pinimg.com/originals/fb/6d/16/fb6d16c4321ab45dad1c6290f2740f7a.jpg',
-                          width: 100,
+                        child: Image.asset(
+                          'assets/images/f_ma18.png',
+                          width: 150,
                           fit: BoxFit.cover,
-                        ),
+                          )
                       ),
                       Form(
                         key: _formKey,
@@ -174,24 +174,49 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                               padding: const EdgeInsets.symmetric(
                                 vertical: 8.0,
                               ),
-                              child: TextFormField(
-                                style: const TextStyle(color: Colors.black),
-                                controller: _controllers[index],
-                                decoration: InputDecoration(
-                                  labelStyle: const TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                  labelText: _fieldNames[index],
-                                  hintText:
-                                      'Ingrese ${_fieldNames[index].toLowerCase()}',
-                                  border: const OutlineInputBorder(),
+                              child: SizedBox(
+                                width: double.maxFinite,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                      style: const TextStyle(color: Colors.black),
+                                      controller: _controllers[index],
+                                      decoration: InputDecoration(
+                                        labelStyle: const TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                        labelText: _fieldNames[index],
+                                        hintText:
+                                            'Ingrese ${_fieldNames[index].toLowerCase()}',
+                                        border: const OutlineInputBorder(),
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Por favor, ingrese ${_fieldNames[index].toLowerCase()}';
+                                        }
+                                        return null;
+                                      },
+                                                                        ),
+                                    ),
+                                  if(_namesdb[index]=='birthday')...[
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: const Icon(Icons.calendar_today, color: Colors.black),
+                                      onPressed: ()async{
+                                        final DateTime? pickDate = await showDatePicker(
+                                          context: context, 
+                                          firstDate: DateTime(1990), 
+                                          lastDate: DateTime(2050));
+                                          if(pickDate != null){
+                                            _controllers[index].text = pickDate.toIso8601String().split('T').first;
+                                          }
+                                      },
+                                
+                                    )
+                                  ]
+                                  ]
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor, ingrese ${_fieldNames[index].toLowerCase()}';
-                                  }
-                                  return null;
-                                },
                               ),
                             );
                           }),

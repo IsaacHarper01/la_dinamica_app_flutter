@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/models/Pay.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/lastPayments_provider.dart';
+import 'package:la_dinamica_app/widgets/payment_box.dart';
 
 class EditpaymentsScreen extends ConsumerStatefulWidget {
   final UserLocal user;
@@ -35,7 +37,8 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     final paymentsAsync = ref.watch(paymentsProvider);
-  
+    final date = ref.watch(dateProvider);
+
     return paymentsAsync.when(
       data:(payments) => Scaffold(
         appBar: AppBar(title: Center(child: Text("Ultimos Pagos"))),
@@ -57,7 +60,15 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
                   },
                 );
               },
-            )
+            ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async{
+              await showPaymentDialog(context, ref, studentID: widget.student.user_id!,name: widget.student.name! , date: date, user: widget.user);
+              ref.read(paymentsProvider.notifier)
+                 .fetchLastPayments(widget.user, widget.student);
+            }, 
+          child: Icon(Icons.add),
+          ),
     ),
     error: (error, stackTrace) => Center(),
     loading: () => Center(child: CircularProgressIndicator()),

@@ -8,12 +8,14 @@ import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
+import 'package:la_dinamica_app/widgets/payment_box.dart';
 import 'package:la_dinamica_app/widgets/select_school_widget.dart';
 import 'package:la_dinamica_app/widgets/students_number_home.dart';
 
@@ -42,7 +44,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
             .fetchAttendanceToday(ref.read(dateProvider));
       }
     });
-
+    Future.microtask(() => ref.read(planProvider.notifier).loadPlans());
     _searchController.addListener(() {
       ref.read(searchTermProvider.notifier).state = _searchController.text;
     });
@@ -71,18 +73,11 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
       safePrint("No se escanearon datos o hubo un error");
       return;
     }
-    if (result['action'] == 'attencance') {
+    if (result['action'] == 'attendance') {
       final id = result['id'];
       final name = result['name'];
-      await ref
-          .read(studentsProvider.notifier)
-          .insertAttendance(id, name, currentDate);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Asistencia registrada'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      await showPaymentDialog(context, ref, studentID: id,name: name, date: currentDate, user: user!);
+      return;
     }
     if (result['action'] == 'newAccess' && user!.permissions['addProfesor']==true) {
       final permissions = await Navigator.push(
@@ -166,12 +161,12 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                       borderRadius: BorderRadius.circular(16),
                       child: Image.asset(
                         isDarkMode
-                            ? 'assets/images/f_ma11.png'
-                            : 'assets/images/f_ma18.png',
+                            ? 'assets/images/f_ma18.png'
+                            : 'assets/images/f_ma11.png',
                         height:
                             isDarkMode
-                                ? screenHeight * 0.2
-                                : screenHeight * 0.1,
+                                ? screenHeight * 0.1
+                                : screenHeight * 0.2,
                         fit: BoxFit.cover,
                       ),
                     ),

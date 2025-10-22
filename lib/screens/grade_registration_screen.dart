@@ -63,6 +63,7 @@ Future<void> loadUser() async{
     final currentTest = examState.actualState;
     final types = examState.types;
     final length = students.length;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -76,7 +77,7 @@ Future<void> loadUser() async{
               if (types[currentTest] == "Tiempo") ...[
                 StopwatchWidget(),
                 SizedBox(height: 10),
-                SetBase10Widget(),
+                SetBase10Widget(screenWidth: screenWidth),
                 SizedBox(height: 20),
               ],
           

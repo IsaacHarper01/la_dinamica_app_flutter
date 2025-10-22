@@ -25,6 +25,7 @@ type LocalPlan @model @auth(rules: [{allow: public}]) {
   clases: Int
   price: Float
   client_id: String
+  defaultPlan: Boolean
 }
 
 type Student @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -54,6 +55,7 @@ type Pay @model @auth(rules: [{allow: public, operations: [create, read, update,
   client_id: String
   prof_id: String
   debt: Boolean
+  active: Boolean
 }
 
 type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {

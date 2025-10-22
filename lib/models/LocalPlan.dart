@@ -31,6 +31,7 @@ class LocalPlan extends amplify_core.Model {
   final int? _clases;
   final double? _price;
   final String? _client_id;
+  final bool? _defaultPlan;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -63,6 +64,10 @@ class LocalPlan extends amplify_core.Model {
     return _client_id;
   }
   
+  bool? get defaultPlan {
+    return _defaultPlan;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -71,15 +76,16 @@ class LocalPlan extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const LocalPlan._internal({required this.id, type, clases, price, client_id, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _client_id = client_id, _createdAt = createdAt, _updatedAt = updatedAt;
+  const LocalPlan._internal({required this.id, type, clases, price, client_id, defaultPlan, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _client_id = client_id, _defaultPlan = defaultPlan, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory LocalPlan({String? id, String? type, int? clases, double? price, String? client_id}) {
+  factory LocalPlan({String? id, String? type, int? clases, double? price, String? client_id, bool? defaultPlan}) {
     return LocalPlan._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       type: type,
       clases: clases,
       price: price,
-      client_id: client_id);
+      client_id: client_id,
+      defaultPlan: defaultPlan);
   }
   
   bool equals(Object other) {
@@ -94,7 +100,8 @@ class LocalPlan extends amplify_core.Model {
       _type == other._type &&
       _clases == other._clases &&
       _price == other._price &&
-      _client_id == other._client_id;
+      _client_id == other._client_id &&
+      _defaultPlan == other._defaultPlan;
   }
   
   @override
@@ -110,6 +117,7 @@ class LocalPlan extends amplify_core.Model {
     buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
     buffer.write("price=" + (_price != null ? _price!.toString() : "null") + ", ");
     buffer.write("client_id=" + "$_client_id" + ", ");
+    buffer.write("defaultPlan=" + (_defaultPlan != null ? _defaultPlan!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -117,27 +125,30 @@ class LocalPlan extends amplify_core.Model {
     return buffer.toString();
   }
   
-  LocalPlan copyWith({String? type, int? clases, double? price, String? client_id}) {
+  LocalPlan copyWith({String? type, int? clases, double? price, String? client_id, bool? defaultPlan}) {
     return LocalPlan._internal(
       id: id,
       type: type ?? this.type,
       clases: clases ?? this.clases,
       price: price ?? this.price,
-      client_id: client_id ?? this.client_id);
+      client_id: client_id ?? this.client_id,
+      defaultPlan: defaultPlan ?? this.defaultPlan);
   }
   
   LocalPlan copyWithModelFieldValues({
     ModelFieldValue<String?>? type,
     ModelFieldValue<int?>? clases,
     ModelFieldValue<double?>? price,
-    ModelFieldValue<String?>? client_id
+    ModelFieldValue<String?>? client_id,
+    ModelFieldValue<bool?>? defaultPlan
   }) {
     return LocalPlan._internal(
       id: id,
       type: type == null ? this.type : type.value,
       clases: clases == null ? this.clases : clases.value,
       price: price == null ? this.price : price.value,
-      client_id: client_id == null ? this.client_id : client_id.value
+      client_id: client_id == null ? this.client_id : client_id.value,
+      defaultPlan: defaultPlan == null ? this.defaultPlan : defaultPlan.value
     );
   }
   
@@ -147,11 +158,12 @@ class LocalPlan extends amplify_core.Model {
       _clases = (json['clases'] as num?)?.toInt(),
       _price = (json['price'] as num?)?.toDouble(),
       _client_id = json['client_id'],
+      _defaultPlan = json['defaultPlan'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'client_id': _client_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'client_id': _client_id, 'defaultPlan': _defaultPlan, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -160,6 +172,7 @@ class LocalPlan extends amplify_core.Model {
     'clases': _clases,
     'price': _price,
     'client_id': _client_id,
+    'defaultPlan': _defaultPlan,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -170,6 +183,7 @@ class LocalPlan extends amplify_core.Model {
   static final CLASES = amplify_core.QueryField(fieldName: "clases");
   static final PRICE = amplify_core.QueryField(fieldName: "price");
   static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
+  static final DEFAULTPLAN = amplify_core.QueryField(fieldName: "defaultPlan");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "LocalPlan";
     modelSchemaDefinition.pluralName = "LocalPlans";
@@ -209,6 +223,12 @@ class LocalPlan extends amplify_core.Model {
       key: LocalPlan.CLIENT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: LocalPlan.DEFAULTPLAN,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

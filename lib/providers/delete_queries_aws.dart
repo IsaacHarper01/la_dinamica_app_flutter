@@ -51,19 +51,22 @@ class DataStoreDeleteService {
       try {
         List<Attendance> attendance = await Amplify.DataStore.query(
           Attendance.classType,
-          where: Attendance.USER_ID.eq(id).and(Attendance.CLIENT_ID.eq(tenantId)),
+          where: Attendance.USER_ID.eq(id)
+          .and(Attendance.CLIENT_ID.eq(tenantId))
+          .and(Attendance.DATE.eq(date)),
           sortBy: [Attendance.DATE.descending()],
         );
         List<Pay> payments = await Amplify.DataStore.query(
           Pay.classType,
-          where: Pay.USER_ID.eq(id).and(Pay.CLIENT_ID.eq(tenantId)),
+          where: Pay.USER_ID.eq(id)
+          .and(Pay.CLIENT_ID.eq(tenantId))
+          .and(Pay.DATE.eq(date)),
           sortBy: [Pay.DATE.descending()],
         );
 
         if (attendance.isNotEmpty) {
-            await Amplify.DataStore.delete(attendance.last);
-
-        safePrint('✅ Asistencia eliminada correctamente');
+            await Amplify.DataStore.delete(attendance.first);
+            safePrint('✅ Asistencia eliminada correctamente');
         } 
 
         Pay? lastPayment = payments.isNotEmpty ? payments.last : null;

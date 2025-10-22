@@ -1,11 +1,12 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/default_plan_provider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
-import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/widgets/section_card_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -29,7 +30,8 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
     final userAsync = ref.watch(userProvider);
     final colorScheme = ColorScheme.of(context);
     final textTheme = TextTheme.of(context);
-
+    final defaultPlan = ref.watch(defaultPlanProvider);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ajustes'),
@@ -118,6 +120,12 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                             child: PlanCard(
                               plan: plan,
                               permission: userAsync.permissions["setPlans"]!,
+                              onSetDefault: () {
+                                setPlanDefault(plan, ref);
+                              },
+                              unSetDefault: (){
+                                unSetDefaultPlan(ref, plan);
+                              },
                               onDelete: () {
                                 ref
                                     .read(planProvider.notifier)
@@ -135,6 +143,19 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
       ),
     );
   }
+}
+
+void setPlanDefault(LocalPlan plan, WidgetRef ref){
+  final oldPlan = ref.read(defaultPlanProvider);
+  ref.read(planProvider.notifier).updatePlanDefaultStatus(oldPlan, plan);
+  ref.read(defaultPlanProvider.notifier).state = plan;
+  safePrint('Plan predeterminado establecido: ${ref.read(defaultPlanProvider).type}');
+}
+
+Future<void> unSetDefaultPlan(WidgetRef ref, LocalPlan plan)async{
+  final updatedPlan = plan.copyWith(defaultPlan: false);
+  await Amplify.DataStore.save(updatedPlan);
+  ref.read(planProvider.notifier).loadPlans();
 }
 
 void _showQrCodeDialog(BuildContext context, String dataToEncode){
@@ -180,12 +201,16 @@ void _showQrCodeDialog(BuildContext context, String dataToEncode){
 class PlanCard extends StatelessWidget {
   final LocalPlan plan;
   final VoidCallback onDelete;
+  final VoidCallback onSetDefault;
+  final VoidCallback unSetDefault;
   final bool permission;
 
   const PlanCard({
     super.key, 
     required this.plan, 
     required this.onDelete,
+    required this.onSetDefault,
+    required this.unSetDefault,
     required this.permission,
     });
 
@@ -197,7 +222,7 @@ class PlanCard extends StatelessWidget {
 
     return Card(
       elevation: 10,
-      color: colorScheme.surface,
+      color: plan.defaultPlan == true ? colorScheme.surface.withGreen(70) : colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -268,11 +293,16 @@ class PlanCard extends StatelessWidget {
                           ],
                         ),
                   );
-
                   if (confirm == true) {
                     onDelete();
                   }
                 }
+              if (value == 'default') {
+                  onSetDefault();
+                }
+              if (value == 'undefault'){
+                unSetDefault();
+              }
               },
               itemBuilder:
                   (context) => [
@@ -283,6 +313,27 @@ class PlanCard extends StatelessWidget {
                           Icon(Icons.delete, color: Colors.redAccent),
                           SizedBox(width: 8),
                           Text('Eliminar'),
+                        ],
+                      ),
+                    ),
+                    plan.defaultPlan == true ?
+                    const PopupMenuItem<String>(
+                      value: 'undefault',
+                      child: Row(
+                        children: [
+                          Icon(Icons.bookmark_add_outlined, color: Colors.redAccent),
+                          SizedBox(width: 8),
+                          Text('quitar predeterminado'),
+                        ],
+                      ),
+                    ): 
+                    const PopupMenuItem<String>(
+                      value: 'default',
+                      child: Row(
+                        children: [
+                          Icon(Icons.bookmark_add_outlined, color: Colors.green),
+                          SizedBox(width: 8),
+                          Text('predeterminado'),
                         ],
                       ),
                     ),

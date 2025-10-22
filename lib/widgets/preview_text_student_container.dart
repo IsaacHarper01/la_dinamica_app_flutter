@@ -130,7 +130,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
             ),
             widget.type == "Tiempo"
                 ? Expanded(
-                  flex: 1,
+                  flex: 3,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -147,7 +147,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
                     child: Text('Detener',style: GoogleFonts.gochiHand(fontSize: 13),)),)
                 : const SizedBox(width: 20),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: TextField(
                 controller: widget.controller,
                 decoration: InputDecoration(labelText: textDecorator,border: OutlineInputBorder(),),

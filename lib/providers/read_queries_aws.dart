@@ -107,7 +107,8 @@ class DataStoreReadService {
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
         where: Pay.USER_ID.eq(userId) 
-            .and(Pay.CLIENT_ID.eq(tenantId)),
+            .and(Pay.CLIENT_ID.eq(tenantId))
+            .and(Pay.CLASES.gt(0)),
         sortBy: [Pay.DATE.descending()],);
         lastPay = payments.last;
 
@@ -334,33 +335,14 @@ class DataStoreReadService {
     }
   }
 
-  Future<LocalPlan?> getSimplePlan(String tenantId) async {
-    try {
-      // Consultar los datos almacenados en DataStore
-      List<LocalPlan> plans = await Amplify.DataStore.query(
-        LocalPlan.classType,
-        where: LocalPlan.CLASES.eq(1) 
-            .and(LocalPlan.CLIENT_ID.eq(tenantId)),
-      );
-      safePrint('✅ Planes obtenidos correctamente');
-      if (plans.isNotEmpty) {
-        return plans.first;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      safePrint('❌ Error al obtener los planes: $e');
-      rethrow;
-    }
-  }
-
   Future<Pay?> getLastPayment(int userId, String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Pay> payments = await Amplify.DataStore.query(
         Pay.classType,
         where: Pay.USER_ID.eq(userId)  
-            .and(Pay.CLIENT_ID.eq(tenantId)),
+            .and(Pay.CLIENT_ID.eq(tenantId))
+            .and(Pay.CLASES.gt(0)),
         sortBy: [Pay.DATE.descending()],
       );
       safePrint('✅ Pagos obtenidos correctamente');
@@ -390,53 +372,33 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> verifyPayment(int userId, String date, String tenantId, String profId) async {
-    try {
+  Future<void> verifyPayment(int userId, String date, String tenantId, String profId, LocalPlan defaulPlan) async {
+     try {
       Pay? lastPayment = await getLastPayment(userId, tenantId);
-      LocalPlan? basePlan = await getSimplePlan(tenantId);
-      double cost = 0.0;
-      String planType = 'Clase Unica';
-
-      if (basePlan != null) {
-        cost = basePlan.price!;
-        planType = basePlan.type!;
-      }
-      if (lastPayment == null) {
+      if(lastPayment != null){
+        final newPayment = lastPayment.copyWith(clases: lastPayment.clases! - 1);
+        await Amplify.DataStore.save(newPayment);
+        safePrint('✅ Pago verificado y actualizado correctamente');
+      }else {
+        if(defaulPlan.client_id!='none'){
         final newPayment = Pay(
-          user_id: userId, //This user ID is the student ID
-          amount: cost,
-          clases: 0,
-          type: planType,
+          user_id: userId,
+          amount: defaulPlan.price,
+          clases: defaulPlan.clases,
+          type: defaulPlan.type,
           date: TemporalDate(DateTime.parse(date)),
-          client_id: tenantId, //this user ID is the client ID
-          prof_id: profId, //This user ID is the teacher ID
+          client_id: tenantId,
+          prof_id: profId,
           debt: false,
         );
-
         await Amplify.DataStore.save(newPayment);
-      } else {
-        if (lastPayment.type != planType && (lastPayment.clases!) > 0) {
-          var remainingClases = (lastPayment.clases!) - 1;
-          Pay newPayment = lastPayment.copyWith(clases: remainingClases);
-          await Amplify.DataStore.save(newPayment);
-        } else {
-          final newPayment = Pay(
-            user_id: userId,
-            amount: cost,
-            clases: 0,
-            type: planType,
-            date: TemporalDate(DateTime.parse(date)),
-            client_id: tenantId, // this user ID is the client ID
-            prof_id: profId, //This user ID is the teacher ID
-          );
-          await Amplify.DataStore.save(newPayment);
+        safePrint('✅ Pago por defecto creado correctamente');
+        }else{
+          return;
         }
-      }
-
-      safePrint('✅ Pago verificado correctamente');
-    } catch (e) {
+    }
+    }catch (e) {
       safePrint('❌ Error al verificar el pago: $e');
-      rethrow;
     }
   }
 
@@ -708,6 +670,17 @@ class DataStoreReadService {
       return(grades);
     } catch (e) {
       safePrint("Error al obtener calificaciones");
+      rethrow;
+    }
+  }
+
+  Future<void> updatePlanDefaultStatus(LocalPlan plan, bool isDefault) async {
+    try {
+        final updatedPlan = plan.copyWith(defaultPlan: isDefault);
+        await Amplify.DataStore.save(updatedPlan);
+        safePrint('✅ Estado de plan predeterminado actualizado correctamente');
+    } catch (e) {
+      safePrint('❌ Error al actualizar el estado de plan predeterminado: $e');
       rethrow;
     }
   }

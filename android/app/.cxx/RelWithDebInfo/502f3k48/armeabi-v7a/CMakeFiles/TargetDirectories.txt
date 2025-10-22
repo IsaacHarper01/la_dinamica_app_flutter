@@ -1,0 +1,2 @@
+C:/Users/IsaacAnibalHernandez/la_dinamica_app_flutter/android/app/.cxx/RelWithDebInfo/502f3k48/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/IsaacAnibalHernandez/la_dinamica_app_flutter/android/app/.cxx/RelWithDebInfo/502f3k48/armeabi-v7a/CMakeFiles/rebuild_cache.dir

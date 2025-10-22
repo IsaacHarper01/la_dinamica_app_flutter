@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/student.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/default_plan_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/storageS3.dart';
@@ -97,7 +98,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
         gymId: gymid,
         profId: profId,
       );
-      await awsDb2.verifyPayment(studentId, date, gymid, profId);
+      await awsDb2.verifyPayment(studentId, date, gymid, profId, ref.watch(defaultPlanProvider));
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {
