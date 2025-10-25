@@ -28,7 +28,7 @@ Future<void> generateIncomeReport(DateTime min, DateTime max, String tenantId) a
     csvData.add([
       pay.user_id.toString(),
       pay.date.toString(),
-      pay.type.toString(),
+      pay.plan!.type.toString(),
       pay.amount.toString(),
     ]);
   }

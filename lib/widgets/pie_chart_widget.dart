@@ -78,23 +78,25 @@ class ChartPie extends StatelessWidget {
   Widget build(BuildContext context) {
     final sections = <PieChartSectionData>[];
     final percentages = <String, double>{};
+    final planNames = <String, String>{};
     final colors = <Color>[];
     final random = Random();
     double total = 0;
 
     for (var pay in data) {
-      final type = pay.type;
+      final planID = pay.plan!.id;
       final amount = pay.amount!;
-      if (percentages.containsKey(type)) {
-        percentages[pay.type!] = percentages[pay.type]! + amount;
+      if (percentages.containsKey(planID)) {
+        percentages[planID] = percentages[planID]! + amount;
       } else {
-        percentages[pay.type!] = amount;
+        percentages[planID] = amount;
+        planNames[planID] = pay.plan!.type!;
       }
       total += amount;
     }
 
-    for (var type in percentages.keys) {
-      final value = percentages[type]! / total * 100; // Calculate percentage
+    for (var planID in percentages.keys) {
+      final value = percentages[planID]! / total * 100; // Calculate percentage
       final color = Color.fromRGBO(
         random.nextInt(256),
         random.nextInt(256),
@@ -114,18 +116,25 @@ class ChartPie extends StatelessWidget {
 
     Column chartInfo(
       Map<String, double> percentages,
+      Map<String, String> planNames,
       double totalAmount,
       List<Color> colors,
     ) {
-      final List<String> planTypes = percentages.keys.toList();
-      final List<double> amounts = percentages.values.toList();
+      List<String> planTypes = [];
+      List<double> amounts = [];
+
+      for(var planId in percentages.keys){
+        if (percentages[planId]! > 0)
+        {planTypes.add(planNames[planId]!);
+        amounts.add(percentages[planId]!);}
+      }
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text('Total: \$${totalAmount.toStringAsFixed(2)}'),
           const SizedBox(height: 20),
-          ...List.generate(colors.length, (index) {
+          ...List.generate(planTypes.length, (index) {
             return Indicator(
               color: colors[index],
               text:
@@ -159,7 +168,7 @@ class ChartPie extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(child: chartInfo(percentages, total, colors)),
+            Expanded(child: chartInfo(percentages,planNames ,total, colors)),
           ],
         ),
       ],

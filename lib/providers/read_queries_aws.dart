@@ -385,7 +385,7 @@ class DataStoreReadService {
           user_id: userId,
           amount: defaulPlan.price,
           clases: defaulPlan.clases,
-          type: defaulPlan.type,
+          plan: defaulPlan,
           date: TemporalDate(DateTime.parse(date)),
           client_id: tenantId,
           prof_id: profId,

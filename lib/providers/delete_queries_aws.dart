@@ -74,7 +74,7 @@ class DataStoreDeleteService {
         if(lastPayment != null) {
           List<LocalPlan> plan = await Amplify.DataStore.query(
           LocalPlan.classType,
-          where: LocalPlan.TYPE.eq(lastPayment.type),
+          where: LocalPlan.TYPE.eq(lastPayment.plan!.type),
           );
 
           if (plan.first.clases! > lastPayment.clases!  && lastPayment.date!.format() != date){

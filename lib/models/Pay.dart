@@ -31,12 +31,11 @@ class Pay extends amplify_core.Model {
   final int? _user_id;
   final double? _amount;
   final int? _clases;
-  final String? _type;
   final amplify_core.TemporalDate? _date;
   final String? _client_id;
   final String? _prof_id;
   final bool? _debt;
-  final bool? _active;
+  final LocalPlan? _plan;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -69,10 +68,6 @@ class Pay extends amplify_core.Model {
     return _clases;
   }
   
-  String? get type {
-    return _type;
-  }
-  
   amplify_core.TemporalDate? get date {
     return _date;
   }
@@ -89,8 +84,8 @@ class Pay extends amplify_core.Model {
     return _debt;
   }
   
-  bool? get active {
-    return _active;
+  LocalPlan? get plan {
+    return _plan;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -101,21 +96,20 @@ class Pay extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Pay._internal({required this.id, composite_key, user_id, amount, clases, type, date, client_id, prof_id, debt, active, createdAt, updatedAt}): _composite_key = composite_key, _user_id = user_id, _amount = amount, _clases = clases, _type = type, _date = date, _client_id = client_id, _prof_id = prof_id, _debt = debt, _active = active, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Pay._internal({required this.id, composite_key, user_id, amount, clases, date, client_id, prof_id, debt, plan, createdAt, updatedAt}): _composite_key = composite_key, _user_id = user_id, _amount = amount, _clases = clases, _date = date, _client_id = client_id, _prof_id = prof_id, _debt = debt, _plan = plan, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Pay({String? id, String? composite_key, int? user_id, double? amount, int? clases, String? type, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, bool? active}) {
+  factory Pay({String? id, String? composite_key, int? user_id, double? amount, int? clases, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, LocalPlan? plan}) {
     return Pay._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       composite_key: composite_key,
       user_id: user_id,
       amount: amount,
       clases: clases,
-      type: type,
       date: date,
       client_id: client_id,
       prof_id: prof_id,
       debt: debt,
-      active: active);
+      plan: plan);
   }
   
   bool equals(Object other) {
@@ -131,12 +125,11 @@ class Pay extends amplify_core.Model {
       _user_id == other._user_id &&
       _amount == other._amount &&
       _clases == other._clases &&
-      _type == other._type &&
       _date == other._date &&
       _client_id == other._client_id &&
       _prof_id == other._prof_id &&
       _debt == other._debt &&
-      _active == other._active;
+      _plan == other._plan;
   }
   
   @override
@@ -152,12 +145,11 @@ class Pay extends amplify_core.Model {
     buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
     buffer.write("amount=" + (_amount != null ? _amount!.toString() : "null") + ", ");
     buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
-    buffer.write("type=" + "$_type" + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
     buffer.write("client_id=" + "$_client_id" + ", ");
     buffer.write("prof_id=" + "$_prof_id" + ", ");
     buffer.write("debt=" + (_debt != null ? _debt!.toString() : "null") + ", ");
-    buffer.write("active=" + (_active != null ? _active!.toString() : "null") + ", ");
+    buffer.write("plan=" + (_plan != null ? _plan!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -165,19 +157,18 @@ class Pay extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Pay copyWith({String? composite_key, int? user_id, double? amount, int? clases, String? type, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, bool? active}) {
+  Pay copyWith({String? composite_key, int? user_id, double? amount, int? clases, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, LocalPlan? plan}) {
     return Pay._internal(
       id: id,
       composite_key: composite_key ?? this.composite_key,
       user_id: user_id ?? this.user_id,
       amount: amount ?? this.amount,
       clases: clases ?? this.clases,
-      type: type ?? this.type,
       date: date ?? this.date,
       client_id: client_id ?? this.client_id,
       prof_id: prof_id ?? this.prof_id,
       debt: debt ?? this.debt,
-      active: active ?? this.active);
+      plan: plan ?? this.plan);
   }
   
   Pay copyWithModelFieldValues({
@@ -185,12 +176,11 @@ class Pay extends amplify_core.Model {
     ModelFieldValue<int?>? user_id,
     ModelFieldValue<double?>? amount,
     ModelFieldValue<int?>? clases,
-    ModelFieldValue<String?>? type,
     ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<String?>? client_id,
     ModelFieldValue<String?>? prof_id,
     ModelFieldValue<bool?>? debt,
-    ModelFieldValue<bool?>? active
+    ModelFieldValue<LocalPlan?>? plan
   }) {
     return Pay._internal(
       id: id,
@@ -198,12 +188,11 @@ class Pay extends amplify_core.Model {
       user_id: user_id == null ? this.user_id : user_id.value,
       amount: amount == null ? this.amount : amount.value,
       clases: clases == null ? this.clases : clases.value,
-      type: type == null ? this.type : type.value,
       date: date == null ? this.date : date.value,
       client_id: client_id == null ? this.client_id : client_id.value,
       prof_id: prof_id == null ? this.prof_id : prof_id.value,
       debt: debt == null ? this.debt : debt.value,
-      active: active == null ? this.active : active.value
+      plan: plan == null ? this.plan : plan.value
     );
   }
   
@@ -213,17 +202,20 @@ class Pay extends amplify_core.Model {
       _user_id = (json['user_id'] as num?)?.toInt(),
       _amount = (json['amount'] as num?)?.toDouble(),
       _clases = (json['clases'] as num?)?.toInt(),
-      _type = json['type'],
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
       _client_id = json['client_id'],
       _prof_id = json['prof_id'],
       _debt = json['debt'],
-      _active = json['active'],
+      _plan = json['plan'] != null
+        ? json['plan']['serializedData'] != null
+          ? LocalPlan.fromJson(new Map<String, dynamic>.from(json['plan']['serializedData']))
+          : LocalPlan.fromJson(new Map<String, dynamic>.from(json['plan']))
+        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'composite_key': _composite_key, 'user_id': _user_id, 'amount': _amount, 'clases': _clases, 'type': _type, 'date': _date?.format(), 'client_id': _client_id, 'prof_id': _prof_id, 'debt': _debt, 'active': _active, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'composite_key': _composite_key, 'user_id': _user_id, 'amount': _amount, 'clases': _clases, 'date': _date?.format(), 'client_id': _client_id, 'prof_id': _prof_id, 'debt': _debt, 'plan': _plan?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -232,12 +224,11 @@ class Pay extends amplify_core.Model {
     'user_id': _user_id,
     'amount': _amount,
     'clases': _clases,
-    'type': _type,
     'date': _date,
     'client_id': _client_id,
     'prof_id': _prof_id,
     'debt': _debt,
-    'active': _active,
+    'plan': _plan,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -248,12 +239,13 @@ class Pay extends amplify_core.Model {
   static final USER_ID = amplify_core.QueryField(fieldName: "user_id");
   static final AMOUNT = amplify_core.QueryField(fieldName: "amount");
   static final CLASES = amplify_core.QueryField(fieldName: "clases");
-  static final TYPE = amplify_core.QueryField(fieldName: "type");
   static final DATE = amplify_core.QueryField(fieldName: "date");
   static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
   static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
   static final DEBT = amplify_core.QueryField(fieldName: "debt");
-  static final ACTIVE = amplify_core.QueryField(fieldName: "active");
+  static final PLAN = amplify_core.QueryField(
+    fieldName: "plan",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'LocalPlan'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Pay";
     modelSchemaDefinition.pluralName = "Pays";
@@ -267,6 +259,10 @@ class Pay extends amplify_core.Model {
           amplify_core.ModelOperation.UPDATE,
           amplify_core.ModelOperation.DELETE
         ])
+    ];
+    
+    modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["plan_id"], name: "paysByPlan_id")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
@@ -296,12 +292,6 @@ class Pay extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.TYPE,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: Pay.DATE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
@@ -325,10 +315,11 @@ class Pay extends amplify_core.Model {
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.ACTIVE,
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
+      key: Pay.PLAN,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+      targetNames: ['plan_id'],
+      ofModelName: 'LocalPlan'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

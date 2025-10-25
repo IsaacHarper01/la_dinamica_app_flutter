@@ -99,7 +99,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                       async {
                         final result = await Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const AddNewPlan()),
+                          MaterialPageRoute(builder: (_) => AddNewPlan()),
                         );
                         if (result == true) {
                           ref.read(planProvider.notifier).loadPlans();
@@ -303,9 +303,24 @@ class PlanCard extends StatelessWidget {
               if (value == 'undefault'){
                 unSetDefault();
               }
+              if(value == 'update'){
+                Navigator.push(context, 
+                  MaterialPageRoute(builder: (_)=> 
+                    AddNewPlan(edit:true, oldPlan: plan,)));
+              }
               },
               itemBuilder:
                   (context) => [
+                    const PopupMenuItem<String>(
+                      value: 'update',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, color: Colors.blueAccent),
+                          SizedBox(width: 8),
+                          Text('Editar'),
+                        ],
+                      ),
+                    ),
                     const PopupMenuItem<String>(
                       value: 'delete',
                       child: Row(

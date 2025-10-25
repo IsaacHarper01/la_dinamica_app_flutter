@@ -74,6 +74,16 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
     }
   }
 
+  Future<void> updatePlan(LocalPlan oldPlan, String newType, int newClases, double newPrice) async{
+    final copyPlan = oldPlan.copyWith(
+      type: newType,
+      clases: newClases,
+      price: newPrice,
+    );
+    await Amplify.DataStore.save(copyPlan);
+    loadPlans();
+  }
+
   Future<void> updatePlanDefaultStatus(LocalPlan oldPlan ,LocalPlan newplan) async {
     try {
         final updatedPlan = newplan.copyWith(defaultPlan: true);

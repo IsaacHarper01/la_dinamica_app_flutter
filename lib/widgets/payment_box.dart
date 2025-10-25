@@ -101,7 +101,7 @@ Future<void> showPaymentDialog(
                           userId: studentID,
                           amount: plan.price!,
                           clases: plan.clases!,
-                          type: plan.type!,
+                          plan: plan,
                           date: date,
                           dbId: user.tenant.tenant_id,
                           profId: user.name,

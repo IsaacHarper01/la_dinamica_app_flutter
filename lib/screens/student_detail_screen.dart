@@ -43,7 +43,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     user_id: 0,
     amount: 0.0,
     clases: 0,
-    type: 'Desconocido',
+    plan: LocalPlan(),
     date: TemporalDate(DateTime.now()),
     client_id: '',
     prof_id: '',
@@ -420,7 +420,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Tipo de plan', style: GoogleFonts.gochiHand(fontSize: 30, fontWeight: FontWeight.bold)),
-                Text('${paymentData.type}', style: GoogleFonts.gochiHand(fontSize: 20)),
+                Text('${paymentData.plan!.type}', style: GoogleFonts.gochiHand(fontSize: 20)),
               ],
             ),
           ),

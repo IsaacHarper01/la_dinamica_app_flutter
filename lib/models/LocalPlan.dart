@@ -21,6 +21,7 @@
 
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
+import 'package:collection/collection.dart';
 
 
 /** This is an auto generated class representing the LocalPlan type in your schema. */
@@ -32,6 +33,7 @@ class LocalPlan extends amplify_core.Model {
   final double? _price;
   final String? _client_id;
   final bool? _defaultPlan;
+  final List<Pay>? _pays;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -68,6 +70,10 @@ class LocalPlan extends amplify_core.Model {
     return _defaultPlan;
   }
   
+  List<Pay>? get pays {
+    return _pays;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -76,16 +82,17 @@ class LocalPlan extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const LocalPlan._internal({required this.id, type, clases, price, client_id, defaultPlan, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _client_id = client_id, _defaultPlan = defaultPlan, _createdAt = createdAt, _updatedAt = updatedAt;
+  const LocalPlan._internal({required this.id, type, clases, price, client_id, defaultPlan, pays, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _client_id = client_id, _defaultPlan = defaultPlan, _pays = pays, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory LocalPlan({String? id, String? type, int? clases, double? price, String? client_id, bool? defaultPlan}) {
+  factory LocalPlan({String? id, String? type, int? clases, double? price, String? client_id, bool? defaultPlan, List<Pay>? pays}) {
     return LocalPlan._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       type: type,
       clases: clases,
       price: price,
       client_id: client_id,
-      defaultPlan: defaultPlan);
+      defaultPlan: defaultPlan,
+      pays: pays != null ? List<Pay>.unmodifiable(pays) : pays);
   }
   
   bool equals(Object other) {
@@ -101,7 +108,8 @@ class LocalPlan extends amplify_core.Model {
       _clases == other._clases &&
       _price == other._price &&
       _client_id == other._client_id &&
-      _defaultPlan == other._defaultPlan;
+      _defaultPlan == other._defaultPlan &&
+      DeepCollectionEquality().equals(_pays, other._pays);
   }
   
   @override
@@ -125,14 +133,15 @@ class LocalPlan extends amplify_core.Model {
     return buffer.toString();
   }
   
-  LocalPlan copyWith({String? type, int? clases, double? price, String? client_id, bool? defaultPlan}) {
+  LocalPlan copyWith({String? type, int? clases, double? price, String? client_id, bool? defaultPlan, List<Pay>? pays}) {
     return LocalPlan._internal(
       id: id,
       type: type ?? this.type,
       clases: clases ?? this.clases,
       price: price ?? this.price,
       client_id: client_id ?? this.client_id,
-      defaultPlan: defaultPlan ?? this.defaultPlan);
+      defaultPlan: defaultPlan ?? this.defaultPlan,
+      pays: pays ?? this.pays);
   }
   
   LocalPlan copyWithModelFieldValues({
@@ -140,7 +149,8 @@ class LocalPlan extends amplify_core.Model {
     ModelFieldValue<int?>? clases,
     ModelFieldValue<double?>? price,
     ModelFieldValue<String?>? client_id,
-    ModelFieldValue<bool?>? defaultPlan
+    ModelFieldValue<bool?>? defaultPlan,
+    ModelFieldValue<List<Pay>?>? pays
   }) {
     return LocalPlan._internal(
       id: id,
@@ -148,7 +158,8 @@ class LocalPlan extends amplify_core.Model {
       clases: clases == null ? this.clases : clases.value,
       price: price == null ? this.price : price.value,
       client_id: client_id == null ? this.client_id : client_id.value,
-      defaultPlan: defaultPlan == null ? this.defaultPlan : defaultPlan.value
+      defaultPlan: defaultPlan == null ? this.defaultPlan : defaultPlan.value,
+      pays: pays == null ? this.pays : pays.value
     );
   }
   
@@ -159,11 +170,24 @@ class LocalPlan extends amplify_core.Model {
       _price = (json['price'] as num?)?.toDouble(),
       _client_id = json['client_id'],
       _defaultPlan = json['defaultPlan'],
+      _pays = json['pays']  is Map
+        ? (json['pays']['items'] is List
+          ? (json['pays']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => Pay.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['pays'] is List
+          ? (json['pays'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => Pay.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'client_id': _client_id, 'defaultPlan': _defaultPlan, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'client_id': _client_id, 'defaultPlan': _defaultPlan, 'pays': _pays?.map((Pay? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -173,6 +197,7 @@ class LocalPlan extends amplify_core.Model {
     'price': _price,
     'client_id': _client_id,
     'defaultPlan': _defaultPlan,
+    'pays': _pays,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -184,6 +209,9 @@ class LocalPlan extends amplify_core.Model {
   static final PRICE = amplify_core.QueryField(fieldName: "price");
   static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
   static final DEFAULTPLAN = amplify_core.QueryField(fieldName: "defaultPlan");
+  static final PAYS = amplify_core.QueryField(
+    fieldName: "pays",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Pay'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "LocalPlan";
     modelSchemaDefinition.pluralName = "LocalPlans";
@@ -229,6 +257,13 @@ class LocalPlan extends amplify_core.Model {
       key: LocalPlan.DEFAULTPLAN,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: LocalPlan.PAYS,
+      isRequired: false,
+      ofModelName: 'Pay',
+      associatedKey: Pay.PLAN
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

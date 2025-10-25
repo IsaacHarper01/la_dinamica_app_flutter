@@ -26,6 +26,8 @@ type LocalPlan @model @auth(rules: [{allow: public}]) {
   price: Float
   client_id: String
   defaultPlan: Boolean
+
+  pays: [Pay] @hasMany(fields: ["id"])
 }
 
 type Student @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -46,16 +48,17 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
 
 type Pay @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
+  plan_id: ID! @index
   composite_key: String
   user_id: Int
   amount: Float
   clases: Int
-  type: String
   date: AWSDate
   client_id: String
   prof_id: String
   debt: Boolean
-  active: Boolean
+
+  plan: LocalPlan @belongsTo(fields: ["plan_id"])
 }
 
 type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {

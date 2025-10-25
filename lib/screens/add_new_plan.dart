@@ -5,7 +5,10 @@ import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class AddNewPlan extends ConsumerStatefulWidget {
-  const AddNewPlan({super.key});
+  bool edit;
+  LocalPlan? oldPlan;
+
+  AddNewPlan({super.key, this.edit=false, this.oldPlan});
 
   @override
   ConsumerState<AddNewPlan> createState() => _AddNewPlanState();
@@ -19,6 +22,32 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
   );
 
   final _formKey = GlobalKey<FormState>(); // Clave global para el formulario
+  
+  @override
+  void initState(){
+    super.initState();
+    if (widget.edit){
+      _controllers[0].text = widget.oldPlan?.type ?? '';
+      _controllers[1].text = widget.oldPlan?.clases.toString() ?? '';
+      _controllers[2].text = widget.oldPlan?.price.toString() ?? '';
+    }
+  }
+
+  void _updatedPlan() async{
+      try {
+        if (_formKey.currentState?.validate() ?? false){
+        await ref.read(planProvider.notifier)
+          .updatePlan(
+            widget.oldPlan!, 
+            _controllers[0].text,
+            int.parse(_controllers[1].text),
+            double.parse(_controllers[2].text));
+        Navigator.pop(context, true);
+        }
+      } catch (e) {
+        return;
+      }
+  }
 
   void _registerPlan() async {
     // Verificar si el formulario es válido
@@ -131,9 +160,9 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
                       }),
                       const SizedBox(height: 24),
                       FilledButton.icon(
-                        onPressed: _registerPlan,
+                        onPressed: widget.edit ? _updatedPlan : _registerPlan,
                         icon: const Icon(Icons.save),
-                        label: const Text('Registrar'),
+                        label: widget.edit ?Text('Actualizar') : Text('Registrar'),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           backgroundColor: colorScheme.primary,

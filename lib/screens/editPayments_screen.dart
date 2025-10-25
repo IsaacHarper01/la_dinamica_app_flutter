@@ -112,7 +112,7 @@ class PayCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    payment.type!,
+                    payment.plan!.type!,
                     style: textTheme.bodyLarge!.copyWith(
                       fontSize: screenWidth * 0.045,
                       fontWeight: FontWeight.bold,
