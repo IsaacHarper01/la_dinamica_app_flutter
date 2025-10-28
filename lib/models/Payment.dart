@@ -23,9 +23,9 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Pay type in your schema. */
-class Pay extends amplify_core.Model {
-  static const classType = const _PayModelType();
+/** This is an auto generated class representing the Payment type in your schema. */
+class Payment extends amplify_core.Model {
+  static const classType = const _PaymentModelType();
   final String id;
   final String? _composite_key;
   final int? _user_id;
@@ -46,8 +46,8 @@ class Pay extends amplify_core.Model {
   @override
   String getId() => id;
   
-  PayModelIdentifier get modelIdentifier {
-      return PayModelIdentifier(
+  PaymentModelIdentifier get modelIdentifier {
+      return PaymentModelIdentifier(
         id: id
       );
   }
@@ -96,10 +96,10 @@ class Pay extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Pay._internal({required this.id, composite_key, user_id, amount, clases, date, client_id, prof_id, debt, plan, createdAt, updatedAt}): _composite_key = composite_key, _user_id = user_id, _amount = amount, _clases = clases, _date = date, _client_id = client_id, _prof_id = prof_id, _debt = debt, _plan = plan, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Payment._internal({required this.id, composite_key, user_id, amount, clases, date, client_id, prof_id, debt, plan, createdAt, updatedAt}): _composite_key = composite_key, _user_id = user_id, _amount = amount, _clases = clases, _date = date, _client_id = client_id, _prof_id = prof_id, _debt = debt, _plan = plan, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Pay({String? id, String? composite_key, int? user_id, double? amount, int? clases, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, LocalPlan? plan}) {
-    return Pay._internal(
+  factory Payment({String? id, String? composite_key, int? user_id, double? amount, int? clases, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, LocalPlan? plan}) {
+    return Payment._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       composite_key: composite_key,
       user_id: user_id,
@@ -119,7 +119,7 @@ class Pay extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Pay &&
+    return other is Payment &&
       id == other.id &&
       _composite_key == other._composite_key &&
       _user_id == other._user_id &&
@@ -139,7 +139,7 @@ class Pay extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Pay {");
+    buffer.write("Payment {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("composite_key=" + "$_composite_key" + ", ");
     buffer.write("user_id=" + (_user_id != null ? _user_id!.toString() : "null") + ", ");
@@ -157,8 +157,8 @@ class Pay extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Pay copyWith({String? composite_key, int? user_id, double? amount, int? clases, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, LocalPlan? plan}) {
-    return Pay._internal(
+  Payment copyWith({String? composite_key, int? user_id, double? amount, int? clases, amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? debt, LocalPlan? plan}) {
+    return Payment._internal(
       id: id,
       composite_key: composite_key ?? this.composite_key,
       user_id: user_id ?? this.user_id,
@@ -171,7 +171,7 @@ class Pay extends amplify_core.Model {
       plan: plan ?? this.plan);
   }
   
-  Pay copyWithModelFieldValues({
+  Payment copyWithModelFieldValues({
     ModelFieldValue<String?>? composite_key,
     ModelFieldValue<int?>? user_id,
     ModelFieldValue<double?>? amount,
@@ -182,7 +182,7 @@ class Pay extends amplify_core.Model {
     ModelFieldValue<bool?>? debt,
     ModelFieldValue<LocalPlan?>? plan
   }) {
-    return Pay._internal(
+    return Payment._internal(
       id: id,
       composite_key: composite_key == null ? this.composite_key : composite_key.value,
       user_id: user_id == null ? this.user_id : user_id.value,
@@ -196,7 +196,7 @@ class Pay extends amplify_core.Model {
     );
   }
   
-  Pay.fromJson(Map<String, dynamic> json)  
+  Payment.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _composite_key = json['composite_key'],
       _user_id = (json['user_id'] as num?)?.toInt(),
@@ -233,7 +233,7 @@ class Pay extends amplify_core.Model {
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<PayModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<PayModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<PaymentModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<PaymentModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final COMPOSITE_KEY = amplify_core.QueryField(fieldName: "composite_key");
   static final USER_ID = amplify_core.QueryField(fieldName: "user_id");
@@ -247,8 +247,8 @@ class Pay extends amplify_core.Model {
     fieldName: "plan",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'LocalPlan'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Pay";
-    modelSchemaDefinition.pluralName = "Pays";
+    modelSchemaDefinition.name = "Payment";
+    modelSchemaDefinition.pluralName = "Payments";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -262,61 +262,61 @@ class Pay extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["plan_id"], name: "paysByPlan_id")
+      amplify_core.ModelIndex(fields: const ["plan_id"], name: "paymentsByPlan_id")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.COMPOSITE_KEY,
+      key: Payment.COMPOSITE_KEY,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.USER_ID,
+      key: Payment.USER_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.AMOUNT,
+      key: Payment.AMOUNT,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.CLASES,
+      key: Payment.CLASES,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.DATE,
+      key: Payment.DATE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.CLIENT_ID,
+      key: Payment.CLIENT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.PROF_ID,
+      key: Payment.PROF_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Pay.DEBT,
+      key: Payment.DEBT,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: Pay.PLAN,
+      key: Payment.PLAN,
       isRequired: false,
       targetNames: ['plan_id'],
       ofModelName: 'LocalPlan'
@@ -338,29 +338,29 @@ class Pay extends amplify_core.Model {
   });
 }
 
-class _PayModelType extends amplify_core.ModelType<Pay> {
-  const _PayModelType();
+class _PaymentModelType extends amplify_core.ModelType<Payment> {
+  const _PaymentModelType();
   
   @override
-  Pay fromJson(Map<String, dynamic> jsonData) {
-    return Pay.fromJson(jsonData);
+  Payment fromJson(Map<String, dynamic> jsonData) {
+    return Payment.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Pay';
+    return 'Payment';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Pay] in your schema.
+ * of [Payment] in your schema.
  */
-class PayModelIdentifier implements amplify_core.ModelIdentifier<Pay> {
+class PaymentModelIdentifier implements amplify_core.ModelIdentifier<Payment> {
   final String id;
 
-  /** Create an instance of PayModelIdentifier using [id] the primary key. */
-  const PayModelIdentifier({
+  /** Create an instance of PaymentModelIdentifier using [id] the primary key. */
+  const PaymentModelIdentifier({
     required this.id});
   
   @override
@@ -378,7 +378,7 @@ class PayModelIdentifier implements amplify_core.ModelIdentifier<Pay> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'PayModelIdentifier(id: $id)';
+  String toString() => 'PaymentModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -386,7 +386,7 @@ class PayModelIdentifier implements amplify_core.ModelIdentifier<Pay> {
       return true;
     }
     
-    return other is PayModelIdentifier &&
+    return other is PaymentModelIdentifier &&
       id == other.id;
   }
   

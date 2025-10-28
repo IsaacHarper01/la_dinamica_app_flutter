@@ -8,7 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
 
-Future<String?> pickAndSaveImage(String name, String tenantId, bool takeAgain) async {
+Future<String?> pickAndSaveImage(String name, String tenantId, bool takeAgain, bool product) async {
   final picker = ImagePicker();
   final storage = Storages3();
   final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -39,7 +39,7 @@ Future<String?> pickAndSaveImage(String name, String tenantId, bool takeAgain) a
 
     String? newPath = takeAgain ? 
        await storage.updateImage(tempFile, name) :
-       await storage.uploadFile(tempFile, name, tenantId);
+       await storage.uploadFile(tempFile, name, tenantId, product);
     
     return newPath;
   } else {

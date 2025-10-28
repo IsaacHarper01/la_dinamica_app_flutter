@@ -7,6 +7,7 @@ import 'package:la_dinamica_app/screens/config_screen.dart';
 import 'package:la_dinamica_app/screens/earn_screen.dart';
 import 'package:la_dinamica_app/screens/home_screen.dart';
 import 'package:la_dinamica_app/screens/new_evaluation_screen.dart';
+import 'package:la_dinamica_app/screens/products_screen.dart';
 import 'package:la_dinamica_app/screens/students_screen.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -24,6 +25,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     StudentsScreen(),
     EarnScreen(),
     NewEvaluationScreen(),
+    ProductsScreen(),
     ConfigScreen(),
   ];
 

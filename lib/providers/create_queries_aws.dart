@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/models/Product.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class DataStoreService {
@@ -32,7 +33,7 @@ class DataStoreService {
     required String? dbId,
     required String? profId,
   }) async {
-    final item = Pay(
+    final item = Payment(
       user_id: userId,
       amount: amount,
       clases: clases,
@@ -298,10 +299,30 @@ await Amplify.DataStore.save(submetric);
   }
 
   Future<void> markDebtStatus({
-    required Pay pay,
+    required Payment pay,
     required bool status,
     })async{
       final newPay = pay.copyWith(debt:status);
       Amplify.DataStore.save(newPay);
     }
+
+  Future<void> saveProduct({
+    required String code,
+    required String name,
+    required String tenaniId,
+    required double price,
+    required String image,
+    required int stock,
+    required String category,
+  })async{
+      final newProduct = Product(
+        name: name,
+        tenant_id: tenaniId,
+        price: price,
+        image: image,
+        stock: stock,
+        category: category
+      );
+      Amplify.DataStore.save(newProduct);
+  }
 }

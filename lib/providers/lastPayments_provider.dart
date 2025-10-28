@@ -6,11 +6,11 @@ import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 final paymentsProvider =
-    StateNotifierProvider<PaymentsNotifier, AsyncValue<List<Pay>>>((ref) {
+    StateNotifierProvider<PaymentsNotifier, AsyncValue<List<Payment>>>((ref) {
       return PaymentsNotifier(ref);
     });
 
-class PaymentsNotifier extends StateNotifier<AsyncValue<List<Pay>>>{
+class PaymentsNotifier extends StateNotifier<AsyncValue<List<Payment>>>{
   final Ref ref;
 
   PaymentsNotifier(this.ref,) : super(const AsyncValue.loading());
@@ -21,7 +21,7 @@ class PaymentsNotifier extends StateNotifier<AsyncValue<List<Pay>>>{
     state = AsyncValue.data(payments!);
   }
 
-  Future<void> markDebt(UserLocal user, Student student, Pay payment, bool status)async{
+  Future<void> markDebt(UserLocal user, Student student, Payment payment, bool status)async{
     final aws = DataStoreService();
     aws.markDebtStatus(pay: payment,status: status);
     fetchLastPayments(user, student);

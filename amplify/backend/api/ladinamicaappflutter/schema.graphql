@@ -27,7 +27,22 @@ type LocalPlan @model @auth(rules: [{allow: public}]) {
   client_id: String
   defaultPlan: Boolean
 
-  pays: [Pay] @hasMany(fields: ["id"])
+  pays: [Payment] @hasMany(fields: ["id"])
+}
+
+type Payment @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  plan_id: ID! @index
+  composite_key: String
+  user_id: Int
+  amount: Float
+  clases: Int
+  date: AWSDate
+  client_id: String
+  prof_id: String
+  debt: Boolean
+
+  plan: LocalPlan @belongsTo(fields: ["plan_id"])
 }
 
 type Student @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -46,20 +61,6 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   debts: [Debt] @hasMany(indexName: "debtByStudent", fields: ["id"])
 }
 
-type Pay @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  plan_id: ID! @index
-  composite_key: String
-  user_id: Int
-  amount: Float
-  clases: Int
-  date: AWSDate
-  client_id: String
-  prof_id: String
-  debt: Boolean
-
-  plan: LocalPlan @belongsTo(fields: ["plan_id"])
-}
 
 type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
@@ -156,4 +157,26 @@ type Debt @model @auth(rules: [{allow: public, operations: [create, read, update
   price: Float
   
   student: Student @belongsTo(fields: ["studentID"])
+}
+
+type Product @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  code: Int @index
+  name: String 
+  tenant_id: ID
+  price: Float
+  image: String
+  stock: Int
+  category: String
+
+  sale: [Sale] @hasMany(fields: ["id"])
+}
+
+type Sale @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  product_id: ID!
+  tenant_id: ID
+  price: Float
+  
+  product: Product @belongsTo(fields: ["product_id"])
 }

@@ -38,7 +38,7 @@ class StudentDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
-  Pay paymentData = Pay(
+  Payment paymentData = Payment(
     id: '0',
     user_id: 0,
     amount: 0.0,
@@ -59,9 +59,8 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   );
 
   bool isActive = true;
-  List<Pay>? debts;
+  List<Payment>? debts;
 
-  final DatabaseHelper db = DatabaseHelper();
   final awsDb = DataStoreReadService();
   final awsDelete = DataStoreDeleteService();
 
@@ -126,7 +125,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     isActive = paymentData.clases != 0;
     final String date = ref.watch(dateProvider);
     final tenantId = user.tenant.tenant_id;
-    final imageUrl = ref.watch(studentImageProvider(studentData.image!));
+    final imageUrl = ref.watch(imageProvider(studentData.image!));
 
     void handleDeleteDash(context, id, bool permision) async {
     bool? shouldDelete = await showDialog(
@@ -322,7 +321,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                         child: SizedBox()),
                       Expanded(child: IconButton(
                         onPressed: () async{
-                          await pickAndSaveImage(widget.image, tenantId, true).then((newPath) {
+                          await pickAndSaveImage(widget.image, tenantId, true, false).then((newPath) {
                             if (newPath != null) {
                               setState(() {
                                 studentData = studentData.copyWith(image: newPath);
@@ -493,7 +492,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 ),
                 FilledButton.icon(
                   onPressed: () {
-                    db.deleteStudentPlan(widget.id, date);
+                    
                   },
                   label: const Text('Eliminar Plan'),
                   style: ButtonStyle(

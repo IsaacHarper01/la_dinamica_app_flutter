@@ -1,13 +1,9 @@
-import 'dart:convert';
-
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-Future<Map<String, dynamic>?> scannerQR(BuildContext context, String tenantId) async {
+Future<Barcode?> scannerQR(BuildContext context) async {
   // Request camera permission
   var status = await Permission.camera.request();
   final logger = Logger();
@@ -16,51 +12,21 @@ Future<Map<String, dynamic>?> scannerQR(BuildContext context, String tenantId) a
   if (!context.mounted) return null;
 
   // Navigate to the scanner screen and wait for the result
-  final String? scannedCode = await Navigator.push(
+  final Barcode? scannedCode = await Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => const ScannerScreen()),
   );
 
   if (scannedCode == null) {
-    logger.d('No se escaneó ningún código QR o el código QR es inválido.');
+    logger.d('No se escaneó ningún código o el código es inválido.');
     return null;
-
   }
-
-  try {
-    Map<String, dynamic> info = jsonDecode(scannedCode);
-    final awsDb = DataStoreReadService();
-    safePrint('INFO DECODED: $info');
-    if (info['action']=='attendance'){
-        int id = info['id'] ?? -1;
-
-        if (id == -1) {
-          logger.e("ID no válido: ${info['id']}");
-          return null;
-        }
-
-        String name = info['name'];
-        
-        
-        if (await awsDb.checkIfStudentExists(id, tenantId)) {
-          //check if student exist in General table
-          logger.i('Asistencia de $name registrada con ID: $id');
-          return Future.value({'action':'attendance','id': id, 'name': name});
-        } else {
-          logger.i('Alumno no encontrado');
-          return null;
-        }
-      }
-    else if(info['action']=='newAccess'){
-       String profId = info['profID'];
-       return Future.value({'action':info["action"],'profID':profId});
-    }
-    else{
-      return null;
-    }
-  } catch (e) {
-    logger.e('Error al procesar los datos del QR: $e');
+  if (scannedCode.rawValue == null) {
+    logger.d('No se escaneó ningún código o el código es inválido.');
     return null;
+  }
+  else{
+    return Future.value(scannedCode);
   }
 }
 
@@ -83,7 +49,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Escanear QR")),
+      appBar: AppBar(title: const Text("Escanear")),
       body: MobileScanner(
         controller: _scannerController,
         onDetect: (BarcodeCapture barcode) async {
@@ -93,7 +59,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
             return;
           }
 
-          final String? scannedData = barcode.barcodes.first.rawValue;
+          final Barcode? scannedData = barcode.barcodes.first;
 
           _scannerController.stop();
           await Future.delayed(const Duration(milliseconds: 300));

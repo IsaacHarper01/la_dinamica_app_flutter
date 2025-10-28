@@ -44,7 +44,7 @@ class PieChartWidget extends ConsumerWidget {
 
     return FutureBuilder(
       future: awsDb.getPaymentsRange(lastdate, today, tenantId),
-      builder: (BuildContext context, AsyncSnapshot<List<Pay>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<List<Payment>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
@@ -65,7 +65,7 @@ class PieChartWidget extends ConsumerWidget {
 }
 
 class ChartPie extends StatelessWidget {
-  final List<Pay> data;
+  final List<Payment> data;
   final double screenWidth;
 
   const ChartPie({

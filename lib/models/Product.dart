@@ -19,21 +19,24 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
+import 'package:la_dinamica_app/models/Sale.dart';
+
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'package:collection/collection.dart';
 
 
-/** This is an auto generated class representing the LocalPlan type in your schema. */
-class LocalPlan extends amplify_core.Model {
-  static const classType = const _LocalPlanModelType();
+/** This is an auto generated class representing the Product type in your schema. */
+class Product extends amplify_core.Model {
+  static const classType = const _ProductModelType();
   final String id;
-  final String? _type;
-  final int? _clases;
+  final String? _name;
+  final String? _tenant_id;
   final double? _price;
-  final String? _client_id;
-  final bool? _defaultPlan;
-  final List<Payment>? _pays;
+  final String? _image;
+  final int? _stock;
+  final String? _category;
+  final List<Sale>? _sale;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -44,34 +47,38 @@ class LocalPlan extends amplify_core.Model {
   @override
   String getId() => id;
   
-  LocalPlanModelIdentifier get modelIdentifier {
-      return LocalPlanModelIdentifier(
+  ProductModelIdentifier get modelIdentifier {
+      return ProductModelIdentifier(
         id: id
       );
   }
   
-  String? get type {
-    return _type;
+  String? get name {
+    return _name;
   }
   
-  int? get clases {
-    return _clases;
+  String? get tenant_id {
+    return _tenant_id;
   }
   
   double? get price {
     return _price;
   }
   
-  String? get client_id {
-    return _client_id;
+  String? get image {
+    return _image;
   }
   
-  bool? get defaultPlan {
-    return _defaultPlan;
+  int? get stock {
+    return _stock;
   }
   
-  List<Payment>? get pays {
-    return _pays;
+  String? get category {
+    return _category;
+  }
+  
+  List<Sale>? get sale {
+    return _sale;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -82,17 +89,18 @@ class LocalPlan extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const LocalPlan._internal({required this.id, type, clases, price, client_id, defaultPlan, pays, createdAt, updatedAt}): _type = type, _clases = clases, _price = price, _client_id = client_id, _defaultPlan = defaultPlan, _pays = pays, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Product._internal({required this.id, name, tenant_id, price, image, stock, category, sale, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _price = price, _image = image, _stock = stock, _category = category, _sale = sale, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory LocalPlan({String? id, String? type, int? clases, double? price, String? client_id, bool? defaultPlan, List<Payment>? pays}) {
-    return LocalPlan._internal(
+  factory Product({String? id, String? name, String? tenant_id, double? price, String? image, int? stock, String? category, List<Sale>? sale}) {
+    return Product._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      type: type,
-      clases: clases,
+      name: name,
+      tenant_id: tenant_id,
       price: price,
-      client_id: client_id,
-      defaultPlan: defaultPlan,
-      pays: pays != null ? List<Payment>.unmodifiable(pays) : pays);
+      image: image,
+      stock: stock,
+      category: category,
+      sale: sale != null ? List<Sale>.unmodifiable(sale) : sale);
   }
   
   bool equals(Object other) {
@@ -102,14 +110,15 @@ class LocalPlan extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is LocalPlan &&
+    return other is Product &&
       id == other.id &&
-      _type == other._type &&
-      _clases == other._clases &&
+      _name == other._name &&
+      _tenant_id == other._tenant_id &&
       _price == other._price &&
-      _client_id == other._client_id &&
-      _defaultPlan == other._defaultPlan &&
-      DeepCollectionEquality().equals(_pays, other._pays);
+      _image == other._image &&
+      _stock == other._stock &&
+      _category == other._category &&
+      DeepCollectionEquality().equals(_sale, other._sale);
   }
   
   @override
@@ -119,13 +128,14 @@ class LocalPlan extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("LocalPlan {");
+    buffer.write("Product {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("type=" + "$_type" + ", ");
-    buffer.write("clases=" + (_clases != null ? _clases!.toString() : "null") + ", ");
+    buffer.write("name=" + "$_name" + ", ");
+    buffer.write("tenant_id=" + "$_tenant_id" + ", ");
     buffer.write("price=" + (_price != null ? _price!.toString() : "null") + ", ");
-    buffer.write("client_id=" + "$_client_id" + ", ");
-    buffer.write("defaultPlan=" + (_defaultPlan != null ? _defaultPlan!.toString() : "null") + ", ");
+    buffer.write("image=" + "$_image" + ", ");
+    buffer.write("stock=" + (_stock != null ? _stock!.toString() : "null") + ", ");
+    buffer.write("category=" + "$_category" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -133,137 +143,149 @@ class LocalPlan extends amplify_core.Model {
     return buffer.toString();
   }
   
-  LocalPlan copyWith({String? type, int? clases, double? price, String? client_id, bool? defaultPlan, List<Payment>? pays}) {
-    return LocalPlan._internal(
+  Product copyWith({String? name, String? tenant_id, double? price, String? image, int? stock, String? category, List<Sale>? sale}) {
+    return Product._internal(
       id: id,
-      type: type ?? this.type,
-      clases: clases ?? this.clases,
+      name: name ?? this.name,
+      tenant_id: tenant_id ?? this.tenant_id,
       price: price ?? this.price,
-      client_id: client_id ?? this.client_id,
-      defaultPlan: defaultPlan ?? this.defaultPlan,
-      pays: pays ?? this.pays);
+      image: image ?? this.image,
+      stock: stock ?? this.stock,
+      category: category ?? this.category,
+      sale: sale ?? this.sale);
   }
   
-  LocalPlan copyWithModelFieldValues({
-    ModelFieldValue<String?>? type,
-    ModelFieldValue<int?>? clases,
+  Product copyWithModelFieldValues({
+    ModelFieldValue<String?>? name,
+    ModelFieldValue<String?>? tenant_id,
     ModelFieldValue<double?>? price,
-    ModelFieldValue<String?>? client_id,
-    ModelFieldValue<bool?>? defaultPlan,
-    ModelFieldValue<List<Payment>?>? pays
+    ModelFieldValue<String?>? image,
+    ModelFieldValue<int?>? stock,
+    ModelFieldValue<String?>? category,
+    ModelFieldValue<List<Sale>?>? sale
   }) {
-    return LocalPlan._internal(
+    return Product._internal(
       id: id,
-      type: type == null ? this.type : type.value,
-      clases: clases == null ? this.clases : clases.value,
+      name: name == null ? this.name : name.value,
+      tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       price: price == null ? this.price : price.value,
-      client_id: client_id == null ? this.client_id : client_id.value,
-      defaultPlan: defaultPlan == null ? this.defaultPlan : defaultPlan.value,
-      pays: pays == null ? this.pays : pays.value
+      image: image == null ? this.image : image.value,
+      stock: stock == null ? this.stock : stock.value,
+      category: category == null ? this.category : category.value,
+      sale: sale == null ? this.sale : sale.value
     );
   }
   
-  LocalPlan.fromJson(Map<String, dynamic> json)  
+  Product.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _type = json['type'],
-      _clases = (json['clases'] as num?)?.toInt(),
+      _name = json['name'],
+      _tenant_id = json['tenant_id'],
       _price = (json['price'] as num?)?.toDouble(),
-      _client_id = json['client_id'],
-      _defaultPlan = json['defaultPlan'],
-      _pays = json['pays']  is Map
-        ? (json['pays']['items'] is List
-          ? (json['pays']['items'] as List)
+      _image = json['image'],
+      _stock = (json['stock'] as num?)?.toInt(),
+      _category = json['category'],
+      _sale = json['sale']  is Map
+        ? (json['sale']['items'] is List
+          ? (json['sale']['items'] as List)
               .where((e) => e != null)
-              .map((e) => Payment.fromJson(new Map<String, dynamic>.from(e)))
+              .map((e) => Sale.fromJson(new Map<String, dynamic>.from(e)))
               .toList()
           : null)
-        : (json['pays'] is List
-          ? (json['pays'] as List)
+        : (json['sale'] is List
+          ? (json['sale'] as List)
               .where((e) => e?['serializedData'] != null)
-              .map((e) => Payment.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .map((e) => Sale.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'type': _type, 'clases': _clases, 'price': _price, 'client_id': _client_id, 'defaultPlan': _defaultPlan, 'pays': _pays?.map((Payment? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'price': _price, 'image': _image, 'stock': _stock, 'category': _category, 'sale': _sale?.map((Sale? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'type': _type,
-    'clases': _clases,
+    'name': _name,
+    'tenant_id': _tenant_id,
     'price': _price,
-    'client_id': _client_id,
-    'defaultPlan': _defaultPlan,
-    'pays': _pays,
+    'image': _image,
+    'stock': _stock,
+    'category': _category,
+    'sale': _sale,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<LocalPlanModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<LocalPlanModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<ProductModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<ProductModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final TYPE = amplify_core.QueryField(fieldName: "type");
-  static final CLASES = amplify_core.QueryField(fieldName: "clases");
+  static final NAME = amplify_core.QueryField(fieldName: "name");
+  static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
   static final PRICE = amplify_core.QueryField(fieldName: "price");
-  static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
-  static final DEFAULTPLAN = amplify_core.QueryField(fieldName: "defaultPlan");
-  static final PAYS = amplify_core.QueryField(
-    fieldName: "pays",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Payment'));
+  static final IMAGE = amplify_core.QueryField(fieldName: "image");
+  static final STOCK = amplify_core.QueryField(fieldName: "stock");
+  static final CATEGORY = amplify_core.QueryField(fieldName: "category");
+  static final SALE = amplify_core.QueryField(
+    fieldName: "sale",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Sale'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "LocalPlan";
-    modelSchemaDefinition.pluralName = "LocalPlans";
+    modelSchemaDefinition.name = "Product";
+    modelSchemaDefinition.pluralName = "Products";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
         authStrategy: amplify_core.AuthStrategy.PUBLIC,
         operations: const [
           amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.READ,
           amplify_core.ModelOperation.UPDATE,
-          amplify_core.ModelOperation.DELETE,
-          amplify_core.ModelOperation.READ
+          amplify_core.ModelOperation.DELETE
         ])
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.TYPE,
+      key: Product.NAME,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.CLASES,
+      key: Product.TENANT_ID,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.PRICE,
+      key: Product.PRICE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.CLIENT_ID,
+      key: Product.IMAGE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: LocalPlan.DEFAULTPLAN,
+      key: Product.STOCK,
       isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Product.CATEGORY,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: LocalPlan.PAYS,
+      key: Product.SALE,
       isRequired: false,
-      ofModelName: 'Payment',
-      associatedKey: Payment.PLAN
+      ofModelName: 'Sale',
+      associatedKey: Sale.PRODUCT
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -282,29 +304,29 @@ class LocalPlan extends amplify_core.Model {
   });
 }
 
-class _LocalPlanModelType extends amplify_core.ModelType<LocalPlan> {
-  const _LocalPlanModelType();
+class _ProductModelType extends amplify_core.ModelType<Product> {
+  const _ProductModelType();
   
   @override
-  LocalPlan fromJson(Map<String, dynamic> jsonData) {
-    return LocalPlan.fromJson(jsonData);
+  Product fromJson(Map<String, dynamic> jsonData) {
+    return Product.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'LocalPlan';
+    return 'Product';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [LocalPlan] in your schema.
+ * of [Product] in your schema.
  */
-class LocalPlanModelIdentifier implements amplify_core.ModelIdentifier<LocalPlan> {
+class ProductModelIdentifier implements amplify_core.ModelIdentifier<Product> {
   final String id;
 
-  /** Create an instance of LocalPlanModelIdentifier using [id] the primary key. */
-  const LocalPlanModelIdentifier({
+  /** Create an instance of ProductModelIdentifier using [id] the primary key. */
+  const ProductModelIdentifier({
     required this.id});
   
   @override
@@ -322,7 +344,7 @@ class LocalPlanModelIdentifier implements amplify_core.ModelIdentifier<LocalPlan
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'LocalPlanModelIdentifier(id: $id)';
+  String toString() => 'ProductModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -330,7 +352,7 @@ class LocalPlanModelIdentifier implements amplify_core.ModelIdentifier<LocalPlan
       return true;
     }
     
-    return other is LocalPlanModelIdentifier &&
+    return other is ProductModelIdentifier &&
       id == other.id;
   }
   

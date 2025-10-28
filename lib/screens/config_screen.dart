@@ -1,6 +1,7 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/backend/upload_from_csv.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/default_plan_provider.dart';
@@ -59,7 +60,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                 icon: const Icon(Icons.lock_clock),
                 label: const Text('Habilitar vencimiento'),
                 onPressed: () {
-                  // Aquí puedes implementar la lógica para habilitar el vencimiento de planes
+                  
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,

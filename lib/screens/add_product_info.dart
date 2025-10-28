@@ -1,64 +1,45 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:logger/logger.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
-class AddStudentScreen extends ConsumerStatefulWidget {
-  const AddStudentScreen({super.key});
+class AddProductInfo extends ConsumerStatefulWidget {
+  const AddProductInfo({super.key});
 
   @override
-  ConsumerState<AddStudentScreen> createState() => AddStudentScreenState();
+  ConsumerState<AddProductInfo> createState() => AddStudentScreenState();
 }
 
-class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
+class AddStudentScreenState extends ConsumerState<AddProductInfo> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
   
   final List<TextEditingController> _controllers = List.generate(
-    6,
+    5,
     (index) => TextEditingController(),
   );
 
   final List<String> _fieldNames = [
-    'Nombre',
-    'Localidad',
-    'Teléfono',
-    'Edad',
-    'Fecha de nacimiento(yyyy-mm-dd)',
-    'Correo Electrónico',
+    'Nombre del Producto',
+    'Precio',
+    'Numero de Unidades',
+    'Categoria',
+    'Codigo del producto'
   ];
 
   final List<String> _namesdb = [
     'name',
-    'address',
-    'phone',
-    'age',
-    'birthday',
-    'email',
+    'price',
+    'stock',
+    'category',
+    'code',
   ];
-
-  @override
-  void dispose() {
-    for (var controller in _controllers) {
-      controller.dispose();
-    }
-    super.dispose();
-  }
-
-  bool checkDateFormat(String date) {
-        final regex = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-        if (!regex.hasMatch(date)) return false;
-        try {
-          DateTime.parse(date);
-          return true;
-        } catch (e) {
-          return false;
-        }
-      }
 
   void _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
@@ -73,40 +54,18 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       };
       logger.i('Datos del formulario: $data');
 
-      if(checkDateFormat(data['birthday']!) == false){
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Formato de fecha incorrecto. Use yyyy-mm-dd'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
       // Insertar los valores en la base de datos y generar el archivo PDF
-      final image = await pickAndSaveImage(data['name']!, gymId, false, false);
+      final image = await pickAndSaveImage(data['name']!, gymId, false, true);
       data['image'] = image!;
 
-      final id = await awsDb.saveGeneral(
+      await awsDb.saveProduct(
         name: data['name']!,
-        address: data['address']!,
-        phone: data['phone']!,
-        age: int.parse(data['age']!),
-        birthday: data['birthday']!,
-        email: data['email']!,
+        code: data['code']!,
         image: image,
-        gymId: gymId, 
-      );
-
-      generateCredentialandSend(
-        id,
-        data['name']!,
-        data['address']!,
-        data['phone']!,
-        data['age']!,
-        image,
-        gymId,
+        tenaniId: user.tenant.tenant_id,
+        stock: int.parse(data['stock']!),
+        category: data['category']!,
+        price: double.parse(data['price']!)
       );
 
       if (!mounted) return;
@@ -199,18 +158,19 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                                       },
                                                                         ),
                                     ),
-                                  if(_namesdb[index]=='birthday')...[
+                                  if(_namesdb[index]=='code')...[
                                     const SizedBox(width: 8),
                                     IconButton(
-                                      icon: const Icon(Icons.calendar_today, color: Colors.black),
+                                      icon: const Icon(Icons.barcode_reader, color: Colors.black),
                                       onPressed: ()async{
-                                        final DateTime? pickDate = await showDatePicker(
-                                          context: context, 
-                                          firstDate: DateTime(1990), 
-                                          lastDate: DateTime(2050));
-                                          if(pickDate != null){
-                                            _controllers[index].text = pickDate.toIso8601String().split('T').first;
+                                        final Barcode? data = await scannerQR(context);
+                                         if(data!=null){
+                                          safePrint("CODE: ${data.format}");
+                                          if(data.rawValue != null){
+                                            _controllers[index].text = data.rawValue!;
                                           }
+                                         }
+                                          
                                       },
                                 
                                     )

@@ -41,7 +41,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
     final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
     
-    final imageUrl = ref.watch(studentImageProvider(widget.image));
+    final imageUrl = ref.watch(imageProvider(widget.image));
     final state = ref.watch(examProvider);
     final base10Conversion = state.objetives.containsKey(state.actualState) && state.penalties.containsKey(state.actualState);
 

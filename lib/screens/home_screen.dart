@@ -18,6 +18,8 @@ import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 import 'package:la_dinamica_app/widgets/payment_box.dart';
 import 'package:la_dinamica_app/widgets/select_school_widget.dart';
 import 'package:la_dinamica_app/widgets/students_number_home.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+
 
 import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
@@ -57,49 +59,92 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
     WidgetsBinding.instance.removeObserver(this);
   }
 
-  Future<void> registerAssistance(BuildContext context) async {
+  Future<void> checkAction(BuildContext context) async {
     final currentDate = ref.read(dateProvider);
-    final result = await scannerQR(context, user!.tenant.tenant_id);
+    final result = await scannerQR(context,);
     safePrint('QR Result: $result');
-    final aws = DataStoreReadService();
+    final decodedResult = decodeInfo(result, user!.tenant.tenant_id);
+    if(decodedResult!=null){
+      if (decodedResult['codeType']=='QR'){
+       final bool status = await manageQR(decodedResult['info'], currentDate, user!);
+      }
+      else{
+       final bool status = await manageBarcode(decodedResult['info'], currentDate, user!);
+      }
+    }
+    else{
+      ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+            content: Text('Error'),
+            backgroundColor: Colors.red,
+            ),
+          );
+    }
+  }
 
-    if (result == null || result.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('ID no encontrado'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      safePrint("No se escanearon datos o hubo un error");
-      return;
-    }
-    if (result['action'] == 'attendance') {
-      final id = result['id'];
-      final name = result['name'];
-      await showPaymentDialog(context, ref, studentID: id,name: name, date: currentDate, user: user!);
-      return;
-    }
-    if (result['action'] == 'newAccess' && user!.permissions['addProfesor']==true) {
-      final permissions = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const PermissionsScreen(),
-        ),
-      );
-      safePrint('Permisos otorgados: $permissions');
-      aws.giveUserAccess(user!.tenant, jsonEncode(permissions), result['profID']);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-      content: Text('Profesor añadido correctamente'),
-      backgroundColor: Colors.green,
-      ),);
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-      content: Text('Permiso Denegado'),
-      backgroundColor: Colors.red,
-      ));
-    }
+  Future<bool> manageQR(Map<String, dynamic> info, String date, UserLocal user)async{
+      final awsDb = DataStoreReadService();
+        if (info['action']=='attendance'){
+            int id = info['id'] ?? -1;
+            if (id == -1) {
+              return Future.value(false);
+            }
+
+            String name = info['name'];
+          
+            if (await awsDb.checkIfStudentExists(id, user.tenant.tenant_id)) {
+              //check if student exist in General table
+              await showPaymentDialog(context, ref, studentID: id, name: name, date: date, user: user);
+              return Future.value(true);
+            } else {
+              return Future.value(false);
+            }
+          }
+        else if(info['action']=='newAccess' && user.permissions['addProfesor']==true){
+          String profId = info['profID'];
+          final permissions = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PermissionsScreen(),
+            ),
+          );
+          safePrint('Permisos otorgados: $permissions');
+          awsDb.giveUserAccess(user.tenant, jsonEncode(permissions), profId);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+            content: Text('Profesor añadido correctamente'),
+            backgroundColor: Colors.green,
+            ),
+          );
+          return Future.value(true);
+            }
+        else{
+            return Future.value(false);
+              }
+  }
+
+  Future<bool> manageBarcode(String productCode, String date, UserLocal user)async{
+      return Future.value(false);
+  }
+
+  Map<String, dynamic>? decodeInfo(Barcode? data, String tenantId){
+    try {
+      if (data != null){
+        if (data.format == BarcodeFormat.qrCode){
+        Map<String, dynamic> info = jsonDecode(data.rawValue!);
+        return {'codeType':'QR', 'info': info};
+        }
+        else{
+          safePrint('Codigo de barras detectado: ${data.rawValue}');
+          return {'codeType':'BARCODE','info':data.rawValue};
+        }
+      }
+      else {
+        return null;
+          }
+  } catch (e) {
+    return null;
+  }
   }
 
   void _clearSearch() {
@@ -143,7 +188,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => registerAssistance(context),
+        onPressed: () => checkAction(context),
         child: const Icon(Icons.qr_code_scanner_outlined),
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,

@@ -28,7 +28,9 @@ import 'Grades.dart';
 import 'JoinSubMetric.dart';
 import 'JointMetric.dart';
 import 'LocalPlan.dart';
-import 'Pay.dart';
+import 'Payment.dart';
+import 'Product.dart';
+import 'Sale.dart';
 import 'SingleMetric.dart';
 import 'Student.dart';
 import 'SubMetric.dart';
@@ -44,7 +46,9 @@ export 'Grades.dart';
 export 'JoinSubMetric.dart';
 export 'JointMetric.dart';
 export 'LocalPlan.dart';
-export 'Pay.dart';
+export 'Payment.dart';
+export 'Product.dart';
+export 'Sale.dart';
 export 'SingleMetric.dart';
 export 'Student.dart';
 export 'SubMetric.dart';
@@ -54,9 +58,9 @@ export 'UserAccess.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "82eeb356813cfa120c5b5fb7b17081dd";
+  String version = "8547f02c9cbb8418b1404a692c66dfdf";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Debt.schema, Evaluations.schema, Grades.schema, JoinSubMetric.schema, JointMetric.schema, LocalPlan.schema, Pay.schema, SingleMetric.schema, Student.schema, SubMetric.schema, Tenant.schema, User.schema, UserAccess.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Debt.schema, Evaluations.schema, Grades.schema, JoinSubMetric.schema, JointMetric.schema, LocalPlan.schema, Payment.schema, Product.schema, Sale.schema, SingleMetric.schema, Student.schema, SubMetric.schema, Tenant.schema, User.schema, UserAccess.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -81,8 +85,12 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return JointMetric.classType;
       case "LocalPlan":
         return LocalPlan.classType;
-      case "Pay":
-        return Pay.classType;
+      case "Payment":
+        return Payment.classType;
+      case "Product":
+        return Product.classType;
+      case "Sale":
+        return Sale.classType;
       case "SingleMetric":
         return SingleMetric.classType;
       case "Student":

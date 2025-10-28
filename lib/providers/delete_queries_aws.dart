@@ -56,12 +56,12 @@ class DataStoreDeleteService {
           .and(Attendance.DATE.eq(date)),
           sortBy: [Attendance.DATE.descending()],
         );
-        List<Pay> payments = await Amplify.DataStore.query(
-          Pay.classType,
-          where: Pay.USER_ID.eq(id)
-          .and(Pay.CLIENT_ID.eq(tenantId))
-          .and(Pay.DATE.eq(date)),
-          sortBy: [Pay.DATE.descending()],
+        List<Payment> payments = await Amplify.DataStore.query(
+          Payment.classType,
+          where: Payment.USER_ID.eq(id)
+          .and(Payment.CLIENT_ID.eq(tenantId))
+          .and(Payment.DATE.eq(date)),
+          sortBy: [Payment.DATE.descending()],
         );
 
         if (attendance.isNotEmpty) {
@@ -69,7 +69,7 @@ class DataStoreDeleteService {
             safePrint('✅ Asistencia eliminada correctamente');
         } 
 
-        Pay? lastPayment = payments.isNotEmpty ? payments.last : null;
+        Payment? lastPayment = payments.isNotEmpty ? payments.last : null;
 
         if(lastPayment != null) {
           List<LocalPlan> plan = await Amplify.DataStore.query(
@@ -78,7 +78,7 @@ class DataStoreDeleteService {
           );
 
           if (plan.first.clases! > lastPayment.clases!  && lastPayment.date!.format() != date){
-            Pay updatedPayment = lastPayment.copyWith(clases: lastPayment.clases! + 1);
+            Payment updatedPayment = lastPayment.copyWith(clases: lastPayment.clases! + 1);
             await Amplify.DataStore.save(updatedPayment);
           } else {
             await Amplify.DataStore.delete(lastPayment);
@@ -119,9 +119,9 @@ class DataStoreDeleteService {
 
   Future<void> deletePaymentByID(String id, String tenantId) async {
       try {
-        List<Pay> payments = await Amplify.DataStore.query(
-          Pay.classType,
-          where: Pay.ID.eq(id).and(Pay.CLIENT_ID.eq(tenantId)),
+        List<Payment> payments = await Amplify.DataStore.query(
+          Payment.classType,
+          where: Payment.ID.eq(id).and(Payment.CLIENT_ID.eq(tenantId)),
         );
         if (payments.isNotEmpty) {
           for (var payment in payments) {

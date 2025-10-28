@@ -6,9 +6,9 @@ import 'package:la_dinamica_app/models/student.dart';
 
 class Storages3 {
   
-Future<String?> uploadFile(File file, String name, String tenantId) async {
+Future<String?> uploadFile(File file, String name, String tenantId, bool product) async {
   try {
-    String newPath = 'public/$tenantId/students/$name.png';
+    String newPath = product ? 'public/$tenantId/products/$name.png' : 'public/$tenantId/students/$name.png';
     safePrint('Uploading file to S3: $newPath');
     final result = await Amplify.Storage.uploadFile(
       localFile: AWSFilePlatform.fromFile(file),

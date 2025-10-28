@@ -27,7 +27,7 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
     final bool isPortatil = orientation == Orientation.portrait;
     final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
-    final imageUrl = ref.watch(studentImageProvider(image));
+    final imageUrl = ref.watch(imageProvider(image));
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
