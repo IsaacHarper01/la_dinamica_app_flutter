@@ -16,6 +16,7 @@ import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 import 'package:la_dinamica_app/widgets/payment_box.dart';
+import 'package:la_dinamica_app/widgets/product_payment_box.dart';
 import 'package:la_dinamica_app/widgets/select_school_widget.dart';
 import 'package:la_dinamica_app/widgets/students_number_home.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -124,7 +125,19 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
   }
 
   Future<bool> manageBarcode(String productCode, String date, UserLocal user)async{
-      return Future.value(false);
+      final aws = DataStoreReadService();
+      final product = await aws.productExists(productCode, user.tenant.tenant_id);
+      if(product != null){
+        await showProductInfoDialog(context, product, user);
+        return Future.value(true);
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+            content: Text('Producto no encontrado: $productCode'),
+            backgroundColor: Colors.red,
+            ),);
+        return Future.value(false);
+        }
   }
 
   Map<String, dynamic>? decodeInfo(Barcode? data, String tenantId){

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
+import 'package:la_dinamica_app/providers/product_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:logger/logger.dart';
@@ -56,20 +57,19 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
 
       // Insertar los valores en la base de datos y generar el archivo PDF
       final image = await pickAndSaveImage(data['name']!, gymId, false, true);
-      data['image'] = image!;
 
-      await awsDb.saveProduct(
-        name: data['name']!,
-        code: data['code']!,
-        image: image,
-        tenaniId: user.tenant.tenant_id,
-        stock: int.parse(data['stock']!),
-        category: data['category']!,
-        price: double.parse(data['price']!)
+      await ref.read(productProvider.notifier).addProducts(
+        data['name']!,
+        image,
+        data['code']!,
+        user.tenant.tenant_id,
+        int.parse(data['stock']!),
+        double.parse(data['price']!),
+        data['category']!,
       );
 
       if (!mounted) return;
-      // Mostrar SnackBar confirmando el registro
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Registro exitoso'),

@@ -161,7 +161,7 @@ type Debt @model @auth(rules: [{allow: public, operations: [create, read, update
 
 type Product @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
-  code: Int @index
+  code: String @index(name: "byCode", queryField: "productByCode")
   name: String 
   tenant_id: ID
   price: Float
@@ -177,6 +177,7 @@ type Sale @model @auth(rules: [{allow: public, operations: [create, read, update
   product_id: ID!
   tenant_id: ID
   price: Float
+  date: AWSDate
   
   product: Product @belongsTo(fields: ["product_id"])
 }

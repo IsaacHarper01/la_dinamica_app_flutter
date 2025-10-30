@@ -136,4 +136,8 @@ class DataStoreDeleteService {
       }
     }
 
+  Future<void> deleteProduct(Product product)async{
+      Amplify.DataStore.delete(product);
+  }
+
 }

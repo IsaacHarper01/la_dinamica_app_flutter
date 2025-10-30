@@ -89,4 +89,14 @@ Future<List<String?>> getImages(List<int> ids, String tenantId) async {
       rethrow;
     }
   }
+
+Future<void> deleteFile(String fileName) async {
+  try {
+    await Amplify.Storage.remove(path: StoragePath.fromString(fileName)).result;
+    safePrint('Deleted file: $fileName');
+  } on StorageException catch (e) {
+    safePrint('Error deleting file: ${e.message}');
+    }
+  }
+
 }

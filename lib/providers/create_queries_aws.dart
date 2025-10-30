@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/models/Product.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class DataStoreService {
@@ -317,6 +316,7 @@ await Amplify.DataStore.save(submetric);
   })async{
       final newProduct = Product(
         name: name,
+        code: code,
         tenant_id: tenaniId,
         price: price,
         image: image,
@@ -324,5 +324,18 @@ await Amplify.DataStore.save(submetric);
         category: category
       );
       Amplify.DataStore.save(newProduct);
+  }
+
+  Future<void> saveSale({
+    required String tenaniId,
+    required double price,
+    required Product product
+  })async{
+      final newSale = Sale(
+        tenant_id: tenaniId,
+        price: price,
+        product: product,
+      );
+      Amplify.DataStore.save(newSale);
   }
 }

@@ -28,12 +28,14 @@ Future<void> _configureAmplify() async {
   final apiPlugin = AmplifyAPI();
   final storage = AmplifyStorageS3();
   final auth = AmplifyAuthCognito();
-
+  
   if (!Amplify.isConfigured) {
     try {
       await Amplify.addPlugins([datastorePlugin, apiPlugin, storage, auth]);
       await Amplify.configure(amplifyconfig);
-
+      // await Amplify.DataStore.stop();
+      // await Amplify.DataStore.clear();
+      // await Amplify.DataStore.start();
       safePrint('✅ Amplify configurado correctamente');
     } on AmplifyAlreadyConfiguredException {
       safePrint('⚠️ Amplify ya estaba configurado');

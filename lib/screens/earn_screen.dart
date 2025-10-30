@@ -9,6 +9,7 @@ import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/line_chart_widget.dart';
+import 'package:la_dinamica_app/widgets/pie_chart_products_widget.dart';
 import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
 
 class EarnScreen extends ConsumerStatefulWidget {
@@ -235,7 +236,21 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: colorList[1], width: 1),
                 ),
-                child: PieChartWidget(
+                child: PieChartWidgetPlans(
+                  startDate: startDate, 
+                  endDate: endDate, 
+                  tenantId: user.tenant.tenant_id,
+                  screenWidth: screenWidth,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: screenWidth,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: colorList[1], width: 1),
+                ),
+                child: PieChartWidgetProducts(
                   startDate: startDate, 
                   endDate: endDate, 
                   tenantId: user.tenant.tenant_id,

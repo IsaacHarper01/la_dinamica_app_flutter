@@ -44,6 +44,6 @@ Future<String?> pickAndSaveImage(String name, String tenantId, bool takeAgain, b
     return newPath;
   } else {
     safePrint('No image selected.');
-    return 'assets/images/default_profile.jpg'; // Default image path
+    return null; // Default image path
   }
 }

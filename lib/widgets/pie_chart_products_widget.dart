@@ -9,13 +9,13 @@ import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/widgets/piechart_indicator.dart';
 
-class PieChartWidgetPlans extends ConsumerWidget {
+class PieChartWidgetProducts extends ConsumerWidget {
   final DateTime startDate;
   final DateTime endDate;
   final String tenantId;
   final double screenWidth;
 
-  const PieChartWidgetPlans({
+  const PieChartWidgetProducts({
     super.key,
     required this.startDate,
     required this.endDate,
@@ -43,8 +43,8 @@ class PieChartWidgetPlans extends ConsumerWidget {
     final today = parsedDate;
 
     return FutureBuilder(
-      future: awsDb.getPaymentsRange(lastdate, today, tenantId),
-      builder: (BuildContext context, AsyncSnapshot<List<Payment>> snapshot) {
+      future: awsDb.getSalesPerRange(lastdate, today, tenantId),
+      builder: (BuildContext context, AsyncSnapshot<List<Sale>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
@@ -65,7 +65,7 @@ class PieChartWidgetPlans extends ConsumerWidget {
 }
 
 class ChartPie extends StatelessWidget {
-  final List<Payment> data;
+  final List<Sale> data;
   final double screenWidth;
 
   const ChartPie({
@@ -78,26 +78,25 @@ class ChartPie extends StatelessWidget {
   Widget build(BuildContext context) {
     final sections = <PieChartSectionData>[];
     final percentages = <String, double>{};
-    final planNames = <String, String>{};
+    final productNames = <String, String>{};
     final colors = <Color>[];
     final random = Random();
     double total = 0;
 
-    for (var pay in data) {
-      final planID = pay.plan!.id;
-      final amount = pay.amount!;
-      if (percentages.containsKey(planID)) {
-        percentages[planID] = percentages[planID]! + amount;
+    for (var sale in data) {
+      final productID = sale.product!.id;
+      final amount = sale.price!;
+      if (percentages.containsKey(productID)) {
+        percentages[productID] = percentages[productID]! + amount;
       } else {
-        percentages[planID] = amount;
-        planNames[planID] = pay.plan!.type!;
+        percentages[productID] = amount;
+        productNames[productID] = sale.product!.name!;
       }
       total += amount;
     }
 
-    for (var planID in percentages.keys) {
-      final value = percentages[planID]! / total * 100; // Calculate percentage
-      
+    for (var productID in percentages.keys) {
+      final value = percentages[productID]! / total * 100; // Calculate percentage
       final color = Color.fromRGBO(
         random.nextInt(256),
         random.nextInt(256),
@@ -111,22 +110,23 @@ class ChartPie extends StatelessWidget {
           color: color, // You can customize the color
           title: '${value.toStringAsFixed(1)}%',
           radius: 40,
-          ),
-        );
+        ),
+      );
     }
 
     Column chartInfo(
       Map<String, double> percentages,
-      Map<String, String> planNames,
+      Map<String, String> productNames,
       double totalAmount,
       List<Color> colors,
     ) {
-      List<String> planTypes = [];
+      List<String> productTypes = [];
       List<double> amounts = [];
 
-      for(var planId in percentages.keys){
-        planTypes.add(planNames[planId]!);
-        amounts.add(percentages[planId]!);
+      for(var productId in percentages.keys){
+        if (percentages[productId]! > 0)
+        {productTypes.add(productNames[productId]!);
+        amounts.add(percentages[productId]!);}
       }
 
       return Column(
@@ -134,11 +134,11 @@ class ChartPie extends StatelessWidget {
         children: [
           Text('Total: \$${totalAmount.toStringAsFixed(2)}'),
           const SizedBox(height: 20),
-          ...List.generate(sections.length, (index) {
+          ...List.generate(productTypes.length, (index) {
             return Indicator(
               color: colors[index],
               text:
-                  '${planTypes[index]}:  \$${amounts[index].toStringAsFixed(2)}',
+                  '${productTypes[index]}:  \$${amounts[index].toStringAsFixed(2)}',
               isSquare: false,
             );
           }),
@@ -150,16 +150,18 @@ class ChartPie extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Ingresos por plan',
+          'Ingresos por producto',
           style: GoogleFonts.michroma()
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Expanded(child: chartInfo(percentages,productNames ,total, colors)),
             Expanded(
               child: SizedBox(
                 height: 300,
-                child: PieChart(
+                child: 
+                PieChart(
                   PieChartData(
                     sectionsSpace: 0,
                     centerSpaceRadius: screenWidth * 0.1,
@@ -168,7 +170,6 @@ class ChartPie extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(child: chartInfo(percentages,planNames ,total, colors)),
           ],
         ),
       ],

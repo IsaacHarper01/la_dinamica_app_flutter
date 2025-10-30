@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/lastPayments_provider.dart';
 import 'package:la_dinamica_app/widgets/payment_box.dart';
@@ -51,11 +50,11 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
                   payment: payment,
                   permision: widget.user.permissions["deletePayments"]!,
                   setDebt: ()async{
-                      ref.read(paymentsProvider.notifier).markDebt(widget.user, widget.student, payment, payStatus);
+                      await ref.read(paymentsProvider.notifier).markDebt(widget.user, widget.student, payment, payStatus);
                       safePrint("Adeudo guardado correctamente");
                   },
                   onDelete: () async {
-                    ref.read(paymentsProvider.notifier).deletePay(payment.id, widget.user, widget.student);
+                    await ref.read(paymentsProvider.notifier).deletePay(payment.id, widget.user, widget.student);
                     safePrint('Eliminando pago con ID: ${payment.id}');
                   },
                 );

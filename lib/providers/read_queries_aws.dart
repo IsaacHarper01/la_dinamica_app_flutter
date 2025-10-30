@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/models/Product.dart';
+import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 
 class DataStoreReadService {
 
@@ -100,6 +100,26 @@ class DataStoreReadService {
       return payments;
     } catch (e) {
       safePrint('❌ Error al obtener los pagos: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<Sale>> getSalesPerRange(
+    DateTime startDate,
+    DateTime endDate,
+    String tenantId,
+  ) async {
+    try {
+      List<Sale> sales = await Amplify.DataStore.query(
+        Sale.classType,
+        where: (Sale.TENANT_ID.eq(tenantId))
+        .and(Sale.DATE.between(TemporalDate(startDate), TemporalDate(endDate)))
+        ,
+      );
+      safePrint('✅ Ventas obtenidas correctamente');
+      return sales;
+    } catch (e) {
+      safePrint('❌ Error al obtener las ventas: $e');
       rethrow;
     }
   }
@@ -700,7 +720,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Product>?> getProducts(String tenaniId)async{
+  Future<List<Product>> getProducts(String tenaniId)async{
       try {
         safePrint("Obteniendo productos para $tenaniId");
         final products = await Amplify.DataStore.query(
@@ -709,9 +729,30 @@ class DataStoreReadService {
         safePrint("Productos obtenidos correctamente: $products");
         return products;
       } catch (e) {
-        return null;
+        rethrow;
       }
   }
+
+  Future<Product?> productExists(String productCode, String tenaniId)async {
+    safePrint("🔍 Buscando el producto: $productCode");
+    try {
+      final products = await Amplify.DataStore.query(
+        Product.classType,
+        where: Product.TENANT_ID.eq(tenaniId)
+        .and(Product.CODE.eq(productCode))
+        );
+        return products.first;
+    } catch (e) {
+      safePrint('❌ Error checking product via GraphQL: $e');
+      return null;
+    }
+  }
+
+  Future<void> saleProduct(Product product, String tenaniId)async{
+    final aws = DataStoreService();
+    final oldStock = product.stock;
+    final newProduct = product.copyWith(stock: oldStock!-1);
+    await Amplify.DataStore.save(newProduct);
+    await aws.saveSale(tenaniId: tenaniId, price: product.price!, product: product);
+  } 
 }
-
-
