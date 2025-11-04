@@ -129,7 +129,7 @@ class DataStoreService {
     }
   }
 
-  Future<void> saveUser({
+  Future<User> saveUser({
     required String id,
     required String name,
   }) async {
@@ -140,13 +140,14 @@ class DataStoreService {
     try {
       await Amplify.DataStore.save(item);
       safePrint('✅ Usuario guardado correctamente');
+      return item;
     } catch (e) {
       safePrint('❌ Error al guardar el usuario: $e');
       rethrow;
     }
   }
 
-  Future<void> saveUserAccess({
+  Future<UserAccess> saveUserAccess({
     required Map<String, bool> permissions,
     required bool status,
     required Tenant tenant,
@@ -161,13 +162,14 @@ class DataStoreService {
     try {
       await Amplify.DataStore.save(item);
       safePrint('✅ Acceso de usuario guardado correctamente');
+      return item;
     } catch (e) {
       safePrint('❌ Error al guardar el acceso de usuario: $e');
       rethrow;
     }
   }
 
-  Future<void> saveTenant({
+  Future<Tenant> saveTenant({
     required String tenantId,
     required String name,
     required String plan,
@@ -182,6 +184,7 @@ class DataStoreService {
     try {
       await Amplify.DataStore.save(item);
       safePrint('✅ Gimnasio guardado correctamente');
+      return item;
     } catch (e) {
       safePrint('❌ Error al guardar el gimnasio: $e');
       rethrow;
@@ -329,12 +332,14 @@ await Amplify.DataStore.save(submetric);
   Future<void> saveSale({
     required String tenaniId,
     required double price,
-    required Product product
+    required Product product,
+    required String date,
   })async{
       final newSale = Sale(
         tenant_id: tenaniId,
         price: price,
         product: product,
+        date: TemporalDate(DateTime.parse(date))
       );
       Amplify.DataStore.save(newSale);
   }

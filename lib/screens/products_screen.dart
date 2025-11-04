@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/edit_products_screen.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/product_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -26,6 +28,7 @@ class _nameState extends ConsumerState<ProductsScreen> {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
+    final screenHeight =isPortatil? MediaQuery.of(context).size.height: MediaQuery.of(context).size.height * 1.2;
     final userAsync = ref.watch(userProvider);
     final products = ref.watch(productProvider);
 
@@ -65,7 +68,7 @@ class _nameState extends ConsumerState<ProductsScreen> {
                 ],
               ),
             ),
-          productsBox(user, screenWidth),
+          productsBox(user, screenWidth, screenHeight),
         ],
       ),
     )
@@ -74,15 +77,16 @@ class _nameState extends ConsumerState<ProductsScreen> {
     );
   }
     
-  Widget productsBox(UserLocal user, double screenWidth){
+  Widget productsBox(UserLocal user, double screenWidth, double screenHeight){
     final productsAsync = ref.watch(productProvider);
+    final date = ref.watch(dateProvider);
     
     return productsAsync.when(
       error: (e, st) => Center(child: Text('Error: $e')), 
       loading:() => const Center(child: CircularProgressIndicator()),
       data:(products) {
         return SizedBox(
-              height: 800,
+              height: screenHeight-180, //Change this to sizeHeight of the screen
               width: screenWidth,
               child: ListView.builder(
                 itemCount: products.length,
@@ -91,6 +95,7 @@ class _nameState extends ConsumerState<ProductsScreen> {
                   return ProductCard(
                     product: products[index], 
                     user: user,
+                    date: date,
                     onDelete:(){
                       ref.read(productProvider.notifier)
                         .deleteProduct(products[index]);
@@ -108,12 +113,14 @@ class ProductCard extends ConsumerStatefulWidget {
   final Product product;
   final UserLocal user;
   final VoidCallback onDelete;
+  final String date;
 
   const ProductCard({
     super.key, 
     required this.product,
     required this.user,
     required this.onDelete,
+    required this.date,
     });
 
   @override
@@ -141,6 +148,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
         elevation: 6,
         shadowColor: Colors.black26,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: stockState>0 ? colorList[1] : Color.fromRGBO(109, 36, 36, 0.498),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
           child: Row(
@@ -218,19 +226,21 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               ),
 
               // Sell button
-              ElevatedButton(
+              if(widget.user.permissions["sellProducts"]==true&&stockState>0)...[
+                ElevatedButton(
                 onPressed: () async{
                   if(stockState>0)
                   {
                     setState(() {
                       stockState--;
                     });
-                  await aws.saleProduct(widget.product, widget.user.tenant.tenant_id);
+                  await aws.sellProduct(widget.product, widget.user.tenant.tenant_id, widget.date);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                     content: Text('Producto descontado del inventario'),
                     backgroundColor: Colors.green,
-                    ),);
+                      ),
+                    );
                   }else{
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -249,18 +259,28 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                   elevation: 0,
                 ),
                 child: const Text("Vender", style: TextStyle(fontSize: 13)),
-              ),
+                ),
+              ],
 
               const SizedBox(width: 4),
 
               // Popup menu
-              PopupMenuButton<String>(
+              if(widget.user.permissions["editProducts"]==true)...[
+                PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, size: 20),
                 onSelected: (value) async {
                   if (value == 'delete') {
                     widget.onDelete();
                   } else if (value == 'update') {
-                    // handle edit
+                    await Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => 
+                        EditProductInfo(
+                          product: widget.product
+                          )
+                        )
+                      );
                   }
                 },
                 itemBuilder: (context) => [
@@ -286,12 +306,12 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                   ),
                 ],
               ),
+              ]
             ],
           ),
         ),
       ),
     );
-
   }
 }
 

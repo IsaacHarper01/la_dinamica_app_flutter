@@ -52,32 +52,31 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         final plan = "Free";
         final status = true;
 
-        final user = User(user_id: userId, name: name);
-
-        final tenant = Tenant(
-          tenant_id: newTenantId,
-          name: nameSchool,
-          plan: plan,
-          status: status,
-        );
-
-        final userAccess = UserAccess(
-          user: user,
-          tenant: tenant,
-          permissions: '{"deleteStudents": true, "watchIncome": true, "setPlans": true, "setEvaluations": true, "deletePayments": true, "addProfesor": true, "editPast": true}', // Default permissions
-          status: true,
-        );
-        await awsDb2.saveUser(id: userId, name: name);
-        await awsDb2.saveTenant(
+        final user = await awsDb2.saveUser(
+          id: userId, 
+          name: name
+          );
+        final tenant = await awsDb2.saveTenant(
           tenantId: newTenantId,
           name: nameSchool,
           plan: plan,
           status: status,
         );
-        await awsDb2.saveUserAccess(
+        final permisions = {
+            'deleteStudents': true,
+            'watchIncome': true,
+            'setPlans': true,
+            'setEvaluations': true,
+            'deletePayments': true,
+            'addProfesor' : true,
+            'editPast': true,
+            'editProducts': true,
+            'sellProducts': true,
+            };
+        final userAccess = await awsDb2.saveUserAccess(
           user: user,
           tenant: tenant,
-          permissions: {"deleteStudents": true, "watchIncome": true, "setPlans": true, "setEvaluations": true, "deletePayments": true, "addProfesor": true, "editPast": true}, // Default permissions
+          permissions: permisions,
           status: true,
         );
 
@@ -86,7 +85,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           tenant: tenant,
           name: email,
           schoolname: nameSchool,
-          permissions: {"deleteStudents": true, "watchIncome": true, "setPlans": true, "setEvaluations": true, "deletePayments": true, "addProfesor": true, "editPast": true},
+          permissions: permisions,
           // Default permissions
           plan: plan,
           status: status,

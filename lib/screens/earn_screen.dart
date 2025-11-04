@@ -65,17 +65,19 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
       error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
       data: (userAsync) => userAsync.permissions['watchIncome']! ?
       Scaffold(
-      body: FutureBuilder<double>(
-        future: awsDb.getIncomeRange(startDate, endDate, userAsync.tenant.tenant_id),
-        builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: awsDb.getAllInconmeRange(userAsync.tenant.tenant_id, startDate, endDate),
+        builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            double result = snapshot.data!;
+            Map<String, dynamic> totalIncome = snapshot.data!;
             final today = ref.watch(dateProvider);
-            return incomeScreen(context, screenWidth, result, today, userAsync);
+            final todayPlanIncome = awsDb.getIncomePlans(startDate,endDate,userAsync.tenant.tenant_id,totalIncome['payments']);
+            final todaySaleIncome = awsDb.getIncomeSales(startDate,endDate,userAsync.tenant.tenant_id,totalIncome['sales']);
+            return incomeScreen(context, screenWidth, totalIncome,todayPlanIncome,todaySaleIncome, today, userAsync);
           }
         },
       ),
@@ -89,7 +91,9 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
   Center incomeScreen(
     BuildContext context,
     double screenWidth,
-    double result,
+    Map<String, dynamic> income,
+    double todayPlanIncome,
+    double todaySaleIncome,
     String date,
     UserLocal user,
   ) {
@@ -188,7 +192,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
               ),
               const SizedBox(height: 10),
               Container(
-                height: 110,
+                height: 130,
                 width: screenWidth * 0.9,
                 decoration: BoxDecoration(
                   color: colorList[3],
@@ -205,14 +209,41 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                       ),
 
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Ingresos de hoy: ',
+                            'Ingresos de planes: ',
                             style: GoogleFonts.michroma(color: Colors.white),
                           ),
                           Text(
-                            '\$${result.toString()}',
+                            '\$${todayPlanIncome.toString()}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Ingresos de productos: ',
+                            style: GoogleFonts.michroma(color: Colors.white),
+                          ),
+                          Text(
+                            '\$${todaySaleIncome.toString()}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                      const Divider(height: 0, indent: 20, endIndent: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Total: ',
+                            style: GoogleFonts.michroma(color: Colors.white),
+                          ),
+                          Text(
+                            '\$${(todaySaleIncome+todayPlanIncome).toString()}',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 
@@ -171,16 +170,29 @@ class DataStoreReadService {
       return result;
   }
 
-  Future<double> getIncomeRange(DateTime startDate, DateTime endDate, String tenantId) async {
+  Future<Map<String, dynamic>> getAllInconmeRange(String tenaniId, DateTime start, DateTime end)async{
+      try {
+        final startDate = TemporalDate(start);
+        final endDate = TemporalDate(end);
+        final payments =await Amplify.DataStore.query(
+          Payment.classType,
+          where: Payment.CLIENT_ID.eq(tenaniId)
+          .and(Payment.DATE.between(startDate, endDate))
+          );
+        final sales = await Amplify.DataStore.query(
+          Sale.classType,
+          where: Sale.TENANT_ID.eq(tenaniId)
+          .and(Sale.DATE.between(startDate, endDate))
+          );
+          return {"payments":payments, "sales":sales};
+      } catch (e) {
+        rethrow;
+      }
+  }
+
+  double getIncomePlans(DateTime startDate, DateTime endDate, String tenantId, List<Payment> payments){
     double totalIncome = 0.0;
     try {
-      // Consultar los datos almacenados en DataStore
-      List<Payment> payments = await Amplify.DataStore.query(
-        Payment.classType,
-        where: Payment.DATE.between(TemporalDate(startDate), TemporalDate(endDate)) 
-            .and(Payment.CLIENT_ID.eq(tenantId)),
-      );
-
       if (payments.isEmpty) {
         safePrint(
           '❌ No se encontraron ingresos en el rango de fechas proporcionado',
@@ -189,6 +201,27 @@ class DataStoreReadService {
       } else {
         for (var payment in payments) {
           totalIncome += payment.amount ?? 0.0;
+        }
+        safePrint('✅ Ingreso calculado correctamente');
+      }
+      return totalIncome;
+    } catch (e) {
+      safePrint('❌ Error al obtener los Ingresos: $e');
+      rethrow;
+    }
+  }
+
+  double getIncomeSales(DateTime startDate, DateTime endDate, String tenantId, List<Sale> sales){
+    double totalIncome = 0.0;
+    try {
+      if (sales.isEmpty) {
+        safePrint(
+          '❌ No se encontraron ingresos en el rango de fechas proporcionado',
+        );
+        return 0.0;
+      } else {
+        for (var sale in sales) {
+          totalIncome += sale.price ?? 0.0;
         }
         safePrint('✅ Ingreso calculado correctamente');
       }
@@ -550,31 +583,43 @@ class DataStoreReadService {
     }
   }
 
-  Future<User> userLocalAdapter(UserLocal user) async{
-    try{
-      final newUser = User(
-        user_id: user.userId,
-        name: user.name,
-      );
-      return newUser;
-    }catch(e){
-      safePrint('❌ Error converting UserLocal to User: $e');
+  Future<List<UserAccess>> userHasAccess(User user, Tenant tenant)async{
+    try {
+      final access = await Amplify.DataStore.query(
+        UserAccess.classType,
+        where: UserAccess.USER.eq(user.user_id)
+        .and(UserAccess.TENANT.eq(tenant.tenant_id)
+          )
+        );
+        return access;
+    } catch (e) {
+      safePrint('');
       rethrow;
     }
   }
-  
+
   Future<void> giveUserAccess(Tenant tenant, String permissions, String userid) async {
     try{
     final user = await getUser(userid);
     if (user != null) {
-        final userAccess = UserAccess(
+        final access = await userHasAccess(user, tenant);
+        if (access.isEmpty){
+          final userAccess = UserAccess(
           user: user,
           tenant: tenant,
           permissions: permissions,
           status: true,
-        );
-        await Amplify.DataStore.save(userAccess);
-        safePrint('✅ Usuario con ID ${user.user_id} ha sido dado acceso al tenant con ID ${tenant.tenant_id} con permisos: $permissions');
+          );
+          await Amplify.DataStore.save(userAccess);
+          safePrint('✅ Usuario con ID ${user.user_id} ha sido dado acceso al tenant con ID ${tenant.tenant_id} con permisos: $permissions');
+          return;
+        }else{
+          final newAccess = access.first.copyWith(permissions: permissions);
+          await Amplify.DataStore.save(newAccess);
+          safePrint('✅ Permisos del usuario ${user.user_id} han sido actualizados: $permissions');
+        }
+        
+        
     }
     }catch (e) {
       safePrint('❌ Error giving user access: $e');
@@ -748,11 +793,12 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> saleProduct(Product product, String tenaniId)async{
+  Future<void> sellProduct(Product product, String tenaniId, String date)async{
+
     final aws = DataStoreService();
     final oldStock = product.stock;
     final newProduct = product.copyWith(stock: oldStock!-1);
     await Amplify.DataStore.save(newProduct);
-    await aws.saveSale(tenaniId: tenaniId, price: product.price!, product: product);
+    await aws.saveSale(tenaniId: tenaniId, price: product.price!, product: product, date: date);
   } 
 }

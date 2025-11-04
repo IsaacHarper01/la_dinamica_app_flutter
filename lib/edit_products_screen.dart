@@ -1,25 +1,28 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/product_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-class AddProductInfo extends ConsumerStatefulWidget {
+class EditProductInfo extends ConsumerStatefulWidget {
+  final Product product;
   
-  const AddProductInfo({
+  const EditProductInfo({
     super.key,
+    required this.product,
     });
 
   @override
-  ConsumerState<AddProductInfo> createState() => AddStudentScreenState();
+  ConsumerState<EditProductInfo> createState() => AddStudentScreenState();
 }
 
-class AddStudentScreenState extends ConsumerState<AddProductInfo> {
+class AddStudentScreenState extends ConsumerState<EditProductInfo> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
   
@@ -44,6 +47,16 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
     'code',
   ];
 
+@override
+void initState(){
+  super.initState();
+  _controllers[0].text = widget.product.name!;
+  _controllers[1].text = widget.product.price!.toString();
+  _controllers[2].text = widget.product.stock!.toString();
+  _controllers[3].text = widget.product.category!;
+  _controllers[4].text = widget.product.code!;
+}
+
   void _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
@@ -57,23 +70,22 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
       logger.i('Datos del formulario: $data');
 
       // Insertar los valores en la base de datos y generar el archivo PDF
-      final image = await pickAndSaveImage(data['name']!, gymId, false, true);
+      //final image = await pickAndSaveImage(data['name']!, gymId, false, true);
 
-      await ref.read(productProvider.notifier).addProducts(
-        data['name']!,
-        image,
-        data['code']!,
-        user.tenant.tenant_id,
-        int.parse(data['stock']!),
-        double.parse(data['price']!),
-        data['category']!,
+      await ref.read(productProvider.notifier).updateProduct(
+        widget.product,
+        _controllers[0].text,
+        double.parse(_controllers[1].text),
+        int.parse(_controllers[2].text),
+        _controllers[3].text,
+        _controllers[4].text,
       );
 
       if (!mounted) return;
       
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Registro exitoso'),
+          content: Text('Actualización exitosa'),
           backgroundColor: Colors.green,
         ),
       );
@@ -93,8 +105,10 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = ref.watch(imageProvider(widget.product.image!));
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Agregar Producto')),
+      appBar: AppBar(title: const Text('Editar Producto')),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -119,12 +133,13 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: Image.asset(
-                          'assets/images/f_ma18.png',
-                          width: 150,
-                          fit: BoxFit.cover,
+                        child: imageUrl.when(
+                          data: (image)=> Image.network(image!), 
+                          error: (e,_)=>Image.asset('assets/images/default_product'), 
+                          loading: ()=> CircularProgressIndicator()
                           )
                       ),
+                      SizedBox(height: 20),
                       Form(
                         key: _formKey,
                         child: Column(
@@ -140,24 +155,24 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
                                   children: [
                                     Expanded(
                                       child: TextFormField(
-                                      style: const TextStyle(color: Colors.black),
-                                      controller: _controllers[index],
-                                      decoration: InputDecoration(
-                                        labelStyle: const TextStyle(
-                                          color: Colors.black,
+                                        style: const TextStyle(color: Colors.black),
+                                        controller: _controllers[index],
+                                        decoration: InputDecoration(
+                                          labelStyle: const TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                          labelText: _fieldNames[index],
+                                          hintText:
+                                              'Ingrese ${_fieldNames[index].toLowerCase()}',
+                                          border: const OutlineInputBorder(),
                                         ),
-                                        labelText: _fieldNames[index],
-                                        hintText:
-                                            'Ingrese ${_fieldNames[index].toLowerCase()}',
-                                        border: const OutlineInputBorder(),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Por favor, ingrese ${_fieldNames[index].toLowerCase()}';
+                                          }
+                                          return null;
+                                        },
                                       ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Por favor, ingrese ${_fieldNames[index].toLowerCase()}';
-                                        }
-                                        return null;
-                                      },
-                                                                        ),
                                     ),
                                   if(_namesdb[index]=='code')...[
                                     const SizedBox(width: 8),
@@ -173,7 +188,6 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
                                          }
                                           
                                       },
-                                
                                     )
                                   ]
                                   ]
@@ -191,7 +205,7 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
                   onPressed: () {
                     _submitForm(context);
                   },
-                  child: const Text('Registrar'),
+                  child: const Text('Actualizar'),
                 ),
               ],
             ),

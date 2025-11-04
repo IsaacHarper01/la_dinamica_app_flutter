@@ -1,5 +1,3 @@
-
-
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -49,6 +47,12 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<Product>>>{
       safePrint('imagen eliminada correctamente');
       await _dataStoreDeleteService.deleteProduct(product);
       loadProducts();
+  }
+
+  Future<void> updateProduct(Product oldProduct, String? name, double? price, int? stock, String? category, String? code)async{
+    final newProduct = oldProduct.copyWith(code: code, name: name, stock: stock , price: price, category: category);
+    await Amplify.DataStore.save(newProduct);
+    loadProducts();
   }
 }
 
