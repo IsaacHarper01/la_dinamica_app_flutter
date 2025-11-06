@@ -178,6 +178,7 @@ type Sale @model @auth(rules: [{allow: public, operations: [create, read, update
   tenant_id: ID
   price: Float
   date: AWSDate
+  profname: String
   
   product: Product @belongsTo(fields: ["product_id"])
 }

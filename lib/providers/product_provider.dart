@@ -40,19 +40,19 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<Product>>>{
         {
         _dataStoreService.saveProduct(code: code, name: name, tenaniId: tenaniId, price: price, image: image, stock: stock, category: category);
         }
-        loadProducts();
+        await loadProducts();
       }
   Future<void> deleteProduct(Product product)async{
       await _s3service.deleteFile(product.image!);
       safePrint('imagen eliminada correctamente');
       await _dataStoreDeleteService.deleteProduct(product);
-      loadProducts();
+      await loadProducts();
   }
 
   Future<void> updateProduct(Product oldProduct, String? name, double? price, int? stock, String? category, String? code)async{
     final newProduct = oldProduct.copyWith(code: code, name: name, stock: stock , price: price, category: category);
     await Amplify.DataStore.save(newProduct);
-    loadProducts();
+    await loadProducts();
   }
 }
 

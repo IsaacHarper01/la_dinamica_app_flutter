@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 
@@ -793,12 +794,28 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> sellProduct(Product product, String tenaniId, String date)async{
-
-    final aws = DataStoreService();
-    final oldStock = product.stock;
-    final newProduct = product.copyWith(stock: oldStock!-1);
-    await Amplify.DataStore.save(newProduct);
-    await aws.saveSale(tenaniId: tenaniId, price: product.price!, product: product, date: date);
-  } 
+  Future<void> sellProduct(Product product, UserLocal user, String date)async{
+    try {
+        final aws = DataStoreService();
+        final oldStock = product.stock;
+        final newProduct = product.copyWith(stock: oldStock!-1);
+        await Amplify.DataStore.save(newProduct);
+        await aws.saveSale(tenaniId: user.tenant.tenant_id, price: product.price!, product: product, date: date, profName: user.name);
+    } catch (e) {
+      rethrow;
+    }
+  }
+  
+  Future<List<Sale>> fetchSales(String tenantId, String date)async{
+    try {
+      final sales = await Amplify.DataStore.query(
+        Sale.classType,
+        where: Sale.DATE.eq(date).and(Sale.TENANT_ID.eq(tenantId))
+        );
+      return sales;
+      } catch (e) {
+        rethrow;
+      }
+    } 
+  
 }

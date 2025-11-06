@@ -76,7 +76,7 @@ class ProductCardSell extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
                 child: ElevatedButton.icon(
                   onPressed: (){
-                    aws.sellProduct(product, user.tenant.tenant_id, date);
+                    aws.sellProduct(product, user, date);
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.add_shopping_cart_outlined, size: 20),

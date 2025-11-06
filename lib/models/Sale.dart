@@ -30,6 +30,7 @@ class Sale extends amplify_core.Model {
   final String? _tenant_id;
   final double? _price;
   final amplify_core.TemporalDate? _date;
+  final String? _profname;
   final Product? _product;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -59,6 +60,10 @@ class Sale extends amplify_core.Model {
     return _date;
   }
   
+  String? get profname {
+    return _profname;
+  }
+  
   Product? get product {
     return _product;
   }
@@ -71,14 +76,15 @@ class Sale extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Sale._internal({required this.id, tenant_id, price, date, product, createdAt, updatedAt}): _tenant_id = tenant_id, _price = price, _date = date, _product = product, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Sale._internal({required this.id, tenant_id, price, date, profname, product, createdAt, updatedAt}): _tenant_id = tenant_id, _price = price, _date = date, _profname = profname, _product = product, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Sale({String? id, String? tenant_id, double? price, amplify_core.TemporalDate? date, Product? product}) {
+  factory Sale({String? id, String? tenant_id, double? price, amplify_core.TemporalDate? date, String? profname, Product? product}) {
     return Sale._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       tenant_id: tenant_id,
       price: price,
       date: date,
+      profname: profname,
       product: product);
   }
   
@@ -94,6 +100,7 @@ class Sale extends amplify_core.Model {
       _tenant_id == other._tenant_id &&
       _price == other._price &&
       _date == other._date &&
+      _profname == other._profname &&
       _product == other._product;
   }
   
@@ -109,6 +116,7 @@ class Sale extends amplify_core.Model {
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
     buffer.write("price=" + (_price != null ? _price!.toString() : "null") + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
+    buffer.write("profname=" + "$_profname" + ", ");
     buffer.write("product=" + (_product != null ? _product!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -117,12 +125,13 @@ class Sale extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Sale copyWith({String? tenant_id, double? price, amplify_core.TemporalDate? date, Product? product}) {
+  Sale copyWith({String? tenant_id, double? price, amplify_core.TemporalDate? date, String? profname, Product? product}) {
     return Sale._internal(
       id: id,
       tenant_id: tenant_id ?? this.tenant_id,
       price: price ?? this.price,
       date: date ?? this.date,
+      profname: profname ?? this.profname,
       product: product ?? this.product);
   }
   
@@ -130,6 +139,7 @@ class Sale extends amplify_core.Model {
     ModelFieldValue<String?>? tenant_id,
     ModelFieldValue<double?>? price,
     ModelFieldValue<amplify_core.TemporalDate?>? date,
+    ModelFieldValue<String?>? profname,
     ModelFieldValue<Product?>? product
   }) {
     return Sale._internal(
@@ -137,6 +147,7 @@ class Sale extends amplify_core.Model {
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       price: price == null ? this.price : price.value,
       date: date == null ? this.date : date.value,
+      profname: profname == null ? this.profname : profname.value,
       product: product == null ? this.product : product.value
     );
   }
@@ -146,6 +157,7 @@ class Sale extends amplify_core.Model {
       _tenant_id = json['tenant_id'],
       _price = (json['price'] as num?)?.toDouble(),
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
+      _profname = json['profname'],
       _product = json['product'] != null
         ? json['product']['serializedData'] != null
           ? Product.fromJson(new Map<String, dynamic>.from(json['product']['serializedData']))
@@ -155,7 +167,7 @@ class Sale extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'tenant_id': _tenant_id, 'price': _price, 'date': _date?.format(), 'product': _product?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'tenant_id': _tenant_id, 'price': _price, 'date': _date?.format(), 'profname': _profname, 'product': _product?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -163,6 +175,7 @@ class Sale extends amplify_core.Model {
     'tenant_id': _tenant_id,
     'price': _price,
     'date': _date,
+    'profname': _profname,
     'product': _product,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -173,6 +186,7 @@ class Sale extends amplify_core.Model {
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
   static final PRICE = amplify_core.QueryField(fieldName: "price");
   static final DATE = amplify_core.QueryField(fieldName: "date");
+  static final PROFNAME = amplify_core.QueryField(fieldName: "profname");
   static final PRODUCT = amplify_core.QueryField(
     fieldName: "product",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Product'));
@@ -209,6 +223,12 @@ class Sale extends amplify_core.Model {
       key: Sale.DATE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Sale.PROFNAME,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(

@@ -334,13 +334,16 @@ await Amplify.DataStore.save(submetric);
     required double price,
     required Product product,
     required String date,
+    required String profName,
   })async{
       final newSale = Sale(
         tenant_id: tenaniId,
         price: price,
         product: product,
-        date: TemporalDate(DateTime.parse(date))
+        date: TemporalDate(DateTime.parse(date)),
+        profname: profName
       );
       Amplify.DataStore.save(newSale);
   }
+
 }

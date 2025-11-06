@@ -40,7 +40,9 @@ final filteredStudentsProvider = Provider<List<Student>>((ref) {
 class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   final Ref ref;
 
-  StudentsNotifier(this.ref) : super(const AsyncValue.loading());
+  StudentsNotifier(this.ref) : super(const AsyncValue.loading()){
+    fetchAttendanceToday(ref.read(dateProvider));
+  }
 
   Future<void> fetchAttendanceToday(String date) async {
     try {

@@ -10,6 +10,7 @@ import 'package:la_dinamica_app/providers/product_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_product_info.dart';
+import 'package:la_dinamica_app/screens/sales_screen.dart';
 
 
 class ProductsScreen extends ConsumerStatefulWidget {
@@ -42,10 +43,30 @@ class _nameState extends ConsumerState<ProductsScreen> {
               padding: EdgeInsets.only(right: screenWidth * 0.01),
               child: Row(
                 children: [
+                  FilledButton.icon(
+                    onPressed: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => SalesScreen(user: user), 
+                        )
+                      );
+                    },
+                    label: const Text(
+                      'Ventas del día',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    icon: const Icon(
+                      Icons.sell,
+                      color: Colors.white,
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                    ),
+                  ),
                   const Spacer(),
                   FilledButton.icon(
                     onPressed: (){
-
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -234,7 +255,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     setState(() {
                       stockState--;
                     });
-                  await aws.sellProduct(widget.product, widget.user.tenant.tenant_id, widget.date);
+                  await aws.sellProduct(widget.product, widget.user, widget.date);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                     content: Text('Producto descontado del inventario'),
