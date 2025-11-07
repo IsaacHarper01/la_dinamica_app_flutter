@@ -12,7 +12,7 @@ import 'package:la_dinamica_app/screens/add_students_evaluation.dart';
 class ExamDetailScreen extends ConsumerStatefulWidget{
 
   final Evaluations exam;
-  final List<JointMetric> metrics;
+  final List<JoinMetric> metrics;
   final UserLocal user;
   
 
@@ -28,9 +28,10 @@ class ExamDetailScreen extends ConsumerStatefulWidget{
 }
 
 class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
-  final Map<String, List<String>>? examDetails = {};
+  final List<Metric> metrics = [];
   final Map<String, String?> examDescriptions = {};
   final Map<String, String> examTypes = {};
+  final Map<String, bool> examhigger = {};
   final List<MetricCard> examCards = [];
   // examState will be accessed in the build method using ref.watch(examProvider)
 
@@ -40,34 +41,24 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
     loadExamDetails();  
   }
 
-  void addMetricCard(String name, List<String>? submetrics) {
-    examCards.add(MetricCard(name: name, submetrics: submetrics));
+  void addMetricCard(Metric metric) {
+    examCards.add(MetricCard(metric: metric));
   }
 
   loadExamDetails() async {
     final awsDb = DataStoreReadService();
 
-    for (var joinmetric in widget.metrics){
-      final submetrics = await awsDb.getJoinSubMetrics(widget.user.tenant.tenant_id, joinmetric.metric!);
-      if (submetrics.isNotEmpty) {
+    for (var entry in widget.metrics) {
+      if(entry.metric!=null)
+      {
         setState(() {
-          examDetails![joinmetric.metric!.name] = submetrics.map((e) => e.submetric!.name).toList();
-          for (var submetric in submetrics) {
-            examDescriptions[submetric.submetric!.name] = submetric.submetric!.description;
-            examTypes[submetric.submetric!.name] = submetric.submetric!.metric_type!;
-          }
+        addMetricCard(entry.metric!);
+        metrics.add(entry.metric!);
+        examTypes[entry.metric!.name] = entry.metric!.type!;
+        examDescriptions[entry.metric!.name] = entry.metric!.description!;
+        examhigger[entry.metric!.name] = entry.metric!.higgerBetter!;
         });
-      } else {
-        examDetails![joinmetric.metric!.name] = [];
-        examDescriptions[joinmetric.metric!.name] = joinmetric.metric!.description;
-        examTypes[joinmetric.metric!.name] = joinmetric.metric!.metric_type!;
-        safePrint("No se encontraron Submétricas para ${joinmetric.metric!.name}");
       }
-    }
-    for (var entry in examDetails!.entries) {
-      setState(() {
-        addMetricCard(entry.key, entry.value);
-      });
     }
   }
 
@@ -103,12 +94,11 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    safePrint("Exam Details: $examDetails");
-                    ref.read(examProvider.notifier).setMetrics(examDetails!);
-                    ref.read(examProvider.notifier).setEvalname(widget.exam);
-                    ref.read(examProvider.notifier).setDescriptions(examDescriptions);
+                    safePrint("Exam Details: ");
+                    ref.read(examProvider.notifier).setActualState(metrics[0]);
                     ref.read(examProvider.notifier).setTypes(examTypes);
-                    ref.read(examProvider.notifier).setActualState(examDetails!.values.first.isNotEmpty ? examDetails!.values.first.first : examDetails!.keys.first );
+                    ref.read(examProvider.notifier).setDescriptions(examDescriptions);
+                    ref.read(examProvider.notifier).setHiggerBetter(examhigger);
                     Navigator.push(context, MaterialPageRoute(
                       builder: (context) => ExamStudentSelectionPage())
                       );
@@ -126,13 +116,12 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
 }
 
 class MetricCard extends StatelessWidget {
-  final String name;
-  final List<String>? submetrics;
+
+  final Metric metric;
 
   const MetricCard({
     super.key,
-    required this.name,
-    this.submetrics,
+    required this.metric,
   });
 
   @override
@@ -146,9 +135,10 @@ class MetricCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(name, style: GoogleFonts.gochiHand(fontSize: 23, fontWeight: FontWeight.bold)),
-            if (submetrics != null && submetrics!.isNotEmpty)
-              ...submetrics!.map((submetric) => Text("    - $submetric", style: GoogleFonts.gochiHand(fontSize: 15),)).toList(),
+            Text(metric.name, style: GoogleFonts.gochiHand(fontSize: 19)),
+            Text(metric.type!, style: GoogleFonts.gochiHand(fontSize: 14)),
+            Text(metric.description != null ? metric.description! : '', style: GoogleFonts.gochiHand(fontSize: 10)),
+
           ],
         ),
       ),

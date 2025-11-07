@@ -16,7 +16,9 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
   name: String
   tenant_id: String
   who_access: [JointMetric] @hasMany(fields: ["id"])
+  who: [JoinMetric] @hasMany(fields: ["id"])
   grades: [Grades] @hasMany(indexName: "byEvaluation", fields: ["id"])
+  examresults: [ExamResults] @hasMany(fields: ["id"])
 }
 
 type LocalPlan @model @auth(rules: [{allow: public}]) {
@@ -58,7 +60,7 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   client_id: String
   
   grades: [Grades] @hasMany(indexName: "byStudent", fields: ["id"])
-  debts: [Debt] @hasMany(indexName: "debtByStudent", fields: ["id"])
+  examresults: [JoinResults] @hasMany(fields: ["id"])
 }
 
 
@@ -150,15 +152,6 @@ type Grades @model @auth(rules: [{allow: public, operations: [create, read, upda
   evaluation: Evaluations @belongsTo(fields: ["evaluationID"])
 }
 
-type Debt @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  studentID: ID! @index(name: "debtByStudent")
-  tenant_id: ID
-  price: Float
-  
-  student: Student @belongsTo(fields: ["studentID"])
-}
-
 type Product @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
   code: String @index(name: "byCode", queryField: "productByCode")
@@ -181,4 +174,52 @@ type Sale @model @auth(rules: [{allow: public, operations: [create, read, update
   profname: String
   
   product: Product @belongsTo(fields: ["product_id"])
+}
+
+type Metric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String!
+  tenant_id: ID!
+  description: String
+  type: String
+  higgerBetter: Boolean
+
+  access: [JoinMetric] @hasMany(fields: ["id"])
+}
+
+type JoinMetric @model @auth(rules: [{allow: public}]) {
+  id: ID!
+
+  metric_id: ID! @index
+  evaluation_id: ID! @index
+  tenant_id: ID
+
+  metric: Metric @belongsTo(fields: ["metric_id"])
+  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
+}
+
+type ExamResults @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  date: AWSDate
+  prof_id: String
+  tenant_id: ID
+  grades: AWSJSON
+  types: AWSJSON
+  tscore: AWSJSON
+  higgerBetter: AWSJSON
+  evaluation_id: ID! @index
+
+  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
+  joinresult: [JoinResults] @hasMany(fields: ["id"])
+}
+
+type JoinResults @model @auth(rules: [{allow: public}]) {
+  id: ID!
+
+  student_id: ID! @index
+  result_id: ID! @index
+  tenant_id: ID
+
+  student: Student @belongsTo(fields: ["student_id"])
+  result: ExamResults @belongsTo(fields: ["result_id"])
 }

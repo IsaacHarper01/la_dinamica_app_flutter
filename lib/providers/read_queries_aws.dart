@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
+import 'package:la_dinamica_app/models/JoinMetric.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 
@@ -699,14 +700,14 @@ class DataStoreReadService {
     }
   }
    
-  Future<List<JointMetric>?> getJointMetrics(String tenantId, Evaluations exam) async {
+  Future<List<JoinMetric>?> getJoinMetrics(String tenantId, Evaluations exam) async {
     try {
-      final jointMetrics = await Amplify.DataStore.query(
-        JointMetric.classType,
-        where: JointMetric.TENANT_ID.eq(tenantId).and(JointMetric.EVALUATION.eq(exam.id)),
+      final joinMetrics = await Amplify.DataStore.query(
+        JoinMetric.classType,
+        where: JoinMetric.TENANT_ID.eq(tenantId).and(JoinMetric.EVALUATION.eq(exam.id)),
       );
-      safePrint('✅ Métricas conjuntas obtenidas correctamente ${jointMetrics.first.metric!.name}');
-      return jointMetrics;
+      safePrint('✅ Métricas conjuntas obtenidas correctamente ${joinMetrics.first.metric!.name}');
+      return joinMetrics;
     } catch (e) {
       safePrint('❌ Error al obtener las métricas conjuntas: $e');
       rethrow;

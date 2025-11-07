@@ -31,7 +31,9 @@ class Evaluations extends amplify_core.Model {
   final String? _name;
   final String? _tenant_id;
   final List<JointMetric>? _who_access;
+  final List<JoinMetric>? _who;
   final List<Grades>? _grades;
+  final List<ExamResults>? _examresults;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -60,8 +62,16 @@ class Evaluations extends amplify_core.Model {
     return _who_access;
   }
   
+  List<JoinMetric>? get who {
+    return _who;
+  }
+  
   List<Grades>? get grades {
     return _grades;
+  }
+  
+  List<ExamResults>? get examresults {
+    return _examresults;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -72,15 +82,17 @@ class Evaluations extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Evaluations._internal({required this.id, name, tenant_id, who_access, grades, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _who_access = who_access, _grades = grades, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Evaluations._internal({required this.id, name, tenant_id, who_access, who, grades, examresults, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _who_access = who_access, _who = who, _grades = grades, _examresults = examresults, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Evaluations({String? id, String? name, String? tenant_id, List<JointMetric>? who_access, List<Grades>? grades}) {
+  factory Evaluations({String? id, String? name, String? tenant_id, List<JointMetric>? who_access, List<JoinMetric>? who, List<Grades>? grades, List<ExamResults>? examresults}) {
     return Evaluations._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
       tenant_id: tenant_id,
       who_access: who_access != null ? List<JointMetric>.unmodifiable(who_access) : who_access,
-      grades: grades != null ? List<Grades>.unmodifiable(grades) : grades);
+      who: who != null ? List<JoinMetric>.unmodifiable(who) : who,
+      grades: grades != null ? List<Grades>.unmodifiable(grades) : grades,
+      examresults: examresults != null ? List<ExamResults>.unmodifiable(examresults) : examresults);
   }
   
   bool equals(Object other) {
@@ -95,7 +107,9 @@ class Evaluations extends amplify_core.Model {
       _name == other._name &&
       _tenant_id == other._tenant_id &&
       DeepCollectionEquality().equals(_who_access, other._who_access) &&
-      DeepCollectionEquality().equals(_grades, other._grades);
+      DeepCollectionEquality().equals(_who, other._who) &&
+      DeepCollectionEquality().equals(_grades, other._grades) &&
+      DeepCollectionEquality().equals(_examresults, other._examresults);
   }
   
   @override
@@ -116,27 +130,33 @@ class Evaluations extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Evaluations copyWith({String? name, String? tenant_id, List<JointMetric>? who_access, List<Grades>? grades}) {
+  Evaluations copyWith({String? name, String? tenant_id, List<JointMetric>? who_access, List<JoinMetric>? who, List<Grades>? grades, List<ExamResults>? examresults}) {
     return Evaluations._internal(
       id: id,
       name: name ?? this.name,
       tenant_id: tenant_id ?? this.tenant_id,
       who_access: who_access ?? this.who_access,
-      grades: grades ?? this.grades);
+      who: who ?? this.who,
+      grades: grades ?? this.grades,
+      examresults: examresults ?? this.examresults);
   }
   
   Evaluations copyWithModelFieldValues({
     ModelFieldValue<String?>? name,
     ModelFieldValue<String?>? tenant_id,
     ModelFieldValue<List<JointMetric>?>? who_access,
-    ModelFieldValue<List<Grades>?>? grades
+    ModelFieldValue<List<JoinMetric>?>? who,
+    ModelFieldValue<List<Grades>?>? grades,
+    ModelFieldValue<List<ExamResults>?>? examresults
   }) {
     return Evaluations._internal(
       id: id,
       name: name == null ? this.name : name.value,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       who_access: who_access == null ? this.who_access : who_access.value,
-      grades: grades == null ? this.grades : grades.value
+      who: who == null ? this.who : who.value,
+      grades: grades == null ? this.grades : grades.value,
+      examresults: examresults == null ? this.examresults : examresults.value
     );
   }
   
@@ -157,6 +177,19 @@ class Evaluations extends amplify_core.Model {
               .map((e) => JointMetric.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
+      _who = json['who']  is Map
+        ? (json['who']['items'] is List
+          ? (json['who']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => JoinMetric.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['who'] is List
+          ? (json['who'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => JoinMetric.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
       _grades = json['grades']  is Map
         ? (json['grades']['items'] is List
           ? (json['grades']['items'] as List)
@@ -170,11 +203,24 @@ class Evaluations extends amplify_core.Model {
               .map((e) => Grades.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
+      _examresults = json['examresults']  is Map
+        ? (json['examresults']['items'] is List
+          ? (json['examresults']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => ExamResults.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['examresults'] is List
+          ? (json['examresults'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => ExamResults.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'who_access': _who_access?.map((JointMetric? e) => e?.toJson()).toList(), 'grades': _grades?.map((Grades? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'who_access': _who_access?.map((JointMetric? e) => e?.toJson()).toList(), 'who': _who?.map((JoinMetric? e) => e?.toJson()).toList(), 'grades': _grades?.map((Grades? e) => e?.toJson()).toList(), 'examresults': _examresults?.map((ExamResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -182,7 +228,9 @@ class Evaluations extends amplify_core.Model {
     'name': _name,
     'tenant_id': _tenant_id,
     'who_access': _who_access,
+    'who': _who,
     'grades': _grades,
+    'examresults': _examresults,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -194,9 +242,15 @@ class Evaluations extends amplify_core.Model {
   static final WHO_ACCESS = amplify_core.QueryField(
     fieldName: "who_access",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JointMetric'));
+  static final WHO = amplify_core.QueryField(
+    fieldName: "who",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JoinMetric'));
   static final GRADES = amplify_core.QueryField(
     fieldName: "grades",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Grades'));
+  static final EXAMRESULTS = amplify_core.QueryField(
+    fieldName: "examresults",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'ExamResults'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Evaluations";
     modelSchemaDefinition.pluralName = "Evaluations";
@@ -234,10 +288,24 @@ class Evaluations extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: Evaluations.WHO,
+      isRequired: false,
+      ofModelName: 'JoinMetric',
+      associatedKey: JoinMetric.EVALUATION
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
       key: Evaluations.GRADES,
       isRequired: false,
       ofModelName: 'Grades',
       associatedKey: Grades.EVALUATION
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: Evaluations.EXAMRESULTS,
+      isRequired: false,
+      ofModelName: 'ExamResults',
+      associatedKey: ExamResults.EVALUATION
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

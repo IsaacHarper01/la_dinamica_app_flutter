@@ -38,7 +38,7 @@ class TestInfoBox extends ConsumerWidget {
         children: [
           Center(
             child: Text(
-              actualTest,
+              actualTest!.name,
               style: GoogleFonts.gochiHand(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,

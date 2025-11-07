@@ -1,6 +1,9 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:la_dinamica_app/models/ExamGrades.dart';
+import 'package:la_dinamica_app/models/JoinMetric.dart';
+import 'package:la_dinamica_app/models/Metric.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
@@ -205,17 +208,18 @@ class DataStoreService {
   return evaluation;
 }
 
-  Future<SingleMetric> saveMetric({
+  Future<Metric> saveMetric({
   required String name,
   required String tenantId,
   required String description,
   required String type,
 }) async {
-  final metric = SingleMetric(
+  safePrint('nombre: $name, tenant: $tenantId, description $description, type: $type');
+  final metric = Metric(
     name: name,
     tenant_id: tenantId,
     description: description,
-    metric_type: type,
+    type: type,
   );
 
   await Amplify.DataStore.save(metric);
@@ -223,81 +227,45 @@ class DataStoreService {
   return metric;
 }
 
-  Future<JointMetric> saveJoinedMetric({
-  required SingleMetric metric,
+  Future<JoinMetric> saveJoinedMetric({
+  required Metric metric,
   required Evaluations evaluation,
   required String tenantId,
 }) async {
-  final joinMetric = JointMetric(
+  final joinMetric = JoinMetric(
     metric: metric,          // Pass the object
     evaluation: evaluation,  // Pass the object
     tenant_id: tenantId,
   );
 
   await Amplify.DataStore.save(joinMetric);
-  safePrint('✅ JointMetric saved: ${joinMetric.id}');
+  safePrint('✅ JoinMetric saved: ${joinMetric.id}');
   return joinMetric;
 }
 
-  Future<SubMetric> saveSubMetric({
-  required String name,
-  required String tenantId,
-  String? description,
-  String? metricType,
-}) async {
-  final submetric = SubMetric(
-    name: name,
-    tenant_id: tenantId,
-    description: description,
-    metric_type: metricType,
-  );
-
-await Amplify.DataStore.save(submetric);
-  safePrint('✅ SubMetric saved: ${submetric.id}');
-  return submetric;
-}
-
-  Future<JoinSubMetric> saveJoinSubMetric({
-  required SingleMetric metric,
-  required SubMetric submetric,
-  required String tenantId,
-}) async {
-  final join = JoinSubMetric(
-    metric: metric,
-    submetric: submetric,
-    tenant_id: tenantId,
-  );
-
-  await Amplify.DataStore.save(join);
-  safePrint('✅ JoinSubMetric saved: Metric=${metric.id}, SubMetric=${submetric.id}');
-  return join;
-}
-
-  Future<Grades> saveGrade({
+  Future<void> saveGrade({
     required Student student,
-    required Evaluations evaluation,
+    required String tenantID,
+    required String profName,
+    required Evaluations eval,
+    required DateTime date,
     required String grades,
     required String types,
-    required String examTree,
-    required String totals,
-    required String tenantId,
-    required String profId,
+    required String tscore,
+    required String higgerBetter,
   }) async {
-    final grade = Grades(
+    final newGrades = ExamGrades(
       student: student,
-      evaluation: evaluation,
+      evaluation: eval,
+      date: TemporalDate(date),
+      prof_id: profName,
+      tenant_id: tenantID,
       grades: grades,
       types: types,
-      examTree: examTree,
-      totals: totals,
-      date: TemporalDate(DateTime.now()),
-      tenant_id: tenantId,
-      prof_id: profId,
+      tscore: tscore,
+      higgerBetter: higgerBetter,
     );
-
-    await Amplify.DataStore.save(grade);
-    safePrint('✅ Grades saved: ${grade.id}, Value: ${grade.grades}');
-    return grade;
+    await Amplify.DataStore.save(newGrades);
   }
 
   Future<void> markDebtStatus({

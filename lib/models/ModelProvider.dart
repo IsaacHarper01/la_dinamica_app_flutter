@@ -22,12 +22,15 @@
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'AppPlan.dart';
 import 'Attendance.dart';
-import 'Debt.dart';
 import 'Evaluations.dart';
+import 'ExamResults.dart';
 import 'Grades.dart';
+import 'JoinMetric.dart';
+import 'JoinResults.dart';
 import 'JoinSubMetric.dart';
 import 'JointMetric.dart';
 import 'LocalPlan.dart';
+import 'Metric.dart';
 import 'Payment.dart';
 import 'Product.dart';
 import 'Sale.dart';
@@ -40,12 +43,15 @@ import 'UserAccess.dart';
 
 export 'AppPlan.dart';
 export 'Attendance.dart';
-export 'Debt.dart';
 export 'Evaluations.dart';
+export 'ExamResults.dart';
 export 'Grades.dart';
+export 'JoinMetric.dart';
+export 'JoinResults.dart';
 export 'JoinSubMetric.dart';
 export 'JointMetric.dart';
 export 'LocalPlan.dart';
+export 'Metric.dart';
 export 'Payment.dart';
 export 'Product.dart';
 export 'Sale.dart';
@@ -58,9 +64,9 @@ export 'UserAccess.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "c1acef17996b1afa8c785646a819c3bb";
+  String version = "9d25ef68d80196bf87104c7ebf99262e";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Debt.schema, Evaluations.schema, Grades.schema, JoinSubMetric.schema, JointMetric.schema, LocalPlan.schema, Payment.schema, Product.schema, Sale.schema, SingleMetric.schema, Student.schema, SubMetric.schema, Tenant.schema, User.schema, UserAccess.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Evaluations.schema, ExamResults.schema, Grades.schema, JoinMetric.schema, JoinResults.schema, JoinSubMetric.schema, JointMetric.schema, LocalPlan.schema, Metric.schema, Payment.schema, Product.schema, Sale.schema, SingleMetric.schema, Student.schema, SubMetric.schema, Tenant.schema, User.schema, UserAccess.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -73,18 +79,24 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return AppPlan.classType;
       case "Attendance":
         return Attendance.classType;
-      case "Debt":
-        return Debt.classType;
       case "Evaluations":
         return Evaluations.classType;
+      case "ExamResults":
+        return ExamResults.classType;
       case "Grades":
         return Grades.classType;
+      case "JoinMetric":
+        return JoinMetric.classType;
+      case "JoinResults":
+        return JoinResults.classType;
       case "JoinSubMetric":
         return JoinSubMetric.classType;
       case "JointMetric":
         return JointMetric.classType;
       case "LocalPlan":
         return LocalPlan.classType;
+      case "Metric":
+        return Metric.classType;
       case "Payment":
         return Payment.classType;
       case "Product":

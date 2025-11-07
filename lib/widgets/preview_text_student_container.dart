@@ -43,7 +43,6 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
     
     final imageUrl = ref.watch(imageProvider(widget.image));
     final state = ref.watch(examProvider);
-    final base10Conversion = state.objetives.containsKey(state.actualState) && state.penalties.containsKey(state.actualState);
 
     final textDecorator = widget.type == "Tiempo"
         ? "Tiempo (s)"
@@ -137,12 +136,6 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
                     ),
                     onPressed: (){
                       widget.controller.text = ref.read(stopwatchProvider.notifier).currentTime;
-                      if (base10Conversion){
-                        setState(() {
-                          base10amount = ref.read(examProvider.notifier).calculateConversion(widget.controller.text)!;
-                        });
-                        ref.read(examProvider.notifier).setConversion(studentId: widget.id.toString(), base10: base10amount);
-                      }
                     }, 
                     child: Text('Detener',style: GoogleFonts.gochiHand(fontSize: 13),)),)
                 : const SizedBox(width: 20),
@@ -153,19 +146,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
                 decoration: InputDecoration(labelText: textDecorator,border: OutlineInputBorder(),),
               ),
             ),
-            base10Conversion ? Expanded(
-              flex: 1,
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: CustomPaint(
-                  painter: CircleTotalGrade(percent: base10amount, strokeWidth: 6),
-                  child: Center(
-                    child: Text(base10amount.toStringAsFixed(1) , style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                    ),
-                ),
-              )
-            ) : const SizedBox(width: 5),
+            const SizedBox(width: 5),
           ],
         ),
       ),

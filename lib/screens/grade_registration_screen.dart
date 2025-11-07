@@ -6,7 +6,6 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/students_evaluated_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:la_dinamica_app/widgets/exam/set_base10_widget.dart';
 import 'package:la_dinamica_app/widgets/preview_text_student_container.dart';
 import 'package:la_dinamica_app/widgets/exam/stop_wacth_widget.dart';
 import 'package:la_dinamica_app/widgets/test_name_description_box.dart';
@@ -39,7 +38,8 @@ class _GradeRegistrationState extends ConsumerState<GradeRegistrationScreen>{
 Future<void> loadUser() async{
   user = await ref.read(userProvider.future);
 }
-  void saveGrades() {
+
+void saveGrades() {
     final examState = ref.read(examProvider);
     final students = examState.students;
     final currentTest = examState.actualState;
@@ -48,9 +48,9 @@ Future<void> loadUser() async{
       final grade = controllers[i].text.isNotEmpty ? controllers[i].text  : "0.0";
 
       ref.read(examProvider.notifier).setGrade(
-            studentId: students[i].user_id.toString(),
-            metricName: currentTest,
-            grade: grade,
+            studentId: students[i].id,
+            metric: currentTest!,
+            grade: double.parse(grade),
           );
     }
   }
@@ -59,6 +59,7 @@ Future<void> loadUser() async{
   Widget build(BuildContext context) {
     final examState = ref.watch(examProvider);
     final students = examState.students;
+    final metrics = examState.metrics;
     final tests = examState.descriptions.keys.toList();
     final currentTest = examState.actualState;
     final types = examState.types;
@@ -77,8 +78,6 @@ Future<void> loadUser() async{
               if (types[currentTest] == "Tiempo") ...[
                 StopwatchWidget(),
                 SizedBox(height: 10),
-                SetBase10Widget(screenWidth: screenWidth),
-                SizedBox(height: 20),
               ],
           
               Container(
@@ -109,7 +108,7 @@ Future<void> loadUser() async{
               
               ElevatedButton(
                 onPressed: () {
-                if ((tests.indexOf(currentTest) + 1) % tests.length == 0){
+                if ((tests.indexOf(currentTest!.name) + 1) % tests.length == 0){
                   saveGrades();
                   ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
                   ref.read(examProvider.notifier).disposeAll();
@@ -118,10 +117,10 @@ Future<void> loadUser() async{
                 }else{
                   saveGrades();
                   safePrint("actual provider state: ${ref.read(examProvider.notifier).state.grades}");
-                  ref.read(examProvider.notifier).setActualState(tests[(tests.indexOf(currentTest) + 1) % tests.length]);
+                  ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) + 1) % tests.length]);
                   for (var controller in controllers) {
                     controller.clear();
-                  }
+                    }
                   }             
                 },
                 child: const Icon(Icons.arrow_circle_right),
