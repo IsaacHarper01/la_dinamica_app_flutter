@@ -15,9 +15,8 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String
   tenant_id: String
-  who_access: [JointMetric] @hasMany(fields: ["id"])
+
   who: [JoinMetric] @hasMany(fields: ["id"])
-  grades: [Grades] @hasMany(indexName: "byEvaluation", fields: ["id"])
   examresults: [ExamResults] @hasMany(fields: ["id"])
 }
 
@@ -59,7 +58,6 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   image: String
   client_id: String
   
-  grades: [Grades] @hasMany(indexName: "byStudent", fields: ["id"])
   examresults: [JoinResults] @hasMany(fields: ["id"])
 }
 
@@ -93,64 +91,6 @@ type Tenant @model @auth(rules: [{allow: public}]) {
   who_access: [UserAccess] @hasMany(fields: ["tenant_id"])
 }
  
-type SingleMetric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  name: String!
-  tenant_id: ID!
-  description: String
-  metric_type: String
-
-  access: [JointMetric] @hasMany(fields: ["id"])
-  who_access: [JoinSubMetric] @hasMany(fields: ["id"])
-}
-
-type JointMetric @model @auth(rules: [{allow: public}]) {
-  id: ID!
-
-  metric_id: ID! @index
-  evaluation_id: ID! @index
-  tenant_id: ID
-
-  metric: SingleMetric @belongsTo(fields: ["metric_id"])
-  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
-}
-
-type SubMetric @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  name: String!
-  tenant_id: ID!
-  description: String
-  metric_type: String
-
-  access: [JoinSubMetric] @hasMany(fields: ["id"])
-}
-
-type JoinSubMetric @model @auth(rules: [{allow: public}]) {
-  id: ID!
-
-  metric_id: ID! @index
-  submetric_id: ID! @index
-  tenant_id: ID
-
-  submetric: SubMetric @belongsTo(fields: ["submetric_id"])
-  metric: SingleMetric @belongsTo(fields: ["metric_id"])
-}
-
-type Grades @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  studentID: ID! @index(name: "byStudent")
-  evaluationID: ID! @index(name: "byEvaluation")
-  date: AWSDate
-  prof_id: String
-  tenant_id: ID
-  grades: AWSJSON
-  types: AWSJSON
-  examTree: AWSJSON
-  totals: AWSJSON
-
-  student: Student @belongsTo(fields: ["studentID"])
-  evaluation: Evaluations @belongsTo(fields: ["evaluationID"])
-}
 
 type Product @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
@@ -219,6 +159,7 @@ type JoinResults @model @auth(rules: [{allow: public}]) {
   student_id: ID! @index
   result_id: ID! @index
   tenant_id: ID
+  date: AWSDate
 
   student: Student @belongsTo(fields: ["student_id"])
   result: ExamResults @belongsTo(fields: ["result_id"])

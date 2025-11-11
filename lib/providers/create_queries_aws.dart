@@ -1,9 +1,6 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:la_dinamica_app/models/ExamGrades.dart';
-import 'package:la_dinamica_app/models/JoinMetric.dart';
-import 'package:la_dinamica_app/models/Metric.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
@@ -213,6 +210,7 @@ class DataStoreService {
   required String tenantId,
   required String description,
   required String type,
+  required bool higgerBetter
 }) async {
   safePrint('nombre: $name, tenant: $tenantId, description $description, type: $type');
   final metric = Metric(
@@ -220,6 +218,7 @@ class DataStoreService {
     tenant_id: tenantId,
     description: description,
     type: type,
+    higgerBetter: higgerBetter,
   );
 
   await Amplify.DataStore.save(metric);
@@ -243,8 +242,7 @@ class DataStoreService {
   return joinMetric;
 }
 
-  Future<void> saveGrade({
-    required Student student,
+  Future<ExamResults> saveGrade({
     required String tenantID,
     required String profName,
     required Evaluations eval,
@@ -254,8 +252,7 @@ class DataStoreService {
     required String tscore,
     required String higgerBetter,
   }) async {
-    final newGrades = ExamGrades(
-      student: student,
+    final newGrades = ExamResults(
       evaluation: eval,
       date: TemporalDate(date),
       prof_id: profName,
@@ -266,6 +263,23 @@ class DataStoreService {
       higgerBetter: higgerBetter,
     );
     await Amplify.DataStore.save(newGrades);
+    return newGrades;
+  }
+
+  Future<JoinResults> saveJoinResult({
+    required String tenaniId,
+    required String date,
+    required Student student,
+    required ExamResults result
+  })async{
+    final newJoinResult = JoinResults(
+      tenant_id: tenaniId,
+      date: TemporalDate(DateTime.parse(date)),
+      student: student,
+      result: result
+    );
+    await Amplify.DataStore.save(newJoinResult); 
+    return newJoinResult;
   }
 
   Future<void> markDebtStatus({

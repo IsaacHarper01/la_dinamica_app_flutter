@@ -6,7 +6,7 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/bar_grades_indicator.dart';
 
 class TotalGrades extends StatefulWidget {
-  final Grades grade;
+  final ExamResults grade;
 
   const TotalGrades({
     super.key,
@@ -20,9 +20,9 @@ class TotalGrades extends StatefulWidget {
 class _TotalGradesState extends State<TotalGrades> {
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> examTree = jsonDecode(widget.grade.examTree!);
+    Map<String, dynamic> examTree = jsonDecode(widget.grade.tscore!); //change this
     Map<String, dynamic> examTypes = jsonDecode(widget.grade.types!);
-    Map<String, dynamic> totalMetrics = jsonDecode(widget.grade.totals!);
+    Map<String, dynamic> totalMetrics = jsonDecode(widget.grade.tscore!);
     Map<String, dynamic> totalSubmetrics = jsonDecode(widget.grade.grades!);
 
     List<String> metrics = examTree.keys.toList();

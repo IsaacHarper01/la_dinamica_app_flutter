@@ -16,12 +16,19 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<Product>>>{
 
   ProductNotifier(this.ref) : super(const AsyncValue.loading()) {
     loadProducts();
+    _observeProducts();
   }
   final DataStoreReadService _dataStoreReadService = DataStoreReadService();
   final DataStoreService _dataStoreService = DataStoreService();
   final DataStoreDeleteService _dataStoreDeleteService = DataStoreDeleteService();
   final Storages3 _s3service = Storages3();
   
+  void _observeProducts(){
+    Amplify.DataStore.observe(Product.classType).listen((event)async{
+      await loadProducts();
+    });
+  }
+
   Future<void> loadProducts()async{
     final user = await ref.watch(userProvider.future);
     try{
@@ -38,21 +45,19 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<Product>>>{
   Future<void> addProducts(String name, String? image, String code, String tenaniId, int stock, double price, String category)async{
         if(image!=null)
         {
-        _dataStoreService.saveProduct(code: code, name: name, tenaniId: tenaniId, price: price, image: image, stock: stock, category: category);
+        await _dataStoreService.saveProduct(code: code, name: name, tenaniId: tenaniId, price: price, image: image, stock: stock, category: category);
         }
-        await loadProducts();
       }
+
   Future<void> deleteProduct(Product product)async{
       await _s3service.deleteFile(product.image!);
       safePrint('imagen eliminada correctamente');
       await _dataStoreDeleteService.deleteProduct(product);
-      await loadProducts();
   }
 
   Future<void> updateProduct(Product oldProduct, String? name, double? price, int? stock, String? category, String? code)async{
     final newProduct = oldProduct.copyWith(code: code, name: name, stock: stock , price: price, category: category);
     await Amplify.DataStore.save(newProduct);
-    await loadProducts();
   }
 }
 

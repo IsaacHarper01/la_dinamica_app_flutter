@@ -39,20 +39,46 @@ Future<void> loadUser() async{
   user = await ref.read(userProvider.future);
 }
 
-void saveGrades() {
+double convertTime(String time){
+  List<String> parts = time.split(':');
+  int hours = int.parse(parts[0]);
+  int minutes = int.parse(parts[1]);
+
+  // Split seconds and milliseconds
+  List<String> secParts = parts[2].split('.');
+  int seconds = int.parse(secParts[0]);
+  int hundredths = int.parse(secParts[1]); // "91" hundredths
+
+  // Convert to total seconds as double
+  double totalSeconds = hours * 3600 + minutes * 60 + seconds + hundredths / 100;
+  return totalSeconds;
+}
+
+bool saveGrades(BuildContext context) {
     final examState = ref.read(examProvider);
     final students = examState.students;
     final currentTest = examState.actualState;
-
+    safePrint("ACTUAL TEST $currentTest");
     for (var i = 0; i < students.length; i++) {
-      final grade = controllers[i].text.isNotEmpty ? controllers[i].text  : "0.0";
-
-      ref.read(examProvider.notifier).setGrade(
+      final grade = controllers[i].text.isNotEmpty ? controllers[i].text  : "";
+      if(ref.read(examProvider.notifier).checkDataformat(currentTest!.type!, grade))
+      {
+        ref.read(examProvider.notifier).setGrade(
             studentId: students[i].id,
-            metric: currentTest!,
-            grade: double.parse(grade),
-          );
+            metric: currentTest,
+            grade: currentTest.type == "Tiempo" ? convertTime(grade) : double.parse(grade),
+            );
+      }else{
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Formato de datos incorrecto $grade'),
+          backgroundColor: Colors.red,
+          ),
+        );
+        return false;
+      }
     }
+    return true;
   }
 
   @override
@@ -64,8 +90,7 @@ void saveGrades() {
     final currentTest = examState.actualState;
     final types = examState.types;
     final length = students.length;
-    final screenWidth = MediaQuery.of(context).size.width;
-
+    
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -75,11 +100,11 @@ void saveGrades() {
             children: [
               TestInfoBox(),
               SizedBox(height: 20,),
-              if (types[currentTest] == "Tiempo") ...[
+              if ((types[currentTest!.name] == "Tiempo" )||(types[currentTest.name] == "Repeticiones" )) ...[
                 StopwatchWidget(),
                 SizedBox(height: 10),
               ],
-          
+
               Container(
                 height: MediaQuery.of(context).size.height * 0.6,
                 width: double.infinity,
@@ -95,7 +120,7 @@ void saveGrades() {
                     itemCount: length,
                     itemBuilder: (context, index) {
                       return PreviewStudentContainerText(
-                        type: types[currentTest]!,
+                        type: types[currentTest.name]!,
                         name: students[index].name!,
                         id: students[index].user_id!,
                         image: students[index].image!,
@@ -107,21 +132,26 @@ void saveGrades() {
                 ),
               
               ElevatedButton(
-                onPressed: () {
-                if ((tests.indexOf(currentTest!.name) + 1) % tests.length == 0){
-                  saveGrades();
-                  ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
-                  ref.read(examProvider.notifier).disposeAll();
-                  ref.read(selectedStudentsProvider.notifier).clear();
-                  Navigator.pop(context);
-                }else{
-                  saveGrades();
-                  safePrint("actual provider state: ${ref.read(examProvider.notifier).state.grades}");
-                  ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) + 1) % tests.length]);
-                  for (var controller in controllers) {
-                    controller.clear();
-                    }
-                  }             
+                onPressed: ()async{ 
+                  if ((tests.indexOf(currentTest.name) + 1) % tests.length == 0){
+                    if(saveGrades(context))
+                      {
+                        await ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
+                        ref.read(selectedStudentsProvider.notifier).clear();
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }
+                    //ref.read(examProvider.notifier).disposeAll();
+                  }else{
+                    if(saveGrades(context))
+                    {
+                      ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) + 1) % tests.length]);
+                      for (var controller in controllers) {
+                        controller.clear();
+                        }
+                      }
+                    }             
                 },
                 child: const Icon(Icons.arrow_circle_right),
               ),

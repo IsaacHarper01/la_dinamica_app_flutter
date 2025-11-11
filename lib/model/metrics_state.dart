@@ -1,9 +1,9 @@
 import 'package:la_dinamica_app/models/Evaluations.dart';
-import 'package:la_dinamica_app/models/Grades.dart';
+import 'package:la_dinamica_app/models/ExamResults.dart';
 
 class MetricsState {
   final List<Evaluations> evaluations;
-  final List<Grades> grades;
+  final List<ExamResults> grades;
 
   MetricsState({
     this.evaluations = const [],
@@ -12,7 +12,7 @@ class MetricsState {
 
   MetricsState copyWith({
     List<Evaluations>? evaluations,
-    List<Grades>? grades,
+    List<ExamResults>? grades,
   }) {
     return MetricsState(
       evaluations: evaluations ?? this.evaluations,

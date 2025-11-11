@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/stop_watch_provider.dart';
-import 'package:la_dinamica_app/widgets/metrics_screen/circle_total_grade.dart';
 
 class PreviewStudentContainerText extends ConsumerStatefulWidget {
   final String type;
@@ -44,9 +43,17 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
     final imageUrl = ref.watch(imageProvider(widget.image));
     final state = ref.watch(examProvider);
 
-    final textDecorator = widget.type == "Tiempo"
-        ? "Tiempo (s)"
-        : "Calificación(0-10)";
+    String textDecorator = "";
+      if(widget.type == "Tiempo"){
+        textDecorator ='Tiempo(s)'; 
+      }else if(widget.type == "Repeticiones"){
+        textDecorator ='# Repeticiones';
+      }else if(widget.type == "Distancia"){
+        textDecorator ='Distancia(m)';
+      }else if(widget.type == "Base10"){
+        textDecorator ='Nota(0-10)';
+      }
+      
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: AnimatedContainer(

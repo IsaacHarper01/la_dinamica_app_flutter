@@ -19,8 +19,6 @@
 
 // ignore_for_file: public_member_api_docs, annotate_overrides, dead_code, dead_codepublic_member_api_docs, depend_on_referenced_packages, file_names, library_private_types_in_public_api, no_leading_underscores_for_library_prefixes, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, null_check_on_nullable_type_parameter, override_on_non_overriding_member, prefer_adjacent_string_concatenation, prefer_const_constructors, prefer_if_null_operators, prefer_interpolation_to_compose_strings, slash_for_doc_comments, sort_child_properties_last, unnecessary_const, unnecessary_constructor_name, unnecessary_late, unnecessary_new, unnecessary_null_aware_assignments, unnecessary_nullable_for_final_variable_declarations, unnecessary_string_interpolations, use_build_context_synchronously
 
-import 'package:la_dinamica_app/models/JoinResults.dart';
-
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'package:collection/collection.dart';
@@ -39,7 +37,6 @@ class Student extends amplify_core.Model {
   final String? _email;
   final String? _image;
   final String? _client_id;
-  final List<Grades>? _grades;
   final List<JoinResults>? _examresults;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -93,10 +90,6 @@ class Student extends amplify_core.Model {
     return _client_id;
   }
   
-  List<Grades>? get grades {
-    return _grades;
-  }
-  
   List<JoinResults>? get examresults {
     return _examresults;
   }
@@ -109,9 +102,9 @@ class Student extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Student._internal({required this.id, user_id, name, address, age, phone, birthday, email, image, client_id, grades, examresults, createdAt, updatedAt}): _user_id = user_id, _name = name, _address = address, _age = age, _phone = phone, _birthday = birthday, _email = email, _image = image, _client_id = client_id, _grades = grades, _examresults = examresults, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Student._internal({required this.id, user_id, name, address, age, phone, birthday, email, image, client_id, examresults, createdAt, updatedAt}): _user_id = user_id, _name = name, _address = address, _age = age, _phone = phone, _birthday = birthday, _email = email, _image = image, _client_id = client_id, _examresults = examresults, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Student({String? id, int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id, List<Grades>? grades, List<JoinResults>? examresults}) {
+  factory Student({String? id, int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id, List<JoinResults>? examresults}) {
     return Student._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       user_id: user_id,
@@ -123,7 +116,6 @@ class Student extends amplify_core.Model {
       email: email,
       image: image,
       client_id: client_id,
-      grades: grades != null ? List<Grades>.unmodifiable(grades) : grades,
       examresults: examresults != null ? List<JoinResults>.unmodifiable(examresults) : examresults);
   }
   
@@ -145,7 +137,6 @@ class Student extends amplify_core.Model {
       _email == other._email &&
       _image == other._image &&
       _client_id == other._client_id &&
-      DeepCollectionEquality().equals(_grades, other._grades) &&
       DeepCollectionEquality().equals(_examresults, other._examresults);
   }
   
@@ -174,7 +165,7 @@ class Student extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Student copyWith({int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id, List<Grades>? grades, List<JoinResults>? examresults}) {
+  Student copyWith({int? user_id, String? name, String? address, int? age, String? phone, amplify_core.TemporalDate? birthday, String? email, String? image, String? client_id, List<JoinResults>? examresults}) {
     return Student._internal(
       id: id,
       user_id: user_id ?? this.user_id,
@@ -186,7 +177,6 @@ class Student extends amplify_core.Model {
       email: email ?? this.email,
       image: image ?? this.image,
       client_id: client_id ?? this.client_id,
-      grades: grades ?? this.grades,
       examresults: examresults ?? this.examresults);
   }
   
@@ -200,7 +190,6 @@ class Student extends amplify_core.Model {
     ModelFieldValue<String?>? email,
     ModelFieldValue<String?>? image,
     ModelFieldValue<String?>? client_id,
-    ModelFieldValue<List<Grades>?>? grades,
     ModelFieldValue<List<JoinResults>?>? examresults
   }) {
     return Student._internal(
@@ -214,7 +203,6 @@ class Student extends amplify_core.Model {
       email: email == null ? this.email : email.value,
       image: image == null ? this.image : image.value,
       client_id: client_id == null ? this.client_id : client_id.value,
-      grades: grades == null ? this.grades : grades.value,
       examresults: examresults == null ? this.examresults : examresults.value
     );
   }
@@ -230,19 +218,6 @@ class Student extends amplify_core.Model {
       _email = json['email'],
       _image = json['image'],
       _client_id = json['client_id'],
-      _grades = json['grades']  is Map
-        ? (json['grades']['items'] is List
-          ? (json['grades']['items'] as List)
-              .where((e) => e != null)
-              .map((e) => Grades.fromJson(new Map<String, dynamic>.from(e)))
-              .toList()
-          : null)
-        : (json['grades'] is List
-          ? (json['grades'] as List)
-              .where((e) => e?['serializedData'] != null)
-              .map((e) => Grades.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
-              .toList()
-          : null),
       _examresults = json['examresults']  is Map
         ? (json['examresults']['items'] is List
           ? (json['examresults']['items'] as List)
@@ -260,7 +235,7 @@ class Student extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'user_id': _user_id, 'name': _name, 'address': _address, 'age': _age, 'phone': _phone, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'client_id': _client_id, 'grades': _grades?.map((Grades? e) => e?.toJson()).toList(), 'examresults': _examresults?.map((JoinResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'user_id': _user_id, 'name': _name, 'address': _address, 'age': _age, 'phone': _phone, 'birthday': _birthday?.format(), 'email': _email, 'image': _image, 'client_id': _client_id, 'examresults': _examresults?.map((JoinResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -274,7 +249,6 @@ class Student extends amplify_core.Model {
     'email': _email,
     'image': _image,
     'client_id': _client_id,
-    'grades': _grades,
     'examresults': _examresults,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -291,9 +265,6 @@ class Student extends amplify_core.Model {
   static final EMAIL = amplify_core.QueryField(fieldName: "email");
   static final IMAGE = amplify_core.QueryField(fieldName: "image");
   static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
-  static final GRADES = amplify_core.QueryField(
-    fieldName: "grades",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Grades'));
   static final EXAMRESULTS = amplify_core.QueryField(
     fieldName: "examresults",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JoinResults'));
@@ -366,13 +337,6 @@ class Student extends amplify_core.Model {
       key: Student.CLIENT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: Student.GRADES,
-      isRequired: false,
-      ofModelName: 'Grades',
-      associatedKey: Grades.STUDENT
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(

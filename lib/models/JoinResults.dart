@@ -28,6 +28,7 @@ class JoinResults extends amplify_core.Model {
   static const classType = const _JoinResultsModelType();
   final String id;
   final String? _tenant_id;
+  final amplify_core.TemporalDate? _date;
   final Student? _student;
   final ExamResults? _result;
   final amplify_core.TemporalDateTime? _createdAt;
@@ -50,6 +51,10 @@ class JoinResults extends amplify_core.Model {
     return _tenant_id;
   }
   
+  amplify_core.TemporalDate? get date {
+    return _date;
+  }
+  
   Student? get student {
     return _student;
   }
@@ -66,12 +71,13 @@ class JoinResults extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const JoinResults._internal({required this.id, tenant_id, student, result, createdAt, updatedAt}): _tenant_id = tenant_id, _student = student, _result = result, _createdAt = createdAt, _updatedAt = updatedAt;
+  const JoinResults._internal({required this.id, tenant_id, date, student, result, createdAt, updatedAt}): _tenant_id = tenant_id, _date = date, _student = student, _result = result, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory JoinResults({String? id, String? tenant_id, Student? student, ExamResults? result}) {
+  factory JoinResults({String? id, String? tenant_id, amplify_core.TemporalDate? date, Student? student, ExamResults? result}) {
     return JoinResults._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       tenant_id: tenant_id,
+      date: date,
       student: student,
       result: result);
   }
@@ -86,6 +92,7 @@ class JoinResults extends amplify_core.Model {
     return other is JoinResults &&
       id == other.id &&
       _tenant_id == other._tenant_id &&
+      _date == other._date &&
       _student == other._student &&
       _result == other._result;
   }
@@ -100,6 +107,7 @@ class JoinResults extends amplify_core.Model {
     buffer.write("JoinResults {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
+    buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
     buffer.write("student=" + (_student != null ? _student!.toString() : "null") + ", ");
     buffer.write("result=" + (_result != null ? _result!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
@@ -109,22 +117,25 @@ class JoinResults extends amplify_core.Model {
     return buffer.toString();
   }
   
-  JoinResults copyWith({String? tenant_id, Student? student, ExamResults? result}) {
+  JoinResults copyWith({String? tenant_id, amplify_core.TemporalDate? date, Student? student, ExamResults? result}) {
     return JoinResults._internal(
       id: id,
       tenant_id: tenant_id ?? this.tenant_id,
+      date: date ?? this.date,
       student: student ?? this.student,
       result: result ?? this.result);
   }
   
   JoinResults copyWithModelFieldValues({
     ModelFieldValue<String?>? tenant_id,
+    ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<Student?>? student,
     ModelFieldValue<ExamResults?>? result
   }) {
     return JoinResults._internal(
       id: id,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
+      date: date == null ? this.date : date.value,
       student: student == null ? this.student : student.value,
       result: result == null ? this.result : result.value
     );
@@ -133,6 +144,7 @@ class JoinResults extends amplify_core.Model {
   JoinResults.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _tenant_id = json['tenant_id'],
+      _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
       _student = json['student'] != null
         ? json['student']['serializedData'] != null
           ? Student.fromJson(new Map<String, dynamic>.from(json['student']['serializedData']))
@@ -147,12 +159,13 @@ class JoinResults extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'tenant_id': _tenant_id, 'student': _student?.toJson(), 'result': _result?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'tenant_id': _tenant_id, 'date': _date?.format(), 'student': _student?.toJson(), 'result': _result?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'tenant_id': _tenant_id,
+    'date': _date,
     'student': _student,
     'result': _result,
     'createdAt': _createdAt,
@@ -162,6 +175,7 @@ class JoinResults extends amplify_core.Model {
   static final amplify_core.QueryModelIdentifier<JoinResultsModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<JoinResultsModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
+  static final DATE = amplify_core.QueryField(fieldName: "date");
   static final STUDENT = amplify_core.QueryField(
     fieldName: "student",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Student'));
@@ -194,6 +208,12 @@ class JoinResults extends amplify_core.Model {
       key: JoinResults.TENANT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: JoinResults.DATE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(

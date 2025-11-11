@@ -94,19 +94,12 @@ class DataStoreDeleteService {
   Future<void> deleteExamn(Evaluations exam, String tenantId) async {
     try {
       final metrics = await Amplify.DataStore.query(
-        JointMetric.classType,
-        where: JointMetric.EVALUATION.eq(exam.id).and(JointMetric.TENANT_ID.eq(tenantId)),
+        JoinMetric.classType,
+        where: JoinMetric.EVALUATION.eq(exam.id).and(JoinMetric.TENANT_ID.eq(tenantId)),
       );
       for (var metric in metrics) {
-        final submetrics = await Amplify.DataStore.query(
-        JoinSubMetric.classType,
-        where: JoinSubMetric.TENANT_ID.eq(tenantId).and(JoinSubMetric.METRIC.eq(metric.id)));
         await Amplify.DataStore.delete(metric);
         await Amplify.DataStore.delete(metric.metric!);
-        for (var submetric in submetrics) {
-          await Amplify.DataStore.delete(submetric);
-          await Amplify.DataStore.delete(submetric.submetric!);
-        }
       }
       await Amplify.DataStore.delete(exam);
       safePrint('✅ Examen eliminado correctamente');

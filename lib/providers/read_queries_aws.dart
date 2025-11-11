@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/models/JoinMetric.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 
@@ -714,47 +713,50 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<JoinSubMetric>> getJoinSubMetrics(String tenantId, SingleMetric metric) async {
-    try {
-      final joinSubMetrics = await Amplify.DataStore.query(
-        JoinSubMetric.classType,
-        where: JoinSubMetric.TENANT_ID.eq(tenantId).and(JoinSubMetric.METRIC.eq(metric.id)),
+  Future<JoinResults?> getLastExamResult(String tenaniId, String studentId)async{
+    final results = await Amplify.DataStore.query(
+      JoinResults.classType,
+      where: JoinResults.STUDENT.eq(studentId)
+      .and(JoinResults.TENANT_ID.eq(tenaniId)),
+      sortBy: [JoinResults.DATE.descending()],
+      pagination: const QueryPagination.firstResult()
       );
-      safePrint('✅ Submétricas obtenidas correctamente');
-      return joinSubMetrics;
-    } catch (e) {
-      safePrint('❌ Error al obtener las submétricas: $e');
-      rethrow;
-    }
+    return results.isNotEmpty ? results.first : null;
   }
 
-  Future<List<Grades>?> getLastExam(String tenantId, String studentId) async{
+  Future<List<ExamResults>?> getLastExam(String tenantId, String studentId) async{
     try {
-      final grades = await Amplify.DataStore.query(
-        Grades.classType,
-        where: Grades.STUDENT.eq(studentId).and(Grades.TENANT_ID.eq(tenantId)));
-      return([grades.last]);
+      final joinMetric = await getLastExamResult(tenantId,studentId);
+      if(joinMetric!=null)
+      {
+        final grades = await Amplify.DataStore.query(
+        ExamResults.classType,
+        where: ExamResults.JOINRESULT.eq(joinMetric.id).and(ExamResults.TENANT_ID.eq(tenantId)));
+        return([grades.last]);
+      }else{
+        return null;
+      }
     } catch (e) {
       safePrint("Error al obtener calificaciones");
       return null;
     }
   }
 
-  Future<List<Grades>?> getRangeExams(String tenantId, String studentId, DateTime start, DateTime end) async{
-    try {
-      final grades = await Amplify.DataStore.query(
-        Grades.classType,
-        where:Grades.DATE.between(
-          TemporalDate(start), 
-          TemporalDate(end)).
-          and(Grades.STUDENT.eq(studentId).
-          and(Grades.TENANT_ID.eq(tenantId))));
-      return(grades);
-    } catch (e) {
-      safePrint("Error al obtener calificaciones");
-      return null;
-    }
-  }
+  // Future<List<Grades>?> getRangeExams(String tenantId, String studentId, DateTime start, DateTime end) async{
+  //   try {
+  //     final grades = await Amplify.DataStore.query(
+  //       Grades.classType,
+  //       where:Grades.DATE.between(
+  //         TemporalDate(start), 
+  //         TemporalDate(end)).
+  //         and(Grades.STUDENT.eq(studentId).
+  //         and(Grades.TENANT_ID.eq(tenantId))));
+  //     return(grades);
+  //   } catch (e) {
+  //     safePrint("Error al obtener calificaciones");
+  //     return null;
+  //   }
+  // }
 
   Future<void> updatePlanDefaultStatus(LocalPlan plan, bool isDefault) async {
     try {

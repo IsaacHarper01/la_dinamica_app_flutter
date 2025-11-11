@@ -1,12 +1,15 @@
 import 'dart:convert';
-import 'dart:nativewrappers/_internal/vm/lib/math_patch.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/exam_state.dart';
 import 'package:la_dinamica_app/models/Evaluations.dart';
+import 'package:la_dinamica_app/models/ExamResults.dart';
 import 'package:la_dinamica_app/models/Metric.dart';
 import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'dart:math';
 
 
 class ExamNotifier extends Notifier<ExamState> {
@@ -64,12 +67,44 @@ class ExamNotifier extends Notifier<ExamState> {
     state = state.copyWith(grades: newGrades);
   }
 
-  double? getGrade(String studentId, String metricName) {
-    return state.grades[studentId]?[metricName];
+  bool checkDataformat(String type, String data){
+    switch (type) {
+      
+      case "Tiempo":
+        if(stringToTime(data)!=null){
+          return true;
+        }else{
+          return false;
+        }
+      case "Repeticiones":        
+        if (RegExp(r'^\d+$').hasMatch(data)) {
+          return true;
+          }else{
+            return false;
+          }
+      case "Base10":
+        final num = double.tryParse(data);
+        if(num == null || num < 0 || num > 10){
+          return false;
+        }else{
+          return true;
+        }
+      case "Distancia":
+        final regex = RegExp(r'^(\d+(\.\d+)?)(\s*(m))?$');
+        if (!regex.hasMatch(data)) {
+          safePrint("Formato invalido para : $data");
+          return false;
+        }else{
+          return true;
+        }
+      default:
+        return false;
+    }
   }
 
-  Duration stringToTime(String timeString) {
+  Duration? stringToTime(String timeString) {
     //Time should be in format HH:MM:SS:MS("00:00:00.00")
+    try{
     final parts = timeString.split(':');
     final secondsParts = parts[2].split('.');
     final seconds = int.parse(secondsParts[0]);
@@ -80,18 +115,32 @@ class ExamNotifier extends Notifier<ExamState> {
       minutes: int.parse(parts[1]),
       seconds: seconds,
       milliseconds: milliseconds*10,
-    );
+      );
+    }catch(e){
+      safePrint("Foramto der tiempo invalido");
+      return null;
+    }  
   }
 
-  Map<String,Map<String, double>> calculateTscore(Map<Metric, Map<String, double>> grades){ //consider the entry like Map<Metric, Map<Student, Grade>>
-    Map<String, Map<String, double>> tscores = {};
+  Map<String, Map<String, double>> adaptGrades(Map<Metric, Map<String, double>> grades){
+    Map<String, Map<String, double>> result = {};
+    for(var metric in grades.keys){
+      result[metric.id] = grades[metric]!;
+    }
+    return result;
+  }
+
+  Map<Metric, Map<String, double>> calculateTscore(Map<Metric, Map<String, double>> grades){ //consider the entry like Map<Metric, Map<Student, Grade>>
+    Map<Metric, Map<String, double>> tscores = {};
+    //Map<Metric, Map<String, double>> zscores = {};
     for(var metric in grades.keys){
       final metricGrades = grades[metric]!.values.toList();
-      final students = grades[metric]!.keys.toList();
       final mean = metricGrades.reduce((a,b)=>a+b)/metricGrades.length;
       final standartDev = stdDev(metricGrades, mean);
-      final zscores = zscore(metricGrades, mean, standartDev, metric.higgerBetter!);
-      final tsc = tscore(zscores);
+      for (var student in grades[metric]!.keys){
+        tscores.putIfAbsent(metric, ()=>{});
+        tscores[metric]![student] = tscore(zscore(grades[metric]![student]!, mean, standartDev, metric.higgerBetter!));
+      }
     }
       return tscores;
     }
@@ -101,33 +150,40 @@ class ExamNotifier extends Notifier<ExamState> {
       return sqrt(variance);
   } 
   
-  List<double> zscore(List<double> values, double mean, double stdev, bool higgerBetter){
-    final zscores = higgerBetter ? values.map((x)=>(x-mean)/stdev).toList() : values.map((x)=>(mean-x)/stdev).toList();
-    return zscores;
+  double zscore(double value, double mean, double stdev, bool higgerBetter){
+    final zscore = higgerBetter ? ((value-mean)/stdev) : ((mean-value)/stdev);
+    return zscore;
   }
 
-  List<double> tscore(List<double> values){
-    final tscores = values.map((x)=>(50+25*x)).toList();
-    return tscores;
+  double tscore(double value){
+    final tscore = (50+(25*value));
+    return tscore;
   }
 
-  void uploadGrades(String tenantId, String profId){
+  Future<void> uploadGrades(String tenantId, String profId)async{
     final aws = DataStoreService();
     final date = ref.watch(dateProvider);
-    for(var student in state.students){
-      aws.saveGrade(
-        student: student, 
+    safePrint(calculateTscore(state.grades));
+    final newGrades = await aws.saveGrade(
         eval: state.eval,
         date: DateTime.parse(date), 
         profName: profId,
         tenantID: tenantId,
-        grades: jsonEncode(state.grades[(student.user_id).toString()]),
+        grades: jsonEncode(adaptGrades(state.grades)),
         types: jsonEncode(state.types),
-        tscore: jsonEncode(calculateTscore(state.grades)),
+        tscore: jsonEncode(adaptGrades(calculateTscore(state.grades))),
         higgerBetter: jsonEncode(state.higgerBetter)
        );
+    uploadJoinResults(newGrades, tenantId, date);
+  }
+
+  Future<void> uploadJoinResults(ExamResults result, String tenaniId, String date)async{
+    final aws = DataStoreService();
+    for(var student in state.students){
+      aws.saveJoinResult(tenaniId: tenaniId, date: date, student: student, result: result);
     }
   }
+
 }
 
 final examProvider = NotifierProvider<ExamNotifier, ExamState>(() => ExamNotifier());

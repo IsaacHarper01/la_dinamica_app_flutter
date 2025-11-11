@@ -28,7 +28,6 @@ import 'package:collection/collection.dart';
 class ExamResults extends amplify_core.Model {
   static const classType = const _ExamResultsModelType();
   final String id;
-  final String? _who;
   final amplify_core.TemporalDate? _date;
   final String? _prof_id;
   final String? _tenant_id;
@@ -52,19 +51,6 @@ class ExamResults extends amplify_core.Model {
       return ExamResultsModelIdentifier(
         id: id
       );
-  }
-  
-  String get who {
-    try {
-      return _who!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
   }
   
   amplify_core.TemporalDate? get date {
@@ -111,12 +97,11 @@ class ExamResults extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const ExamResults._internal({required this.id, required who, date, prof_id, tenant_id, grades, types, tscore, higgerBetter, evaluation, joinresult, createdAt, updatedAt}): _who = who, _date = date, _prof_id = prof_id, _tenant_id = tenant_id, _grades = grades, _types = types, _tscore = tscore, _higgerBetter = higgerBetter, _evaluation = evaluation, _joinresult = joinresult, _createdAt = createdAt, _updatedAt = updatedAt;
+  const ExamResults._internal({required this.id, date, prof_id, tenant_id, grades, types, tscore, higgerBetter, evaluation, joinresult, createdAt, updatedAt}): _date = date, _prof_id = prof_id, _tenant_id = tenant_id, _grades = grades, _types = types, _tscore = tscore, _higgerBetter = higgerBetter, _evaluation = evaluation, _joinresult = joinresult, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory ExamResults({String? id, required String who, amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
+  factory ExamResults({String? id, amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
     return ExamResults._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      who: who,
       date: date,
       prof_id: prof_id,
       tenant_id: tenant_id,
@@ -137,7 +122,6 @@ class ExamResults extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is ExamResults &&
       id == other.id &&
-      _who == other._who &&
       _date == other._date &&
       _prof_id == other._prof_id &&
       _tenant_id == other._tenant_id &&
@@ -158,7 +142,6 @@ class ExamResults extends amplify_core.Model {
     
     buffer.write("ExamResults {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("who=" + "$_who" + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
     buffer.write("prof_id=" + "$_prof_id" + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
@@ -174,10 +157,9 @@ class ExamResults extends amplify_core.Model {
     return buffer.toString();
   }
   
-  ExamResults copyWith({String? who, amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
+  ExamResults copyWith({amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
     return ExamResults._internal(
       id: id,
-      who: who ?? this.who,
       date: date ?? this.date,
       prof_id: prof_id ?? this.prof_id,
       tenant_id: tenant_id ?? this.tenant_id,
@@ -190,7 +172,6 @@ class ExamResults extends amplify_core.Model {
   }
   
   ExamResults copyWithModelFieldValues({
-    ModelFieldValue<String>? who,
     ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<String?>? prof_id,
     ModelFieldValue<String?>? tenant_id,
@@ -203,7 +184,6 @@ class ExamResults extends amplify_core.Model {
   }) {
     return ExamResults._internal(
       id: id,
-      who: who == null ? this.who : who.value,
       date: date == null ? this.date : date.value,
       prof_id: prof_id == null ? this.prof_id : prof_id.value,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
@@ -218,7 +198,6 @@ class ExamResults extends amplify_core.Model {
   
   ExamResults.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _who = json['who'],
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
       _prof_id = json['prof_id'],
       _tenant_id = json['tenant_id'],
@@ -248,12 +227,11 @@ class ExamResults extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'who': _who, 'date': _date?.format(), 'prof_id': _prof_id, 'tenant_id': _tenant_id, 'grades': _grades, 'types': _types, 'tscore': _tscore, 'higgerBetter': _higgerBetter, 'evaluation': _evaluation?.toJson(), 'joinresult': _joinresult?.map((JoinResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'date': _date?.format(), 'prof_id': _prof_id, 'tenant_id': _tenant_id, 'grades': _grades, 'types': _types, 'tscore': _tscore, 'higgerBetter': _higgerBetter, 'evaluation': _evaluation?.toJson(), 'joinresult': _joinresult?.map((JoinResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'who': _who,
     'date': _date,
     'prof_id': _prof_id,
     'tenant_id': _tenant_id,
@@ -269,7 +247,6 @@ class ExamResults extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<ExamResultsModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<ExamResultsModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final WHO = amplify_core.QueryField(fieldName: "who");
   static final DATE = amplify_core.QueryField(fieldName: "date");
   static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
@@ -299,17 +276,10 @@ class ExamResults extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["evaluationID"], name: "byEvaluation"),
-      amplify_core.ModelIndex(fields: const ["who"], name: "examResultsByWho")
+      amplify_core.ModelIndex(fields: const ["evaluation_id"], name: "examResultsByEvaluation_id")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: ExamResults.WHO,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: ExamResults.DATE,
@@ -356,7 +326,7 @@ class ExamResults extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
       key: ExamResults.EVALUATION,
       isRequired: false,
-      targetNames: ['evaluationID'],
+      targetNames: ['evaluation_id'],
       ofModelName: 'Evaluations'
     ));
     

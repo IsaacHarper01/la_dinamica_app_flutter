@@ -59,6 +59,7 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
         tenantId: user.tenant.tenant_id,
         description: metric._descriptionController.text,
         type: metric._selectedOption,
+        higgerBetter: metric.higgerBetter,
       );
 
       await awsDb.saveJoinedMetric(
@@ -139,16 +140,23 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
 }
 
 // 🧱 Reusable form widget
-class _MetricForm extends StatelessWidget {
-
-
-  _MetricForm();
+class _MetricForm extends StatefulWidget {
 
   final TextEditingController _metricController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   final List<String> _dropdownOptions = ['Base10', 'Tiempo','Repeticiones','Distancia'];
   String _selectedOption = 'Base10';
+  bool higgerBetter = true;
+
+  _MetricForm({super.key});
+
+  @override
+  State<_MetricForm> createState() => _MetricFormState();
+}
+
+class _MetricFormState extends State<_MetricForm>{
+  
 
   @override
   Widget build(BuildContext context) {
@@ -160,9 +168,19 @@ class _MetricForm extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
+              flex: 1,
+              child: Checkbox(
+                value: widget.higgerBetter, 
+                onChanged: (value){
+                  setState(() {
+                    widget.higgerBetter = value!;
+                  });
+                }) 
+              ),
+            Expanded(
               flex: 2,
               child: TextField(
-                controller: _metricController,
+                controller: widget._metricController,
                 decoration: InputDecoration(
                   labelText: 'Prueba',
                   border: OutlineInputBorder(),
@@ -172,7 +190,7 @@ class _MetricForm extends StatelessWidget {
             Expanded(
               flex: 3,
               child: TextField(
-                controller: _descriptionController,
+                controller: widget._descriptionController,
                 decoration: const InputDecoration(
                   labelText: 'Descripción',
                   border: OutlineInputBorder(),
@@ -183,13 +201,13 @@ class _MetricForm extends StatelessWidget {
               flex: 2,
               child: DropdownButtonFormField<String>(
                 decoration: const InputDecoration(border: OutlineInputBorder()),
-                value: _selectedOption,
-                items: _dropdownOptions
+                value: widget._selectedOption,
+                items: widget._dropdownOptions
                     .map((option) =>
                         DropdownMenuItem(value: option, child: Text(option)))
                     .toList(),
                 onChanged: (value) {
-                  if (value != null) _selectedOption = value;
+                  if (value != null) widget._selectedOption = value;
                 },
               ),
             ),

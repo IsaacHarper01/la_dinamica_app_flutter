@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/student_grades.dart';
-import 'package:la_dinamica_app/models/Grades.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class GradeNotifier extends Notifier<StudentGrades> {
   
@@ -9,7 +9,7 @@ class GradeNotifier extends Notifier<StudentGrades> {
     return StudentGrades();
   }
 
-  void setGrades(List<Grades> grades){
+  void setGrades(List<ExamResults> grades){
     state = state.copyWith(actualGrades: grades);
   }
 }

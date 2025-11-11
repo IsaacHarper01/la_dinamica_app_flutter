@@ -1,4 +1,3 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,7 +5,6 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/screens/add_students_evaluation.dart';
 
 class ExamDetailScreen extends ConsumerStatefulWidget{
@@ -46,7 +44,6 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
   }
 
   loadExamDetails() async {
-    final awsDb = DataStoreReadService();
 
     for (var entry in widget.metrics) {
       if(entry.metric!=null)
@@ -55,7 +52,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
         addMetricCard(entry.metric!);
         metrics.add(entry.metric!);
         examTypes[entry.metric!.name] = entry.metric!.type!;
-        examDescriptions[entry.metric!.name] = entry.metric!.description!;
+        examDescriptions[entry.metric!.name] = entry.metric!.description ?? " ";
         examhigger[entry.metric!.name] = entry.metric!.higgerBetter!;
         });
       }
@@ -94,8 +91,10 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    safePrint("Exam Details: ");
+                    ref.read(examProvider.notifier).disposeAll();
+                    ref.read(examProvider.notifier).setEvalname(widget.exam);
                     ref.read(examProvider.notifier).setActualState(metrics[0]);
+                    ref.read(examProvider.notifier).setMetrics(metrics);
                     ref.read(examProvider.notifier).setTypes(examTypes);
                     ref.read(examProvider.notifier).setDescriptions(examDescriptions);
                     ref.read(examProvider.notifier).setHiggerBetter(examhigger);

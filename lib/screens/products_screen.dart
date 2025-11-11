@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/edit_products_screen.dart';
+import 'package:la_dinamica_app/screens/edit_products_screen.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
@@ -31,7 +31,6 @@ class _nameState extends ConsumerState<ProductsScreen> {
     final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
     final screenHeight =isPortatil? MediaQuery.of(context).size.height: MediaQuery.of(context).size.height * 1.2;
     final userAsync = ref.watch(userProvider);
-    final products = ref.watch(productProvider);
 
     return userAsync.when(
     data: (user) =>
@@ -149,13 +148,11 @@ class ProductCard extends ConsumerStatefulWidget {
 }
 
 class _ProductCardState extends ConsumerState<ProductCard> {
-  late int stockState;
   late final DataStoreReadService aws;
 
   @override
   void initState() {
     super.initState();
-    stockState = widget.product.stock ?? 0;
     aws = DataStoreReadService();
   }
 
@@ -169,7 +166,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
         elevation: 6,
         shadowColor: Colors.black26,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: stockState>0 ? colorList[1] : Color.fromRGBO(109, 36, 36, 0.498),
+        color: widget.product.stock!>0 ? colorList[1] : Color.fromRGBO(109, 36, 36, 0.498),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
           child: Row(
@@ -240,22 +237,20 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               Expanded(
                 flex: 1,
                 child: Text(
-                  "Unidades: $stockState",
+                  "Unidades: ${widget.product.stock}",
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 13, color: Colors.grey),
                 ),
               ),
 
               // Sell button
-              if(widget.user.permissions["sellProducts"]==true&&stockState>0)...[
+              if(widget.user.permissions["sellProducts"]==true&&widget.product.stock!>0)...[
                 ElevatedButton(
                 onPressed: () async{
-                  if(stockState>0)
+                  if(widget.product.stock!>0)
                   {
-                    setState(() {
-                      stockState--;
-                    });
                   await aws.sellProduct(widget.product, widget.user, widget.date);
+                  await ref.read(productProvider.notifier).loadProducts();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                     content: Text('Producto descontado del inventario'),

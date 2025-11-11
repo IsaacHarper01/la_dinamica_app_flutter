@@ -2,7 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/models/Grades.dart';
+import 'package:la_dinamica_app/models/ExamResults.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -26,7 +26,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
   late String title;
   String photo = "assets/images/default_profile.jpg";
   UserLocal? user;
-  List<Grades>? grades;
+  List<ExamResults>? grades;
   Map<String, dynamic>? totals;
 
   @override
