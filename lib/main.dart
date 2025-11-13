@@ -56,7 +56,7 @@ class MyApp extends ConsumerWidget {
 
     return Authenticator(
       authenticatorBuilder: (BuildContext context, AuthenticatorState state) {
-              switch (state.currentStep) {
+        switch (state.currentStep) {
           case AuthenticatorStep.signIn:
             return CustomScaffold(
               state: state,

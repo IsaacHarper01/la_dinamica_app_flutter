@@ -95,6 +95,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                     ref.read(examProvider.notifier).setEvalname(widget.exam);
                     ref.read(examProvider.notifier).setActualState(metrics[0]);
                     ref.read(examProvider.notifier).setMetrics(metrics);
+                    ref.read(examProvider.notifier).getMetricNames();
                     ref.read(examProvider.notifier).setTypes(examTypes);
                     ref.read(examProvider.notifier).setDescriptions(examDescriptions);
                     ref.read(examProvider.notifier).setHiggerBetter(examhigger);

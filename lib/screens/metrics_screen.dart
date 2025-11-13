@@ -26,7 +26,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
   late String title;
   String photo = "assets/images/default_profile.jpg";
   UserLocal? user;
-  List<ExamResults>? grades;
+  List<ExamResults>? results;
   Map<String, dynamic>? totals;
 
   @override
@@ -43,11 +43,11 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
     setState(() {
       user = _user;
     });
-    grades = await aws.getLastExam(user!.tenant.tenant_id, widget.studentId);
-    if(grades != null){
-      ref.read(studentGradesProvider.notifier).setGrades(grades!);
+    results = await aws.getLastExamResult(user!.tenant.tenant_id, widget.studentId);
+    if(results!.isNotEmpty){
+      ref.read(studentGradesProvider.notifier).setGrades(results!);
     }
-    safePrint("Calificaciones obtenidas para el estudiante ${widget.studentId} son: $grades");
+    safePrint("Calificaciones obtenidas para el estudiante ${widget.studentId} son: $results");
   }
 
   @override
@@ -56,7 +56,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth =isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
-    final grades = ref.watch(studentGradesProvider).actualGrades;
+    final results = ref.watch(studentGradesProvider).actualResults;
     
     return Scaffold(
       appBar: AppBar(title: Center(child: Text(title))),
@@ -130,7 +130,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
               children: [
                 SizedBox(
                   height: 330,
-                  child: grades!.length == 0
+                  child: results!.isEmpty
                       ? const Center(
                           child: Text(
                             "No hay calificaciones disponibles",
@@ -138,11 +138,12 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                           ),
                         )
                       : ListView.builder(
-                            itemCount: grades.length,
+                            itemCount: results.length,
                             itemBuilder: (context, index) {
-                              final grade = grades[index];
+                              final examResult = results[index];
                               return TotalGrades(
-                                grade: grade,
+                                exam: examResult,
+                                studentId: widget.studentId,
                               );
                             },
                           ),

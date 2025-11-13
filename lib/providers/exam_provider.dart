@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/exam_state.dart';
 import 'package:la_dinamica_app/models/Evaluations.dart';
@@ -40,6 +39,10 @@ class ExamNotifier extends Notifier<ExamState> {
 
   void setDescriptions(Map<String, String?> descriptions) {
     state = state.copyWith(descriptions: descriptions);
+  }
+
+  void setMetricNames(Map<String, String> metriNames){
+    state = state.copyWith(metricNames: metriNames);
   }
 
   void setTypes(Map<String, String> types) {
@@ -122,6 +125,14 @@ class ExamNotifier extends Notifier<ExamState> {
     }  
   }
 
+  void getMetricNames(){
+    final Map<String, String> newMetricNames = {};
+    for (var metric in state.metrics){
+      newMetricNames[metric.id] = metric.name;
+    }
+    setMetricNames(newMetricNames);
+  }
+
   Map<String, Map<String, double>> adaptGrades(Map<Metric, Map<String, double>> grades){
     Map<String, Map<String, double>> result = {};
     for(var metric in grades.keys){
@@ -163,7 +174,7 @@ class ExamNotifier extends Notifier<ExamState> {
   Future<void> uploadGrades(String tenantId, String profId)async{
     final aws = DataStoreService();
     final date = ref.watch(dateProvider);
-    safePrint(calculateTscore(state.grades));
+    
     final newGrades = await aws.saveGrade(
         eval: state.eval,
         date: DateTime.parse(date), 
@@ -172,6 +183,7 @@ class ExamNotifier extends Notifier<ExamState> {
         grades: jsonEncode(adaptGrades(state.grades)),
         types: jsonEncode(state.types),
         tscore: jsonEncode(adaptGrades(calculateTscore(state.grades))),
+        metricNames: jsonEncode(state.metricNames),
         higgerBetter: jsonEncode(state.higgerBetter)
        );
     uploadJoinResults(newGrades, tenantId, date);

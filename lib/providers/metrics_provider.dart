@@ -21,10 +21,7 @@ class MetricsProvider extends StateNotifier<AsyncValue<MetricsState>>{
     MetricsState metrics = MetricsState(); 
     final datastoreservice = DataStoreReadService();
     try{
-      final grades = await datastoreservice.getLastExam(user.tenant.tenant_id, userID);
-      if(grades != null){
-      metrics = metrics.copyWith(grades: grades, evaluations: [grades.first.evaluation!]);
-      }
+      final grades = await datastoreservice.getLastExamResult(user.tenant.tenant_id, userID);
     }
     catch(e){
       safePrint("Error al cargar las calificaciones: $e");

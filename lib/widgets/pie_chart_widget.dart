@@ -131,6 +131,7 @@ class ChartPie extends StatelessWidget {
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Total: \$${totalAmount.toStringAsFixed(2)}'),
           const SizedBox(height: 20),
@@ -147,31 +148,47 @@ class ChartPie extends StatelessWidget {
     }
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+  mainAxisAlignment: MainAxisAlignment.center,
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: [
+    Text(
+      'Ingresos por plan',
+      style: GoogleFonts.michroma(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+    const SizedBox(height: 12),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          'Ingresos por plan',
-          style: GoogleFonts.michroma()
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 300,
-                child: PieChart(
-                  PieChartData(
-                    sectionsSpace: 0,
-                    centerSpaceRadius: screenWidth * 0.1,
-                    sections: sections,
-                  ),
-                ),
+        /// Pie chart container
+        Expanded(
+          flex: 1,
+          child: AspectRatio(
+            aspectRatio: 1, // Ensures it's a perfect circle
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 0,
+                centerSpaceRadius: screenWidth * 0.1,
+                sections: sections,
               ),
             ),
-            Expanded(child: chartInfo(percentages,planNames ,total, colors)),
-          ],
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: chartInfo(percentages, planNames, total, colors),
+            ),
+          ),
         ),
       ],
-    );
+    ),
+  ],
+);
   }
 }

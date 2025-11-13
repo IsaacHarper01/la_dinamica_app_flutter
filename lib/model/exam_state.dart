@@ -11,6 +11,7 @@ class ExamState {
   final Map<Metric, Map<String, double>> grades;
   final Map<String, bool> higgerBetter;
   final Metric? actualState;
+  final Map<String, String> metricNames;
 
   ExamState({
     this.students = const [],
@@ -20,6 +21,7 @@ class ExamState {
     this.types = const {},
     this.grades = const {},
     this.higgerBetter = const {},
+    this.metricNames = const {},
     this.actualState,
   }) : eval = eval ?? Evaluations();
 
@@ -30,6 +32,7 @@ class ExamState {
     Map<String, String?>? descriptions,
     Map<String, String>? types,
     Map<Metric, Map<String, double>>? grades,
+    Map<String, String>? metricNames,
     Map<String, bool>? higgerBetter,
     Metric? actualState,
   }) {
@@ -40,6 +43,7 @@ class ExamState {
       descriptions: descriptions ?? this.descriptions,
       types: types ?? this.types,
       grades: grades ?? this.grades,
+      metricNames: metricNames ?? this.metricNames,
       higgerBetter: higgerBetter ?? this.higgerBetter,
       actualState: actualState ?? this.actualState,
     );

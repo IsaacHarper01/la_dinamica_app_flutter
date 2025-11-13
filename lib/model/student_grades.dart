@@ -1,22 +1,22 @@
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class StudentGrades {
-  final List<ExamResults>? actualGrades;
+  final List<ExamResults>? actualResults;
 
   StudentGrades({
-    this.actualGrades = const [],
+    this.actualResults = const [],
   });
 
   StudentGrades copyWith({
-    List<ExamResults>? actualGrades,
+    List<ExamResults>? actualResults,
   }) {
     return StudentGrades(
-      actualGrades: actualGrades ?? this.actualGrades,
+      actualResults: actualResults ?? this.actualResults,
     );
   }
 
   void clear() {
-    actualGrades!.clear();
+    actualResults!.clear();
   }
 
 }

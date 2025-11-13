@@ -146,6 +146,7 @@ type ExamResults @model @auth(rules: [{allow: public, operations: [create, read,
   grades: AWSJSON
   types: AWSJSON
   tscore: AWSJSON
+  metric_names: AWSJSON
   higgerBetter: AWSJSON
   evaluation_id: ID! @index
 

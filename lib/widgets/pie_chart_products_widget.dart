@@ -131,6 +131,7 @@ class ChartPie extends StatelessWidget {
 
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Total: \$${totalAmount.toStringAsFixed(2)}'),
           const SizedBox(height: 20),
@@ -148,29 +149,55 @@ class ChartPie extends StatelessWidget {
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           'Ingresos por producto',
-          style: GoogleFonts.michroma()
+          style: GoogleFonts.michroma(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(child: chartInfo(percentages,productNames ,total, colors)),
-            Expanded(
-              child: SizedBox(
-                height: 300,
-                child: 
-                PieChart(
-                  PieChartData(
-                    sectionsSpace: 0,
-                    centerSpaceRadius: screenWidth * 0.1,
-                    sections: sections,
+        const SizedBox(height: 12),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final chartSize = constraints.maxWidth * 0.45;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal, // horizontal scroll
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5.0),
+                      child: chartInfo(
+                              percentages,
+                              productNames,
+                              total,
+                              colors,
+                            ),
+                    ),
+                        ),
+                  ),
+
+                Expanded(
+                  flex: 1,
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: PieChart(
+                      PieChartData(
+                        sectionsSpace: 0,
+                        centerSpaceRadius: chartSize * 0.3,
+                        sections: sections,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
         ),
       ],
     );

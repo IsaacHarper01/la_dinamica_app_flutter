@@ -251,6 +251,7 @@ class DataStoreService {
     required String types,
     required String tscore,
     required String higgerBetter,
+    required String metricNames,
   }) async {
     final newGrades = ExamResults(
       evaluation: eval,
@@ -260,6 +261,7 @@ class DataStoreService {
       grades: grades,
       types: types,
       tscore: tscore,
+      metric_names: metricNames,
       higgerBetter: higgerBetter,
     );
     await Amplify.DataStore.save(newGrades);

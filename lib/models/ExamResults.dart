@@ -34,6 +34,7 @@ class ExamResults extends amplify_core.Model {
   final String? _grades;
   final String? _types;
   final String? _tscore;
+  final String? _metric_names;
   final String? _higgerBetter;
   final Evaluations? _evaluation;
   final List<JoinResults>? _joinresult;
@@ -77,6 +78,10 @@ class ExamResults extends amplify_core.Model {
     return _tscore;
   }
   
+  String? get metric_names {
+    return _metric_names;
+  }
+  
   String? get higgerBetter {
     return _higgerBetter;
   }
@@ -97,9 +102,9 @@ class ExamResults extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const ExamResults._internal({required this.id, date, prof_id, tenant_id, grades, types, tscore, higgerBetter, evaluation, joinresult, createdAt, updatedAt}): _date = date, _prof_id = prof_id, _tenant_id = tenant_id, _grades = grades, _types = types, _tscore = tscore, _higgerBetter = higgerBetter, _evaluation = evaluation, _joinresult = joinresult, _createdAt = createdAt, _updatedAt = updatedAt;
+  const ExamResults._internal({required this.id, date, prof_id, tenant_id, grades, types, tscore, metric_names, higgerBetter, evaluation, joinresult, createdAt, updatedAt}): _date = date, _prof_id = prof_id, _tenant_id = tenant_id, _grades = grades, _types = types, _tscore = tscore, _metric_names = metric_names, _higgerBetter = higgerBetter, _evaluation = evaluation, _joinresult = joinresult, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory ExamResults({String? id, amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
+  factory ExamResults({String? id, amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? metric_names, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
     return ExamResults._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       date: date,
@@ -108,6 +113,7 @@ class ExamResults extends amplify_core.Model {
       grades: grades,
       types: types,
       tscore: tscore,
+      metric_names: metric_names,
       higgerBetter: higgerBetter,
       evaluation: evaluation,
       joinresult: joinresult != null ? List<JoinResults>.unmodifiable(joinresult) : joinresult);
@@ -128,6 +134,7 @@ class ExamResults extends amplify_core.Model {
       _grades == other._grades &&
       _types == other._types &&
       _tscore == other._tscore &&
+      _metric_names == other._metric_names &&
       _higgerBetter == other._higgerBetter &&
       _evaluation == other._evaluation &&
       DeepCollectionEquality().equals(_joinresult, other._joinresult);
@@ -148,6 +155,7 @@ class ExamResults extends amplify_core.Model {
     buffer.write("grades=" + "$_grades" + ", ");
     buffer.write("types=" + "$_types" + ", ");
     buffer.write("tscore=" + "$_tscore" + ", ");
+    buffer.write("metric_names=" + "$_metric_names" + ", ");
     buffer.write("higgerBetter=" + "$_higgerBetter" + ", ");
     buffer.write("evaluation=" + (_evaluation != null ? _evaluation!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
@@ -157,7 +165,7 @@ class ExamResults extends amplify_core.Model {
     return buffer.toString();
   }
   
-  ExamResults copyWith({amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
+  ExamResults copyWith({amplify_core.TemporalDate? date, String? prof_id, String? tenant_id, String? grades, String? types, String? tscore, String? metric_names, String? higgerBetter, Evaluations? evaluation, List<JoinResults>? joinresult}) {
     return ExamResults._internal(
       id: id,
       date: date ?? this.date,
@@ -166,6 +174,7 @@ class ExamResults extends amplify_core.Model {
       grades: grades ?? this.grades,
       types: types ?? this.types,
       tscore: tscore ?? this.tscore,
+      metric_names: metric_names ?? this.metric_names,
       higgerBetter: higgerBetter ?? this.higgerBetter,
       evaluation: evaluation ?? this.evaluation,
       joinresult: joinresult ?? this.joinresult);
@@ -178,6 +187,7 @@ class ExamResults extends amplify_core.Model {
     ModelFieldValue<String?>? grades,
     ModelFieldValue<String?>? types,
     ModelFieldValue<String?>? tscore,
+    ModelFieldValue<String?>? metric_names,
     ModelFieldValue<String?>? higgerBetter,
     ModelFieldValue<Evaluations?>? evaluation,
     ModelFieldValue<List<JoinResults>?>? joinresult
@@ -190,6 +200,7 @@ class ExamResults extends amplify_core.Model {
       grades: grades == null ? this.grades : grades.value,
       types: types == null ? this.types : types.value,
       tscore: tscore == null ? this.tscore : tscore.value,
+      metric_names: metric_names == null ? this.metric_names : metric_names.value,
       higgerBetter: higgerBetter == null ? this.higgerBetter : higgerBetter.value,
       evaluation: evaluation == null ? this.evaluation : evaluation.value,
       joinresult: joinresult == null ? this.joinresult : joinresult.value
@@ -204,6 +215,7 @@ class ExamResults extends amplify_core.Model {
       _grades = json['grades'],
       _types = json['types'],
       _tscore = json['tscore'],
+      _metric_names = json['metric_names'],
       _higgerBetter = json['higgerBetter'],
       _evaluation = json['evaluation'] != null
         ? json['evaluation']['serializedData'] != null
@@ -227,7 +239,7 @@ class ExamResults extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'date': _date?.format(), 'prof_id': _prof_id, 'tenant_id': _tenant_id, 'grades': _grades, 'types': _types, 'tscore': _tscore, 'higgerBetter': _higgerBetter, 'evaluation': _evaluation?.toJson(), 'joinresult': _joinresult?.map((JoinResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'date': _date?.format(), 'prof_id': _prof_id, 'tenant_id': _tenant_id, 'grades': _grades, 'types': _types, 'tscore': _tscore, 'metric_names': _metric_names, 'higgerBetter': _higgerBetter, 'evaluation': _evaluation?.toJson(), 'joinresult': _joinresult?.map((JoinResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -238,6 +250,7 @@ class ExamResults extends amplify_core.Model {
     'grades': _grades,
     'types': _types,
     'tscore': _tscore,
+    'metric_names': _metric_names,
     'higgerBetter': _higgerBetter,
     'evaluation': _evaluation,
     'joinresult': _joinresult,
@@ -253,6 +266,7 @@ class ExamResults extends amplify_core.Model {
   static final GRADES = amplify_core.QueryField(fieldName: "grades");
   static final TYPES = amplify_core.QueryField(fieldName: "types");
   static final TSCORE = amplify_core.QueryField(fieldName: "tscore");
+  static final METRIC_NAMES = amplify_core.QueryField(fieldName: "metric_names");
   static final HIGGERBETTER = amplify_core.QueryField(fieldName: "higgerBetter");
   static final EVALUATION = amplify_core.QueryField(
     fieldName: "evaluation",
@@ -313,6 +327,12 @@ class ExamResults extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: ExamResults.TSCORE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: ExamResults.METRIC_NAMES,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));

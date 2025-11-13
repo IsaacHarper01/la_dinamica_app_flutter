@@ -1,82 +1,75 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/bar_grades_indicator.dart';
 
-class TotalGrades extends StatefulWidget {
-  final ExamResults grade;
+class TotalGrades extends ConsumerStatefulWidget {
+  final ExamResults exam;
+  final String studentId;
 
   const TotalGrades({
     super.key,
-    required this.grade,
+    required this.exam,
+    required this.studentId,
   });
 
   @override
-  State<TotalGrades> createState() => _TotalGradesState();
+  ConsumerState<TotalGrades> createState() => _TotalGradesState();
 }
 
-class _TotalGradesState extends State<TotalGrades> {
+class _TotalGradesState extends ConsumerState<TotalGrades> {
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> examTree = jsonDecode(widget.grade.tscore!); //change this
-    Map<String, dynamic> examTypes = jsonDecode(widget.grade.types!);
-    Map<String, dynamic> totalMetrics = jsonDecode(widget.grade.tscore!);
-    Map<String, dynamic> totalSubmetrics = jsonDecode(widget.grade.grades!);
 
-    List<String> metrics = examTree.keys.toList();
+    double total = ref.read(studentGradesProvider.notifier).calculateActualTotal(widget.studentId, widget.exam);
+    final Map<String, double> tscores = ref.read(studentGradesProvider.notifier).adaptTscoresperStudent(widget.exam)[widget.studentId]!;
+
     return Center(
       child: SizedBox(
         child: Column(
           children: [
-          Text(widget.grade.evaluation!.name!, style: GoogleFonts.gochiHand(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
-          ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: metrics.length,
-              itemBuilder: (context, index){
-                final List<dynamic> subMetrics = examTree[metrics[index]]!;
-                if (subMetrics.isNotEmpty) {
-                  return ExpandableList(
-                  title: metrics[index], 
-                  items: subMetrics,
-                  totalMetric: double.parse(totalMetrics[metrics[index]]),
-                  totalSubmetrics: totalSubmetrics,
-                  ); 
-                }else {
-                return StatBar(label: metrics[index], filled: double.parse(totalMetrics[metrics[index]]));
-                }
-              }
-            ),
-          ]
-        ),
-      ),
-    );
+            Text(widget.exam.evaluation!.name!, style: GoogleFonts.gochiHand(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+            ExpandableList(
+                  title: widget.exam.evaluation!.name!, 
+                  metricIds: tscores.keys.toList(),
+                  metricNames: jsonDecode(widget.exam.metric_names!),
+                  totalMetric: total,
+                  tscores: tscores,
+                  ), 
+            ]
+          ),
+        )
+      );
   }
 }
 
 class ExpandableList extends StatelessWidget {
   final String title;
-  final List<dynamic> items;
+  final List<String> metricIds;
+  final Map<String,dynamic> metricNames;
   final double totalMetric;
-  final Map<String, dynamic> totalSubmetrics;
+  final Map<String, dynamic> tscores;
 
   const ExpandableList({
     super.key, 
     required this.title, 
-    required this.items, 
+    required this.metricIds,
+    required this.metricNames, 
     required this.totalMetric,
-    required this.totalSubmetrics,
+    required this.tscores,
     });
 
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: StatBar(label: title, filled: totalMetric),
-      children: items
+      title: StatBar(label: title, filled: totalMetric/10),
+      children: metricIds
           .map((item) => ListTile(
-                title: Text("$item :     ${totalSubmetrics[item]}"),
+                title: Text("${metricNames[item]} :     ${tscores[item]/10}"),
               ))
           .toList(),
     );
