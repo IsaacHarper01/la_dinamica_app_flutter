@@ -35,7 +35,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: isStart ? startDate : endDate,
-      firstDate: DateTime(1990),
+      firstDate: DateTime(1950),
       lastDate: DateTime(2100),
     );
     if (pickedDate != null) {

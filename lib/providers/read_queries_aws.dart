@@ -719,7 +719,7 @@ class DataStoreReadService {
         JoinResults.classType,
         where: JoinResults.STUDENT.eq(studentId)
         .and(JoinResults.TENANT_ID.eq(tenaniId))
-        .and(JoinResults.DATE.between(start, end))
+        .and(JoinResults.DATE.between(TemporalDate(start), TemporalDate(end)))
         );
       return exams;
     } catch (e) {
@@ -727,7 +727,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<ExamResults>> getLastExamResult(String tenaniId, String studentId)async{
+  Future<List<JoinResults>> getLastExamResult(String tenaniId, String studentId)async{
     final results = await Amplify.DataStore.query(
       JoinResults.classType,
       where: JoinResults.STUDENT.eq(studentId)
@@ -735,24 +735,17 @@ class DataStoreReadService {
       sortBy: [JoinResults.DATE.descending()],
       pagination: const QueryPagination.firstResult()
       );
-    return results.isNotEmpty ? [results.first.result!] : [];
+    return results.isNotEmpty ? [results.first] : [];
   }
 
-  // Future<List<Grades>?> getRangeExams(String tenantId, String studentId, DateTime start, DateTime end) async{
-  //   try {
-  //     final grades = await Amplify.DataStore.query(
-  //       Grades.classType,
-  //       where:Grades.DATE.between(
-  //         TemporalDate(start), 
-  //         TemporalDate(end)).
-  //         and(Grades.STUDENT.eq(studentId).
-  //         and(Grades.TENANT_ID.eq(tenantId))));
-  //     return(grades);
-  //   } catch (e) {
-  //     safePrint("Error al obtener calificaciones");
-  //     return null;
-  //   }
-  // }
+  Future<List<JoinResults>> getAllJoinResults(String tenaniId, String studentId)async{
+    final results = await Amplify.DataStore.query(
+      JoinResults.classType,
+      where: JoinResults.STUDENT.eq(studentId)
+      .and(JoinResults.TENANT_ID.eq(tenaniId)),
+      );
+    return results;
+  }
 
   Future<void> updatePlanDefaultStatus(LocalPlan plan, bool isDefault) async {
     try {

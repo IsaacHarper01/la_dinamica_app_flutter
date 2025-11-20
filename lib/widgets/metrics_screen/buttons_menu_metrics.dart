@@ -1,21 +1,28 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
 
 
 class ButtonsMenu extends ConsumerWidget {
   final List<String> options;
   final double screenWidth;
+  final String studentId;
 
   const ButtonsMenu({
     super.key, 
     required this.options,
-    required this.screenWidth
+    required this.screenWidth,
+    required this.studentId
     });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(selectedDateProviderMetrics);
+    final today = DateTime.parse(ref.watch(dateProvider));
+    DateTime lastDate;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -25,7 +32,21 @@ class ButtonsMenu extends ConsumerWidget {
         return GestureDetector(
           onTap: () {
             ref.read(selectedDateProviderMetrics.notifier).state = value;
-            // you can also call a callback here if you want to "return" the value
+            switch (value) {
+              case 1:
+                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'last',null,null);
+              case 2:
+                lastDate = today.subtract(Duration(days: 30));
+                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'range',lastDate, today);
+              case 3:
+                lastDate = today.subtract(Duration(days: 360));
+                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'range',lastDate, today);
+              case 4:
+                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'all',null,null);
+              default:
+                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'last',null,null);
+            }
+            safePrint('ACTUAL GRADES: ');
           },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 6),

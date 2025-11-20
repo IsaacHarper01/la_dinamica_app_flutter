@@ -24,25 +24,31 @@ class TotalGrades extends ConsumerStatefulWidget {
 class _TotalGradesState extends ConsumerState<TotalGrades> {
   @override
   Widget build(BuildContext context) {
-
-    double total = ref.read(studentGradesProvider.notifier).calculateActualTotal(widget.studentId, widget.exam);
-    final Map<String, double> tscores = ref.read(studentGradesProvider.notifier).adaptTscoresperStudent(widget.exam)[widget.studentId]!;
-
-    return Center(
-      child: SizedBox(
-        child: Column(
-          children: [
-            Text(widget.exam.evaluation!.name!, style: GoogleFonts.gochiHand(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
-            ExpandableList(
-                  title: widget.exam.evaluation!.name!, 
-                  metricIds: tscores.keys.toList(),
-                  metricNames: jsonDecode(widget.exam.metric_names!),
-                  totalMetric: total,
-                  tscores: tscores,
-                  ), 
-            ]
-          ),
-        )
+    final gradesState = ref.watch(studentGradesProvider(widget.studentId));
+    
+    return gradesState.when(
+      error: (e,st)=> Center(child: Text('Error al cargar los datos $e'),), 
+      loading: ()=> Center(child: CircularProgressIndicator(),),
+      data:(grades) {
+        final examName = widget.exam.evaluation!.name!;
+        return Center(
+          child: SizedBox(
+            child: Column(
+              children: [
+                Text(examName, style: GoogleFonts.gochiHand(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
+                ExpandableList(
+                      title: examName, 
+                      metricIds: grades.tscoresPerStudent![examName]!.keys.toList(),
+                      metricNames: jsonDecode(widget.exam.metric_names!),
+                      totalMetric: grades.examsTotals[examName]!,
+                      tscores: grades.tscoresPerStudent[examName]!,
+                      grades: grades.gradesPerStudent[examName]!,
+                      ), 
+                ]
+              ),
+            )
+          );
+        },
       );
   }
 }
@@ -53,6 +59,7 @@ class ExpandableList extends StatelessWidget {
   final Map<String,dynamic> metricNames;
   final double totalMetric;
   final Map<String, dynamic> tscores;
+  final Map<String, dynamic> grades;
 
   const ExpandableList({
     super.key, 
@@ -61,6 +68,7 @@ class ExpandableList extends StatelessWidget {
     required this.metricNames, 
     required this.totalMetric,
     required this.tscores,
+    required this.grades,
     });
 
   @override
@@ -69,7 +77,7 @@ class ExpandableList extends StatelessWidget {
       title: StatBar(label: title, filled: totalMetric/10),
       children: metricIds
           .map((item) => ListTile(
-                title: Text("${metricNames[item]} :     ${tscores[item]/10}"),
+                title: Text("${metricNames[item]} : ${grades[item]},   Tscore: ${tscores[item]/10}"),
               ))
           .toList(),
     );
