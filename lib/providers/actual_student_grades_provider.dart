@@ -27,8 +27,10 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
     Map<String,Map<String,double>> grades = {};
     Map<String, double> allTotals = {};
     List<ExamResults> results = [];
+    Set<String> allExamNamesSet = {};
     List<String> allExamNames = [];
     Map<String, Map<String, dynamic>> metricsIds = {};
+    Map<String,Map<String,Map<String, dynamic>>> historicalExamgrades = {};
     StudentGrades newStudentGrades;
     List<JoinResults> joinResults;
     String actualExam;
@@ -54,10 +56,24 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
         tscores[evalName] = examTscores;
         allTotals[evalName] = calculateActualTotal(examTscores);
         grades[evalName] = adaptGradesperStudent(exam.result!)[studentId]!;
-        allExamNames.add(evalName);
         metricsIds[evalName] = jsonDecode(exam.result!.metric_names!);
+
+        if(allExamNamesSet.contains(evalName)){
+          for(var metricId in grades[evalName]!.keys){
+            historicalExamgrades[evalName]![metricId]![exam.result!.date.toString()] = grades[evalName]![metricId];
+          }
+        }else{
+          historicalExamgrades.putIfAbsent(evalName, ()=>{});
+          for(var metricId in grades[evalName]!.keys){
+            historicalExamgrades[evalName]!.putIfAbsent(metricId, ()=>{});
+            historicalExamgrades[evalName]![metricId]![exam.result!.date.toString()] = grades[evalName]![metricId];
+           }
+          }
+
+        allExamNamesSet.add(evalName);
         }
 
+      allExamNames = allExamNamesSet.toList();
       actualExam = allExamNames[0];
       final metrics = metricsIds[actualExam]!.values.toList();
       actualMetric = metrics[0] ?? '';
@@ -65,7 +81,8 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
       newStudentGrades = StudentGrades(
         actualResults: results, 
         gradesPerStudent: grades, 
-        tscoresPerStudent: tscores, 
+        tscoresPerStudent: tscores,
+        historicalExamgrades: historicalExamgrades, 
         examsTotals: allTotals,
         allExamNames: allExamNames,
         metricsIds: metricsIds,
@@ -74,9 +91,14 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
         );
 
       safePrint('Metric DATA: $grades');
-      safePrint('Metric DATA: $metricsIds');
+      safePrint('Metric DATA: $historicalExamgrades');
       state = AsyncValue.data(newStudentGrades);
       }
+  }
+
+  Map<String,Map<String,Map<String, dynamic>>> getHistoricalExamGrades(Map<String, Map<String, double>> grades){
+    Map<String,Map<String,Map<String, dynamic>>> result={};
+    return result;
   }
 
   Map<String, Map<String, double>> adaptGradesperStudent(ExamResults actualExam){
