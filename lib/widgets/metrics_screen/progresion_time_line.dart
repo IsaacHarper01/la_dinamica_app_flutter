@@ -1,5 +1,6 @@
 
 
+import 'package:aws_common/aws_common.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,13 +25,16 @@ class _nameState extends ConsumerState<ProgresionTimeLine> {
   @override
   Widget build(BuildContext context) {
     final examGrades = ref.watch(studentGradesProvider(widget.studentId));
-    final datos = {"2025-10-28": 440.0, "2025-10-26": 360.0, "2025-11-11": 280.0, "2025-11-08": 280.0};
+
     return examGrades.when(
       error: (e,st) => Center(child:  Text("Error al cargar datos $e"),), 
       loading: ()=> Center(child: CircularProgressIndicator(),),
       data: (data) {
+        
         final actualExam = data.actualExam;
-        final List<String> options = data.metricsIds[actualExam]!.values.cast<String>().toList();
+        final List<String> options = data.metricsPerExam.cast<String>().toList();
+        final datos = convertData(data.historicalExamgrades,data.metricsIds,data.actualMetric,actualExam);
+
         return Container(
           height: 350,
           width: double.infinity,
@@ -39,7 +43,9 @@ class _nameState extends ConsumerState<ProgresionTimeLine> {
               OptionDropdown(options: options, onSelected: widget.onSelected),
               Expanded(child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                child: timeLineProgresion(datos)))
+                child: timeLineProgresion(datos)
+                )
+              )
             ],
           )
         );
@@ -56,9 +62,16 @@ class _nameState extends ConsumerState<ProgresionTimeLine> {
     }
   }
 
-  Map<String,double> convertData(Map<String,Map<String,double>> grades, Map<String, Map<String, dynamic>> metricIds,String actualMetric, String actualExam){
-      Map<String, double> dateGrades = {};
-      final metricID = metricIds[actualExam]!.entries.firstWhere((entry)=>entry.value==actualMetric).key;
+  Map<String,dynamic> convertData(
+    Map<String,Map<String, Map<String,dynamic>>> historicalGrades, 
+    Map<String, Map<String, dynamic>> metricsIds,
+    String actualMetric, 
+    String actualExam)
+    {
+      Map<String, dynamic> dateGrades = {};
+      final exam = metricsIds[actualExam];
+      final metricID = exam!.entries.firstWhere((entrie) => entrie.value == actualMetric).key;
+      dateGrades = historicalGrades[actualExam]![metricID]!;
       return dateGrades;
   }
 

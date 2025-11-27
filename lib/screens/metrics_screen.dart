@@ -54,8 +54,6 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
     final screenWidth =isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
     final resultsAsync = ref.watch(studentGradesProvider(widget.studentId));
 
-    List<String> examOptions = [];
-
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -64,8 +62,9 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
       error: (e,st)=>Center(child: Text("Error al cargar los datos del examen $e"),), 
       loading: ()=> Center(child: CircularProgressIndicator(),), 
       data: (results){
-        examOptions = results.allExamNames;
-        return Scaffold(
+        return 
+        results.filteredActualResults.isNotEmpty ?
+        Scaffold(
           appBar: AppBar(title: Center(child: Text(title))),
           backgroundColor: const Color.fromRGBO(6, 20, 27, 1.0),
           body: SingleChildScrollView(
@@ -145,7 +144,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                         borderRadius: BorderRadius.circular(8),
                         border:Border.all(color: colorList[1], width: 2),
                         ),
-                      child: results.actualResults!.isEmpty
+                      child: results.filteredActualResults.isEmpty
                           ? const Center(
                               child: Text(
                                 "No hay calificaciones disponibles",
@@ -153,9 +152,9 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                               ),
                             )
                           : ListView.builder(
-                                itemCount: results.actualResults!.length,
+                                itemCount: results.filteredActualResults.length,
                                 itemBuilder: (context, index) {
-                                  final examResult = results.actualResults![index];
+                                  final examResult = results.filteredActualResults[index];
                                   return TotalGrades(
                                     exam: examResult,
                                     studentId: widget.studentId,
@@ -179,7 +178,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                   child: Column(
                     children: [
                       OptionDropdown(
-                        options: examOptions,
+                        options: results.allExamNames,
                         onSelected: (String selected) => ref.read(studentGradesProvider(widget.studentId).notifier).setActualExam(selected),
                       ),
                       Row(
@@ -218,7 +217,10 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                 ],
               ),
             )
-          );
+          ): 
+          Center(
+            child: Text('No se encontraron registros de calificaciones')
+            );
         }
       );
   }

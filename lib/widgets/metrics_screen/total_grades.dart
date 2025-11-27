@@ -38,7 +38,7 @@ class _TotalGradesState extends ConsumerState<TotalGrades> {
                 Text(examName, style: GoogleFonts.gochiHand(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),),
                 ExpandableList(
                       title: examName, 
-                      metricIds: grades.tscoresPerStudent![examName]!.keys.toList(),
+                      metricIds: grades.tscoresPerStudent[examName]!.keys.toList(),
                       metricNames: jsonDecode(widget.exam.metric_names!),
                       totalMetric: grades.examsTotals[examName]!,
                       tscores: grades.tscoresPerStudent[examName]!,

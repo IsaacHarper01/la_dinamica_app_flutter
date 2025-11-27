@@ -619,8 +619,6 @@ class DataStoreReadService {
           await Amplify.DataStore.save(newAccess);
           safePrint('✅ Permisos del usuario ${user.user_id} han sido actualizados: $permissions');
         }
-        
-        
     }
     }catch (e) {
       safePrint('❌ Error giving user access: $e');
@@ -685,6 +683,19 @@ class DataStoreReadService {
   }
 }
 
+  Future<List<UserAccess>> getUserPermisions(String tenaniId) async {
+    List<UserAccess> userAccess = [];
+    try {
+      userAccess = await Amplify.DataStore.query(
+        UserAccess.classType,
+        where: UserAccess.TENANT.eq(tenaniId)
+        );
+      return userAccess;
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<List<Evaluations>?> getEvaluations(String tenantId) async {
     try {
       final evaluations = await Amplify.DataStore.query(
@@ -719,7 +730,8 @@ class DataStoreReadService {
         JoinResults.classType,
         where: JoinResults.STUDENT.eq(studentId)
         .and(JoinResults.TENANT_ID.eq(tenaniId))
-        .and(JoinResults.DATE.between(TemporalDate(start), TemporalDate(end)))
+        .and(JoinResults.DATE.between(TemporalDate(start), TemporalDate(end))),
+        sortBy: [JoinResults.DATE.descending()],
         );
       return exams;
     } catch (e) {
@@ -743,6 +755,7 @@ class DataStoreReadService {
       JoinResults.classType,
       where: JoinResults.STUDENT.eq(studentId)
       .and(JoinResults.TENANT_ID.eq(tenaniId)),
+      sortBy: [JoinResults.DATE.descending()],
       );
     return results;
   }

@@ -18,12 +18,21 @@ class _ThreeOptionDropdownState extends State<OptionDropdown> {
 
   @override
   Widget build(BuildContext context) {
+    if(widget.options.contains(selectedOption)){
+      
+    }else{
+      setState(() {
+        selectedOption = widget.options[0];
+      });
+    }
     return DropdownButton<String>(
+      borderRadius: BorderRadius.circular(10),
       hint: Text(widget.options[0]),
       value: selectedOption,
       isExpanded: true, // makes it take full width
       items: widget.options.map((String option) {
         return DropdownMenuItem(
+          alignment: Alignment.center,
           value: option,
           child: Text(option),
         );

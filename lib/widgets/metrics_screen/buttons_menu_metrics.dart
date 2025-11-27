@@ -46,7 +46,6 @@ class ButtonsMenu extends ConsumerWidget {
               default:
                 ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'last',null,null);
             }
-            safePrint('ACTUAL GRADES: ');
           },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 6),
