@@ -52,7 +52,7 @@ class _EditPermissionsScreenState extends State<EditPermissionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Permisos")),
+      appBar: AppBar(title: Center(child: const Text("Permisos"))),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

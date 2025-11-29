@@ -152,12 +152,14 @@ class DataStoreService {
     required bool status,
     required Tenant tenant,
     required User user,
+    required bool isAdmin,
   }) async {
     final item = UserAccess(
       permissions: jsonEncode(permissions),
       status: status,
       tenant: tenant,
       user: user,
+      isAdmin: isAdmin,
     );
     try {
       await Amplify.DataStore.save(item);

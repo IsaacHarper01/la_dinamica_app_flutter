@@ -6,6 +6,7 @@ type UserAccess @model @auth(rules: [{allow: public}]) {
 
   permissions: String
   status: Boolean
+  isAdmin: Boolean
 
   user: User @belongsTo(fields: ["user_id"])
   tenant: Tenant @belongsTo(fields: ["tenant_id"])

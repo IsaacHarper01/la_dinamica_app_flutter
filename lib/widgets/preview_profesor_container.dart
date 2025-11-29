@@ -24,8 +24,10 @@ class PreviewProfesorContainer extends ConsumerWidget {
     final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
     final imageUrl = ref.watch(imageProvider(image));
+    final colorScheme = ColorScheme.of(context);
 
     return Card(
+      color: access.isAdmin! ? colorScheme.surface.withGreen(70) : colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
       child: Padding(

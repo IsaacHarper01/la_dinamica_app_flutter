@@ -29,6 +29,7 @@ class UserAccess extends amplify_core.Model {
   final String id;
   final String? _permissions;
   final bool? _status;
+  final bool? _isAdmin;
   final User? _user;
   final Tenant? _tenant;
   final amplify_core.TemporalDateTime? _createdAt;
@@ -55,6 +56,10 @@ class UserAccess extends amplify_core.Model {
     return _status;
   }
   
+  bool? get isAdmin {
+    return _isAdmin;
+  }
+  
   User? get user {
     return _user;
   }
@@ -71,13 +76,14 @@ class UserAccess extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const UserAccess._internal({required this.id, permissions, status, user, tenant, createdAt, updatedAt}): _permissions = permissions, _status = status, _user = user, _tenant = tenant, _createdAt = createdAt, _updatedAt = updatedAt;
+  const UserAccess._internal({required this.id, permissions, status, isAdmin, user, tenant, createdAt, updatedAt}): _permissions = permissions, _status = status, _isAdmin = isAdmin, _user = user, _tenant = tenant, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory UserAccess({String? id, String? permissions, bool? status, User? user, Tenant? tenant}) {
+  factory UserAccess({String? id, String? permissions, bool? status, bool? isAdmin, User? user, Tenant? tenant}) {
     return UserAccess._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       permissions: permissions,
       status: status,
+      isAdmin: isAdmin,
       user: user,
       tenant: tenant);
   }
@@ -93,6 +99,7 @@ class UserAccess extends amplify_core.Model {
       id == other.id &&
       _permissions == other._permissions &&
       _status == other._status &&
+      _isAdmin == other._isAdmin &&
       _user == other._user &&
       _tenant == other._tenant;
   }
@@ -108,6 +115,7 @@ class UserAccess extends amplify_core.Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("permissions=" + "$_permissions" + ", ");
     buffer.write("status=" + (_status != null ? _status!.toString() : "null") + ", ");
+    buffer.write("isAdmin=" + (_isAdmin != null ? _isAdmin!.toString() : "null") + ", ");
     buffer.write("user=" + (_user != null ? _user!.toString() : "null") + ", ");
     buffer.write("tenant=" + (_tenant != null ? _tenant!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
@@ -117,11 +125,12 @@ class UserAccess extends amplify_core.Model {
     return buffer.toString();
   }
   
-  UserAccess copyWith({String? permissions, bool? status, User? user, Tenant? tenant}) {
+  UserAccess copyWith({String? permissions, bool? status, bool? isAdmin, User? user, Tenant? tenant}) {
     return UserAccess._internal(
       id: id,
       permissions: permissions ?? this.permissions,
       status: status ?? this.status,
+      isAdmin: isAdmin ?? this.isAdmin,
       user: user ?? this.user,
       tenant: tenant ?? this.tenant);
   }
@@ -129,6 +138,7 @@ class UserAccess extends amplify_core.Model {
   UserAccess copyWithModelFieldValues({
     ModelFieldValue<String?>? permissions,
     ModelFieldValue<bool?>? status,
+    ModelFieldValue<bool?>? isAdmin,
     ModelFieldValue<User?>? user,
     ModelFieldValue<Tenant?>? tenant
   }) {
@@ -136,6 +146,7 @@ class UserAccess extends amplify_core.Model {
       id: id,
       permissions: permissions == null ? this.permissions : permissions.value,
       status: status == null ? this.status : status.value,
+      isAdmin: isAdmin == null ? this.isAdmin : isAdmin.value,
       user: user == null ? this.user : user.value,
       tenant: tenant == null ? this.tenant : tenant.value
     );
@@ -145,6 +156,7 @@ class UserAccess extends amplify_core.Model {
     : id = json['id'],
       _permissions = json['permissions'],
       _status = json['status'],
+      _isAdmin = json['isAdmin'],
       _user = json['user'] != null
         ? json['user']['serializedData'] != null
           ? User.fromJson(new Map<String, dynamic>.from(json['user']['serializedData']))
@@ -159,13 +171,14 @@ class UserAccess extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'permissions': _permissions, 'status': _status, 'user': _user?.toJson(), 'tenant': _tenant?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'permissions': _permissions, 'status': _status, 'isAdmin': _isAdmin, 'user': _user?.toJson(), 'tenant': _tenant?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'permissions': _permissions,
     'status': _status,
+    'isAdmin': _isAdmin,
     'user': _user,
     'tenant': _tenant,
     'createdAt': _createdAt,
@@ -176,6 +189,7 @@ class UserAccess extends amplify_core.Model {
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final PERMISSIONS = amplify_core.QueryField(fieldName: "permissions");
   static final STATUS = amplify_core.QueryField(fieldName: "status");
+  static final ISADMIN = amplify_core.QueryField(fieldName: "isAdmin");
   static final USER = amplify_core.QueryField(
     fieldName: "user",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
@@ -212,6 +226,12 @@ class UserAccess extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: UserAccess.STATUS,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: UserAccess.ISADMIN,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
     ));

@@ -78,6 +78,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           tenant: tenant,
           permissions: permisions,
           status: true,
+          isAdmin: true,
         );
 
         final newUser = UserLocal(

@@ -131,30 +131,48 @@ bool saveGrades(BuildContext context) {
                   ),
                 ),
               
-              ElevatedButton(
-                onPressed: ()async{ 
-                  if ((tests.indexOf(currentTest.name) + 1) % tests.length == 0){
-                    if(saveGrades(context))
-                      {
-                        await ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
-                        ref.read(selectedStudentsProvider.notifier).clear();
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      }
-                    //ref.read(examProvider.notifier).disposeAll();
-                  }else{
-                    if(saveGrades(context))
-                    {
-                      ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) + 1) % tests.length]);
-                      for (var controller in controllers) {
-                        controller.clear();
-                        }
-                      }
-                    }             
-                },
-                child: const Icon(Icons.arrow_circle_right),
-              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 80),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      ),
+                      onPressed: (){}, 
+                      child: const Icon(Icons.arrow_circle_left)
+                      ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      ),
+                      onPressed: ()async{ 
+                        if ((tests.indexOf(currentTest.name) + 1) % tests.length == 0){
+                          if(saveGrades(context))
+                            {
+                              await ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
+                              ref.read(selectedStudentsProvider.notifier).clear();
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            }
+                          //ref.read(examProvider.notifier).disposeAll();
+                        }else{
+                          if(saveGrades(context))
+                          {
+                            ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) + 1) % tests.length]);
+                            for (var controller in controllers) {
+                              controller.clear();
+                              }
+                            }
+                          }             
+                      },
+                      child: const Icon(Icons.arrow_circle_right),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),

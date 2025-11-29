@@ -56,8 +56,10 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
           child: ListView(
             children: [
-              ElevatedButton.icon(
-                icon: const Icon(Icons.lock_clock),
+              if(userAsync.permissions["addProfesor"]!)...
+              [
+                ElevatedButton.icon(
+                icon: const Icon(Icons.school_outlined),
                 label: const Text('Permisos y Profesores'),
                 onPressed: () {
                   Navigator.push(
@@ -74,9 +76,10 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
-              ),
+              ],
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.qr_code),

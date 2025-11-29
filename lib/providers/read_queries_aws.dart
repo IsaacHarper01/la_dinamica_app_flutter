@@ -610,6 +610,7 @@ class DataStoreReadService {
           tenant: tenant,
           permissions: permissions,
           status: true,
+          isAdmin: false,
           );
           await Amplify.DataStore.save(userAccess);
           safePrint('✅ Usuario con ID ${user.user_id} ha sido dado acceso al tenant con ID ${tenant.tenant_id} con permisos: $permissions');

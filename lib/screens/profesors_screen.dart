@@ -38,6 +38,7 @@ class _nameState extends State<ProfesorsScreen> {
   Widget build(BuildContext context) {
     final awsDelete = DataStoreDeleteService(); 
     return Scaffold(
+      appBar: AppBar(title: Center(child: const Text("Profesores"))),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 10.0),
         child: Center(
