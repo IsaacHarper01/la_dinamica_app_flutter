@@ -50,6 +50,13 @@
       "service": "Cognito"
     }
   },
+  "function": {
+    "bedrockLambda": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
   "storage": {
     "s3ladinamicaappstorage": {
       "dependsOn": [],

@@ -824,4 +824,51 @@ class DataStoreReadService {
       }
     } 
   
+  Future<List<ExamResults>> examAlreadyExistsByDate(String evaluation_id, String date) async {
+  final request = GraphQLRequest<String>(
+    document: '''
+      query CheckExamExists(\$evaluation_id: ID!, \$date: String!) {
+        listExamResults(
+          filter: {
+            evaluation_id: { eq: \$evaluation_id }
+            date: { eq: \$date }
+          }
+        ) {
+          items {
+            id
+            date
+            prof_id
+            tenant_id
+            grades
+            types
+            tscore
+            metric_names
+            higgerBetter
+            evaluation_id
+            evaluation{
+              id
+              name
+            }
+          }
+        }
+      }
+    ''',
+    variables: {
+      'evaluation_id': evaluation_id,
+      'date': date, 
+    },
+  );
+
+  final response = await Amplify.API.query(request: request).response;
+  if(response.data == null){
+    return [];
+  }
+  final data = jsonDecode(response.data!);
+  final items = data['listExamResults']['items'] as List;
+
+  // Convert each item to your ExamResults model
+  return items.map((item) => ExamResults.fromJson(item)).toList();
+}
+
+
 }
