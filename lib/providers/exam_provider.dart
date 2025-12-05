@@ -10,6 +10,8 @@ import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'dart:math';
 
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+
 
 class ExamNotifier extends Notifier<ExamState> {
   @override
@@ -186,7 +188,14 @@ class ExamNotifier extends Notifier<ExamState> {
         metricNames: jsonEncode(state.metricNames),
         higgerBetter: jsonEncode(state.higgerBetter)
        );
-    uploadJoinResults(newGrades, tenantId, date);
+    await uploadJoinResults(newGrades, tenantId, date);
+    await updateLastExamDate();
+  }
+
+  Future<void> updateLastExamDate()async{
+    final date = ref.watch(dateProvider);
+    final newEval = state.eval.copyWith(lastDate: TemporalDate(DateTime.parse(date)));
+    await Amplify.DataStore.save(newEval);
   }
 
   Future<void> uploadJoinResults(ExamResults result, String tenaniId, String date)async{
@@ -194,6 +203,12 @@ class ExamNotifier extends Notifier<ExamState> {
     for(var student in state.students){
       aws.saveJoinResult(tenaniId: tenaniId, date: date, student: student, result: result);
     }
+  }
+
+  Future<void> combineResults(String tenaniId, String date, String profId, Evaluations eval)async{
+    final aws = DataStoreReadService();
+    final data = await aws.examAlreadyExistsByDate(eval.id, eval.lastDate.toString());
+    
   }
 
 }

@@ -44,9 +44,6 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
   }
 
   loadExamDetails() async {
-    // final date = ref.read(dateProvider);
-    // final aws = DataStoreReadService();
-    // final data = await aws.examAlreadyExistsByDate(widget.exam.id, date);
     
     for (var entry in widget.metrics) {
       if(entry.metric!=null)

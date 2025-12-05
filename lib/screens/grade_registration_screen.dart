@@ -140,36 +140,55 @@ bool saveGrades(BuildContext context) {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       ),
-                      onPressed: (){}, 
+                      onPressed: (){
+                        ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) - 1) % tests.length]);
+                      }, 
                       child: const Icon(Icons.arrow_circle_left)
                       ),
-                    ElevatedButton(
+                    if ((tests.indexOf(currentTest.name) + 1) % tests.length == 0) ...[
+                    Row(
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed:(){}, 
+                          label: Text('Combinar Resultados'),
+                          icon: Icon(Icons.merge_type)
+                          ),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                          ),
+                          onPressed: ()async{ 
+                              if(saveGrades(context))
+                                {
+                                  await ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
+                                  ref.read(selectedStudentsProvider.notifier).clear();
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                            },
+                          label: const Text('Guardar Calificaciones'),
+                          icon: const Icon(Icons.save_alt_outlined),
+                          ),
+                      ],
+                    )
+                    ] else ...[
+                      ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                       ),
-                      onPressed: ()async{ 
-                        if ((tests.indexOf(currentTest.name) + 1) % tests.length == 0){
-                          if(saveGrades(context))
-                            {
-                              await ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
-                              ref.read(selectedStudentsProvider.notifier).clear();
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              Navigator.pop(context);
+                      onPressed: (){ 
+                        if(saveGrades(context))
+                        {
+                          ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) + 1) % tests.length]);
+                          for (var controller in controllers) {
+                            controller.clear();
                             }
-                          //ref.read(examProvider.notifier).disposeAll();
-                        }else{
-                          if(saveGrades(context))
-                          {
-                            ref.read(examProvider.notifier).setActualState(metrics[(tests.indexOf(currentTest.name) + 1) % tests.length]);
-                            for (var controller in controllers) {
-                              controller.clear();
-                              }
-                            }
-                          }             
+                          }
                       },
                       child: const Icon(Icons.arrow_circle_right),
-                    ),
+                      ),
+                    ]
                   ],
                 ),
               )

@@ -290,7 +290,7 @@ class ExamResults extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.indexes = [
-      amplify_core.ModelIndex(fields: const ["evaluation_id"], name: "examResultsByEvaluation_id")
+      amplify_core.ModelIndex(fields: const ["evaluation_id", "date"], name: "byEvaluationDate")
     ];
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());

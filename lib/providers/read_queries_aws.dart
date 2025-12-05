@@ -833,6 +833,7 @@ class DataStoreReadService {
             evaluation_id: { eq: \$evaluation_id }
             date: { eq: \$date }
           }
+
         ) {
           items {
             id
@@ -848,6 +849,7 @@ class DataStoreReadService {
             evaluation{
               id
               name
+              lastDate
             }
           }
         }
@@ -855,11 +857,12 @@ class DataStoreReadService {
     ''',
     variables: {
       'evaluation_id': evaluation_id,
-      'date': date, 
+      'date': date,
     },
   );
 
   final response = await Amplify.API.query(request: request).response;
+
   if(response.data == null){
     return [];
   }

@@ -30,6 +30,7 @@ class Evaluations extends amplify_core.Model {
   final String id;
   final String? _name;
   final String? _tenant_id;
+  final amplify_core.TemporalDate? _lastDate;
   final List<JoinMetric>? _who;
   final List<ExamResults>? _examresults;
   final amplify_core.TemporalDateTime? _createdAt;
@@ -56,6 +57,10 @@ class Evaluations extends amplify_core.Model {
     return _tenant_id;
   }
   
+  amplify_core.TemporalDate? get lastDate {
+    return _lastDate;
+  }
+  
   List<JoinMetric>? get who {
     return _who;
   }
@@ -72,13 +77,14 @@ class Evaluations extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Evaluations._internal({required this.id, name, tenant_id, who, examresults, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _who = who, _examresults = examresults, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Evaluations._internal({required this.id, name, tenant_id, lastDate, who, examresults, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _lastDate = lastDate, _who = who, _examresults = examresults, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Evaluations({String? id, String? name, String? tenant_id, List<JoinMetric>? who, List<ExamResults>? examresults}) {
+  factory Evaluations({String? id, String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, List<JoinMetric>? who, List<ExamResults>? examresults}) {
     return Evaluations._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
       tenant_id: tenant_id,
+      lastDate: lastDate,
       who: who != null ? List<JoinMetric>.unmodifiable(who) : who,
       examresults: examresults != null ? List<ExamResults>.unmodifiable(examresults) : examresults);
   }
@@ -94,6 +100,7 @@ class Evaluations extends amplify_core.Model {
       id == other.id &&
       _name == other._name &&
       _tenant_id == other._tenant_id &&
+      _lastDate == other._lastDate &&
       DeepCollectionEquality().equals(_who, other._who) &&
       DeepCollectionEquality().equals(_examresults, other._examresults);
   }
@@ -109,6 +116,7 @@ class Evaluations extends amplify_core.Model {
     buffer.write("id=" + "$id" + ", ");
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
+    buffer.write("lastDate=" + (_lastDate != null ? _lastDate!.format() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -116,11 +124,12 @@ class Evaluations extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Evaluations copyWith({String? name, String? tenant_id, List<JoinMetric>? who, List<ExamResults>? examresults}) {
+  Evaluations copyWith({String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, List<JoinMetric>? who, List<ExamResults>? examresults}) {
     return Evaluations._internal(
       id: id,
       name: name ?? this.name,
       tenant_id: tenant_id ?? this.tenant_id,
+      lastDate: lastDate ?? this.lastDate,
       who: who ?? this.who,
       examresults: examresults ?? this.examresults);
   }
@@ -128,6 +137,7 @@ class Evaluations extends amplify_core.Model {
   Evaluations copyWithModelFieldValues({
     ModelFieldValue<String?>? name,
     ModelFieldValue<String?>? tenant_id,
+    ModelFieldValue<amplify_core.TemporalDate?>? lastDate,
     ModelFieldValue<List<JoinMetric>?>? who,
     ModelFieldValue<List<ExamResults>?>? examresults
   }) {
@@ -135,6 +145,7 @@ class Evaluations extends amplify_core.Model {
       id: id,
       name: name == null ? this.name : name.value,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
+      lastDate: lastDate == null ? this.lastDate : lastDate.value,
       who: who == null ? this.who : who.value,
       examresults: examresults == null ? this.examresults : examresults.value
     );
@@ -144,6 +155,7 @@ class Evaluations extends amplify_core.Model {
     : id = json['id'],
       _name = json['name'],
       _tenant_id = json['tenant_id'],
+      _lastDate = json['lastDate'] != null ? amplify_core.TemporalDate.fromString(json['lastDate']) : null,
       _who = json['who']  is Map
         ? (json['who']['items'] is List
           ? (json['who']['items'] as List)
@@ -174,13 +186,14 @@ class Evaluations extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'who': _who?.map((JoinMetric? e) => e?.toJson()).toList(), 'examresults': _examresults?.map((ExamResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'lastDate': _lastDate?.format(), 'who': _who?.map((JoinMetric? e) => e?.toJson()).toList(), 'examresults': _examresults?.map((ExamResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'name': _name,
     'tenant_id': _tenant_id,
+    'lastDate': _lastDate,
     'who': _who,
     'examresults': _examresults,
     'createdAt': _createdAt,
@@ -191,6 +204,7 @@ class Evaluations extends amplify_core.Model {
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
+  static final LASTDATE = amplify_core.QueryField(fieldName: "lastDate");
   static final WHO = amplify_core.QueryField(
     fieldName: "who",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JoinMetric'));
@@ -224,6 +238,12 @@ class Evaluations extends amplify_core.Model {
       key: Evaluations.TENANT_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Evaluations.LASTDATE,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(

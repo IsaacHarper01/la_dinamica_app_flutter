@@ -16,6 +16,7 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String
   tenant_id: String
+  lastDate: AWSDate
 
   who: [JoinMetric] @hasMany(fields: ["id"])
   examresults: [ExamResults] @hasMany(fields: ["id"])
@@ -149,7 +150,7 @@ type ExamResults @model @auth(rules: [{allow: public, operations: [create, read,
   tscore: AWSJSON
   metric_names: AWSJSON
   higgerBetter: AWSJSON
-  evaluation_id: ID! @index
+  evaluation_id: ID! @index(name: "byEvaluationDate", sortKeyFields: ["date"])
 
   evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
   joinresult: [JoinResults] @hasMany(fields: ["id"])
