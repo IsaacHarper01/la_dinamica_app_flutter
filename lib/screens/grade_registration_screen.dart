@@ -149,7 +149,15 @@ bool saveGrades(BuildContext context) {
                     Row(
                       children: [
                         ElevatedButton.icon(
-                          onPressed:(){}, 
+                          onPressed:()async{
+                           if(saveGrades(context)){
+                            await ref.read(examProvider.notifier).updateEvalResults(user!.tenant.tenant_id, user!.userId);
+                            // ref.read(selectedStudentsProvider.notifier).clear();
+                            // Navigator.pop(context);
+                            // Navigator.pop(context);
+                            // Navigator.pop(context);
+                           }
+                          }, 
                           label: Text('Combinar Resultados'),
                           icon: Icon(Icons.merge_type)
                           ),

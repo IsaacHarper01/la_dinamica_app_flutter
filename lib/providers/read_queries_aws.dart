@@ -824,7 +824,7 @@ class DataStoreReadService {
       }
     } 
   
-  Future<List<ExamResults>> examAlreadyExistsByDate(String evaluation_id, String date) async {
+  Future<List<ExamResults>> getLastEvaluationResult(String evaluation_id, String date) async {
   final request = GraphQLRequest<String>(
     document: '''
       query CheckExamExists(\$evaluation_id: ID!, \$date: String!) {

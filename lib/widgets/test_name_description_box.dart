@@ -15,7 +15,7 @@ class TestInfoBox extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
     final actualTest = ref.watch(examProvider).actualState;
-    final description = ref.watch(examProvider).descriptions[actualTest];
+    final description = ref.watch(examProvider).descriptions[actualTest!.name];
 
     return Container(
       width: size.width * 0.9,

@@ -135,17 +135,30 @@ class ExamNotifier extends Notifier<ExamState> {
     setMetricNames(newMetricNames);
   }
 
-  Map<String, Map<String, double>> adaptGrades(Map<Metric, Map<String, double>> grades){
+  Map<String, Map<String, double>> adaptGrades(Map<Metric, Map<String, double>> grades){// recive Map<Metric, Map<StudentID, Grade>>
     Map<String, Map<String, double>> result = {};
     for(var metric in grades.keys){
       result[metric.id] = grades[metric]!;
     }
-    return result;
+    return result;// return Map<MetricID, Map<StudentID, double>>
+  }
+
+  Map<Metric, Map<String, double>> readaptGrades(Map<String, Map<String, double>> grades){// recive Map<MetricID, Map<StudentID, Grade>>
+    Map<Metric, Map<String, double>> result = {};
+    final metrics = state.metrics;
+    Map<String, Metric> metyricById = {for(var metric in metrics) metric.id : metric};
+    for(var metricId in grades.keys){
+      final metric = metyricById[metricId];
+      if(metric != null){
+        result[metric] = grades[metricId]!;
+      }
+    }
+    return result;// return Map<Metric, Map<StudentID, double>>
   }
 
   Map<Metric, Map<String, double>> calculateTscore(Map<Metric, Map<String, double>> grades){ //consider the entry like Map<Metric, Map<Student, Grade>>
     Map<Metric, Map<String, double>> tscores = {};
-    //Map<Metric, Map<String, double>> zscores = {};
+
     for(var metric in grades.keys){
       final metricGrades = grades[metric]!.values.toList();
       final mean = metricGrades.reduce((a,b)=>a+b)/metricGrades.length;
@@ -182,13 +195,13 @@ class ExamNotifier extends Notifier<ExamState> {
         date: DateTime.parse(date), 
         profName: profId,
         tenantID: tenantId,
-        grades: jsonEncode(adaptGrades(state.grades)),
+        grades: jsonEncode(adaptGrades(state.grades)), // Model in amplify should recive (Map<MetricID, Map<StudentID, Grade>>)
         types: jsonEncode(state.types),
         tscore: jsonEncode(adaptGrades(calculateTscore(state.grades))),
         metricNames: jsonEncode(state.metricNames),
         higgerBetter: jsonEncode(state.higgerBetter)
        );
-    await uploadJoinResults(newGrades, tenantId, date);
+    await uploadJoinResults(newGrades, tenantId, date, state.students);
     await updateLastExamDate();
   }
 
@@ -198,17 +211,78 @@ class ExamNotifier extends Notifier<ExamState> {
     await Amplify.DataStore.save(newEval);
   }
 
-  Future<void> uploadJoinResults(ExamResults result, String tenaniId, String date)async{
+  Future<void> uploadJoinResults(ExamResults result, String tenaniId, String date, List<Student> students)async{
     final aws = DataStoreService();
-    for(var student in state.students){
+    for(var student in students){
       aws.saveJoinResult(tenaniId: tenaniId, date: date, student: student, result: result);
     }
   }
 
-  Future<void> combineResults(String tenaniId, String date, String profId, Evaluations eval)async{
-    final aws = DataStoreReadService();
-    final data = await aws.examAlreadyExistsByDate(eval.id, eval.lastDate.toString());
+  Map<Metric, Map<String, double>> mixResults(Map<String, dynamic> lastData, Map<String, Map<String, double>> actualData){
     
+    Map<String, Metric> metyricById = {for(var metric in state.metrics) metric.id : metric};
+
+    for(var metricId in lastData.keys){
+      Map<String, dynamic> lastGrades = lastData[metricId] as Map<String, dynamic>;
+      for(var studentId in actualData[metricId]!.keys){
+          lastGrades[studentId] = actualData[metricId]![studentId];
+      }
+      lastData[metricId] = lastGrades;
+    }
+
+    Map<Metric, Map<String, double>> finalResult =
+    lastData.map((metricId, gradesMap) {
+        return MapEntry(
+          metyricById[metricId]!,
+          (gradesMap as Map<String, dynamic>).map((studentId, value) =>
+              MapEntry(studentId, (value as num).toDouble())),
+        );
+      });
+    return finalResult;//Map<MetricID, Map<StudentID, Grade>>
+  }
+
+  List<Student> getStudentsWithoutGrades(Map<String, dynamic> lastDataDecoded){
+    List<Student> studentsWithoutGrades = [];
+    final List<Student> actualStudents = state.students;
+    final List<String> studentsWithGrades = lastDataDecoded[state.metrics.first.id].keys.toList();
+
+    for(var student in actualStudents){
+      if(!studentsWithGrades.contains(student.id)){
+        studentsWithoutGrades.add(student);
+      }
+    }
+    
+    return studentsWithoutGrades;
+  }
+
+  Future<void> updateEvalResults(String tenaniId, String profId)async{
+
+    final actualEval = state.eval;
+    final aws = DataStoreReadService();
+    final date = ref.watch(dateProvider);
+    final lastDatalist = await aws.getLastEvaluationResult(actualEval.id, actualEval.lastDate.toString());
+    final lastDataDecoded = jsonDecode(lastDatalist.first.grades!) as Map<String, dynamic>;
+
+    final mixedGrades = mixResults(lastDataDecoded, adaptGrades(state.grades));
+
+    safePrint("ACTUAL GRADES: ${adaptGrades(state.grades)}");
+    safePrint("LAST GRADES: ${lastDatalist.first.grades}");
+    safePrint("MIXED GRADES: $mixedGrades");
+
+    final newTscores = calculateTscore(mixedGrades);
+    final newResult = lastDatalist.first.copyWith(
+      grades: jsonEncode(adaptGrades(mixedGrades)),
+      tscore: jsonEncode(adaptGrades(newTscores)),
+    );
+
+    Amplify.DataStore.save(newResult);
+
+    final newStudentsWithoutGrades = getStudentsWithoutGrades(lastDataDecoded);
+    safePrint("STUDENTS WITHOUT GRADES: $newStudentsWithoutGrades");
+    if(newStudentsWithoutGrades.isNotEmpty){
+      await uploadJoinResults(newResult, tenaniId, date, newStudentsWithoutGrades);
+    }
+    await updateLastExamDate();
   }
 
 }
