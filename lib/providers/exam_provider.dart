@@ -183,7 +183,7 @@ class ExamNotifier extends Notifier<ExamState> {
 
   double tscore(double value){
     final tscore = (50+(25*value));
-    return tscore;
+    return double.parse(tscore.toStringAsFixed(2));
   }
 
   Future<void> uploadGrades(String tenantId, String profId)async{
@@ -244,8 +244,9 @@ class ExamNotifier extends Notifier<ExamState> {
   List<Student> getStudentsWithoutGrades(Map<String, dynamic> lastDataDecoded){
     List<Student> studentsWithoutGrades = [];
     final List<Student> actualStudents = state.students;
+    safePrint("Students in exam: $actualStudents");
     final List<String> studentsWithGrades = lastDataDecoded[state.metrics.first.id].keys.toList();
-
+    safePrint("Students with grades: $studentsWithGrades");
     for(var student in actualStudents){
       if(!studentsWithGrades.contains(student.id)){
         studentsWithoutGrades.add(student);
@@ -263,28 +264,25 @@ class ExamNotifier extends Notifier<ExamState> {
     final lastDatalist = await aws.getLastEvaluationResult(actualEval.id, actualEval.lastDate.toString());
     final lastDataDecoded = jsonDecode(lastDatalist.first.grades!) as Map<String, dynamic>;
 
+    final newStudentsWithoutGrades = getStudentsWithoutGrades(lastDataDecoded);
+    
     final mixedGrades = mixResults(lastDataDecoded, adaptGrades(state.grades));
-
-    safePrint("ACTUAL GRADES: ${adaptGrades(state.grades)}");
-    safePrint("LAST GRADES: ${lastDatalist.first.grades}");
-    safePrint("MIXED GRADES: $mixedGrades");
 
     final newTscores = calculateTscore(mixedGrades);
     final newResult = lastDatalist.first.copyWith(
+      date: TemporalDate(DateTime.parse(date)),
       grades: jsonEncode(adaptGrades(mixedGrades)),
       tscore: jsonEncode(adaptGrades(newTscores)),
     );
+    // safePrint("NEW RESULT GRADES: $newTscores");
+    await Amplify.DataStore.save(newResult);
 
-    Amplify.DataStore.save(newResult);
-
-    final newStudentsWithoutGrades = getStudentsWithoutGrades(lastDataDecoded);
-    safePrint("STUDENTS WITHOUT GRADES: $newStudentsWithoutGrades");
+    
     if(newStudentsWithoutGrades.isNotEmpty){
       await uploadJoinResults(newResult, tenaniId, date, newStudentsWithoutGrades);
     }
     await updateLastExamDate();
   }
-
 }
 
 final examProvider = NotifierProvider<ExamNotifier, ExamState>(() => ExamNotifier());

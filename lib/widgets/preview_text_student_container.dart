@@ -56,9 +56,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
       
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
+      child: Container(
         height: screenHeight * 0.07,
         width: screenWidth,
         decoration: BoxDecoration(
@@ -149,6 +147,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
             Expanded(
               flex: 2,
               child: TextField(
+                autofocus: false,
                 controller: widget.controller,
                 decoration: InputDecoration(labelText: textDecorator,border: OutlineInputBorder(),),
               ),

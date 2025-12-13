@@ -1,4 +1,3 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -58,7 +57,7 @@ bool saveGrades(BuildContext context) {
     final examState = ref.read(examProvider);
     final students = examState.students;
     final currentTest = examState.actualState;
-    safePrint("ACTUAL TEST $currentTest");
+
     for (var i = 0; i < students.length; i++) {
       final grade = controllers[i].text.isNotEmpty ? controllers[i].text  : "";
       if(ref.read(examProvider.notifier).checkDataformat(currentTest!.type!, grade))
@@ -92,7 +91,7 @@ bool saveGrades(BuildContext context) {
     final length = students.length;
     
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: 
         SingleChildScrollView(
@@ -152,10 +151,10 @@ bool saveGrades(BuildContext context) {
                           onPressed:()async{
                            if(saveGrades(context)){
                             await ref.read(examProvider.notifier).updateEvalResults(user!.tenant.tenant_id, user!.userId);
-                            // ref.read(selectedStudentsProvider.notifier).clear();
-                            // Navigator.pop(context);
-                            // Navigator.pop(context);
-                            // Navigator.pop(context);
+                            ref.read(selectedStudentsProvider.notifier).clear();
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
                            }
                           }, 
                           label: Text('Combinar Resultados'),
