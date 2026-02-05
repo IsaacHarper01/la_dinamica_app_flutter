@@ -61,6 +61,7 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   client_id: String
   
   examresults: [JoinResults] @hasMany(fields: ["id"])
+  groups: [JoinGroups] @hasMany(fields: ["id"])
 }
 
 
@@ -166,4 +167,24 @@ type JoinResults @model @auth(rules: [{allow: public}]) {
 
   student: Student @belongsTo(fields: ["student_id"])
   result: ExamResults @belongsTo(fields: ["result_id"])
+}
+
+type JoinGroups @model @auth(rules: [{allow: public}]) {
+  id: ID!
+
+  student_id: ID! @index
+  group_id: ID! @index
+  tenant_id: ID
+
+  student: Student @belongsTo(fields: ["student_id"])
+  group: Groups @belongsTo(fields: ["group_id"])
+}
+
+type Groups @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  name: String
+  description: String
+  tenant_id: ID
+
+  joingroup: [JoinGroups] @hasMany(fields: ["id"])
 }
