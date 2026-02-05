@@ -181,7 +181,6 @@ void initState(){
                                       onPressed: ()async{
                                         final Barcode? data = await scannerQR(context);
                                          if(data!=null){
-                                          safePrint("CODE: ${data.format}");
                                           if(data.rawValue != null){
                                             _controllers[index].text = data.rawValue!;
                                           }

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
@@ -873,5 +875,25 @@ class DataStoreReadService {
   return items.map((item) => ExamResults.fromJson(item)).toList();
 }
 
-
+  Future<String> apiAssistant()async{
+    final session = await Amplify.Auth.fetchAuthSession();
+    if (session is CognitoAuthSession) {
+      final tokensResult = session.userPoolTokensResult;
+      final accessToken = tokensResult.value.accessToken.raw;
+      
+      final response = await http.post(
+        Uri.parse("https://k424jq6fj1.execute-api.us-east-1.amazonaws.com/laDinamicaApp/generate"),
+        headers: {
+          'Content-Type':'application/json',
+          'Authorization':'Bearer $accessToken'
+        },
+        body: jsonEncode("datos de prueba"),
+      );
+      safePrint(response.statusCode);
+      safePrint(response.body);
+      return "Datos obtenidos correctamente"; 
+      }else{
+        return "Fallo al obtener datos";
+      }
+    }
 }

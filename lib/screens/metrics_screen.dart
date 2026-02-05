@@ -5,6 +5,7 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
+import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/dropown_button.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/buttons_menu_metrics.dart';
@@ -44,6 +45,13 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
     setState(() {
       user = _user;
     });
+  }
+
+  Future<String> getAiRutine()async{
+    final response = "";
+    final awsSession = DataStoreReadService();
+    awsSession.apiAssistant();
+    return response;
   }
 
   @override
@@ -213,7 +221,19 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                       child: RadarChartAllExams(studentId: widget.studentId),
                       ),
                   
-                  )
+                  ),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: ElevatedButton.icon(
+                      onPressed:()=>getAiRutine(),
+                      label: const Text("Generar Rutina"),
+                      icon: const Icon(Icons.auto_fix_high),
+                      style: ElevatedButton.styleFrom(
+                       minimumSize: const Size.fromHeight(50),
+                        ),
+                      ),
+                    )
                 ],
               ),
             )

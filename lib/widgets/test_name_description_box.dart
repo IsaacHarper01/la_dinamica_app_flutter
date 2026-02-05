@@ -25,7 +25,7 @@ class TestInfoBox extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 6,
@@ -33,32 +33,30 @@ class TestInfoBox extends ConsumerWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              actualTest!.name,
-              style: GoogleFonts.gochiHand(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+                actualTest.name,
+                style: GoogleFonts.gochiHand(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Text(
+            const SizedBox(height: 8),
+            Text(
               description ?? "",
               style: GoogleFonts.montserrat(
                 fontSize: 16,
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 3,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

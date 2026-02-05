@@ -11,6 +11,7 @@ import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
+import 'package:la_dinamica_app/screens/groups.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 import 'package:la_dinamica_app/widgets/students_number_home.dart';
@@ -174,24 +175,45 @@ class ScrollViewContent extends ConsumerWidget {
             SizedBox(height: screenHeight * 0.01),
             Padding(
               padding: EdgeInsets.only(right: screenHeight * 0.01),
-              child: Row(
-                children: [
-                  const Spacer(),
-                  FilledButton.icon(
-                    onPressed: onAddStudent,
-                    label: const Text(
-                      'Agregar alumno',
-                      style: TextStyle(color: Colors.white),
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  children: [
+                    FilledButton.icon(
+                      onPressed: (){
+                        Navigator.push(context, 
+                          MaterialPageRoute(builder: (context)=> const GroupsPage())
+                        );
+                      },
+                      label: const Text(
+                        'Grupos',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      icon: const Icon(
+                        Icons.group,
+                        color: Colors.white,
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                      ),
                     ),
-                    icon: const Icon(
-                      Icons.group_add_rounded,
-                      color: Colors.white,
+                    const Spacer(),
+                    FilledButton.icon(
+                      onPressed: onAddStudent,
+                      label: const Text(
+                        'Agregar alumno',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      icon: const Icon(
+                        Icons.group_add_rounded,
+                        color: Colors.white,
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                      ),
                     ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(colorList[3]),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             SizedBox(height: screenHeight * 0.01),

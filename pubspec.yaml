@@ -39,6 +39,7 @@ dependencies:
   time_range_picker: ^2.0.0
   aws_common: ^0.7.8
   flutter_native_splash: ^2.4.6
+  http: ^1.6.0
 
 
 dev_dependencies:

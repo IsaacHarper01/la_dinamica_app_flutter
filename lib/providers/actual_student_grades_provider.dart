@@ -15,7 +15,7 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
   final Ref ref;
   final String studentId;
 
-  GradeNotifier(this.ref, this.studentId) : super(const AsyncValue.loading()) {
+  GradeNotifier(this.ref, this.studentId) : super(const AsyncValue.loading()) {  //by defafult load last exam
     loadExamResults(studentId,'last',null,null);
   }
 
@@ -54,7 +54,9 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
     
     if(joinResults.isNotEmpty)
     {
+      
       for(var exam in joinResults) {
+       
         results.add(exam.result!);
         final evalName = exam.result!.evaluation!.name!;
         final Map<String, double> auxGrades = adaptGradesperStudent(exam.result!)[studentId]!;

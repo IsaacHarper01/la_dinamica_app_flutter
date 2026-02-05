@@ -20,6 +20,9 @@ import 'config/provider/theme_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _configureAmplify(); // ✅ Se asegura que se configure una sola vez
+  // await Amplify.DataStore.stop();
+  // await Amplify.DataStore.clear();
+  // await Amplify.DataStore.start();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -33,9 +36,9 @@ Future<void> _configureAmplify() async {
     try {
       await Amplify.addPlugins([datastorePlugin, apiPlugin, storage, auth]);
       await Amplify.configure(amplifyconfig);
-      // await Amplify.DataStore.stop();
-      // await Amplify.DataStore.clear();
-      // await Amplify.DataStore.start();
+      // 
+      
+      //
       safePrint('✅ Amplify configurado correctamente');
     } on AmplifyAlreadyConfiguredException {
       safePrint('⚠️ Amplify ya estaba configurado');
