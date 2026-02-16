@@ -332,4 +332,30 @@ class DataStoreService {
       Amplify.DataStore.save(newSale);
   }
 
+  Future<Groups> saveGroup({
+    required String name,
+    required String tenantId,
+    required String description,
+  })async{
+    final newGroup = Groups(
+      name: name,
+      tenant_id: tenantId,
+      description: description
+    );
+    Amplify.DataStore.save(newGroup);
+    return newGroup;
+  }
+
+  Future<void> saveJoinGroup({
+    required Student student,
+    required Groups group,
+    required String tenantId
+  })async{
+    final newJoinGroup = JoinGroups(
+      tenant_id: tenantId,
+      student: student,
+      group: group
+    );
+    Amplify.DataStore.save(newJoinGroup);
+  }
 }

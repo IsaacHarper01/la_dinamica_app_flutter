@@ -6,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/widgets/average_widget.dart';
-import 'package:la_dinamica_app/widgets/days_chart_widget.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/average_widget.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/days_chart_widget.dart';
 
 class LineChartWidget extends ConsumerWidget {
   final DateTime startDate;

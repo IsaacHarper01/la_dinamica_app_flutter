@@ -67,8 +67,9 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
           final indexList = List.generate(students.length, (index) => index);
 
           return ScrollViewContent(
+            students: students,
             screenHeight: screenHeight,
-            students: names,
+            studentNames: names,
             numAlumnos: students.length,
             indexList: indexList,
             ids: ids,
@@ -95,8 +96,9 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
 class ScrollViewContent extends ConsumerWidget {
   const ScrollViewContent({
     super.key,
-    required this.screenHeight,
     required this.students,
+    required this.screenHeight,
+    required this.studentNames,
     required this.numAlumnos,
     required this.indexList,
     required this.ids,
@@ -105,9 +107,9 @@ class ScrollViewContent extends ConsumerWidget {
     required this.user,
     required this.date,
   });
-
+  final List<Student> students;
   final double screenHeight;
-  final List<dynamic> students;
+  final List<dynamic> studentNames;
   final List<dynamic> ids;
   final List<dynamic> images;
   final int numAlumnos;
@@ -182,7 +184,7 @@ class ScrollViewContent extends ConsumerWidget {
                     FilledButton.icon(
                       onPressed: (){
                         Navigator.push(context, 
-                          MaterialPageRoute(builder: (context)=> const GroupsPage())
+                          MaterialPageRoute(builder: (context)=> GroupsPage(allStudents: students, screenHeight: screenHeight,))
                         );
                       },
                       label: const Text(
@@ -240,7 +242,7 @@ class ScrollViewContent extends ConsumerWidget {
                         if (direction == DismissDirection.startToEnd) {
                           ref
                               .read(studentsProvider.notifier)
-                              .insertAttendance(ids[i], students[i], date);
+                              .insertAttendance(ids[i], studentNames[i], date);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Asistencia Registrada'),
@@ -261,7 +263,7 @@ class ScrollViewContent extends ConsumerWidget {
                             MaterialPageRoute(
                               builder:
                                   (context) => StudentDetailScreen(
-                                    name: students[i],
+                                    name: studentNames[i],
                                     id: ids[i],
                                     image: images[i],
                                   ),
@@ -270,7 +272,7 @@ class ScrollViewContent extends ConsumerWidget {
                         },
                         splashColor: colorList[6],
                         child: PreviewStudentContainerReduce(
-                          name: students[i],
+                          name: studentNames[i],
                           id: ids[i],
                           image: images[i],
                           backgroundColor:
