@@ -5,27 +5,34 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/add_students_to_gruop_provider.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 
-class StudentsListWidget extends ConsumerStatefulWidget {
+class StudentsByGroupListWidget extends ConsumerStatefulWidget {
   final List<Student> allstudents;
+  final List<Student> filterStudents;
+  final bool showAll;
   final double screenHeight;
 
-  const StudentsListWidget({
+  const StudentsByGroupListWidget({
     super.key,
     required this.allstudents,
+    required this.filterStudents,
+    required this.showAll,
     required this.screenHeight,
     });
 
   @override
-  ConsumerState<StudentsListWidget> createState() => _StudentsListWidgetState();
+  ConsumerState<StudentsByGroupListWidget> createState() => _StudentsListWidgetState();
 }
 
-class _StudentsListWidgetState extends ConsumerState<StudentsListWidget> {
+class _StudentsListWidgetState extends ConsumerState<StudentsByGroupListWidget> {
+  
   
   @override
   Widget build(BuildContext context) {
-    final studentsinGroup = ref.watch(groupStudentsProvider);
-    final indexList = List.generate(widget.allstudents.length, (index) => index);
-    final ids = widget.allstudents.map((g) => g.user_id).toList();
+    List<Student> showedStudents = widget.showAll ? widget.allstudents : widget.filterStudents;
+
+    final indexList = List.generate(showedStudents.length, (index) => index);
+    final ids = showedStudents.map((g) => g.user_id).toList();
+    
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -63,15 +70,16 @@ class _StudentsListWidgetState extends ConsumerState<StudentsListWidget> {
                         ),
                         confirmDismiss: (direction) async {
                           if (direction == DismissDirection.startToEnd) {
-                            ref.read(groupStudentsProvider.notifier).add(widget.allstudents[i]);
+                            ref.read(groupStudentsProvider.notifier).add(showedStudents[i]);
                             ScaffoldMessenger.of(context).showSnackBar(
+                              snackBarAnimationStyle: AnimationStyle(duration: Duration(milliseconds: 500)),
                               const SnackBar(
                                 content: Text('Alumno agregado correctamente al grupo'),
                                 backgroundColor: Colors.green,
                               ),
                             );
                           } else {
-                            ref.read(groupStudentsProvider.notifier).remove(widget.allstudents[i]);
+                            ref.read(groupStudentsProvider.notifier).remove(showedStudents[i]);
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Alumno eliminado correctamente del grupo'),
@@ -81,17 +89,16 @@ class _StudentsListWidgetState extends ConsumerState<StudentsListWidget> {
                           }
                           return false;
                         },
-      
                         child: PreviewStudentContainerReduce(
-                            name: widget.allstudents[i].name!,
-                            id: widget.allstudents[i].user_id!,
-                            image: widget.allstudents[i].image!,
+                            name: showedStudents[i].name!,
+                            id: showedStudents[i].user_id!,
+                            image: showedStudents[i].image!,
                             backgroundColor:
-                                studentsinGroup.contains(widget.allstudents[i])
+                                widget.filterStudents.contains(showedStudents[i])
                                     ? Colors.green.withAlpha(20)
                                     : Colors.transparent,
                             trailingIcon:
-                                studentsinGroup.contains(widget.allstudents[i])
+                                widget.filterStudents.contains(showedStudents[i])
                                     ? const Icon(
                                       Icons.check_circle,
                                       color: Colors.green,

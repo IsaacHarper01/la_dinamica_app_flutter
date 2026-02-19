@@ -896,4 +896,39 @@ class DataStoreReadService {
         return "Fallo al obtener datos";
       }
     }
+
+  Future<String> generateRutineByGroup(String description)async{
+    final session = await Amplify.Auth.fetchAuthSession();
+    if (session is CognitoAuthSession) {
+      final tokensResult = session.userPoolTokensResult;
+      final accessToken = tokensResult.value.accessToken.raw;
+      
+      final response = await http.post(
+        Uri.parse("https://k424jq6fj1.execute-api.us-east-1.amazonaws.com/laDinamicaApp/generateByGroup"),
+        headers: {
+          'Content-Type':'application/json',
+          'Authorization':'Bearer $accessToken'
+        },
+        body: jsonEncode({"prompt":description}),
+      );
+      safePrint(response.statusCode);
+      return response.body; 
+      }else{
+        return "Fallo al obtener datos";
+      }
+  }
+
+  Future<List<JoinGroups>> getJoinGroups(String tenantId)async{
+    try {
+      final joinGroups = await Amplify.DataStore.query(
+        JoinGroups.classType, 
+        where: JoinGroups.TENANT_ID.eq(tenantId)
+        );
+      safePrint("Grupos obtenidos correctamente");
+      return joinGroups;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
 }

@@ -20,9 +20,9 @@ import 'config/provider/theme_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _configureAmplify(); // ✅ Se asegura que se configure una sola vez
-  // await Amplify.DataStore.stop();
-  // await Amplify.DataStore.clear();
-  // await Amplify.DataStore.start();
+  //await Amplify.DataStore.stop();
+  //await Amplify.DataStore.clear();
+  //await Amplify.DataStore.start();
   runApp(const ProviderScope(child: MyApp()));
 }
 
