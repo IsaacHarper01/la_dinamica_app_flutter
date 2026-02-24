@@ -9,6 +9,7 @@ import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/selected_group_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/edit_routine_screen.dart';
+import 'package:la_dinamica_app/widgets/group_description_box.dart';
 import 'package:la_dinamica_app/widgets/groups_screen/students_List_widget.dart';
 import 'package:la_dinamica_app/widgets/groups_screen/students_by_group_list.dart';
 
@@ -26,31 +27,12 @@ class GroupsPage extends ConsumerStatefulWidget {
 }
 
 class NameState extends ConsumerState<GroupsPage> {
-  Future<List<JoinGroups>>? joinGroups;
   UserLocal? user;
   bool newGruop = false;
   bool onEdit = false;
   TextEditingController groupName = TextEditingController();
   TextEditingController groupDescription = TextEditingController();
-  Map<String, Set<Student>> groupStudentsMap = {};
-  Map<String, String> groupStudentsDescriptionsMap = {};
-  Set<String> setGroups = {};
-  List<String> listGroups = [];
   bool showAllStudents = true;
-
-  @override
-  void initState() {
-    super.initState();
-    loadGroups();
-  }
-
-  void loadGroups()async{
-    final _user = await ref.read(userProvider.future);
-    setState(() {
-      user = _user;
-      joinGroups = DataStoreReadService().getJoinGroups(_user.tenant.tenant_id); 
-    });
-  }
 
   void setnewGroup(){
     setState(() {
@@ -65,15 +47,6 @@ class NameState extends ConsumerState<GroupsPage> {
     });
   }
 
-  void setMap(List<JoinGroups> joinGroups){
-    for(var member in joinGroups){
-      String groupName = member.group!.name!;
-      groupStudentsMap.putIfAbsent(groupName, ()=> <Student>{}).add(member.student!);
-      groupStudentsDescriptionsMap.putIfAbsent(groupName, ()=>member.group!.description!);
-      setGroups.add(groupName);
-    }
-    listGroups = setGroups.toList();
-  }
 
   void saveGroup(BuildContext context) async{
     final user = await ref.watch(userProvider.future); 
@@ -113,27 +86,18 @@ class NameState extends ConsumerState<GroupsPage> {
   
   @override
   Widget build(BuildContext context) {
-    String selectedGroup = ref.watch(selectedGroupProvider);
-    if (joinGroups == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    return FutureBuilder<List<JoinGroups>>(
-      future: joinGroups, 
-      builder: (BuildContext context, AsyncSnapshot<List<JoinGroups>> snapshot){
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-        setMap(snapshot.data!);
-        
+    final groupState = ref.watch(seletedGroupProvider);
+    return groupState.when(
+      error: (e,_)=>Text("Error $e"), 
+      loading: ()=>CircularProgressIndicator(),
+      data: (groupState){
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(title: Center(child: Text("Grupos"))),
             body: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(30.0),
+                  padding: EdgeInsets.all(20.0),
                   child: Row(
                     children: [
                       FilledButton.icon(
@@ -170,16 +134,16 @@ class NameState extends ConsumerState<GroupsPage> {
                   ),
                   DropdownButton<String>(
                     borderRadius: BorderRadius.circular(10),
-                    hint: Text(selectedGroup != "" ? selectedGroup:setGroups.first),
+                    hint: Text(groupState.actualGroup),
                     isExpanded: true,
-                    value: selectedGroup != "" ? selectedGroup:setGroups.first,
-                    items: setGroups.map((String option){
+                    value: groupState.actualGroup,
+                    items: groupState.setGroups.map((String option){
                       return DropdownMenuItem(
                         alignment: Alignment.center,
                         value: option,
                         child: Text(option));
                     }).toList(), 
-                  onChanged: (value) => ref.read(selectedGroupProvider.notifier).state = value!
+                  onChanged: (value) => ref.read(seletedGroupProvider.notifier).changeActualGroup(value!)
                   ),
                   if(newGruop)...[
                       Column(
@@ -240,13 +204,14 @@ class NameState extends ConsumerState<GroupsPage> {
                       ),
                       StudentsByGroupListWidget(
                         allstudents: widget.allStudents, 
-                        filterStudents: groupStudentsMap[selectedGroup != "" ? selectedGroup:setGroups.first]!.toList(), 
+                        filterStudents: groupState.filteredStudents, 
                         showAll: showAllStudents, 
                         screenHeight: widget.screenHeight),
+                      GroupDescriptionBox(groupName: groupState.actualGroup, description: groupState.groupDescriptions[groupState.actualGroup]!,),
                       Padding(
                         padding: EdgeInsets.all(16.0),
                         child: ElevatedButton.icon(
-                          onPressed:()=>generateRutine(context,groupStudentsDescriptionsMap[selectedGroup]!,selectedGroup),
+                          onPressed:()=>generateRutine(context,groupState.groupDescriptions[groupState.actualGroup]!,groupState.actualGroup),
                           label: const Text("Generar Rutina"),
                           icon: const Icon(Icons.auto_fix_high),
                           style: ElevatedButton.styleFrom(
@@ -254,13 +219,12 @@ class NameState extends ConsumerState<GroupsPage> {
                         ),
                       ),
                     )
-                    ]
+                  ]
               ],
             ),
           ),
         );
-        }
       }
-    );
+      );
   }
 }

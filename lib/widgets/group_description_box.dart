@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 // ConsumerWidget version
 class GroupDescriptionBox extends ConsumerWidget {
@@ -19,8 +18,8 @@ class GroupDescriptionBox extends ConsumerWidget {
     final size = MediaQuery.of(context).size;
 
     return Container(
-      width: size.width * 0.9,
-      height: size.height * 0.15,
+      width: size.width * 0.95,
+      height: size.height * 0.1,
       margin: const EdgeInsets.all(12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
