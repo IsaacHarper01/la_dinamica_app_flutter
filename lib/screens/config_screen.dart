@@ -8,10 +8,10 @@ import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_new_plan.dart';
 import 'package:la_dinamica_app/screens/profesors_screen.dart';
-import 'package:la_dinamica_app/widgets/section_card_widget.dart';
+import 'package:la_dinamica_app/widgets/config_page.dart/section_card_widget.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../widgets/theme_selector_widget.dart';
+import '../widgets/config_page.dart/theme_selector_widget.dart';
 
 class ConfigScreen extends ConsumerStatefulWidget {
   const ConfigScreen({super.key});

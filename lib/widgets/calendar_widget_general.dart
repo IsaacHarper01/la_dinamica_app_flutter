@@ -22,7 +22,7 @@ class CalendarButton extends ConsumerWidget {
 
         if (picked != null) {
           ref.read(dateProvider.notifier).state = picked.toString().split(' ')[0];
-          ref.read(studentsProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
+          ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
         }
       },
     );

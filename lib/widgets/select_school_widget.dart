@@ -45,7 +45,7 @@ class _SelectSchoolState extends ConsumerState<SelectSchoolWidget> {
                                   permissions: permissions,
                                   plan: access.tenant!.plan!,
                                 );
-                            ref.read(studentsProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
+                            ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
                             Navigator.pop(context);
                           },
                           child: Text(access.tenant!.name),

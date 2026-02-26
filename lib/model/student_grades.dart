@@ -59,7 +59,7 @@ class StudentGrades {
   }
 
   void clear() {
-    actualResults!.clear();
+    actualResults.clear();
   }
 
 }

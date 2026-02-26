@@ -16,7 +16,7 @@ import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 import 'package:la_dinamica_app/widgets/payment_box.dart';
-import 'package:la_dinamica_app/widgets/product_payment_box.dart';
+import 'package:la_dinamica_app/widgets/products_page.dart/product_payment_box.dart';
 import 'package:la_dinamica_app/widgets/select_school_widget.dart';
 import 'package:la_dinamica_app/widgets/students_number_home.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -43,7 +43,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
       user = ref.read(userProvider).value;
       if (user != null) {
         ref
-            .watch(studentsProvider.notifier)
+            .watch(studentsAttendanceProvider.notifier)
             .fetchAttendanceToday(ref.read(dateProvider));
       }
     });
@@ -178,7 +178,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
     final themeMode = ref.watch(themeNotifierProvider);
     final isDarkMode = themeMode == ThemeMode.dark;
 
-    final studentsState = ref.watch(studentsProvider);
+    final studentsState = ref.watch(studentsAttendanceProvider);
     final userState = ref.watch(userProvider);
     final filteredStudents = ref.watch(filteredStudentsProvider);
     final allStudents = studentsState.asData?.value ?? [];
@@ -303,7 +303,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                                         image: student.image,
                                         onDismissed: () {
                                           ref
-                                              .read(studentsProvider.notifier)
+                                              .read(studentsAttendanceProvider.notifier)
                                               .deleteAttendance(
                                                 student.id,
                                                 ref.read(dateProvider),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/widgets/product_card_test.dart';
+import 'package:la_dinamica_app/widgets/products_page.dart/product_card_test.dart';
 
 Future<void> showProductInfoDialog(BuildContext context, Product product, UserLocal user) async {
   await showDialog(

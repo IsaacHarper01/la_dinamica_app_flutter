@@ -3,7 +3,7 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/widgets/preview_profesor_container.dart';
+import 'package:la_dinamica_app/widgets/config_page.dart/preview_profesor_container.dart';
 
 class ProfesorsScreen extends StatefulWidget {
    final UserLocal user;

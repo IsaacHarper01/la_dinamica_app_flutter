@@ -17,13 +17,13 @@ final attendanceRefreshProvider = Provider((ref) {
 
 final searchTermProvider = StateProvider<String>((ref) => '');
 
-final studentsProvider =
+final studentsAttendanceProvider =
     StateNotifierProvider<StudentsNotifier, AsyncValue<List<Student>>>((ref) {
       return StudentsNotifier(ref);
     });
 
 final filteredStudentsProvider = Provider<List<Student>>((ref) {
-  final students = ref.watch(studentsProvider).asData?.value ?? [];
+  final students = ref.watch(studentsAttendanceProvider).asData?.value ?? [];
   final searchTerm = ref.watch(searchTermProvider).toLowerCase().trim();
 
   if (searchTerm.isEmpty) {

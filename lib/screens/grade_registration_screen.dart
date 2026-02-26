@@ -5,9 +5,9 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/students_evaluated_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:la_dinamica_app/widgets/preview_text_student_container.dart';
+import 'package:la_dinamica_app/widgets/exam/preview_text_student_container.dart';
 import 'package:la_dinamica_app/widgets/exam/stop_wacth_widget.dart';
-import 'package:la_dinamica_app/widgets/test_name_description_box.dart';
+import 'package:la_dinamica_app/widgets/exam/test_name_description_box.dart';
 
 class GradeRegistrationScreen extends ConsumerStatefulWidget{
 

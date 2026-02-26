@@ -58,7 +58,7 @@ Future<void> showPaymentDialog(
                 child: ElevatedButton.icon(
                   onPressed: () async{
                     await ref
-                      .read(studentsProvider.notifier)
+                      .read(studentsAttendanceProvider.notifier)
                       .insertAttendance(studentID, name, date);
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

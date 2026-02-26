@@ -241,7 +241,7 @@ class ScrollViewContent extends ConsumerWidget {
                       confirmDismiss: (direction) async {
                         if (direction == DismissDirection.startToEnd) {
                           ref
-                              .read(studentsProvider.notifier)
+                              .read(studentsAttendanceProvider.notifier)
                               .insertAttendance(ids[i], studentNames[i], date);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

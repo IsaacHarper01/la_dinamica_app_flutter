@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/circle_total_grade.dart';
-import 'package:la_dinamica_app/widgets/tilted_square_graph.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/tilted_square_graph.dart';
 
 class StatBar extends ConsumerStatefulWidget {
   
