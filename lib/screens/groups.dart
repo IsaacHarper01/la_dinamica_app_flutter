@@ -9,7 +9,7 @@ import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/selected_group_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/edit_routine_screen.dart';
-import 'package:la_dinamica_app/widgets/group_description_box.dart';
+import 'package:la_dinamica_app/widgets/groups_screen/group_description_box.dart';
 import 'package:la_dinamica_app/widgets/groups_screen/students_List_widget.dart';
 import 'package:la_dinamica_app/widgets/groups_screen/students_by_group_list.dart';
 import 'package:la_dinamica_app/widgets/loading_widget.dart';

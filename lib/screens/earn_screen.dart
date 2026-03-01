@@ -9,8 +9,8 @@ import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/line_chart_widget.dart';
-import 'package:la_dinamica_app/widgets/pie_chart_products_widget.dart';
-import 'package:la_dinamica_app/widgets/pie_chart_widget.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/pie_chart_products_widget.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/pie_chart_widget.dart';
 
 
 class EarnScreen extends ConsumerStatefulWidget {

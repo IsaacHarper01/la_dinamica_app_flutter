@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/widgets/piechart_indicator.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/piechart_indicator.dart';
 
 class PieChartWidgetProducts extends ConsumerWidget {
   final DateTime startDate;
