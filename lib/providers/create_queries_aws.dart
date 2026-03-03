@@ -94,41 +94,6 @@ class DataStoreService {
     }
   }
 
-  Future<void> saveAttendance({
-    required int userId,
-    required String name,
-    required String date,
-    required String gymId,
-    required String profId,
-  }) async {
-    final awsDb = DataStoreReadService();
-    final todayAttendance = await awsDb.getAttendanceByDate(date, gymId);
-
-    if (todayAttendance.isNotEmpty) {
-      for (var att in todayAttendance) {
-        if (att.user_id == userId) {
-          safePrint('Asistencia ya registrada para el usuario: $userId');
-          return;
-        }
-      }
-    }
-    final item = Attendance(
-      user_id: userId,
-      name: name,
-      date: TemporalDate(DateTime.parse(date)),
-      client_id: gymId,
-      prof_id: profId,
-    );
-
-    try {
-      await Amplify.DataStore.save(item);
-      safePrint('✅ Asistencia guardada correctamente');
-    } catch (e) {
-      safePrint('❌ Error al guardar la Asistencia: $e');
-      rethrow;
-    }
-  }
-
   Future<User> saveUser({
     required String id,
     required String name,

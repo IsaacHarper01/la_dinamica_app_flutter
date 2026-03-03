@@ -306,6 +306,21 @@ class DataStoreReadService {
     }
   }
 
+  Future<List<Student>> getAllStudents() async {
+    try {
+      // Consultar los datos almacenados en DataStore
+      List<Student> general = await Amplify.DataStore.query(
+        Student.classType,
+        );
+        
+      safePrint('✅ Alumnos obtenidos correctamente');
+      return general;
+    } catch (e) {
+      safePrint('❌ Error al obtener los Alumnos: $e');
+      rethrow;
+    }
+  }
+
   Future<bool> checkIfStudentExists(int id, String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore

@@ -30,4 +30,27 @@ Future<void> uploadPaymentsFromCsv()async{
     await Amplify.DataStore.save(newPay);
     safePrint('Finished Column $i');
     }
+  Future<void> uploadAttendanceFromCsv()async{
+    final rows = data2.split('\n');
+    safePrint('Filas leídas del CSV: ${rows.length}');
+    final aws = DataStoreReadService();
+    final students = await aws.getAllStudents();
+    Map<String, Student> mapStudents = {};
+    for(var student in students){
+      mapStudents[student.name!] = student;
+    }
+    for (var i = 1; i < rows.length; i++ ){
+    final  columns = rows[i].split(',');
+    final newAttendance = Attendance(
+      id: columns[0],
+      user_id: mapStudents[2]!.name!+columns[3],
+      date: TemporalDate(DateTime.parse(columns[3])),
+      client_id: columns[4],
+      prof_id: columns[5],
+      student: mapStudents[columns[2]],
+    ); 
+    await Amplify.DataStore.save(newAttendance);
+    safePrint('Finished Column $i');
+    }
+  }
 }

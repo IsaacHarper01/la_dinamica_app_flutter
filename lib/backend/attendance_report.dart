@@ -29,7 +29,7 @@ Future<void> generateAttendanceReport(
   final List<int> ids = [];
 
   for (var row in attendanceData) {
-    ids.add(row.user_id!);
+    ids.add(row.student!.user_id!);
   }
 
   final agesAndAddress = await awsDb.getAgesandAddress(ids, tenantId);
@@ -40,8 +40,8 @@ Future<void> generateAttendanceReport(
 
   for (var i = 0; i < attendanceData.length; i++) {
     csvData.add([
-      attendanceData[i].user_id.toString(),
-      attendanceData[i].name.toString(),
+      attendanceData[i].student!.user_id.toString(),
+      attendanceData[i].student!.name.toString(),
       agesAndAddress[0][i].toString(),
       agesAndAddress[1][i].toString(),
       attendanceData[i].date.toString(),

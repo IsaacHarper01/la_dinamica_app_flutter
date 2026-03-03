@@ -51,7 +51,7 @@ class DataStoreDeleteService {
       try {
         List<Attendance> attendance = await Amplify.DataStore.query(
           Attendance.classType,
-          where: Attendance.USER_ID.eq(id)
+          where: Attendance.STUDENT.eq(id.toString())
           .and(Attendance.CLIENT_ID.eq(tenantId))
           .and(Attendance.DATE.eq(date)),
           sortBy: [Attendance.DATE.descending()],

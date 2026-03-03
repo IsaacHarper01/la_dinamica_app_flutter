@@ -60,18 +60,20 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   image: String
   client_id: String
   
+  attendances: [Attendance] @hasMany(fields: ["id"])
   examresults: [JoinResults] @hasMany(fields: ["id"])
   groups: [JoinGroups] @hasMany(fields: ["id"])
 }
 
-
 type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
-  user_id: Int
-  name: String
-  date: AWSDate
+  user_id: ID! @primaryKey(sortKeyFields:["date"])
+  date: AWSDate!
   client_id: String
   prof_id: String
+  status: Boolean
+
+  student: Student @belongsTo(fields: ["user_id"])
 }
 
 type User @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -94,7 +96,6 @@ type Tenant @model @auth(rules: [{allow: public}]) {
   who_access: [UserAccess] @hasMany(fields: ["tenant_id"])
 }
  
-
 type Product @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
   code: String @index(name: "byCode", queryField: "productByCode")
