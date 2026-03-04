@@ -5,11 +5,12 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/students_provider.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 Future<void> showPaymentDialog(
   BuildContext context,
   WidgetRef ref, {
-  required int studentID,
+  required Student student,
   required String name,
   required String date,
   required UserLocal user,
@@ -59,7 +60,7 @@ Future<void> showPaymentDialog(
                   onPressed: () async{
                     await ref
                       .read(studentsAttendanceProvider.notifier)
-                      .insertAttendance(studentID, name, date);
+                      .insertAttendance(student, date);
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Asistencia registrada'),
@@ -98,7 +99,7 @@ Future<void> showPaymentDialog(
                       final aws = DataStoreService();
                       try {
                         await aws.savePayment(
-                          userId: studentID,
+                          userId: student.user_id!,
                           amount: plan.price!,
                           clases: plan.clases!,
                           plan: plan,

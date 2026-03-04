@@ -61,19 +61,10 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           final students = snapshot.data!;
-          final names = students.map((g) => g.name).toList();
-          final ids = students.map((g) => g.user_id).toList();
-          final images = students.map((g) => g.image).toList();
-          final indexList = List.generate(students.length, (index) => index);
 
           return ScrollViewContent(
             students: students,
             screenHeight: screenHeight,
-            studentNames: names,
-            numAlumnos: students.length,
-            indexList: indexList,
-            ids: ids,
-            images: images,
             user: user!,
             date: selectedDate!,
             onAddStudent: () {
@@ -98,22 +89,12 @@ class ScrollViewContent extends ConsumerWidget {
     super.key,
     required this.students,
     required this.screenHeight,
-    required this.studentNames,
-    required this.numAlumnos,
-    required this.indexList,
-    required this.ids,
-    required this.images,
     required this.onAddStudent,
     required this.user,
     required this.date,
   });
   final List<Student> students;
   final double screenHeight;
-  final List<dynamic> studentNames;
-  final List<dynamic> ids;
-  final List<dynamic> images;
-  final int numAlumnos;
-  final List<int> indexList;
   final VoidCallback onAddStudent;
   final UserLocal user;
   final String date;
@@ -123,7 +104,7 @@ class ScrollViewContent extends ConsumerWidget {
     awsDb.deleteAttendanceByID(id, date, tenantId);
   }
 
-  void handleDeleteDash(context, i) async {
+  void handleDeleteDash(context, Student student) async {
     // Mostrar un cuadro de diálogo para confirmar la eliminación
     bool? shouldDelete = await showDialog(
       context: context,
@@ -153,7 +134,7 @@ class ScrollViewContent extends ConsumerWidget {
 
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      _deleteAttendance(ids[i], date ,user.tenant.tenant_id);
+      _deleteAttendance(student.user_id, date ,user.tenant.tenant_id);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Asistencia Eliminada'),
@@ -173,7 +154,7 @@ class ScrollViewContent extends ConsumerWidget {
         child: Column(
           children: [
             SizedBox(height: screenHeight * 0.06),
-            StudentsNumberHome(studentsNumber: "Total de alumnos: $numAlumnos"),
+            StudentsNumberHome(studentsNumber: "Total de alumnos: ${students.length}"),
             SizedBox(height: screenHeight * 0.01),
             Padding(
               padding: EdgeInsets.only(right: screenHeight * 0.01),
@@ -219,12 +200,12 @@ class ScrollViewContent extends ConsumerWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.01),
-            ...indexList.map((i) {
+            ...students.map((student) {
               return FadeInUp(
                 child: Column(
                   children: [
                     Dismissible(
-                      key: Key(ids[i].toString()),
+                      key: Key(student.user_id.toString()),
                       // Llave única para cada elemento
                       background: Container(
                         color: const Color.fromARGB(255, 102, 165, 104),
@@ -242,7 +223,7 @@ class ScrollViewContent extends ConsumerWidget {
                         if (direction == DismissDirection.startToEnd) {
                           ref
                               .read(studentsAttendanceProvider.notifier)
-                              .insertAttendance(ids[i], studentNames[i], date);
+                              .insertAttendance(student, date);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Asistencia Registrada'),
@@ -250,7 +231,7 @@ class ScrollViewContent extends ConsumerWidget {
                             ),
                           );
                         } else {
-                          handleDeleteDash(context, i);
+                          handleDeleteDash(context, student);
                         }
 
                         return false;
@@ -263,24 +244,20 @@ class ScrollViewContent extends ConsumerWidget {
                             MaterialPageRoute(
                               builder:
                                   (context) => StudentDetailScreen(
-                                    name: studentNames[i],
-                                    id: ids[i],
-                                    image: images[i],
+                                    student: student,
                                   ),
                             ),
                           );
                         },
                         splashColor: colorList[6],
                         child: PreviewStudentContainerReduce(
-                          name: studentNames[i],
-                          id: ids[i],
-                          image: images[i],
+                          student: student,
                           backgroundColor:
-                              attendedIds.contains(ids[i])
+                              attendedIds.contains(student)
                                   ? Colors.green.withAlpha(20)
                                   : Colors.transparent,
                           trailingIcon:
-                              attendedIds.contains(ids[i])
+                              attendedIds.contains(student)
                                   ? const Icon(
                                     Icons.check_circle,
                                     color: Colors.green,

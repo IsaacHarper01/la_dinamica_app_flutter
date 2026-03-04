@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 class DataStoreService {
 
@@ -90,6 +89,30 @@ class DataStoreService {
       return item.user_id!;
     } catch (e) {
       safePrint('❌ Error al consultar los alumnos: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> saveAttendance({
+    required Student student,
+    required String date,
+    required String gymId,
+    required String profId,
+    required bool status
+  }) async {
+    final item = Attendance(
+      student: student,
+      date: TemporalDate(DateTime.parse(date)),
+      client_id: gymId,
+      prof_id: profId,
+      status: status,
+    );
+
+    try {
+      await Amplify.DataStore.save(item);
+      safePrint('✅ Asistencia guardada correctamente');
+    } catch (e) {
+      safePrint('❌ Error al guardar la Asistencia: $e');
       rethrow;
     }
   }

@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -21,8 +22,6 @@ import 'package:la_dinamica_app/widgets/select_school_widget.dart';
 import 'package:la_dinamica_app/widgets/students_number_home.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-
-import '../model/student.dart';
 import '../widgets/preview_student_container.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -92,10 +91,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
             }
 
             String name = info['name'];
-          
-            if (await awsDb.checkIfStudentExists(id, user.tenant.tenant_id)) {
+            final student = await awsDb.checkIfStudentExists(id, user.tenant.tenant_id);
+            if (student!=null) {
               //check if student exist in General table
-              await showPaymentDialog(context, ref, studentID: id, name: name, date: date, user: user);
+              await showPaymentDialog(context, ref, student: student, name: name, date: date, user: user);
               return Future.value(true);
             } else {
               return Future.value(false);
@@ -196,7 +195,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
               ) 
             ),
             user!.permissions["editPast"] == true ?
-            CalendarButton() : SizedBox()
+            CalendarButton() : SizedBox(),
           ],
         ),
       ),
@@ -295,17 +294,16 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                             children:
                                 filteredStudents.asMap().entries.map((entry) {
                                   Student student = entry.value;
-
                                   return Column(
                                     children: [
                                       PreviewStudentContainer(
-                                        name: student.name,
-                                        image: student.image,
+                                        name: student.name!,
+                                        image: student.image!,
                                         onDismissed: () {
                                           ref
                                               .read(studentsAttendanceProvider.notifier)
                                               .deleteAttendance(
-                                                student.id,
+                                                student,
                                                 ref.read(dateProvider),
                                                 user.tenant.tenant_id,
                                               );

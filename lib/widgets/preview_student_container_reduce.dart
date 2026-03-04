@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class PreviewStudentContainerReduce extends ConsumerWidget{
-  final String name;
-  final int id;
-  final String image;
+  final Student student;
   final Color backgroundColor;
   final Icon? trailingIcon;
 
   const PreviewStudentContainerReduce({
     super.key,
-    required this.name,
-    required this.id,
-    required this.image,
+    required this.student,
     required this.backgroundColor,
     this.trailingIcon,
   });
@@ -27,7 +24,7 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
     final bool isPortatil = orientation == Orientation.portrait;
     final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
-    final imageUrl = ref.watch(imageProvider(image));
+    final imageUrl = ref.watch(imageProvider(student.image!));
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -87,7 +84,7 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
                       children: [
                         Flexible(
                           child: Text(
-                            name,
+                            student.name!,
                             style: GoogleFonts.gochiHand(
                               fontSize: screenHeight * 0.03,
                               color: Colors.white,
@@ -98,7 +95,7 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
                           ),
                         ),
                         Text(
-                          'ID: $id',
+                          'ID: ${student.user_id}',
                           style: GoogleFonts.gochiHand(
                             fontSize: screenHeight * 0.017,
                             color: Colors.white70,
@@ -116,11 +113,11 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
                   child:
                   trailingIcon != null
                       ? Padding(
-                    key: ValueKey('icon-$id'),
+                    key: ValueKey('icon-${student.user_id}'),
                     padding: const EdgeInsets.only(right: 12.0),
                     child: trailingIcon,
                   )
-                      : SizedBox.shrink(key: ValueKey('empty-$id')),
+                      : SizedBox.shrink(key: ValueKey('empty-${student.user_id}')),
                 ),
               ],
             ),

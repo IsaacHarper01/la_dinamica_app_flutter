@@ -7,7 +7,6 @@ import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -20,15 +19,11 @@ import '../providers/attendance_provider.dart';
 
 // ignore: must_be_immutable
 class StudentDetailScreen extends ConsumerStatefulWidget {
-  final String name;
-  final int id;
-  final String image;
+  final Student student;
 
   const StudentDetailScreen({
     super.key,
-    required this.name,
-    required this.id,
-    required this.image,
+    required this.student,
   });
 
   @override
@@ -77,16 +72,16 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             : MediaQuery.of(context).size.width * 0.8;
 
     final attendedIds = ref.watch(attendedIdsProvider);
-    final bool hasAttendance = attendedIds.contains(widget.id);
+    final bool hasAttendance = attendedIds.contains(widget.student);
     final userAsync = ref.watch(userProvider);
 
     return userAsync.when(
       loading: () => Scaffold(body: Center(child: CircularProgressIndicator(),),),
       error: (error, stackTrace) => Scaffold(body: Center(child: Text("Error al cargar Usuario $error"),),),
       data: (userAsync) => Scaffold(
-      appBar: AppBar(title: Text(widget.name)),
+      appBar: AppBar(title: Text(widget.student.name!)),
       body: FutureBuilder(
-        future: awsDb.getLastPayandStudentData(widget.id, userAsync.tenant.tenant_id),
+        future: awsDb.getLastPayandStudentData(widget.student.user_id!, userAsync.tenant.tenant_id),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -122,7 +117,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     UserLocal user,
   ) {
     isActive = paymentData.clases != 0;
-    final String date = ref.watch(dateProvider);
+    final student = widget.student;
     final tenantId = user.tenant.tenant_id;
     final imageUrl = ref.watch(imageProvider(studentData.image!));
 
@@ -259,7 +254,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      widget.name,
+                      student.name!,
                       style: GoogleFonts.gochiHand(
                         fontSize: screenHeight * 0.05,
                         color: Colors.white,
@@ -286,7 +281,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                                     color: Colors.white,
                                   ),
                                   Text(
-                                    '${studentData.address}',
+                                    '${student.address}',
                                     style: GoogleFonts.gochiHand(fontWeight: FontWeight.bold),
                                   ),
                                 ],
@@ -308,7 +303,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  '${studentData.age} años',
+                                  '${student.age} años',
                                   style: GoogleFonts.gochiHand(fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -320,7 +315,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                         child: SizedBox()),
                       Expanded(child: IconButton(
                         onPressed: () async{
-                          await pickAndSaveImage(widget.image, tenantId, true, false).then((newPath) {
+                          await pickAndSaveImage(student.image!, tenantId, true, false).then((newPath) {
                             if (newPath != null) {
                               setState(() {
                                 studentData = studentData.copyWith(image: newPath);
@@ -351,7 +346,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 Expanded(
                   child: FilledButton(
                     onPressed: (){
-                      handleDeleteDash(context, widget.id, user.permissions['deleteStudents'] ?? false);
+                      handleDeleteDash(context, student.user_id, user.permissions['deleteStudents'] ?? false);
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[4]),
@@ -371,7 +366,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                         MaterialPageRoute(
                           builder:
                               (context) => EditpaymentsScreen(
-                                student: studentData,
+                                student: student,
                                 user: user,
                               ),
                         ),
@@ -391,9 +386,9 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                         MaterialPageRoute(
                           builder:
                               (context) => MetricsPage(
-                                studentId: studentData.id,
-                                name: widget.name,
-                                image: studentData.image!,
+                                studentId: student.user_id!.toString(),
+                                name: student.name!,
+                                image: student.image!,
                               ),
                         ),
                       );
@@ -470,17 +465,17 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                InfoCard(id: widget.id, clases: paymentData.clases!, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
+                InfoCard(id: student.user_id!, clases: paymentData.clases!, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
                 const SizedBox(height: 10),
                 FilledButton.icon(
                   onPressed: () {
                     generateCredentialandSend(
-                      widget.id,
-                      widget.name,
-                      studentData.address!,
-                      studentData.phone!,
-                      studentData.age.toString(),
-                      widget.image,
+                      student.user_id!,
+                      student.name!,
+                      student.address!,
+                      student.phone!,
+                      student.age.toString(),
+                      student.image!,
                       tenantId,
                     );
                   },

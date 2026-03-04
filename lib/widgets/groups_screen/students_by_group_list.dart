@@ -90,9 +90,7 @@ class _StudentsListWidgetState extends ConsumerState<StudentsByGroupListWidget> 
                           return false;
                         },
                         child: PreviewStudentContainerReduce(
-                            name: showedStudents[i].name!,
-                            id: showedStudents[i].user_id!,
-                            image: showedStudents[i].image!,
+                            student: showedStudents[i],
                             backgroundColor:
                                 widget.filterStudents.contains(showedStudents[i])
                                     ? Colors.green.withAlpha(20)

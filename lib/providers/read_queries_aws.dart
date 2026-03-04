@@ -321,7 +321,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<bool> checkIfStudentExists(int id, String tenantId) async {
+  Future<Student?> checkIfStudentExists(int id, String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Student> general = await Amplify.DataStore.query(
@@ -331,10 +331,10 @@ class DataStoreReadService {
       );
       if (general.isNotEmpty) {
         safePrint('✅ El alumno con ID $id existe');
-        return true;
+        return general.first;
       } else {
         safePrint('❌ El alumno con ID $id no existe');
-        return false;
+        return null;
       }
     } catch (e) {
       safePrint('❌ Error al verificar la existencia del alumno: $e');
@@ -458,20 +458,23 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> verifyPayment(int userId, String date, String tenantId, String profId, LocalPlan defaulPlan) async {
+  Future<void> verifyPayment(int userId, String date, String tenantId, String profId, LocalPlan defaultPlan) async {
      try {
+      safePrint("USER ID: $userId");
+      safePrint("DEFAULT PLAN: $defaultPlan");
       Payment? lastPayment = await getLastPayment(userId, tenantId);
+      safePrint("LAST PAY $lastPayment");
       if(lastPayment != null){
         final newPayment = lastPayment.copyWith(clases: lastPayment.clases! - 1);
         await Amplify.DataStore.save(newPayment);
         safePrint('✅ Pago verificado y actualizado correctamente');
       }else {
-        if(defaulPlan.client_id!='none'){
+        if(defaultPlan.client_id!='none'){
         final newPayment = Payment(
           user_id: userId,
-          amount: defaulPlan.price,
-          clases: defaulPlan.clases,
-          plan: defaulPlan,
+          amount: defaultPlan.price,
+          clases: defaultPlan.clases,
+          plan: defaultPlan,
           date: TemporalDate(DateTime.parse(date)),
           client_id: tenantId,
           prof_id: profId,

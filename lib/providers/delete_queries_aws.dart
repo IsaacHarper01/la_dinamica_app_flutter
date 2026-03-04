@@ -47,18 +47,18 @@ class DataStoreDeleteService {
       }
     }
 
-  Future<void> deleteAttendanceByID(int id, String date, String tenantId) async {
+  Future<void> deleteAttendanceByID(Student student, String date, String tenantId) async {
       try {
         List<Attendance> attendance = await Amplify.DataStore.query(
           Attendance.classType,
-          where: Attendance.STUDENT.eq(id.toString())
+          where: Attendance.STUDENT.eq(student.id.toString())
           .and(Attendance.CLIENT_ID.eq(tenantId))
           .and(Attendance.DATE.eq(date)),
           sortBy: [Attendance.DATE.descending()],
         );
         List<Payment> payments = await Amplify.DataStore.query(
           Payment.classType,
-          where: Payment.USER_ID.eq(id)
+          where: Payment.USER_ID.eq(student.user_id)
           .and(Payment.CLIENT_ID.eq(tenantId))
           .and(Payment.DATE.eq(date)),
           sortBy: [Payment.DATE.descending()],

@@ -62,7 +62,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
             ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async{
-              await showPaymentDialog(context, ref, studentID: widget.student.user_id!,name: widget.student.name! , date: date, user: widget.user);
+              await showPaymentDialog(context, ref, student: widget.student,name: widget.student.name! , date: date, user: widget.user);
               ref.read(paymentsProvider.notifier)
                  .fetchLastPayments(widget.user, widget.student);
             }, 

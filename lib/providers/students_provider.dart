@@ -1,12 +1,11 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/model/student.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/default_plan_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/providers/storageS3.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 final attendanceRefreshProvider = Provider((ref) {
@@ -31,7 +30,7 @@ final filteredStudentsProvider = Provider<List<Student>>((ref) {
   }
 
   return students.where((student) {
-    final name = student.name.toLowerCase();
+    final name = student.name!.toLowerCase();
     final id = student.id;
     return name.contains(searchTerm) || id == int.tryParse(searchTerm);
   }).toList();
@@ -47,7 +46,6 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   Future<void> fetchAttendanceToday(String date) async {
     try {
       final awsDb = DataStoreReadService();
-      final awsS3 = Storages3();
       final user = await ref.watch(userProvider.future);
       final tenenatId = user.tenant.tenant_id;
       final snapshot = await awsDb.getAttendanceByDate(date, tenenatId);
@@ -56,27 +54,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
         return;
       }
 
-      List<dynamic> ids = snapshot.map((g) => g.user_id).toList();
-      List<dynamic> names = snapshot.map((g) => g.name).toList();
-      List<dynamic> images = await awsS3.getImages(
-        snapshot.map((g) => g.user_id!).toList(),
-        tenenatId,
-      );
-
-      if (!mounted) return;
-
-      if (ids.isEmpty || names.isEmpty || images.isEmpty) {
-        state = const AsyncValue.data([]);
-        return;
-      }
-
-      List<Student> students = List.generate(ids.length, (index) {
-        return Student(
-          id: ids[index],
-          name: names[index],
-          image: images[index],
-        );
-      });
+     List<Student> students = snapshot.map((att) => att.student!).toList();
 
       state = AsyncValue.data(students);
     } catch (e) {
@@ -85,7 +63,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     }
   }
 
-  Future<void> insertAttendance(int studentId, String name, String date) async {
+  Future<void> insertAttendance(Student student , String date) async {
     try {
       final awsDb = DataStoreService();
       final awsDb2 = DataStoreReadService();
@@ -94,13 +72,13 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
       final profId = user.name;
       safePrint("gymid: $gymid, profId: $profId");
       await awsDb.saveAttendance(
-        userId: studentId,
-        name: name,
+        student: student,
         date: date,
         gymId: gymid,
         profId: profId,
+        status: true,
       );
-      await awsDb2.verifyPayment(studentId, date, gymid, profId, ref.watch(defaultPlanProvider));
+      await awsDb2.verifyPayment(student.user_id!, date, gymid, profId, ref.watch(defaultPlanProvider));
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {
@@ -109,13 +87,13 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   }
 
   Future<void> deleteAttendance(
-    int studentId,
+    Student deleted,
     String date,
     String tenantId,
   ) async {
     try {
       final awsDb = DataStoreDeleteService();
-      await awsDb.deleteAttendanceByID(studentId, date, tenantId);
+      await awsDb.deleteAttendanceByID(deleted, date, tenantId);
       await fetchAttendanceToday(date);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);

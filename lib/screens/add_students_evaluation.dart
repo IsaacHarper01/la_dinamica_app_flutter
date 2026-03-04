@@ -184,9 +184,7 @@ Widget build(BuildContext context, WidgetRef ref) {
                           child: InkWell(
                             splashColor: colorList[6],
                             child: PreviewStudentContainerReduce(
-                              name: names[i],
-                              id: ids[i],
-                              image: images[i],
+                              student: students[i],
                               backgroundColor: selectedStudents.contains(ids[i])
                                   ? Colors.green.withAlpha(30)
                                   : Colors.transparent,

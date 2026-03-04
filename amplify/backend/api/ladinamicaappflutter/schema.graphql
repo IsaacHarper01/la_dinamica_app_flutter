@@ -67,13 +67,14 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
 
 type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
   id: ID!
-  user_id: ID! @primaryKey(sortKeyFields:["date"])
+  studentID: ID!
   date: AWSDate!
+
   client_id: String
   prof_id: String
   status: Boolean
 
-  student: Student @belongsTo(fields: ["user_id"])
+  student: Student @belongsTo(fields: ["studentID"])
 }
 
 type User @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
