@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
-import 'package:la_dinamica_app/providers/students_provider.dart';
+import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class SelectSchoolWidget extends ConsumerStatefulWidget {

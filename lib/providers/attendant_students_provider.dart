@@ -14,37 +14,16 @@ final attendanceRefreshProvider = Provider((ref) {
   return (user, date);
 });
 
-final searchTermProvider = StateProvider<String>((ref) => '');
-
 final studentsAttendanceProvider =
     StateNotifierProvider<StudentsNotifier, AsyncValue<List<Student>>>((ref) {
       return StudentsNotifier(ref);
     });
-
-final filteredStudentsProvider = Provider<List<Student>>((ref) {
-  final students = ref.watch(studentsAttendanceProvider).asData?.value ?? [];
-  final searchTerm = ref.watch(searchTermProvider).toLowerCase().trim();
-
-  if (searchTerm.isEmpty) {
-    return students;
-  }
-
-  return students.where((student) {
-    final name = student.name!.toLowerCase();
-    final id = student.id;
-    return name.contains(searchTerm) || id == int.tryParse(searchTerm);
-  }).toList();
-});
 
 class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   final Ref ref;
 
   StudentsNotifier(this.ref) : super(const AsyncValue.loading()){
     fetchAttendanceToday(ref.read(dateProvider));
-  }
-
-  Future<void> fetchAllStudentsLists(date) async{
-    
   }
   
   Future<void> fetchAttendanceToday(String date) async {

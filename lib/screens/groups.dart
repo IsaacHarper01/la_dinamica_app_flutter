@@ -159,7 +159,7 @@ class NameState extends ConsumerState<GroupsPage> {
                                                 ),
                                 )
                             ),
-                            StudentsListWidget(allstudents: widget.allStudents,screenHeight: widget.screenHeight,),
+                            StudentsListWidget(screenHeight: widget.screenHeight,),
                             SizedBox(
                             height: widget.screenHeight*0.1,
                             width: double.maxFinite,
@@ -245,6 +245,6 @@ class NameState extends ConsumerState<GroupsPage> {
           ),
         );
       }
-      );
+    );
   }
 }

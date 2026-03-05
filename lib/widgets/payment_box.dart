@@ -4,7 +4,7 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
-import 'package:la_dinamica_app/providers/students_provider.dart';
+import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 Future<void> showPaymentDialog(

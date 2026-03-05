@@ -11,7 +11,7 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
-import 'package:la_dinamica_app/providers/students_provider.dart';
+import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
@@ -33,7 +33,6 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObserver{
   UserLocal? user;
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -47,16 +46,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
       }
     });
     Future.microtask(() => ref.read(planProvider.notifier).loadPlans());
-    _searchController.addListener(() {
-      ref.read(searchTermProvider.notifier).state = _searchController.text;
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
   }
 
   Future<void> checkAction(BuildContext context) async {
@@ -159,11 +148,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
   }
   }
 
-  void _clearSearch() {
-    _searchController.clear();
-    ref.read(searchTermProvider.notifier).state = '';
-  }
-
   @override
   Widget build(BuildContext context) {
     user = ref.watch(userProvider).value;
@@ -179,9 +163,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
 
     final studentsState = ref.watch(studentsAttendanceProvider);
     final userState = ref.watch(userProvider);
-    final filteredStudents = ref.watch(filteredStudentsProvider);
     final allStudents = studentsState.asData?.value ?? [];
-    final searchTerm = ref.watch(searchTermProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -229,7 +211,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                     ),
                   );
                 }
-
                 return SingleChildScrollView(
                   child: Center(
                     child: Column(
@@ -240,84 +221,34 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                           child: StudentsNumberHome(studentsNumber: "Asistencias: ${allStudents.length}"),
                         ),
                         SizedBox(height: screenHeight * 0.03),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: TextField(
-                            controller: _searchController,
-                            decoration: InputDecoration(
-                              hintText: 'Buscar por ID o nombre...',
-                              prefixIcon: const Icon(Icons.search),
-                              suffixIcon:
-                                  searchTerm.isNotEmpty
-                                      ? IconButton(
-                                        icon: const Icon(Icons.clear),
-                                        onPressed: _clearSearch,
-                                      )
-                                      : null,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              filled: true,
-                              fillColor: Theme.of(context).colorScheme.surface,
-                            ),
-                          ),
+                        Column(
+                          children:
+                              allStudents.asMap().entries.map((entry) {
+                                Student student = entry.value;
+                                return Column(
+                                  children: [
+                                    PreviewStudentContainer(
+                                      name: student.name!,
+                                      image: student.image!,
+                                      onDismissed: () {
+                                        ref
+                                            .read(studentsAttendanceProvider.notifier)
+                                            .deleteAttendance(
+                                              student,
+                                              ref.read(dateProvider),
+                                              user.tenant.tenant_id,
+                                            );
+                                      },
+                                    ),
+                                    const Divider(
+                                      height: 0,
+                                      indent: 20,
+                                      endIndent: 20,
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
                         ),
-                        SizedBox(height: screenHeight * 0.01),
-                        if (filteredStudents.isEmpty && searchTerm.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.search_off,
-                                  size: 64,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface.withAlpha(128),
-                                ),
-                                Text(
-                                  'No se encontraron estudiantes\ncon el término: "$searchTerm"',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface.withOpacity(0.6),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        else
-                          Column(
-                            children:
-                                filteredStudents.asMap().entries.map((entry) {
-                                  Student student = entry.value;
-                                  return Column(
-                                    children: [
-                                      PreviewStudentContainer(
-                                        name: student.name!,
-                                        image: student.image!,
-                                        onDismissed: () {
-                                          ref
-                                              .read(studentsAttendanceProvider.notifier)
-                                              .deleteAttendance(
-                                                student,
-                                                ref.read(dateProvider),
-                                                user.tenant.tenant_id,
-                                              );
-                                        },
-                                      ),
-                                      const Divider(
-                                        height: 0,
-                                        indent: 20,
-                                        endIndent: 20,
-                                      ),
-                                    ],
-                                  );
-                                }).toList(),
-                          ),
                       ],
                     ),
                   ),
