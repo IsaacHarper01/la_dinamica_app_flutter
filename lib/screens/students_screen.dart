@@ -27,6 +27,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen> {
   Future<List<Student>>? _studentsFuture;
   UserLocal? user;
   String? selectedDate;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {

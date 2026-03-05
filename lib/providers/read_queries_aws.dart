@@ -942,10 +942,10 @@ class DataStoreReadService {
         JoinGroups.classType, 
         where: JoinGroups.TENANT_ID.eq(tenantId)
         );
-      safePrint("Grupos obtenidos correctamente");
+      safePrint("Grupos obtenidos correctamente $joinGroups");
       return joinGroups;
     } catch (e) {
-      rethrow;
+      return [];
     }
   }
 

@@ -43,6 +43,10 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     fetchAttendanceToday(ref.read(dateProvider));
   }
 
+  Future<void> fetchAllStudentsLists(date) async{
+    
+  }
+  
   Future<void> fetchAttendanceToday(String date) async {
     try {
       final awsDb = DataStoreReadService();

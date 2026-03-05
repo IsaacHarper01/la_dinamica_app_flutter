@@ -99,7 +99,7 @@ class NameState extends ConsumerState<GroupsPage> {
   Widget build(BuildContext context) {
     final groupState = ref.watch(seletedGroupProvider);
     return groupState.when(
-      error: (e,_)=>Text("Error $e"), 
+      error: (e,_)=>Center(child: Text("No hay grupos disponibles $e"),), 
       loading: ()=>CircularProgressIndicator(),
       data: (groupState){
         return SafeArea(
@@ -143,19 +143,6 @@ class NameState extends ConsumerState<GroupsPage> {
                             ),
                         ],
                       ),
-                    ),
-                    DropdownButton<String>(
-                      borderRadius: BorderRadius.circular(10),
-                      hint: Text(groupState.actualGroup),
-                      isExpanded: true,
-                      value: groupState.actualGroup,
-                      items: groupState.setGroups.map((String option){
-                        return DropdownMenuItem(
-                          alignment: Alignment.center,
-                          value: option,
-                          child: Text(option));
-                      }).toList(), 
-                    onChanged: (value) => ref.read(seletedGroupProvider.notifier).changeActualGroup(value!)
                     ),
                     if(newGruop)...[
                         Column(
@@ -205,32 +192,52 @@ class NameState extends ConsumerState<GroupsPage> {
                           ]
                         )
                       ]else...[
-                        Row(
-                          children: [
-                            Checkbox(
-                            value: showAllStudents, 
-                            onChanged: (value){setShowAll(value!);
-                            }),
-                            Text("Mostar todos")
+                          if(groupState.groupJoinList.isNotEmpty)...[
+                            DropdownButton<String>(
+                            borderRadius: BorderRadius.circular(10),
+                            hint: Text(groupState.actualGroup),
+                            isExpanded: true,
+                            value: groupState.actualGroup,
+                            items: groupState.setGroups.map((String option){
+                              return DropdownMenuItem(
+                                alignment: Alignment.center,
+                                value: option,
+                                child: Text(option));
+                            }).toList(), 
+                              onChanged: (value) => ref.read(seletedGroupProvider.notifier).changeActualGroup(value!)
+                              ),
+                            Row(
+                              children: [
+                                Checkbox(
+                                value: showAllStudents, 
+                                onChanged: (value){setShowAll(value!);
+                                }),
+                                Text("Mostar todos")
+                              ]
+                            ),
+                            StudentsByGroupListWidget(
+                              allstudents: widget.allStudents, 
+                              filterStudents: groupState.filteredStudents, 
+                              showAll: showAllStudents, 
+                              screenHeight: widget.screenHeight),
+                            GroupDescriptionBox(groupName: groupState.actualGroup, description: groupState.groupDescriptions[groupState.actualGroup]!,),
+                            Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: ElevatedButton.icon(
+                                onPressed:()=>generateRutine(context,groupState.groupDescriptions[groupState.actualGroup]!,groupState.actualGroup),
+                                label: const Text("Generar Rutina"),
+                                icon: const Icon(Icons.auto_fix_high),
+                                style: ElevatedButton.styleFrom(
+                                minimumSize: const Size.fromHeight(50),
+                              ),
+                            ),
+                          )
+                          ]else...[
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(10, widget.screenHeight/3, 10, 10),
+                              child: Center(
+                                child: Text("No hay grupos disponibles"),))
                           ]
-                        ),
-                        StudentsByGroupListWidget(
-                          allstudents: widget.allStudents, 
-                          filterStudents: groupState.filteredStudents, 
-                          showAll: showAllStudents, 
-                          screenHeight: widget.screenHeight),
-                        GroupDescriptionBox(groupName: groupState.actualGroup, description: groupState.groupDescriptions[groupState.actualGroup]!,),
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: ElevatedButton.icon(
-                            onPressed:()=>generateRutine(context,groupState.groupDescriptions[groupState.actualGroup]!,groupState.actualGroup),
-                            label: const Text("Generar Rutina"),
-                            icon: const Icon(Icons.auto_fix_high),
-                            style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(50),
-                          ),
-                        ),
-                      )
                     ]
                 ],
               ),

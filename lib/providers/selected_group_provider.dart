@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/group_state.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -29,9 +30,10 @@ class GroupNotifier extends StateNotifier<AsyncValue<GroupState>> {
     Set<String> setGroups = {};
     List<String> listGroups = [];
     String actualGroup = "";
-
+    safePrint("enter");
     final joinGroups = await DataStoreReadService().getJoinGroups(tenantId);
-    for(var member in joinGroups){
+    if (joinGroups.isNotEmpty){
+      for(var member in joinGroups){
         String groupName = member.group!.name!;
         groupStudentsMap.putIfAbsent(groupName, ()=> <Student>{}).add(member.student!);
         groupStudentsDescriptionsMap.putIfAbsent(groupName, ()=>member.group!.description!);
@@ -39,12 +41,12 @@ class GroupNotifier extends StateNotifier<AsyncValue<GroupState>> {
       }
     listGroups = setGroups.toList();
     actualGroup = listGroups[0];
-
+    }
     return GroupState(
       groupJoinList: joinGroups,
       groupList: groupStudentsMap,
       groupDescriptions: groupStudentsDescriptionsMap,
-      filteredStudents: groupStudentsMap[actualGroup]!.toList(),
+      filteredStudents: actualGroup != "" ? groupStudentsMap[actualGroup]!.toList() : [],
       setGroups: setGroups,
       actualGroup: actualGroup,
     );
