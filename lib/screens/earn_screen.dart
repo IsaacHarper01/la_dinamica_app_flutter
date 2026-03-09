@@ -6,6 +6,7 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/income_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/line_chart_widget.dart';
@@ -23,6 +24,7 @@ class EarnScreen extends ConsumerStatefulWidget {
 class EarnScreenState extends ConsumerState<EarnScreen> {
   late DateTime startDate;
   late DateTime endDate;
+  late UserLocal user;
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     final selectedDate = ref.read(dateProvider);
     startDate = DateTime.parse(selectedDate);
     endDate = DateTime.parse(selectedDate);
+    user = ref.watch(userProvider).value!;
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -60,6 +63,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
             : MediaQuery.of(context).size.width * 0.8;
     final awsDb = DataStoreReadService();
     final userAsync = ref.watch(userProvider);
+    final incomeState = ref.watch(incomeProvider);
 
     return userAsync.when(
       loading:()=> Scaffold(body: Center(child: CircularProgressIndicator(),),),

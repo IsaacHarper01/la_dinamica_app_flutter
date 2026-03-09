@@ -1,7 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/add_students_to_gruop_provider.dart';
 import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';

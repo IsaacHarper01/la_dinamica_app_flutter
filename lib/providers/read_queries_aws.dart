@@ -270,7 +270,7 @@ class DataStoreReadService {
       if (students.isNotEmpty) {
 
         for (var student in students) {
-          String dateKey = student.date!.format();
+          String dateKey = student.date.format();
           if (studentsPerDay.containsKey(dateKey)) {
             studentsPerDay[dateKey] += 1;
           } else {

@@ -36,7 +36,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
   }
 
   void loadStudents(){
-    ref.read(studentsProvider.notifier).fetchStudents(selectedDate!);
+    ref.read(studentsProvider.notifier).fetchStudents();
   }
 
   @override

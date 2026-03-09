@@ -2,7 +2,6 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/default_plan_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -35,10 +34,10 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   final Ref ref;
 
   StudentsNotifier(this.ref) : super(const AsyncValue.loading()){
-    fetchStudents(ref.read(dateProvider));
+    fetchStudents();
   }
   
-  Future<void> fetchStudents(String date) async {
+  Future<void> fetchStudents() async {
     try {
       final awsDb = DataStoreReadService();
       final user = await ref.watch(userProvider.future);
@@ -75,7 +74,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {
-      await fetchStudents(date);
+      await fetchStudents();
     }
   }
 
@@ -87,7 +86,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final awsDb = DataStoreDeleteService();
       await awsDb.deleteAttendanceByID(deleted, date, tenantId);
-      await fetchStudents(date);
+      await fetchStudents();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }
