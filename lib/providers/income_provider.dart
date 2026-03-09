@@ -41,6 +41,29 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
+
+  Future<void> reLoadIncomeData(DateTime start, DateTime end)async{
+    try {
+      final awsDb = DataStoreReadService();
+      final user = await ref.watch(userProvider.future);
+      final tenenatId = user.tenant.tenant_id;
+      final incomeMap = await awsDb.getAllInconmeRange(tenenatId, start, end);
+      final salesList = incomeMap["sales"];
+      final planList = incomeMap["payments"];
+      final totalPlan = calculatePlanIncome(planList);
+      final totalSales = calculateSalesIncome(salesList);
+      final income = IncomeState(
+        listPlanIncome:planList, 
+        listProductIncome: salesList,
+        planIncome: totalPlan,
+        productIncome: totalSales,
+        );
+      state = AsyncValue.data(income);
+    } catch (e) {
+      if (!mounted) return;
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
   
   double calculatePlanIncome(List<Payment> listPayments){
     double total = 0.0;

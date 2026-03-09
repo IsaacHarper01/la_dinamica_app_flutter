@@ -5,9 +5,9 @@ import 'package:la_dinamica_app/backend/income_report.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_dinamica_app/model/income_state.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/income_provider.dart';
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/line_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/pie_chart_products_widget.dart';
@@ -24,7 +24,6 @@ class EarnScreen extends ConsumerStatefulWidget {
 class EarnScreenState extends ConsumerState<EarnScreen> {
   late DateTime startDate;
   late DateTime endDate;
-  late UserLocal user;
 
   @override
   void initState() {
@@ -32,7 +31,6 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     final selectedDate = ref.read(dateProvider);
     startDate = DateTime.parse(selectedDate);
     endDate = DateTime.parse(selectedDate);
-    user = ref.watch(userProvider).value!;
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -45,8 +43,10 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     if (pickedDate != null) {
       setState(() {
         if (isStart) {
+          ref.read(incomeProvider.notifier).reLoadIncomeData(pickedDate, endDate);
           startDate = pickedDate;
         } else {
+          ref.read(incomeProvider.notifier).reLoadIncomeData(startDate, pickedDate);
           endDate = pickedDate;
         }
       });
@@ -55,50 +55,34 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider).value!;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth =
         isPortatil
             ? MediaQuery.of(context).size.width
             : MediaQuery.of(context).size.width * 0.8;
-    final awsDb = DataStoreReadService();
-    final userAsync = ref.watch(userProvider);
+    final date = ref.watch(dateProvider);
     final incomeState = ref.watch(incomeProvider);
-
-    return userAsync.when(
-      loading:()=> Scaffold(body: Center(child: CircularProgressIndicator(),),),
-      error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
-      data: (userAsync) => userAsync.permissions['watchIncome']! ?
-      Scaffold(
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: awsDb.getAllInconmeRange(userAsync.tenant.tenant_id, startDate, endDate),
-        builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            Map<String, dynamic> totalIncome = snapshot.data!;
-            final today = ref.watch(dateProvider);
-            final todayPlanIncome = awsDb.getIncomePlans(startDate,endDate,userAsync.tenant.tenant_id,totalIncome['payments']);
-            final todaySaleIncome = awsDb.getIncomeSales(startDate,endDate,userAsync.tenant.tenant_id,totalIncome['sales']);
-            return incomeScreen(context, screenWidth, totalIncome,todayPlanIncome,todaySaleIncome, today, userAsync);
-          }
-        },
-      ),
-      ): Scaffold(
-        body: Center(child: 
-          Text('No tienes acceso a esta sección')) 
-      )
-    );
+    return incomeState.when(
+      error: (e,s)=>Center(child: Text("Error al obtener los datos $e"),), 
+      loading: ()=>Center(child: CircularProgressIndicator(),),
+      data:(data) {
+        return Scaffold(
+          body: incomeScreen(
+            context, 
+            screenWidth,
+            data,  
+            date, 
+            user));
+      },
+      ); 
   }
 
   Center incomeScreen(
     BuildContext context,
     double screenWidth,
-    Map<String, dynamic> income,
-    double todayPlanIncome,
-    double todaySaleIncome,
+    IncomeState incomeData,
     String date,
     UserLocal user,
   ) {
@@ -221,7 +205,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                             style: GoogleFonts.michroma(color: Colors.white),
                           ),
                           Text(
-                            '\$${todayPlanIncome.toString()}',
+                            '\$${incomeData.planIncome.toString()}',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],
@@ -234,7 +218,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                             style: GoogleFonts.michroma(color: Colors.white),
                           ),
                           Text(
-                            '\$${todaySaleIncome.toString()}',
+                            '\$${incomeData.productIncome.toString()}',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],
@@ -248,7 +232,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                             style: GoogleFonts.michroma(color: Colors.white),
                           ),
                           Text(
-                            '\$${(todaySaleIncome+todayPlanIncome).toString()}',
+                            '\$${(incomeData.planIncome!+incomeData.productIncome!).toString()}',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],
