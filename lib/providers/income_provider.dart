@@ -1,6 +1,8 @@
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/income_state.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
@@ -20,19 +22,21 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
     try {
       final awsDb = DataStoreReadService();
       final user = await ref.watch(userProvider.future);
-      final tenenatId = user.tenant.tenant_id;
+      final date = DateTime.parse(ref.watch(dateProvider));
       final start = DateTime.now().subtract(Duration(days:DateTime.now().day-1));
       final end = DateTime.now();
-      final incomeMap = await awsDb.getAllInconmeRange(tenenatId, start, end);
+      final incomeMap = await awsDb.getAllInconmeRange(user.tenant.tenant_id, start, end);
       final salesList = incomeMap["sales"];
       final planList = incomeMap["payments"];
-      final totalPlan = calculatePlanIncome(planList);
-      final totalSales = calculateSalesIncome(salesList);
+      final planData = calculatePlanIncomeRange(planList, date);
+      final salesData = calculateSalesIncomeRange(salesList, date);
       final income = IncomeState(
         listPlanIncome:planList, 
         listProductIncome: salesList,
-        planIncome: totalPlan,
-        productIncome: totalSales,
+        dayPlanIncome: planData["day"]!,
+        dayProductIncome: salesData["day"]!,
+        planIncome: planData["range"],
+        productIncome: salesData["range"],
         );
       state = AsyncValue.data(income);
 
@@ -46,17 +50,19 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
     try {
       final awsDb = DataStoreReadService();
       final user = await ref.watch(userProvider.future);
-      final tenenatId = user.tenant.tenant_id;
-      final incomeMap = await awsDb.getAllInconmeRange(tenenatId, start, end);
+      final date = DateTime.parse(ref.watch(dateProvider));
+      final incomeMap = await awsDb.getAllInconmeRange(user.tenant.tenant_id, start, end);
       final salesList = incomeMap["sales"];
       final planList = incomeMap["payments"];
-      final totalPlan = calculatePlanIncome(planList);
-      final totalSales = calculateSalesIncome(salesList);
+      final planData = calculatePlanIncomeRange(planList, date);
+      final salesData = calculateSalesIncomeRange(salesList, date);
       final income = IncomeState(
         listPlanIncome:planList, 
         listProductIncome: salesList,
-        planIncome: totalPlan,
-        productIncome: totalSales,
+        dayPlanIncome: planData["day"]!,
+        dayProductIncome: salesData["day"]!,
+        planIncome: planData["range"],
+        productIncome: salesData["range"],
         );
       state = AsyncValue.data(income);
     } catch (e) {
@@ -65,20 +71,28 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
     }
   }
   
-  double calculatePlanIncome(List<Payment> listPayments){
-    double total = 0.0;
+  Map<String, double> calculatePlanIncomeRange(List<Payment> listPayments, DateTime date){
+    double totalRange = 0.0;
+    double totalDay = 0.0;
     for(var payment in listPayments){
-      total += payment.amount!;
+      totalRange += payment.amount!;
+      if (payment.date == TemporalDate(date)) {
+        totalDay += payment.amount!;
+      }
     }
-    return total; 
+    return {"range": totalRange,"day":totalDay}; 
   }
 
-  double calculateSalesIncome(List<Sale> listSales){
-    double total = 0.0;
+  Map<String, double> calculateSalesIncomeRange(List<Sale> listSales, DateTime date){
+    double totalRange = 0.0;
+    double totalDay = 0.0;
     for(var sale in listSales){
-      total += sale.price!;
+      totalRange += sale.price!;
+      if (sale.date == TemporalDate(date)) {
+        totalDay += sale.price!;
+      }
     }
-    return total; 
+    return {"range": totalRange,"day":totalDay}; 
   }
 
   }

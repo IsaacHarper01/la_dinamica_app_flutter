@@ -9,6 +9,8 @@ import 'package:la_dinamica_app/model/income_state.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/income_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/add_expenses_widget.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/box_info_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/line_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/pie_chart_products_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/pie_chart_widget.dart';
@@ -58,8 +60,8 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     final user = ref.watch(userProvider).value!;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
-    final screenWidth =
-        isPortatil
+    final months = {1:"Enero",2:"Febrero",3:"Marzo",4:"Abril",5:"Mayo",6:"Junio",7:"Julio",8:"Agosto",9:"Septiembre",10:"Octubre",11:"Noviembre",12:"Diciembre",};
+    final screenWidth = isPortatil
             ? MediaQuery.of(context).size.width
             : MediaQuery.of(context).size.width * 0.8;
     final date = ref.watch(dateProvider);
@@ -74,7 +76,15 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
             screenWidth,
             data,  
             date, 
-            user));
+            user,
+            months,),
+        floatingActionButton: FloatingActionButton(
+          onPressed: ()async{
+            showDialog(context: context, builder: (_) => AddExpensesWidget());
+          },
+          child: Icon(Icons.receipt_long),
+          ),
+            );
       },
       ); 
   }
@@ -85,6 +95,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     IncomeState incomeData,
     String date,
     UserLocal user,
+    Map<int,String> months,
   ) {
     return Center(
       child: SingleChildScrollView(
@@ -180,67 +191,12 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 ],
               ),
               const SizedBox(height: 10),
-              Container(
-                height: 130,
-                width: screenWidth * 0.9,
-                decoration: BoxDecoration(
-                  color: colorList[3],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                        'Datos de la fecha Actual: $date',
-                        style: GoogleFonts.michroma(color: Colors.white),
-                      ),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Ingresos de planes: ',
-                            style: GoogleFonts.michroma(color: Colors.white),
-                          ),
-                          Text(
-                            '\$${incomeData.planIncome.toString()}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Ingresos de productos: ',
-                            style: GoogleFonts.michroma(color: Colors.white),
-                          ),
-                          Text(
-                            '\$${incomeData.productIncome.toString()}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      const Divider(height: 0, indent: 20, endIndent: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Total: ',
-                            style: GoogleFonts.michroma(color: Colors.white),
-                          ),
-                          Text(
-                            '\$${(incomeData.planIncome!+incomeData.productIncome!).toString()}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              BoxInfoWidget(
+                screenWidth: screenWidth, 
+                planData: incomeData.dayPlanIncome!, 
+                productData: incomeData.dayProductIncome!, 
+                date: date,
+                text: "Ingresos del día: $date"),
               const SizedBox(height: 20),
               Container(
                 decoration: BoxDecoration(
@@ -249,6 +205,13 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 ),
                 child: LineChartWidget(startDate: startDate, endDate: endDate, user: user),
               ),
+              const SizedBox(height: 20),
+              BoxInfoWidget(
+                screenWidth: screenWidth, 
+                planData: incomeData.planIncome!, 
+                productData: incomeData.productIncome!, 
+                date: date, 
+                text: "Ingresos mensuales: ${months[DateTime.parse(date).month]}"),
               const SizedBox(height: 20),
               Container(
                 width: screenWidth,

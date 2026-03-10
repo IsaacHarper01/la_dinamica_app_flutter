@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/income_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/average_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/days_chart_widget.dart';
@@ -37,6 +38,7 @@ class LineChartWidget extends ConsumerWidget {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
+    final incomeDate = ref.watch(incomeProvider);
     
     var n = 30;
 
