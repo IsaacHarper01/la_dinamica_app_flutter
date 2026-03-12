@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class DataStoreService {
@@ -346,4 +347,21 @@ class DataStoreService {
     );
     Amplify.DataStore.save(newJoinGroup);
   }
+
+  Future<void> saveExpense({
+    required Tenant tenant,
+    required DateTime date,
+    required String name,
+    required double amount,
+    required String? description,
+  })async{
+    final newExpense = Expense(
+      tenant: tenant,
+      name: name, 
+      amount: amount,
+      description: description,
+      date: TemporalDate(date));
+    Amplify.DataStore.save(newExpense);
+  }
+
 }

@@ -4,6 +4,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:la_dinamica_app/model/UserLocal.dart';
+import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 
@@ -187,52 +188,16 @@ class DataStoreReadService {
           where: Sale.TENANT_ID.eq(tenaniId)
           .and(Sale.DATE.between(startDate, endDate))
           );
-          return {"payments":payments, "sales":sales};
+        final expenses = await Amplify.DataStore.query(
+          Expense.classType,
+          where: Expense.TENANT.eq(tenaniId)
+          .and(Expense.DATE.between(startDate, endDate)
+            )
+          );
+          return {"payments":payments, "sales":sales, "expenses": expenses};
       } catch (e) {
         rethrow;
       }
-  }
-
-  double getIncomePlans(DateTime startDate, DateTime endDate, String tenantId, List<Payment> payments){
-    double totalIncome = 0.0;
-    try {
-      if (payments.isEmpty) {
-        safePrint(
-          '❌ No se encontraron ingresos en el rango de fechas proporcionado',
-        );
-        return 0.0;
-      } else {
-        for (var payment in payments) {
-          totalIncome += payment.amount ?? 0.0;
-        }
-        safePrint('✅ Ingreso calculado correctamente');
-      }
-      return totalIncome;
-    } catch (e) {
-      safePrint('❌ Error al obtener los Ingresos: $e');
-      rethrow;
-    }
-  }
-
-  double getIncomeSales(DateTime startDate, DateTime endDate, String tenantId, List<Sale> sales){
-    double totalIncome = 0.0;
-    try {
-      if (sales.isEmpty) {
-        safePrint(
-          '❌ No se encontraron ingresos en el rango de fechas proporcionado',
-        );
-        return 0.0;
-      } else {
-        for (var sale in sales) {
-          totalIncome += sale.price ?? 0.0;
-        }
-        safePrint('✅ Ingreso calculado correctamente');
-      }
-      return totalIncome;
-    } catch (e) {
-      safePrint('❌ Error al obtener los Ingresos: $e');
-      rethrow;
-    }
   }
   
   Future<List<Map<String, dynamic>>?> getTotalAmounRange(DateTime startDate,DateTime endDate, String tenantId) async {
@@ -440,6 +405,19 @@ class DataStoreReadService {
     } catch (e) {
       safePrint('❌ Error al obtener los pagos: $e');
       return null;
+    }
+  }
+
+  Future<List<Expense>> getExpensesRange(Tenant tenant, DateTime start, DateTime end)async{
+    try{
+      final List<Expense> allexpenses = await Amplify.DataStore.query(
+      Expense.classType,
+      where: Expense.DATE.between(TemporalDate(start), TemporalDate(end))
+      .and(Expense.TENANT.eq(tenant)));
+
+      return allexpenses;
+    }catch(e){
+      return [];
     }
   }
 

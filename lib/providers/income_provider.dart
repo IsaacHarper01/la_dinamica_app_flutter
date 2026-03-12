@@ -1,6 +1,7 @@
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/income_state.dart';
+import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -28,15 +29,20 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
       final incomeMap = await awsDb.getAllInconmeRange(user.tenant.tenant_id, start, end);
       final salesList = incomeMap["sales"];
       final planList = incomeMap["payments"];
+      final expensesList = incomeMap["expenses"];
       final planData = calculatePlanIncomeRange(planList, date);
       final salesData = calculateSalesIncomeRange(salesList, date);
+      final expenseData = calculateExpensesRange(expensesList, date);
       final income = IncomeState(
         listPlanIncome:planList, 
         listProductIncome: salesList,
+        listExpense: expensesList,
         dayPlanIncome: planData["day"]!,
         dayProductIncome: salesData["day"]!,
+        dayExpense: expenseData["day"],
         planIncome: planData["range"],
         productIncome: salesData["range"],
+        expenseTotal: expenseData["range"],
         );
       state = AsyncValue.data(income);
 
@@ -52,17 +58,22 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
       final user = await ref.watch(userProvider.future);
       final date = DateTime.parse(ref.watch(dateProvider));
       final incomeMap = await awsDb.getAllInconmeRange(user.tenant.tenant_id, start, end);
-      final salesList = incomeMap["sales"];
+     final salesList = incomeMap["sales"];
       final planList = incomeMap["payments"];
+      final expensesList = incomeMap["expenses"];
       final planData = calculatePlanIncomeRange(planList, date);
       final salesData = calculateSalesIncomeRange(salesList, date);
+      final expenseData = calculateExpensesRange(expensesList, date);
       final income = IncomeState(
         listPlanIncome:planList, 
         listProductIncome: salesList,
+        listExpense: expensesList,
         dayPlanIncome: planData["day"]!,
         dayProductIncome: salesData["day"]!,
+        dayExpense: expenseData["day"],
         planIncome: planData["range"],
         productIncome: salesData["range"],
+        expenseTotal: expenseData["range"],
         );
       state = AsyncValue.data(income);
     } catch (e) {
@@ -90,6 +101,18 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
       totalRange += sale.price!;
       if (sale.date == TemporalDate(date)) {
         totalDay += sale.price!;
+      }
+    }
+    return {"range": totalRange,"day":totalDay}; 
+  }
+
+   Map<String, double> calculateExpensesRange(List<Expense> listExpenses, DateTime date){
+    double totalRange = 0.0;
+    double totalDay = 0.0;
+    for(var expense in listExpenses){
+      totalRange += expense.amount;
+      if (expense.date == TemporalDate(date)) {
+        totalDay += expense.amount;
       }
     }
     return {"range": totalRange,"day":totalDay}; 

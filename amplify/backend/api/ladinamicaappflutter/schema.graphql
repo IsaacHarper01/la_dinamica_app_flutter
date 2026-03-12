@@ -94,7 +94,9 @@ type Tenant @model @auth(rules: [{allow: public}]) {
   name: String!
   status: Boolean
   plan: String
+
   who_access: [UserAccess] @hasMany(fields: ["tenant_id"])
+  expense: [Expense] @hasMany(fields: ["tenant_id"])
 }
  
 type Product @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -189,4 +191,15 @@ type Groups @model @auth(rules: [{allow: public, operations: [create, read, upda
   tenant_id: ID
 
   joingroup: [JoinGroups] @hasMany(fields: ["id"])
+}
+
+type Expense @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  tenant_id: ID!
+  name: String!
+  amount: Float!
+  date: AWSDate!
+  description: String
+
+  tenant: Tenant @belongsTo(fields: ["tenant_id"])
 }

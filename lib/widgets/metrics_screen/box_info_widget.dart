@@ -6,12 +6,15 @@ class BoxInfoWidget extends StatefulWidget {
   final double screenWidth;
   final double planData;
   final double productData;
+  final double expenses;
   final String date;
   final String text;
+
   const BoxInfoWidget({
     super.key,
     required this.screenWidth,
     required this.planData,
+    required this.expenses,
     required this.productData,
     required this.date,
     required this.text
@@ -67,6 +70,19 @@ class _BoxInfoWidgetState extends State<BoxInfoWidget> {
                           ),
                         ],
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Gastos: ',
+                            style: GoogleFonts.michroma(color: Colors.white),
+                          ),
+                          Text(
+                            '\$${widget.expenses.toString()}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
                       const Divider(height: 0, indent: 20, endIndent: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -76,7 +92,7 @@ class _BoxInfoWidgetState extends State<BoxInfoWidget> {
                             style: GoogleFonts.michroma(color: Colors.white),
                           ),
                           Text(
-                            '\$${(widget.planData+widget.productData).toString()}',
+                            '\$${(widget.planData+widget.productData-widget.expenses).toString()}',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ],

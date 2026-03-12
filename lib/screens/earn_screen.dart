@@ -194,7 +194,8 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
               BoxInfoWidget(
                 screenWidth: screenWidth, 
                 planData: incomeData.dayPlanIncome!, 
-                productData: incomeData.dayProductIncome!, 
+                productData: incomeData.dayProductIncome!,
+                expenses: incomeData.dayExpense!, 
                 date: date,
                 text: "Ingresos del día: $date"),
               const SizedBox(height: 20),
@@ -210,6 +211,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 screenWidth: screenWidth, 
                 planData: incomeData.planIncome!, 
                 productData: incomeData.productIncome!, 
+                expenses: incomeData.expenseTotal!,
                 date: date, 
                 text: "Ingresos mensuales: ${months[DateTime.parse(date).month]}"),
               const SizedBox(height: 20),

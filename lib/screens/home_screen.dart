@@ -178,13 +178,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
             ),
             user!.permissions["editPast"] == true ?
             CalendarButton() : SizedBox(),
-            FilledButton(onPressed: (){
-              final start = DateTime.now().subtract(Duration(days:DateTime.now().day-1));
-              final end = DateTime.now();
-              safePrint(start);
-              safePrint(end);
-            }, 
-            child: Text("Test"))
           ],
         ),
       ),

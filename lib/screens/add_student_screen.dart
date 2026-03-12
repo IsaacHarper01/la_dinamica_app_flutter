@@ -5,7 +5,6 @@ import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:logger/logger.dart';
 
 class AddStudentScreen extends ConsumerStatefulWidget {
   const AddStudentScreen({super.key});
@@ -16,7 +15,6 @@ class AddStudentScreen extends ConsumerStatefulWidget {
 
 class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
-  final logger = Logger();
   
   final List<TextEditingController> _controllers = List.generate(
     6,
@@ -71,7 +69,6 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
         for (var i = 0; i < _controllers.length; i++)
           _namesdb[i]: _controllers[i].text,
       };
-      logger.i('Datos del formulario: $data');
 
       if(checkDateFormat(data['birthday']!) == false){
         if (!mounted) return;

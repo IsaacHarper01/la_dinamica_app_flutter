@@ -32,6 +32,7 @@ class Tenant extends amplify_core.Model {
   final bool? _status;
   final String? _plan;
   final List<UserAccess>? _who_access;
+  final List<Expense>? _expense;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -95,6 +96,10 @@ class Tenant extends amplify_core.Model {
     return _who_access;
   }
   
+  List<Expense>? get expense {
+    return _expense;
+  }
+  
   amplify_core.TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -103,15 +108,16 @@ class Tenant extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Tenant._internal({required tenant_id, required name, status, plan, who_access, createdAt, updatedAt}): _tenant_id = tenant_id, _name = name, _status = status, _plan = plan, _who_access = who_access, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Tenant._internal({required tenant_id, required name, status, plan, who_access, expense, createdAt, updatedAt}): _tenant_id = tenant_id, _name = name, _status = status, _plan = plan, _who_access = who_access, _expense = expense, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Tenant({required String tenant_id, required String name, bool? status, String? plan, List<UserAccess>? who_access}) {
+  factory Tenant({required String tenant_id, required String name, bool? status, String? plan, List<UserAccess>? who_access, List<Expense>? expense}) {
     return Tenant._internal(
       tenant_id: tenant_id,
       name: name,
       status: status,
       plan: plan,
-      who_access: who_access != null ? List<UserAccess>.unmodifiable(who_access) : who_access);
+      who_access: who_access != null ? List<UserAccess>.unmodifiable(who_access) : who_access,
+      expense: expense != null ? List<Expense>.unmodifiable(expense) : expense);
   }
   
   bool equals(Object other) {
@@ -126,7 +132,8 @@ class Tenant extends amplify_core.Model {
       _name == other._name &&
       _status == other._status &&
       _plan == other._plan &&
-      DeepCollectionEquality().equals(_who_access, other._who_access);
+      DeepCollectionEquality().equals(_who_access, other._who_access) &&
+      DeepCollectionEquality().equals(_expense, other._expense);
   }
   
   @override
@@ -148,27 +155,30 @@ class Tenant extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Tenant copyWith({String? name, bool? status, String? plan, List<UserAccess>? who_access}) {
+  Tenant copyWith({String? name, bool? status, String? plan, List<UserAccess>? who_access, List<Expense>? expense}) {
     return Tenant._internal(
       tenant_id: tenant_id,
       name: name ?? this.name,
       status: status ?? this.status,
       plan: plan ?? this.plan,
-      who_access: who_access ?? this.who_access);
+      who_access: who_access ?? this.who_access,
+      expense: expense ?? this.expense);
   }
   
   Tenant copyWithModelFieldValues({
     ModelFieldValue<String>? name,
     ModelFieldValue<bool?>? status,
     ModelFieldValue<String?>? plan,
-    ModelFieldValue<List<UserAccess>?>? who_access
+    ModelFieldValue<List<UserAccess>?>? who_access,
+    ModelFieldValue<List<Expense>?>? expense
   }) {
     return Tenant._internal(
       tenant_id: tenant_id,
       name: name == null ? this.name : name.value,
       status: status == null ? this.status : status.value,
       plan: plan == null ? this.plan : plan.value,
-      who_access: who_access == null ? this.who_access : who_access.value
+      who_access: who_access == null ? this.who_access : who_access.value,
+      expense: expense == null ? this.expense : expense.value
     );
   }
   
@@ -190,11 +200,24 @@ class Tenant extends amplify_core.Model {
               .map((e) => UserAccess.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
+      _expense = json['expense']  is Map
+        ? (json['expense']['items'] is List
+          ? (json['expense']['items'] as List)
+              .where((e) => e != null)
+              .map((e) => Expense.fromJson(new Map<String, dynamic>.from(e)))
+              .toList()
+          : null)
+        : (json['expense'] is List
+          ? (json['expense'] as List)
+              .where((e) => e?['serializedData'] != null)
+              .map((e) => Expense.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
+              .toList()
+          : null),
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'tenant_id': _tenant_id, 'name': _name, 'status': _status, 'plan': _plan, 'who_access': _who_access?.map((UserAccess? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'tenant_id': _tenant_id, 'name': _name, 'status': _status, 'plan': _plan, 'who_access': _who_access?.map((UserAccess? e) => e?.toJson()).toList(), 'expense': _expense?.map((Expense? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -203,6 +226,7 @@ class Tenant extends amplify_core.Model {
     'status': _status,
     'plan': _plan,
     'who_access': _who_access,
+    'expense': _expense,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -215,6 +239,9 @@ class Tenant extends amplify_core.Model {
   static final WHO_ACCESS = amplify_core.QueryField(
     fieldName: "who_access",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'UserAccess'));
+  static final EXPENSE = amplify_core.QueryField(
+    fieldName: "expense",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Expense'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Tenant";
     modelSchemaDefinition.pluralName = "Tenants";
@@ -263,6 +290,13 @@ class Tenant extends amplify_core.Model {
       isRequired: false,
       ofModelName: 'UserAccess',
       associatedKey: UserAccess.TENANT
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
+      key: Tenant.EXPENSE,
+      isRequired: false,
+      ofModelName: 'Expense',
+      associatedKey: Expense.TENANT
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
