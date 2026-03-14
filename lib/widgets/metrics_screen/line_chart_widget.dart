@@ -38,7 +38,7 @@ class LineChartWidget extends ConsumerWidget {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
-    final incomeDate = ref.watch(incomeProvider);
+    final incomeData = ref.watch(incomeProvider);
     
     var n = 30;
 

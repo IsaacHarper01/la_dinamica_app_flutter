@@ -229,7 +229,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               ),
               if (hasAttendance)
                 Positioned(
-                  bottom: 12,
+                  top: 12,
                   right: 12,
                   child: AnimatedScale(
                     scale: 1.0,
@@ -311,7 +311,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                           ),
                         ),
                       Expanded(
-                        flex: 3,
+                        flex: 6,
                         child: SizedBox()),
                       Expanded(child: IconButton(
                         onPressed: () async{
@@ -413,7 +413,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Tipo de plan', style: GoogleFonts.gochiHand(fontSize: 30, fontWeight: FontWeight.bold)),
-                Text('${paymentData.plan!.type}', style: GoogleFonts.gochiHand(fontSize: 20)),
+                Text(paymentData.plan!.type ?? "Sin Plan", style: GoogleFonts.gochiHand(fontSize: 20)),
               ],
             ),
           ),

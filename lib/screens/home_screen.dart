@@ -15,6 +15,7 @@ import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
+import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/calendar_widget_general.dart';
 import 'package:la_dinamica_app/widgets/payment_box.dart';
 import 'package:la_dinamica_app/widgets/products_page.dart/product_payment_box.dart';
@@ -227,18 +228,29 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                                 Student student = entry.value;
                                 return Column(
                                   children: [
-                                    PreviewStudentContainer(
-                                      name: student.name!,
-                                      image: student.image!,
-                                      onDismissed: () {
-                                        ref
-                                            .read(studentsAttendanceProvider.notifier)
-                                            .deleteAttendance(
-                                              student,
-                                              ref.read(dateProvider),
-                                              user.tenant.tenant_id,
-                                            );
-                                      },
+                                    InkWell(
+                                      onTap:(){Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => StudentDetailScreen(
+                                              student: student,
+                                            ),
+                                      ),
+                                    );},
+                                    child: PreviewStudentContainer(
+                                        name: student.name!,
+                                        image: student.image!,
+                                        onDismissed: () {
+                                          ref
+                                              .read(studentsAttendanceProvider.notifier)
+                                              .deleteAttendance(
+                                                student,
+                                                ref.read(dateProvider),
+                                                user.tenant.tenant_id,
+                                              );
+                                        },
+                                      ),
                                     ),
                                     const Divider(
                                       height: 0,

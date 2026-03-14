@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/add_students_to_gruop_provider.dart';
+import 'package:la_dinamica_app/screens/student_detail_screen.dart';
 import 'package:la_dinamica_app/widgets/preview_student_container_reduce.dart';
 
 class StudentsByGroupListWidget extends ConsumerStatefulWidget {
@@ -88,20 +89,33 @@ class _StudentsListWidgetState extends ConsumerState<StudentsByGroupListWidget> 
                               }
                               return false;
                             },
-                            child: PreviewStudentContainerReduce(
-                                student: showedStudents[index],
-                                backgroundColor:
-                                    widget.filterStudents.contains(showedStudents[index])
-                                        ? Colors.green.withAlpha(20)
-                                        : Colors.transparent,
-                                trailingIcon:
-                                    widget.filterStudents.contains(showedStudents[index])
-                                        ? const Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green,
-                                        )
-                                        : null,
-                              ),
+                            child: InkWell(
+                              onTap:(){
+                                Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) => StudentDetailScreen(
+                                              student: showedStudents[index],
+                                            ),
+                                      ),
+                                    );
+                              },
+                              child: PreviewStudentContainerReduce(
+                                  student: showedStudents[index],
+                                  backgroundColor:
+                                      widget.filterStudents.contains(showedStudents[index])
+                                          ? Colors.green.withAlpha(20)
+                                          : Colors.transparent,
+                                  trailingIcon:
+                                      widget.filterStudents.contains(showedStudents[index])
+                                          ? const Icon(
+                                            Icons.check_circle,
+                                            color: Colors.green,
+                                          )
+                                          : null,
+                                ),
+                            ),
                           ),
                           const Divider(height: 0, indent: 20, endIndent: 20),
                         ],

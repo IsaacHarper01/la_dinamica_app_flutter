@@ -72,6 +72,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            spacing: 10,
             children: [
               Text("Añadir Gasto"),
               SizedBox(height: 20),
