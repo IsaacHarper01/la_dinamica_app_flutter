@@ -89,7 +89,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
       ); 
   }
 
-  Center incomeScreen(
+ incomeScreen(
     BuildContext context,
     double screenWidth,
     IncomeState incomeData,
@@ -97,155 +97,158 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     UserLocal user,
     Map<int,String> months,
   ) {
-    return Center(
+    return RefreshIndicator(
+      onRefresh: () async{
+        ref.read(incomeProvider.notifier).loadActualMonth();
+      },
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 20, 8, 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 35),
-              Text('Seleccione un periodo',style: GoogleFonts.michroma()),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: screenWidth,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      flex: 5,
-                      child: FilledButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(colorList[2]),
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(8, 20, 8, 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 35),
+                Text('Seleccione un periodo',style: GoogleFonts.michroma()),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: screenWidth,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        flex: 5,
+                        child: FilledButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(colorList[2]),
+                            shape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                            ),
                           ),
-                        ),
-                        onPressed: () => _selectDate(context, true),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            "Inicio: ${startDate.month}/${startDate.day}/${startDate.year}",
-                            style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
+                          onPressed: () => _selectDate(context, true),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "Inicio: ${startDate.month}/${startDate.day}/${startDate.year}",
+                              style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('A', style: GoogleFonts.michroma(),),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      flex: 5,
-                      child: FilledButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(colorList[2]),
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                      const SizedBox(width: 8),
+                      Text('A', style: GoogleFonts.michroma(),),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        flex: 5,
+                        child: FilledButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(colorList[2]),
+                            shape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                            ),
+                          ),
+                          onPressed: () => _selectDate(context, false),
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "Final: ${endDate.month}/${endDate.day}/${endDate.year}",
+                              style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
+                            ),
                           ),
                         ),
-                        onPressed: () => _selectDate(context, false),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            "Final: ${endDate.month}/${endDate.day}/${endDate.year}",
-                            style: GoogleFonts.michroma(color: Colors.white, fontSize: 10),
-                          ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ), // Espaciado entre los botones y el gráfico
+                Text('Generar reportes en csv', style: GoogleFonts.michroma()),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          generateAttendanceReport(startDate, endDate, user.tenant.tenant_id);
+                        },
+                        child: const Text(
+                          'Reporte de asistencias',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          generateIncomeReport(startDate, endDate, user.tenant.tenant_id);
+                        },
+                        child: const Text(
+                          'Reporte de Ingresos',
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              ), // Espaciado entre los botones y el gráfico
-              Text('Generar reportes en csv', style: GoogleFonts.michroma()),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        generateAttendanceReport(startDate, endDate, user.tenant.tenant_id);
-                      },
-                      child: const Text(
-                        'Reporte de asistencias',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                const SizedBox(height: 10),
+                BoxInfoWidget(
+                  screenWidth: screenWidth, 
+                  planData: incomeData.dayPlanIncome!, 
+                  productData: incomeData.dayProductIncome!,
+                  expenses: incomeData.dayExpense!, 
+                  date: date,
+                  text: "Ingresos del día: $date"),
+                const SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: colorList[1], width: 1),
                   ),
-                  Flexible(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        generateIncomeReport(startDate, endDate, user.tenant.tenant_id);
-                      },
-                      child: const Text(
-                        'Reporte de Ingresos',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                  child: LineChartWidget(startDate: startDate, endDate: endDate, user: user),
+                ),
+                const SizedBox(height: 20),
+                BoxInfoWidget(
+                  screenWidth: screenWidth, 
+                  planData: incomeData.planIncome!, 
+                  productData: incomeData.productIncome!, 
+                  expenses: incomeData.expenseTotal!,
+                  date: date, 
+                  text: "Ingresos mensuales: ${months[DateTime.parse(date).month]}"),
+                const SizedBox(height: 20),
+                Container(
+                  width: screenWidth,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: colorList[1], width: 1),
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              BoxInfoWidget(
-                screenWidth: screenWidth, 
-                planData: incomeData.dayPlanIncome!, 
-                productData: incomeData.dayProductIncome!,
-                expenses: incomeData.dayExpense!, 
-                date: date,
-                text: "Ingresos del día: $date"),
-              const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colorList[1], width: 1),
+                  child: PieChartWidgetPlans(
+                    startDate: startDate, 
+                    endDate: endDate, 
+                    tenantId: user.tenant.tenant_id,
+                    screenWidth: screenWidth,
+                  ),
                 ),
-                child: LineChartWidget(startDate: startDate, endDate: endDate, user: user),
-              ),
-              const SizedBox(height: 20),
-              BoxInfoWidget(
-                screenWidth: screenWidth, 
-                planData: incomeData.planIncome!, 
-                productData: incomeData.productIncome!, 
-                expenses: incomeData.expenseTotal!,
-                date: date, 
-                text: "Ingresos mensuales: ${months[DateTime.parse(date).month]}"),
-              const SizedBox(height: 20),
-              Container(
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colorList[1], width: 1),
+                const SizedBox(height: 20),
+                Container(
+                  width: screenWidth,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: colorList[1], width: 1),
+                  ),
+                  child: PieChartWidgetProducts(
+                    startDate: startDate, 
+                    endDate: endDate, 
+                    tenantId: user.tenant.tenant_id,
+                    screenWidth: screenWidth,
+                  ),
                 ),
-                child: PieChartWidgetPlans(
-                  startDate: startDate, 
-                  endDate: endDate, 
-                  tenantId: user.tenant.tenant_id,
-                  screenWidth: screenWidth,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                width: screenWidth,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colorList[1], width: 1),
-                ),
-                child: PieChartWidgetProducts(
-                  startDate: startDate, 
-                  endDate: endDate, 
-                  tenantId: user.tenant.tenant_id,
-                  screenWidth: screenWidth,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
 }

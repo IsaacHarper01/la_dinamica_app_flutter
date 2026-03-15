@@ -212,56 +212,62 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                     ),
                   );
                 }
-                return SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(height: screenHeight * 0.06),
-                        Center(
-                          child: StudentsNumberHome(studentsNumber: "Asistencias: ${allStudents.length}"),
-                        ),
-                        SizedBox(height: screenHeight * 0.03),
-                        Column(
-                          children:
-                              allStudents.asMap().entries.map((entry) {
-                                Student student = entry.value;
-                                return Column(
-                                  children: [
-                                    InkWell(
-                                      onTap:(){Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => StudentDetailScreen(
-                                              student: student,
-                                            ),
+                return RefreshIndicator(
+                  onRefresh: () async{
+                    ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(
+                      ref.read(dateProvider));
+                  },
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height: screenHeight * 0.06),
+                          Center(
+                            child: StudentsNumberHome(studentsNumber: "Asistencias: ${allStudents.length}"),
+                          ),
+                          SizedBox(height: screenHeight * 0.03),
+                          Column(
+                            children:
+                                allStudents.asMap().entries.map((entry) {
+                                  Student student = entry.value;
+                                  return Column(
+                                    children: [
+                                      InkWell(
+                                        onTap:(){Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => StudentDetailScreen(
+                                                student: student,
+                                              ),
+                                        ),
+                                      );},
+                                      child: PreviewStudentContainer(
+                                          name: student.name!,
+                                          image: student.image!,
+                                          onDismissed: () {
+                                            ref
+                                                .read(studentsAttendanceProvider.notifier)
+                                                .deleteAttendance(
+                                                  student,
+                                                  ref.read(dateProvider),
+                                                  user.tenant.tenant_id,
+                                                );
+                                          },
+                                        ),
                                       ),
-                                    );},
-                                    child: PreviewStudentContainer(
-                                        name: student.name!,
-                                        image: student.image!,
-                                        onDismissed: () {
-                                          ref
-                                              .read(studentsAttendanceProvider.notifier)
-                                              .deleteAttendance(
-                                                student,
-                                                ref.read(dateProvider),
-                                                user.tenant.tenant_id,
-                                              );
-                                        },
+                                      const Divider(
+                                        height: 0,
+                                        indent: 20,
+                                        endIndent: 20,
                                       ),
-                                    ),
-                                    const Divider(
-                                      height: 0,
-                                      indent: 20,
-                                      endIndent: 20,
-                                    ),
-                                  ],
-                                );
-                              }).toList(),
-                        ),
-                      ],
+                                    ],
+                                  );
+                                }).toList(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

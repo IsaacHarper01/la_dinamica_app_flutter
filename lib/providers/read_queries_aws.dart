@@ -4,7 +4,6 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 

@@ -1,4 +1,3 @@
-import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class IncomeState {

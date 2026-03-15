@@ -1,8 +1,9 @@
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/model/income_state.dart';
-import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
@@ -58,7 +59,7 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
       final user = await ref.watch(userProvider.future);
       final date = DateTime.parse(ref.watch(dateProvider));
       final incomeMap = await awsDb.getAllInconmeRange(user.tenant.tenant_id, start, end);
-     final salesList = incomeMap["sales"];
+      final salesList = incomeMap["sales"];
       final planList = incomeMap["payments"];
       final expensesList = incomeMap["expenses"];
       final planData = calculatePlanIncomeRange(planList, date);
@@ -116,6 +117,20 @@ class IncomeNotifier extends StateNotifier<AsyncValue<IncomeState>> {
       }
     }
     return {"range": totalRange,"day":totalDay}; 
+  }
+
+  Future<void> addPay(Student student, LocalPlan plan, String date, UserLocal user)async{
+    final aws = DataStoreService();
+    aws.savePayment(
+      userId: student.user_id!,
+      amount: plan.price!,
+      clases: plan.clases!,
+      plan: plan,
+      date: date,
+      dbId: user.tenant.tenant_id,
+      profId: user.name,
+    );
+    loadActualMonth();
   }
 
   }

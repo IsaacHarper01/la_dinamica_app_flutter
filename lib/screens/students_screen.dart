@@ -211,80 +211,85 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
                     ),
                   )else
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: filteredStudents.length,
-                      itemBuilder: (context, index){
-                        final student = filteredStudents[index];
-                        return FadeInUp(
-                          child: Column(
-                            children: [
-                              Dismissible(
-                                key: Key(student.user_id.toString()),
-                                // Llave única para cada elemento
-                                background: Container(
-                                  color: const Color.fromARGB(255, 102, 165, 104),
-                                  alignment: Alignment.centerLeft,
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: const Icon(Icons.add_task, color: Colors.white),
-                                ),
-                                secondaryBackground: Container(
-                                  color: const Color.fromARGB(255, 179, 103, 97),
-                                  alignment: Alignment.centerRight,
-                                  padding: const EdgeInsets.only(right: 20),
-                                  child: const Icon(Icons.delete, color: Colors.white),
-                                ),
-                                confirmDismiss: (direction) async {
-                                  if (direction == DismissDirection.startToEnd) {
-                                    ref
-                                        .read(studentsAttendanceProvider.notifier)
-                                        .insertAttendance(student, date);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Asistencia Registrada'),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
-                                  } else {
-                                    handleDeleteDash(context, student);
-                                  }
-                              
-                                  return false;
-                                },
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => StudentDetailScreen(
-                                              student: student,
-                                            ),
-                                      ),
-                                    );
+                    child: RefreshIndicator(
+                      onRefresh: () async{
+                        ref.read(studentsProvider.notifier).fetchStudents();
+                      },
+                      child: ListView.builder(
+                        itemCount: filteredStudents.length,
+                        itemBuilder: (context, index){
+                          final student = filteredStudents[index];
+                          return FadeInUp(
+                            child: Column(
+                              children: [
+                                Dismissible(
+                                  key: Key(student.user_id.toString()),
+                                  // Llave única para cada elemento
+                                  background: Container(
+                                    color: const Color.fromARGB(255, 102, 165, 104),
+                                    alignment: Alignment.centerLeft,
+                                    padding: const EdgeInsets.only(left: 20),
+                                    child: const Icon(Icons.add_task, color: Colors.white),
+                                  ),
+                                  secondaryBackground: Container(
+                                    color: const Color.fromARGB(255, 179, 103, 97),
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.only(right: 20),
+                                    child: const Icon(Icons.delete, color: Colors.white),
+                                  ),
+                                  confirmDismiss: (direction) async {
+                                    if (direction == DismissDirection.startToEnd) {
+                                      ref
+                                          .read(studentsAttendanceProvider.notifier)
+                                          .insertAttendance(student, date);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Asistencia Registrada'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    } else {
+                                      handleDeleteDash(context, student);
+                                    }
+                                
+                                    return false;
                                   },
-                                  splashColor: colorList[6],
-                                  child: PreviewStudentContainerReduce(
-                                    student: student,
-                                    backgroundColor:
-                                        attendedIds.contains(student)
-                                            ? Colors.green.withAlpha(20)
-                                            : Colors.transparent,
-                                    trailingIcon:
-                                        attendedIds.contains(student)
-                                            ? const Icon(
-                                              Icons.check_circle,
-                                              color: Colors.green,
-                                            )
-                                            : null,
+                                  child: InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => StudentDetailScreen(
+                                                student: student,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    splashColor: colorList[6],
+                                    child: PreviewStudentContainerReduce(
+                                      student: student,
+                                      backgroundColor:
+                                          attendedIds.contains(student)
+                                              ? Colors.green.withAlpha(20)
+                                              : Colors.transparent,
+                                      trailingIcon:
+                                          attendedIds.contains(student)
+                                              ? const Icon(
+                                                Icons.check_circle,
+                                                color: Colors.green,
+                                              )
+                                              : null,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const Divider(height: 0, indent: 20, endIndent: 20),
-                            ],
-                          ),
-                        );
-                      }
-                     ),
+                                const Divider(height: 0, indent: 20, endIndent: 20),
+                              ],
+                            ),
+                          );
+                        }
+                       ),
+                    ),
                   )
                           ]
           );

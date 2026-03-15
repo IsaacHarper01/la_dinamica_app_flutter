@@ -41,25 +41,30 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
     return paymentsAsync.when(
       data:(payments) => Scaffold(
         appBar: AppBar(title: Center(child: Text("Ultimos Pagos"))),
-        body: ListView.builder(
-              itemCount: payments.length,
-              itemBuilder: (context, index) {
-                final payment = payments[index];
-                final payStatus = payment.debt == true ? false : true;
-                return PayCard(
-                  payment: payment,
-                  permision: widget.user.permissions["deletePayments"]!,
-                  setDebt: ()async{
-                      await ref.read(paymentsProvider.notifier).markDebt(widget.user, widget.student, payment, payStatus);
-                      safePrint("Adeudo guardado correctamente");
-                  },
-                  onDelete: () async {
-                    await ref.read(paymentsProvider.notifier).deletePay(payment.id, widget.user, widget.student);
-                    safePrint('Eliminando pago con ID: ${payment.id}');
-                  },
-                );
-              },
-            ),
+        body: RefreshIndicator(
+          onRefresh: () async{
+            ref.read(paymentsProvider.notifier).fetchLastPayments(widget.user, widget.student);
+          },
+          child: ListView.builder(
+                itemCount: payments.length,
+                itemBuilder: (context, index) {
+                  final payment = payments[index];
+                  final payStatus = payment.debt == true ? false : true;
+                  return PayCard(
+                    payment: payment,
+                    permision: widget.user.permissions["deletePayments"]!,
+                    setDebt: ()async{
+                        await ref.read(paymentsProvider.notifier).markDebt(widget.user, widget.student, payment, payStatus);
+                        safePrint("Adeudo guardado correctamente");
+                    },
+                    onDelete: () async {
+                      await ref.read(paymentsProvider.notifier).deletePay(payment.id, widget.user, widget.student);
+                      safePrint('Eliminando pago con ID: ${payment.id}');
+                    },
+                  );
+                },
+              ),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async{
               await showPaymentDialog(context, ref, student: widget.student,name: widget.student.name! , date: date, user: widget.user);

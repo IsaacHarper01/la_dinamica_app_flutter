@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class DataStoreService {

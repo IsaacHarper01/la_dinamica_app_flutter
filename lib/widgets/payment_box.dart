@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/providers/create_queries_aws.dart';
+import 'package:la_dinamica_app/providers/income_provider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -96,17 +96,12 @@ Future<void> showPaymentDialog(
                       'Price: \$${plan.price?.toStringAsFixed(2)} - Classes: ${plan.clases ?? 0}',
                     ),
                     onTap: () async {
-                      final aws = DataStoreService();
                       try {
-                        await aws.savePayment(
-                          userId: student.user_id!,
-                          amount: plan.price!,
-                          clases: plan.clases!,
-                          plan: plan,
-                          date: date,
-                          dbId: user.tenant.tenant_id,
-                          profId: user.name,
-                        );
+                        ref.read(incomeProvider.notifier).addPay(
+                          student, 
+                          plan, 
+                          date, 
+                          user);
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Payment saved for ${plan.type}')),
