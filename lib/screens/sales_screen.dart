@@ -26,7 +26,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
     super.initState();
     Future.microtask(() {
       ref.read(salesProvider.notifier)
-         .fetchTodaySales();
+         .setTodaySales();
     });
   }
   
@@ -38,9 +38,9 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
       data:(sales) => Scaffold(
         appBar: AppBar(title: Center(child: Text("Ventas de $date"))),
         body: ListView.builder(
-              itemCount: sales.length,
+              itemCount: sales.dayList!.length,
               itemBuilder: (context, index) {
-                final sale = sales[index];
+                final sale = sales.dayList![index];
                 return SaleCard(
                   sale: sale,
                   permision: widget.user.permissions["deletePayments"]!,

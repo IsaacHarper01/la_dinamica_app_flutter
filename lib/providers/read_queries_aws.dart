@@ -106,11 +106,19 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Sale>> getSalesPerRange(
-    DateTime startDate,
-    DateTime endDate,
-    String tenantId,
-  ) async {
+  Future<List<Payment>> getTodayPayments(String tenantId, String date)async{
+    try {
+      final expenses = await Amplify.DataStore.query(
+        Payment.classType,
+        where: Payment.DATE.eq(date).and(Payment.CLIENT_ID.eq(tenantId))
+        );
+      return expenses;
+      } catch (e) {
+        rethrow;
+      }
+    }
+
+  Future<List<Sale>> getSalesPerRange(DateTime startDate,DateTime endDate,String tenantId,) async {
     try {
       List<Sale> sales = await Amplify.DataStore.query(
         Sale.classType,
@@ -419,6 +427,18 @@ class DataStoreReadService {
       return [];
     }
   }
+
+  Future<List<Expense>> getTodayExpenses(String tenantId, String date)async{
+    try {
+      final expenses = await Amplify.DataStore.query(
+        Expense.classType,
+        where: Expense.DATE.eq(date).and(Expense.TENANT.eq(tenantId))
+        );
+      return expenses;
+      } catch (e) {
+        rethrow;
+      }
+    } 
 
   Future<List<Payment>?> getLastTenPayments(int userId, String tenaniId)async{
     try{

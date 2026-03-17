@@ -5,9 +5,11 @@ import 'package:la_dinamica_app/backend/income_report.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_dinamica_app/model/income_state.dart';
+import 'package:la_dinamica_app/model/earn_summary_model.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/income_provider.dart';
+import 'package:la_dinamica_app/providers/income_summary_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/add_expenses_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/box_info_widget.dart';
@@ -45,10 +47,12 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     if (pickedDate != null) {
       setState(() {
         if (isStart) {
-          ref.read(incomeProvider.notifier).reLoadIncomeData(pickedDate, endDate);
+          //ref.read(incomeProvider.notifier).reLoadIncomeData(pickedDate, endDate);
+          ref.read(dateProviderNew.notifier).setStart(pickedDate);
           startDate = pickedDate;
         } else {
-          ref.read(incomeProvider.notifier).reLoadIncomeData(startDate, pickedDate);
+          //ref.read(incomeProvider.notifier).reLoadIncomeData(startDate, pickedDate);
+          ref.read(dateProviderNew.notifier).setEnd(pickedDate);
           endDate = pickedDate;
         }
       });
@@ -65,7 +69,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
             ? MediaQuery.of(context).size.width
             : MediaQuery.of(context).size.width * 0.8;
     final date = ref.watch(dateProvider);
-    final incomeState = ref.watch(incomeProvider);
+    final incomeState = ref.watch(incomeSummaryProvider);
     return incomeState.when(
       error: (e,s)=>Center(child: Text("Error al obtener los datos $e"),), 
       loading: ()=>Center(child: CircularProgressIndicator(),),
@@ -92,7 +96,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
  incomeScreen(
     BuildContext context,
     double screenWidth,
-    IncomeState incomeData,
+    FinancialSummary incomeData,
     String date,
     UserLocal user,
     Map<int,String> months,
@@ -196,9 +200,9 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 const SizedBox(height: 10),
                 BoxInfoWidget(
                   screenWidth: screenWidth, 
-                  planData: incomeData.dayPlanIncome!, 
-                  productData: incomeData.dayProductIncome!,
-                  expenses: incomeData.dayExpense!, 
+                  planData: incomeData.payments.totalDay!, 
+                  productData: incomeData.sales.totalDay!, 
+                  expenses: incomeData.expenses.totalDay!, 
                   date: date,
                   text: "Ingresos del día: $date"),
                 const SizedBox(height: 20),
@@ -212,9 +216,9 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                 const SizedBox(height: 20),
                 BoxInfoWidget(
                   screenWidth: screenWidth, 
-                  planData: incomeData.planIncome!, 
-                  productData: incomeData.productIncome!, 
-                  expenses: incomeData.expenseTotal!,
+                  planData: incomeData.payments.totalRange!, 
+                  productData: incomeData.sales.totalRange!, 
+                  expenses: incomeData.expenses.totalRange!,
                   date: date, 
                   text: "Ingresos mensuales: ${months[DateTime.parse(date).month]}"),
                 const SizedBox(height: 20),

@@ -9,6 +9,7 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
@@ -43,14 +44,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
       if (user != null) {
         ref
             .watch(studentsAttendanceProvider.notifier)
-            .fetchAttendanceToday(ref.read(dateProvider));
+            .fetchAttendanceToday(ref.read(dateProviderNew).today);
       }
     });
     Future.microtask(() => ref.read(planProvider.notifier).loadPlans());
   }
 
   Future<void> checkAction(BuildContext context) async {
-    final currentDate = ref.read(dateProvider);
+    final currentDate = ref.read(dateProviderNew).today;
     final result = await scannerQR(context,);
     safePrint('QR Result: $result');
     final decodedResult = decodeInfo(result, user!.tenant.tenant_id);

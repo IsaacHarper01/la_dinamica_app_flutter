@@ -6,64 +6,56 @@ import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
-final salesProvider = StateNotifierProvider<SalesNotifier,AsyncValue<FinacialModel<Sale>>>( 
+final incomePlanProvider = StateNotifierProvider<SalesNotifier,AsyncValue<FinacialModel<Payment>>>( 
     (ref) => SalesNotifier(ref),
 );
 
-class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Sale>>>{
+class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Payment>>>{
   final Ref ref;
 
   SalesNotifier(this.ref) : super(const AsyncValue.loading()){
-    setAllSales();
+    setAllPayments();
   }
 
   DataStoreReadService aws =  DataStoreReadService();
   DataStoreService awsSave = DataStoreService();
 
-  Future<void> setAllSales()async{
+  Future<void> setAllPayments()async{
     try {
-      await setTodaySales();
-      await setRangeSales();
+      await setTodayPayments();
+      await setRangePayments();
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
 
-  Future<void> setTodaySales()async{
+  Future<void> setTodayPayments()async{
     final today = ref.read(dateProviderNew).today;
     try {
       final user = await ref.watch(userProvider.future);
-      final sales = await aws.fetchSales(user.tenant.tenant_id, today);
-      state = AsyncData(FinacialModel<Sale>(
-        dayList: sales, 
-        totalDay: sales.fold(0,(sum,sale)=>sum! +sale.price!) ?? 0.0
+      final payments = await aws.getTodayPayments(user.tenant.tenant_id, today);
+      state = AsyncData(FinacialModel<Payment>(
+        dayList: payments, 
+        totalDay: payments.fold(0,(sum,payment)=>sum! +payment.amount!) ?? 0.0
         ));
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
 
-  Future<void> setRangeSales()async{
+  Future<void> setRangePayments()async{
     final start = ref.read(dateProviderNew).start;
     final end = ref.read(dateProviderNew).end;
     try {
       final user = await ref.watch(userProvider.future);
-      final sales = await aws.getSalesPerRange(start,end,user.tenant.tenant_id);
-      state = AsyncData(FinacialModel<Sale>(
-        rangelist: sales,
-        totalRange: sales.fold(0,(sum,sale)=>sum! +sale.price!) ?? 0.0
+      final payments = await aws.getPaymentsRange(start, end, user.tenant.tenant_id);
+      state = AsyncData(FinacialModel<Payment>(
+        rangelist: payments,
+        totalRange: payments.fold(0,(sum,payment)=>sum! +payment.amount!) ?? 0.0
       ));
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }
 
-  Future<void> newSale(String tenantId, double price, String date, String profName, Product product)async{
-      try {
-        awsSave.saveSale(tenaniId: tenantId, price: price, product: product, date: date, profName: profName);
-        setAllSales();
-      } catch (e,st) {
-        state = AsyncValue.error(e, st);
-      }
-  }
 }
