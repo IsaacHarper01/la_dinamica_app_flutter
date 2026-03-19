@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 
 class CalendarButton extends ConsumerWidget {
@@ -8,7 +8,7 @@ class CalendarButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDate = ref.watch(dateProvider);
+    final selectedDate = ref.watch(dateProvider).today;
 
     return IconButton(
       icon: Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.primary),
@@ -21,8 +21,8 @@ class CalendarButton extends ConsumerWidget {
         );
 
         if (picked != null) {
-          ref.read(dateProvider.notifier).state = picked.toString().split(' ')[0];
-          ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
+          ref.read(dateProvider.notifier).setToday(picked.toString().split(' ')[0]);
+          ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(ref.read(dateProvider).today);
         }
       },
     );

@@ -6,7 +6,7 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
@@ -100,7 +100,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     final screenHeight = MediaQuery.of(context).size.height;
     final _studentsFuture = ref.watch(studentsProvider);
     final attendedIds = ref.watch(attendedIdsProvider);
-    final date = ref.watch(dateProvider);
+    final date = ref.watch(dateProvider).today;
     final filteredStudents = ref.watch(filteredStudentsProvider);
     final searchTerm = ref.watch(searchTermProvider);
 

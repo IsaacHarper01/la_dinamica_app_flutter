@@ -2,7 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/date_model.dart';
 
-final dateProviderNew = StateNotifierProvider<DateRangeNotifier, DateModel>(
+final dateProvider = StateNotifierProvider<DateRangeNotifier, DateModel>(
     (ref) => DateRangeNotifier(ref),
 );
 

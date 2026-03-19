@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/lastPayments_provider.dart';
 import 'package:la_dinamica_app/widgets/payment_box.dart';
 
@@ -36,7 +36,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
   @override
   Widget build(BuildContext context) {
     final paymentsAsync = ref.watch(paymentsProvider);
-    final date = ref.watch(dateProvider);
+    final date = ref.watch(dateProvider).today;
 
     return paymentsAsync.when(
       data:(payments) => Scaffold(

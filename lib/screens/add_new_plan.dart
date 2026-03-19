@@ -5,8 +5,8 @@ import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class AddNewPlan extends ConsumerStatefulWidget {
-  bool edit;
-  LocalPlan? oldPlan;
+  final bool edit;
+  final LocalPlan? oldPlan;
 
   AddNewPlan({super.key, this.edit=false, this.oldPlan});
 

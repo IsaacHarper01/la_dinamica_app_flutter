@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/finacial_model.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -6,11 +7,11 @@ import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
-final expensesProvider = StateNotifierProvider<SalesNotifier,AsyncValue<FinacialModel<Expense>>>( 
+final expensesProvider = StateNotifierProvider<SalesNotifier,AsyncValue<FinancialModel<Expense>>>( 
     (ref) => SalesNotifier(ref),
 );
 
-class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Expense>>>{
+class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Expense>>>{
   final Ref ref;
 
   SalesNotifier(this.ref) : super(const AsyncValue.loading()){
@@ -30,11 +31,12 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Expense>>>{
   }
 
   Future<void> setTodayExpenses()async{
-    final today = ref.read(dateProviderNew).today;
+    final today = ref.read(dateProvider).today;
     try {
       final user = await ref.watch(userProvider.future);
       final expenses = await aws.getTodayExpenses(user.tenant.tenant_id, today);
-      state = AsyncData(FinacialModel<Expense>(
+      final current = state.value ?? FinancialModel<Expense>();
+      state = AsyncData(current.copyWith(
         dayList: expenses, 
         totalDay: expenses.fold(0,(sum,expense)=>sum! + expense.amount) ?? 0.0
         ));
@@ -44,12 +46,14 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Expense>>>{
   }
 
   Future<void> setRangeExpenses()async{
-    final start = ref.read(dateProviderNew).start;
-    final end = ref.read(dateProviderNew).end;
+    final start = ref.read(dateProvider).start;
+    final end = ref.read(dateProvider).end;
     try {
       final user = await ref.watch(userProvider.future);
       final expenses = await aws.getExpensesRange(user.tenant, start, end);
-      state = AsyncData(FinacialModel<Expense>(
+      safePrint(expenses);
+      final current = state.value ?? FinancialModel<Expense>();
+      state = AsyncData(current.copyWith(
         rangelist: expenses,
         totalRange: expenses.fold(0,(sum,expense)=>sum! +expense.amount) ?? 0.0
       ));

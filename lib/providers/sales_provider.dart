@@ -6,11 +6,11 @@ import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
-final salesProvider = StateNotifierProvider<SalesNotifier,AsyncValue<FinacialModel<Sale>>>( 
+final salesProvider = StateNotifierProvider<SalesNotifier,AsyncValue<FinancialModel<Sale>>>( 
     (ref) => SalesNotifier(ref),
 );
 
-class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Sale>>>{
+class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Sale>>>{
   final Ref ref;
 
   SalesNotifier(this.ref) : super(const AsyncValue.loading()){
@@ -30,11 +30,11 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Sale>>>{
   }
 
   Future<void> setTodaySales()async{
-    final today = ref.read(dateProviderNew).today;
+    final today = ref.read(dateProvider).today;
     try {
       final user = await ref.watch(userProvider.future);
       final sales = await aws.fetchSales(user.tenant.tenant_id, today);
-      state = AsyncData(FinacialModel<Sale>(
+      state = AsyncData(FinancialModel<Sale>(
         dayList: sales, 
         totalDay: sales.fold(0,(sum,sale)=>sum! +sale.price!) ?? 0.0
         ));
@@ -44,12 +44,13 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinacialModel<Sale>>>{
   }
 
   Future<void> setRangeSales()async{
-    final start = ref.read(dateProviderNew).start;
-    final end = ref.read(dateProviderNew).end;
+    final start = ref.read(dateProvider).start;
+    final end = ref.read(dateProvider).end;
     try {
       final user = await ref.watch(userProvider.future);
       final sales = await aws.getSalesPerRange(start,end,user.tenant.tenant_id);
-      state = AsyncData(FinacialModel<Sale>(
+      final current = state.value ?? FinancialModel<Sale>();
+      state = AsyncData(current.copyWith(
         rangelist: sales,
         totalRange: sales.fold(0,(sum,sale)=>sum! +sale.price!) ?? 0.0
       ));

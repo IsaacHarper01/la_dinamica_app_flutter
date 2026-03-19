@@ -1,10 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
+import 'package:la_dinamica_app/providers/income_summary_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class SelectSchoolWidget extends ConsumerStatefulWidget {
@@ -45,7 +45,8 @@ class _SelectSchoolState extends ConsumerState<SelectSchoolWidget> {
                                   permissions: permissions,
                                   plan: access.tenant!.plan!,
                                 );
-                            ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(ref.read(dateProvider));
+                            ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(ref.read(dateProvider).today);
+                            ref.read(incomeSummaryProvider.notifier).clear();
                             Navigator.pop(context);
                           },
                           child: Text(access.tenant!.name),

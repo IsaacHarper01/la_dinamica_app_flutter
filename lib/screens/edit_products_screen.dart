@@ -4,7 +4,6 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/product_provider.dart';
-import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:logger/logger.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -59,9 +58,7 @@ void initState(){
   void _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
-      final user = await ref.watch(userProvider.future);
-      final gymId = user.tenant.tenant_id; 
-
+  
       final data = {
         for (var i = 0; i < _controllers.length; i++)
           _namesdb[i]: _controllers[i].text,

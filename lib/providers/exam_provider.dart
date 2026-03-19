@@ -7,7 +7,7 @@ import 'package:la_dinamica_app/models/ExamResults.dart';
 import 'package:la_dinamica_app/models/Metric.dart';
 import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'dart:math';
 
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -188,7 +188,7 @@ class ExamNotifier extends Notifier<ExamState> {
 
   Future<void> uploadGrades(String tenantId, String profId)async{
     final aws = DataStoreService();
-    final date = ref.watch(dateProvider);
+    final date = ref.watch(dateProvider).today;
     
     final newGrades = await aws.saveGrade(
         eval: state.eval,
@@ -206,7 +206,7 @@ class ExamNotifier extends Notifier<ExamState> {
   }
 
   Future<void> updateLastExamDate()async{
-    final date = ref.watch(dateProvider);
+    final date = ref.watch(dateProvider).today;
     final newEval = state.eval.copyWith(lastDate: TemporalDate(DateTime.parse(date)));
     await Amplify.DataStore.save(newEval);
   }
@@ -260,7 +260,7 @@ class ExamNotifier extends Notifier<ExamState> {
 
     final actualEval = state.eval;
     final aws = DataStoreReadService();
-    final date = ref.watch(dateProvider);
+    final date = ref.watch(dateProvider).today;
     final lastDatalist = await aws.getLastEvaluationResult(actualEval.id, actualEval.lastDate.toString());
     final lastDataDecoded = jsonDecode(lastDatalist.first.grades!) as Map<String, dynamic>;
 

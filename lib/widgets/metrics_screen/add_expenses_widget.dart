@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class AddExpensesWidget extends ConsumerStatefulWidget {
@@ -61,7 +61,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider).value!;
-    final date = ref.watch(dateProvider);
+    final date = ref.watch(dateProvider).today;
     return Dialog(
         backgroundColor: Colors.transparent,
         child: Container(

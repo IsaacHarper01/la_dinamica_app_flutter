@@ -2,7 +2,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/default_plan_provider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -10,7 +10,7 @@ import 'package:la_dinamica_app/providers/user_provider.dart';
 
 final attendanceRefreshProvider = Provider((ref) {
   final user = ref.watch(userProvider).value;
-  final date = ref.watch(dateProvider);
+  final date = ref.watch(dateProvider).today;
   return (user, date);
 });
 
@@ -23,7 +23,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
   final Ref ref;
 
   StudentsNotifier(this.ref) : super(const AsyncValue.loading()){
-    fetchAttendanceToday(ref.read(dateProvider));
+    fetchAttendanceToday(ref.read(dateProvider).today);
   }
   
   Future<void> fetchAttendanceToday(String date) async {

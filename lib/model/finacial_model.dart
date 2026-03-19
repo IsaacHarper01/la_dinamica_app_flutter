@@ -1,23 +1,32 @@
-class FinacialModel<T> {
-  final List<T>? rangelist;
-  final List<T>? dayList;
-  final double? totalDay;
-  final double? totalRange;
+class FinancialModel<T> {
+  final List<T> rangelist;
+  final List<T> dayList;
+  final double totalDay;
+  final double totalRange;
 
-  FinacialModel({
-    this.rangelist,
-    this.dayList,
-    this.totalDay,
-    this.totalRange,
+  FinancialModel({
+    this.rangelist = const [],
+    this.dayList = const [],
+    this.totalDay = 0.0,
+    this.totalRange = 0.0,
   });
 
-  FinacialModel copyWith({
+  factory FinancialModel.empty() {
+    return FinancialModel(
+      rangelist: const [],
+      dayList: const [],
+      totalDay: 0.0,
+      totalRange: 0.0,
+    );
+  }
+
+  FinancialModel<T> copyWith({
     List<T>? rangelist,
     List<T>? dayList,
     double? totalDay,
     double? totalRange,
   }){
-    return FinacialModel(
+    return FinancialModel(
       rangelist: rangelist ?? this.rangelist, 
       dayList: dayList ?? this.dayList,
       totalDay: totalDay ?? this.totalDay,

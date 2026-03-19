@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/piechart_indicator.dart';
 
@@ -25,7 +25,7 @@ class PieChartWidgetProducts extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final parsedDate = DateTime.tryParse(ref.watch(dateProvider));
+    final parsedDate = DateTime.tryParse(ref.watch(dateProvider).today);
 
     if (parsedDate == null) {
       return const Center(child: Text('Fecha inválida'));

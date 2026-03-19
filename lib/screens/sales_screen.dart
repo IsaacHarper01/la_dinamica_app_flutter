@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/sales_provider.dart';
 
 
@@ -33,14 +33,14 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
   @override
   Widget build(BuildContext context) {
     final salesAsync = ref.watch(salesProvider);
-    final date = ref.watch(dateProvider);
+    final date = ref.watch(dateProvider).today;
     return salesAsync.when(
       data:(sales) => Scaffold(
         appBar: AppBar(title: Center(child: Text("Ventas de $date"))),
         body: ListView.builder(
-              itemCount: sales.dayList!.length,
+              itemCount: sales.dayList.length,
               itemBuilder: (context, index) {
-                final sale = sales.dayList![index];
+                final sale = sales.dayList[index];
                 return SaleCard(
                   sale: sale,
                   permision: widget.user.permissions["deletePayments"]!,

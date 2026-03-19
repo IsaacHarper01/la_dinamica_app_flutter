@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
 
 
@@ -20,7 +20,7 @@ class ButtonsMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(selectedDateProviderMetrics);
-    final today = DateTime.parse(ref.watch(dateProvider));
+    final today = DateTime.parse(ref.watch(dateProvider).today);
     DateTime lastDate;
 
     return Column(

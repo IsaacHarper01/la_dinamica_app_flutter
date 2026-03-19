@@ -8,7 +8,6 @@ import 'package:la_dinamica_app/config/provider/theme_provider.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/date_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -44,14 +43,14 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
       if (user != null) {
         ref
             .watch(studentsAttendanceProvider.notifier)
-            .fetchAttendanceToday(ref.read(dateProviderNew).today);
+            .fetchAttendanceToday(ref.read(dateProvider).today);
       }
     });
     Future.microtask(() => ref.read(planProvider.notifier).loadPlans());
   }
 
   Future<void> checkAction(BuildContext context) async {
-    final currentDate = ref.read(dateProviderNew).today;
+    final currentDate = ref.read(dateProvider).today;
     final result = await scannerQR(context,);
     safePrint('QR Result: $result');
     final decodedResult = decodeInfo(result, user!.tenant.tenant_id);
@@ -216,7 +215,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                 return RefreshIndicator(
                   onRefresh: () async{
                     ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(
-                      ref.read(dateProvider));
+                      ref.read(dateProvider).today);
                   },
                   child: SingleChildScrollView(
                     child: Center(
@@ -252,7 +251,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                                                 .read(studentsAttendanceProvider.notifier)
                                                 .deleteAttendance(
                                                   student,
-                                                  ref.read(dateProvider),
+                                                  ref.read(dateProvider).today,
                                                   user.tenant.tenant_id,
                                                 );
                                           },

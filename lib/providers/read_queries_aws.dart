@@ -420,7 +420,7 @@ class DataStoreReadService {
       final List<Expense> allexpenses = await Amplify.DataStore.query(
       Expense.classType,
       where: Expense.DATE.between(TemporalDate(start), TemporalDate(end))
-      .and(Expense.TENANT.eq(tenant)));
+      .and(Expense.TENANT.eq(tenant.tenant_id)));
 
       return allexpenses;
     }catch(e){

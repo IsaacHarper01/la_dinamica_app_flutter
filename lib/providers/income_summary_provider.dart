@@ -4,38 +4,35 @@ import 'package:la_dinamica_app/providers/expenses_provider.dart';
 import 'package:la_dinamica_app/providers/income_plan_provider.dart';
 import 'package:la_dinamica_app/providers/sales_provider.dart';
 
+final incomeSummaryProvider = StateNotifierProvider<SalesNotifier,AsyncValue<FinancialSummary>>( 
+    (ref) => SalesNotifier(ref),
+);
 
-final incomeSummaryProvider = Provider<AsyncValue<FinancialSummary>>((ref) {
+class SalesNotifier extends StateNotifier<AsyncValue<FinancialSummary>>{
+  final Ref ref;
 
-  final salesAsync = ref.watch(salesProvider);
-  final plansAsync = ref.watch(incomePlanProvider);
-  final expensesAsync = ref.watch(expensesProvider);
-
-  if (salesAsync.isLoading || plansAsync.isLoading || expensesAsync.isLoading) {
-    return const AsyncValue.loading();
+  SalesNotifier(this.ref) : super(const AsyncValue.loading()){
+    setAllProviders();
+    }
+  
+  Future<void> setAllProviders()async{
+    try {
+      await ref.read(salesProvider.notifier).setAllSales();
+      await ref.read(incomePlanProvider.notifier).setAllPayments();
+      await ref.read(expensesProvider.notifier).setAllExpenses();
+      state = AsyncData(FinancialSummary(
+        sales: ref.read(salesProvider).value!, 
+        expenses: ref.read(expensesProvider).value!, 
+        payments: ref.read(incomePlanProvider).value!
+      ));
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
   }
-
-  if (salesAsync.hasError) {
-    return AsyncValue.error(salesAsync.error!, salesAsync.stackTrace!);
+  
+  void clear() {
+  state = AsyncValue.data(
+    FinancialSummary.empty(), // you define this
+    );
   }
-
-  if (plansAsync.hasError) {
-    return AsyncValue.error(plansAsync.error!, plansAsync.stackTrace!);
-  }
-
-  if (expensesAsync.hasError) {
-    return AsyncValue.error(expensesAsync.error!, expensesAsync.stackTrace!);
-  }
-
-  final sales = salesAsync.value!;
-  final plans = plansAsync.value!;
-  final expenses = expensesAsync.value!;
-
-  return AsyncData(
-    FinancialSummary(
-      sales: sales,
-      expenses: expenses,
-      payments: plans,
-    ),
-  );
-});
+}

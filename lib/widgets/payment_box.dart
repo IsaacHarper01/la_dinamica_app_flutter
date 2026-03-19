@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/providers/income_provider.dart';
+import 'package:la_dinamica_app/providers/income_plan_provider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -97,7 +97,7 @@ Future<void> showPaymentDialog(
                     ),
                     onTap: () async {
                       try {
-                        ref.read(incomeProvider.notifier).addPay(
+                        ref.read(incomePlanProvider.notifier).addPay(
                           student, 
                           plan, 
                           date, 
