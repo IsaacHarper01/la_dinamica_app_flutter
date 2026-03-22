@@ -80,7 +80,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
                         decoration: InputDecoration(
                             labelStyle: const TextStyle(
                               color: Colors.white,),
-                            labelText:"Nombre del gasto",
+                            labelText:"Categoría",
                             border: const OutlineInputBorder(),
                           ),),
               TextField(controller: amountController,

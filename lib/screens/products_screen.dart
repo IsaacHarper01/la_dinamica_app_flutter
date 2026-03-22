@@ -108,21 +108,26 @@ class _nameState extends ConsumerState<ProductsScreen> {
         return SizedBox(
               height: screenHeight-180, //Change this to sizeHeight of the screen
               width: screenWidth,
-              child: ListView.builder(
-                itemCount: products.length,
-                itemBuilder: 
-                (context,index){
-                  return ProductCard(
-                    product: products[index], 
-                    user: user,
-                    date: date,
-                    onDelete:(){
-                      ref.read(productProvider.notifier)
-                        .deleteProduct(products[index]);
-                      },
-                    );
-                    }
-                  ), 
+              child: RefreshIndicator(
+                onRefresh: () async{
+                  ref.read(productProvider.notifier).loadProducts();
+                },
+                child: ListView.builder(
+                  itemCount: products.length,
+                  itemBuilder: 
+                  (context,index){
+                    return ProductCard(
+                      product: products[index], 
+                      user: user,
+                      date: date,
+                      onDelete:(){
+                        ref.read(productProvider.notifier)
+                          .deleteProduct(products[index]);
+                        },
+                      );
+                      }
+                    ),
+              ), 
                 ); 
               }
             );

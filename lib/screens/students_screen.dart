@@ -76,6 +76,9 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
             TextButton(
               child: const Text('Eliminar'),
               onPressed: () {
+                ref.read(studentsAttendanceProvider.notifier)
+                .deleteAttendance(
+                  student, ref.read(dateProvider).today, user!.tenant.tenant_id);
                 Navigator.of(context).pop(true); // Retornar true si confirma
               },
             ),
