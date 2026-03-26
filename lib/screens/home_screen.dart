@@ -164,7 +164,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
 
     final studentsState = ref.watch(studentsAttendanceProvider);
     final userState = ref.watch(userProvider);
-    final allStudents = studentsState.asData?.value ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -194,8 +193,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
             (user) => studentsState.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stack) => Center(child: Text('Error: $error')),
-              data: (students) {
-                if (students.isEmpty) {
+              data: (attendanceModel) {
+                final allStudents = attendanceModel.attendanceToday;
+                if (attendanceModel.attendanceToday.isEmpty) {
                   return Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),

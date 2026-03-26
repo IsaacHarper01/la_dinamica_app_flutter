@@ -6,7 +6,7 @@ final attendedIdsProvider = Provider<Set<Student>>((ref) {
   final studendsAsync = ref.watch(studentsAttendanceProvider);
 
   return studendsAsync.when(
-    data: (students) => students.toSet(),
+    data: (model) => model.attendanceToday.toSet(),
     loading: () => {},
     error: (_, __) => {},
   );

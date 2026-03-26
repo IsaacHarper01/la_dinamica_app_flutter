@@ -98,6 +98,8 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     UserLocal user,
     Map<int,String> months,
   ) {
+    String selectedOption = "";
+    final options = ["Ingreso Neto", "Ingreso de planes", "Ingreso de productos", "Gastos"];
     return RefreshIndicator(
       onRefresh: () async{
         ref.read(incomeSummaryProvider.notifier).setAllProviders();
@@ -202,6 +204,21 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   expenses: incomeData.expenses.totalDay, 
                   date: date,
                   text: "Ingresos del día: $date"),
+                const SizedBox(height: 20),
+                DropdownButton(
+                  borderRadius: BorderRadius.circular(10),
+                  isExpanded: true,
+                  hint: Text(options[0]),
+                  items: options.map((option) => DropdownMenuItem(
+                    alignment: Alignment.center,
+                    value: option,
+                    child: Text(option),
+                  )).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedOption = value!;
+                    });
+                  }),
                 const SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(

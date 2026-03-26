@@ -7,7 +7,6 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
-import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/groups.dart';
@@ -51,9 +50,10 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     ref.read(searchTermProvider.notifier).state = '';
   }
 
-  void _deleteAttendance(id,date,tenantId) {
-    final awsDb = DataStoreDeleteService();
-    awsDb.deleteAttendanceByID(id, date, tenantId);
+  void _deleteAttendance(Student student) {
+    ref.read(studentsAttendanceProvider.notifier)
+                .deleteAttendance(
+                  student, ref.read(dateProvider).today, user!.tenant.tenant_id);
   }
 
   void handleDeleteDash(context, Student student) async {
@@ -76,9 +76,6 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
             TextButton(
               child: const Text('Eliminar'),
               onPressed: () {
-                ref.read(studentsAttendanceProvider.notifier)
-                .deleteAttendance(
-                  student, ref.read(dateProvider).today, user!.tenant.tenant_id);
                 Navigator.of(context).pop(true); // Retornar true si confirma
               },
             ),
@@ -88,7 +85,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     );
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      _deleteAttendance(student.user_id, selectedDate, user!.tenant.tenant_id);
+      _deleteAttendance(student);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Asistencia Eliminada'),

@@ -25,11 +25,16 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialSummary>>{
         expenses: ref.read(expensesProvider).value!, 
         payments: ref.read(incomePlanProvider).value!
       ));
+      state.value?.setMap("Ingreso Neto");
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
   
+  void setMap(String option){
+    state = AsyncData(state.value!..setMap(option));
+  }
+
   void clear() {
   state = AsyncValue.data(
     FinancialSummary.empty(), // you define this
