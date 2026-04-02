@@ -1,5 +1,6 @@
 import 'package:aws_common/aws_common.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/model/attendance_model.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
@@ -17,14 +18,17 @@ final attendanceRefreshProvider = Provider((ref) {
 
 final studentsAttendanceProvider =
     StateNotifierProvider<StudentsNotifier, AsyncValue<AttendanceModel>>((ref) {
-      return StudentsNotifier(ref);
+      final userAsync = ref.watch(userProvider);
+      return StudentsNotifier(ref,userAsync);
     });
 
 class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
   final Ref ref;
 
-  StudentsNotifier(this.ref) : super(const AsyncValue.loading()){
-    loadValues();
+  StudentsNotifier(this.ref, AsyncValue<UserLocal> userAsync) : super(const AsyncValue.loading()){
+    userAsync.whenData((user){
+      loadValues();
+    });
   }
   
   Future<void> loadValues() async {
@@ -41,6 +45,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
       state = AsyncValue.data(model);
       safePrint("PROVIDER: ${state.value!.attendancebyDate}");
     } catch (e, st) {
+      if(!mounted) return;
       state = AsyncValue.error(e, st);
     }
   }

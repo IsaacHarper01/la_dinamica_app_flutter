@@ -5,7 +5,7 @@ class FinancialSummary {
   final FinancialModel<Sale> sales;
   final FinancialModel<Payment> payments;
   final FinancialModel<Expense> expenses;
-  final Map<String, double>? mapDate;
+  final Map<DateTime, double>? mapDate;
 
   FinancialSummary({
     required this.sales,
@@ -27,7 +27,7 @@ class FinancialSummary {
     FinancialModel<Sale>? sales,
     FinancialModel<Payment>? payments,
     FinancialModel<Expense>? expenses,
-    Map<String, double>? mapDate,
+    Map<DateTime, double>? mapDate,
   }){
     return FinancialSummary(
         sales: sales ?? this.sales,
@@ -38,12 +38,12 @@ class FinancialSummary {
   }
 
   FinancialSummary setMap(String option){
-    Map<String, double> map = {};
+    Map<DateTime, double> map = {};
     switch (option) {
 
       case "Ingreso Neto":
         for (var payment in payments.rangelist) {
-          String dateKey = payment.date!.format();
+          DateTime dateKey = payment.date!.getDateTime();
           double amount = payment.amount ?? 0.0;
           if (map.containsKey(dateKey)) {
             map[dateKey] = map[dateKey]! + amount;
@@ -52,7 +52,7 @@ class FinancialSummary {
           }
         }
         for (var sale in sales.rangelist) {
-          String dateKey = sale.date!.format();
+          DateTime dateKey = sale.date!.getDateTime();
           double amount = sale.price ?? 0.0;
 
           if (map.containsKey(dateKey)) {
@@ -62,7 +62,7 @@ class FinancialSummary {
           }
         }
         for (var expense in expenses.rangelist) {
-          String dateKey = expense.date.format();
+          DateTime dateKey = expense.date.getDateTime();
           double amount = expense.amount;
 
           if (map.containsKey(dateKey)) {
@@ -75,7 +75,7 @@ class FinancialSummary {
 
       case "Ingreso de planes":
         for (var payment in payments.rangelist) {
-          String dateKey = payment.date!.format();
+          DateTime dateKey = payment.date!.getDateTime();
           double amount = payment.amount ?? 0.0;
 
           if (map.containsKey(dateKey)) {
@@ -88,7 +88,7 @@ class FinancialSummary {
 
       case "Ingreso de productos":
         for (var sale in sales.rangelist) {
-          String dateKey = sale.date!.format();
+          DateTime dateKey = sale.date!.getDateTime();
           double amount = sale.price ?? 0.0;
 
           if (map.containsKey(dateKey)) {
@@ -101,7 +101,7 @@ class FinancialSummary {
         
       case "Gastos":
         for (var expense in expenses.rangelist) {
-          String dateKey = expense.date.format();
+          DateTime dateKey = expense.date.getDateTime();
           double amount = expense.amount;
 
           if (map.containsKey(dateKey)) {

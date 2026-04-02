@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LineGraphWidget extends ConsumerStatefulWidget {
-  final Map<String, double> data;
+  final Map<DateTime, double> data;
   const LineGraphWidget({
     super.key, 
     required this.data
@@ -16,23 +16,15 @@ class LineGraphWidget extends ConsumerStatefulWidget {
 class _LineGraphWidgetState extends ConsumerState<LineGraphWidget> {
   @override
   Widget build(BuildContext context) {
-    bool _isValidDate(String value) {
-    try {
-      DateTime.parse(value);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
 
     final yData = <FlSpot>[];
     double i = 0;
 
     final filteredEntries =
-        widget.data.entries.where((entry) => _isValidDate(entry.key)).toList();
+        widget.data.entries.toList();
 
     filteredEntries.sort(
-      (a, b) => DateTime.parse(a.key).compareTo(DateTime.parse(b.key)),
+      (a, b) => a.key.compareTo(b.key),
     );
     final orderedData = Map.fromEntries(filteredEntries);
 

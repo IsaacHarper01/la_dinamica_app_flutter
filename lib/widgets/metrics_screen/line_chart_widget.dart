@@ -46,76 +46,74 @@ class LineChartWidget extends ConsumerWidget {
             error:(e, s) => Text("Error al obtener los datos: $e"),
             loading: () => const CircularProgressIndicator(),
             data: (studentsdata) {
-             return infocharts(screenWidth, financialData, n);
+            final studentsPerDay =  getCountPerDay(studentsdata.attendancebyDate!);
+            final financialPerDay = getCountPerDay(financialData.mapDate!);
+             return  Center(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Text('Analisis de los ultimos $n días',
+                      style: GoogleFonts.michroma(color: Colors.white)),
+                    const SizedBox(height: 25),
+                    Row(
+                      children: [
+                        Column(
+                          children: [
+                            Text('Ingresos por día',
+                            style: GoogleFonts.michroma(fontSize: 11),
+                            ),
+                            SizedBox(
+                              width: screenWidth * 0.37, 
+                              height: 200, 
+                              child: DaysChartWidget(values: financialPerDay['values']),
+                              ),]
+                            ,),
+                        SizedBox(
+                          width: screenWidth * 0.58, 
+                          height: 350, 
+                          child: LineGraphWidget(data: financialData.mapDate!),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(children: [
+                            Text('Estudiantes por día',
+                            style: GoogleFonts.michroma(fontSize: 11),
+                          ),
+                          SizedBox( 
+                            height: 200,
+                            child: DaysChartWidget(values: studentsPerDay['values']),
+                            ),
+                          ]
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(children: [
+                            AverageWidget(average: "\$${financialPerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
+                            const SizedBox(height: 20),
+                            AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
+                            ]),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              );
              },
             );
       },
     );
   }
-
-infocharts(double screenWidth, FinancialSummary alldata, int n){
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          Text('Analisis de los ultimos $n días',
-            style: GoogleFonts.michroma(color: Colors.white)),
-          const SizedBox(height: 25),
-          Row(
-            children: [
-              Column(
-                children: [
-                  Text('Ingresos por día',
-                  style: GoogleFonts.michroma(fontSize: 11),
-                  ),
-                  SizedBox(
-                    width: screenWidth * 0.37, 
-                    height: 200, 
-                    child: Text("Here should be days chart")//DaysChartWidget(values: incomePerDay['values']),
-                    ),]
-                  ,),
-              SizedBox(
-                width: screenWidth * 0.58, 
-                height: 350, 
-                child: LineGraphWidget(data: alldata.mapDate!),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: Column(children: [
-                  Text('Estudiantes por día',
-                  style: GoogleFonts.michroma(fontSize: 11),
-                ),
-                SizedBox( 
-                  height: 200,
-                  child: Text("Here should be days chart")//DaysChartWidget(values: studentsPerDay['values']),
-                  ),
-                ]
-                ),
-              ),
-              Expanded(
-                child: Column(children: [
-                  //AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
-                  const SizedBox(height: 20),
-                  //AverageWidget(average: "\$${incomePerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
-                  ]),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
   
-  Map<String, dynamic> getCountPerDay(data){ //this function could be used for both income and students
+  Map<String, dynamic> getCountPerDay(Map<DateTime, double> data){ //this function could be used for both income and students
     List<double> values = [0,0,0,0,0,0,0]; // [LU, MA, MI, JU, VI, SA, DO]
     int aux = 0;
-
+    
     data.forEach((dateStr, earning) {
-      final date = DateTime.parse(dateStr);
+      final date = dateStr;
       final day = date.weekday;
       values[day - 1] += earning;
       aux += 1;
