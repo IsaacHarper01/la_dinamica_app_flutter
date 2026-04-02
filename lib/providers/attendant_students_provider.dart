@@ -1,3 +1,4 @@
+import 'package:aws_common/aws_common.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/attendance_model.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -27,48 +28,84 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
   }
   
   Future<void> loadValues() async {
-    await fetchAttendanceToday(ref.read(dateProvider).today);
-    await fetchAttendanceInRange();
-  }
-
-  Future<void> fetchAttendanceToday(String date) async {
     try {
-      final awsDb = DataStoreReadService();
-      final user = await ref.watch(userProvider.future);
-      final tenenatId = user.tenant.tenant_id;
-      final snapshot = await awsDb.getAttendanceByDate(date, tenenatId);
-      if (snapshot.isEmpty) {
-        state = AsyncValue.data(AttendanceModel(attendanceToday: [], attendanceInRange: []));
-        return;
-      }
+      final today = await fetchAttendanceToday(ref.read(dateProvider).today);
+      final range = await fetchAttendanceInRange();
+      final dateMap = getMap(range);
 
-     List<Student> students = snapshot.map((att) => att.student!).toList();
-     final current = state.value ?? AttendanceModel(attendanceToday: [], attendanceInRange: []);
-     state = AsyncValue.data(current.copyWith(attendanceToday: students));
-    } catch (e) {
-      if (!mounted) return;
-      state = AsyncValue.error(e, StackTrace.current);
+      AttendanceModel model = AttendanceModel(
+        attendanceToday: today, 
+        attendanceInRange: range,
+        attendancebyDate: dateMap,
+        );
+      state = AsyncValue.data(model);
+      safePrint("PROVIDER: ${state.value!.attendancebyDate}");
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
     }
   }
 
-  Future<void> fetchAttendanceInRange() async {
+  Map<DateTime, double> getMap(List<Attendance> range){
+    Map<DateTime, double> newMap = {};
+    for (var attendance in range){
+      final key = DateTime.parse(attendance.date.toString().split(" ")[0]);
+      if (newMap.containsKey(key)){
+        newMap[key] = newMap[key]! + 1;
+      }else{
+        newMap[key] = 1;
+      }
+    }
+    return newMap;
+  }
+
+  Future<List<Student>> fetchAttendanceToday(String date) async {
     try {
       final awsDb = DataStoreReadService();
-      final user = await ref.watch(userProvider.future);
-      final startDate = ref.watch(dateProvider).start;
-      final endDate = ref.watch(dateProvider).end;
+      final user = await ref.read(userProvider.future);
+      final tenenatId = user.tenant.tenant_id;
+      final snapshot = await awsDb.getAttendanceByDate(date, tenenatId);
+      if (snapshot.isEmpty) {
+        return [];
+      }else{
+     List<Student> students = snapshot.map((att) => att.student!).toList();
+     return students;
+     }
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> setAttendanceToday(String date)async{
+    final students = await fetchAttendanceToday(date);
+    if (students.isNotEmpty){
+      final current = state.value ?? AttendanceModel(attendanceToday: [], attendanceInRange: []);
+      state = AsyncValue.data(current.copyWith(attendanceToday: students));
+    }
+  }
+
+  Future<List<Attendance>> fetchAttendanceInRange() async {
+    try {
+      final awsDb = DataStoreReadService();
+      final user = await ref.read(userProvider.future);
+      final startDate = ref.read(dateProvider).start;
+      final endDate = ref.read(dateProvider).end;
       final tenenatId = user.tenant.tenant_id;
       final snapshot = await awsDb.getAttendanceRange(startDate, endDate, tenenatId);
       if (snapshot.isEmpty) {
-        state = AsyncValue.data(AttendanceModel(attendanceToday: [], attendanceInRange: []));
-        return;
+        return [];
       }
-
-     final current = state.value ?? AttendanceModel(attendanceToday: [], attendanceInRange: []);
-     state = AsyncValue.data(current.copyWith(attendanceInRange: snapshot));
+     return snapshot;
     } catch (e) {
-      if (!mounted) return;
-      state = AsyncValue.error(e, StackTrace.current);
+      return [];
+    }
+  }
+
+  Future<void> setAttendanceInRange() async{
+    final attendances = await fetchAttendanceInRange();
+    final dateMap = getMap(attendances);
+    if(attendances.isNotEmpty){
+      final current = state.value ?? AttendanceModel(attendanceToday: [], attendanceInRange: []);
+      state = AsyncValue.data(current.copyWith(attendanceInRange: attendances, attendancebyDate: dateMap));
     }
   }
 
@@ -91,7 +128,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {
-      await fetchAttendanceToday(date);
+      await setAttendanceToday(date);
     }
   }
 
@@ -109,19 +146,4 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
       await fetchAttendanceToday(date);
     }
   }
-
-  Map<String, int> getAttendanceMap() {
-    final attendances = state.value?.attendanceInRange;
-    Map<String, int> studentsPerDay = {};
-        for (var attendance in attendances!) {
-          String dateKey = attendance.date.format();
-          if (studentsPerDay.containsKey(dateKey)) {
-            studentsPerDay[dateKey] = studentsPerDay[dateKey]! + 1;
-          } else {
-            studentsPerDay[dateKey] = 1;
-          }
-        }
-      return studentsPerDay;
-    }
-
 }

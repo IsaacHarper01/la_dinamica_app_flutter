@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LineGraphWidget extends ConsumerStatefulWidget {
-  final Map<String, dynamic> data;
+  final Map<String, double> data;
   const LineGraphWidget({
     super.key, 
     required this.data
@@ -39,7 +39,7 @@ class _LineGraphWidgetState extends ConsumerState<LineGraphWidget> {
     for (var key in orderedData.keys) {
       final value = orderedData[key];
       if (value is num) {
-        yData.add(FlSpot(i, value.toDouble()));
+        yData.add(FlSpot(i, value!));
       }
       i++;
     }

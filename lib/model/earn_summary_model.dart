@@ -5,7 +5,7 @@ class FinancialSummary {
   final FinancialModel<Sale> sales;
   final FinancialModel<Payment> payments;
   final FinancialModel<Expense> expenses;
-  final Map<String, dynamic>? mapDate;
+  final Map<String, double>? mapDate;
 
   FinancialSummary({
     required this.sales,
@@ -19,7 +19,7 @@ class FinancialSummary {
       sales: FinancialModel<Sale>(dayList: [], rangelist: [], totalDay: 0.0, totalRange: 0.0),
       payments: FinancialModel<Payment>(dayList: [], rangelist: [], totalDay: 0.0, totalRange: 0.0),
       expenses: FinancialModel<Expense>(dayList: [], rangelist: [], totalDay: 0.0, totalRange: 0.0),
-      mapDate: null
+      mapDate: const {}
     );
   }
 
@@ -27,7 +27,7 @@ class FinancialSummary {
     FinancialModel<Sale>? sales,
     FinancialModel<Payment>? payments,
     FinancialModel<Expense>? expenses,
-    Map<String, dynamic>? mapDate,
+    Map<String, double>? mapDate,
   }){
     return FinancialSummary(
         sales: sales ?? this.sales,

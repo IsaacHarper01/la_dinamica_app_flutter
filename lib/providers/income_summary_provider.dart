@@ -17,14 +17,22 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialSummary>>{
   
   Future<void> setAllProviders()async{
     try {
-      await ref.read(salesProvider.notifier).setAllSales();
-      await ref.read(incomePlanProvider.notifier).setAllPayments();
-      await ref.read(expensesProvider.notifier).setAllExpenses();
-      state = AsyncData(FinancialSummary(
-        sales: ref.read(salesProvider).value!, 
-        expenses: ref.read(expensesProvider).value!, 
-        payments: ref.read(incomePlanProvider).value!
-      ));
+      await Future.wait([
+      ref.read(salesProvider.notifier).setAllSales(),
+      ref.read(incomePlanProvider.notifier).setAllPayments(),
+      ref.read(expensesProvider.notifier).setAllExpenses(),
+      ]);
+
+      final salesAsync = ref.read(salesProvider);
+      final paymentsAsync = ref.read(incomePlanProvider);
+      final expensesAsync = ref.read(expensesProvider);
+
+      final summary = FinancialSummary(
+        sales: salesAsync.value!, 
+        payments: paymentsAsync.value!, 
+        expenses: expensesAsync.value!);
+
+      state = AsyncData(summary.setMap("Ingreso Neto"));
       state.value?.setMap("Ingreso Neto");
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
@@ -32,7 +40,9 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialSummary>>{
   }
   
   void setMap(String option){
-    state = AsyncData(state.value!..setMap(option));
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncData(current.setMap(option));
   }
 
   void clear() {

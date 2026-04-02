@@ -27,6 +27,8 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
   late DateTime startDate;
   late DateTime endDate;
 
+  String selectedValue = "Ingreso Neto";
+
   @override
   void initState() {
     super.initState();
@@ -98,7 +100,6 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
     UserLocal user,
     Map<int,String> months,
   ) {
-    String selectedOption = "";
     final options = ["Ingreso Neto", "Ingreso de planes", "Ingreso de productos", "Gastos"];
     return RefreshIndicator(
       onRefresh: () async{
@@ -205,20 +206,22 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   date: date,
                   text: "Ingresos del día: $date"),
                 const SizedBox(height: 20),
-                DropdownButton(
-                  borderRadius: BorderRadius.circular(10),
-                  isExpanded: true,
-                  hint: Text(options[0]),
-                  items: options.map((option) => DropdownMenuItem(
-                    alignment: Alignment.center,
-                    value: option,
-                    child: Text(option),
-                  )).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedOption = value!;
-                    });
-                  }),
+                DropdownButton<String>(
+                    value: selectedValue,
+                    borderRadius: BorderRadius.circular(10),
+                    isExpanded: true,
+                    items: options.map((option) => DropdownMenuItem<String>(
+                      alignment: Alignment.center,
+                      value: option,
+                      child: Text(option),
+                    )).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedValue = value!;
+                        ref.read(incomeSummaryProvider.notifier).setMap(value);
+                      });
+                    },
+                  ),
                 const SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(

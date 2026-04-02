@@ -43,7 +43,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
       if (user != null) {
         ref
             .watch(studentsAttendanceProvider.notifier)
-            .fetchAttendanceToday(ref.read(dateProvider).today);
+            .loadValues();
       }
     });
     Future.microtask(() => ref.read(planProvider.notifier).loadPlans());
@@ -214,7 +214,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                 }
                 return RefreshIndicator(
                   onRefresh: () async{
-                    ref.read(studentsAttendanceProvider.notifier).fetchAttendanceToday(
+                    ref.read(studentsAttendanceProvider.notifier).setAttendanceToday(
                       ref.read(dateProvider).today);
                   },
                   child: SingleChildScrollView(

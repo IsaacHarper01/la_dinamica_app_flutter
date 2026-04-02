@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
+import 'package:la_dinamica_app/model/earn_summary_model.dart';
+import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/income_summary_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -23,12 +25,11 @@ class LineChartWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final today = DateTime.parse(ref.watch(dateProvider).today);
-    final tenantId = user.tenant.tenant_id;
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
     final financialData = ref.watch(incomeSummaryProvider);
+    final studentsData = ref.watch(studentsAttendanceProvider);
     
     var n = 30;
 
@@ -37,26 +38,22 @@ class LineChartWidget extends ConsumerWidget {
       n = endDate.difference(startDate).inDays;
     }
 
-    final lastdate = today.subtract(Duration(days: n));
-    final awsDb = DataStoreReadService();
-
     return financialData.when(
       error: (e, s) => Text("Error al obtener los datos: $e"),
       loading: () => const CircularProgressIndicator(),
-      data: (data) {
-        final mapDate = data.mapDate;
-          return infocharts(screenWidth, mapDate, n);
+      data: (financialData) {
+          return studentsData.when(
+            error:(e, s) => Text("Error al obtener los datos: $e"),
+            loading: () => const CircularProgressIndicator(),
+            data: (studentsdata) {
+             return infocharts(screenWidth, financialData, n);
+             },
+            );
       },
     );
   }
 
-infocharts(screenWidth, alldata, n){
-    final inconmeData = alldata[0];
-    final studentData = alldata[1];
-
-    final incomePerDay = getCountPerDay(inconmeData);
-    final studentsPerDay = getCountPerDay(studentData);
-
+infocharts(double screenWidth, FinancialSummary alldata, int n){
     return Center(
       child: Column(
         children: [
@@ -74,13 +71,13 @@ infocharts(screenWidth, alldata, n){
                   SizedBox(
                     width: screenWidth * 0.37, 
                     height: 200, 
-                    child: DaysChartWidget(values: incomePerDay['values']),
+                    child: Text("Here should be days chart")//DaysChartWidget(values: incomePerDay['values']),
                     ),]
                   ,),
               SizedBox(
                 width: screenWidth * 0.58, 
                 height: 350, 
-                child: LineGraphWidget(data: alldata),
+                child: LineGraphWidget(data: alldata.mapDate!),
               ),
               const SizedBox(height: 20),
             ],
@@ -94,16 +91,16 @@ infocharts(screenWidth, alldata, n){
                 ),
                 SizedBox( 
                   height: 200,
-                  child: DaysChartWidget(values: studentsPerDay['values']),
+                  child: Text("Here should be days chart")//DaysChartWidget(values: studentsPerDay['values']),
                   ),
                 ]
                 ),
               ),
               Expanded(
                 child: Column(children: [
-                  AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
+                  //AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
                   const SizedBox(height: 20),
-                  AverageWidget(average: "\$${incomePerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
+                  //AverageWidget(average: "\$${incomePerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
                   ]),
               ),
             ],
