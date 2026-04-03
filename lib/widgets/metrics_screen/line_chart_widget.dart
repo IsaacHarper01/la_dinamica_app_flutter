@@ -1,26 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/model/earn_summary_model.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/income_summary_provider.dart';
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/average_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/days_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/line_graph_widget.dart';
 
 class LineChartWidget extends ConsumerWidget {
-  final DateTime startDate;
-  final DateTime endDate;
-  final UserLocal user;
 
   const LineChartWidget({
     super.key,
-    required this.startDate,
-    required this.endDate,
-    required this.user,
   });
 
   @override
@@ -30,6 +21,9 @@ class LineChartWidget extends ConsumerWidget {
     final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
     final financialData = ref.watch(incomeSummaryProvider);
     final studentsData = ref.watch(studentsAttendanceProvider);
+    final startDate = ref.watch(dateProvider).start;
+    final endDate = ref.watch(dateProvider).end;
+
     
     var n = 30;
 
