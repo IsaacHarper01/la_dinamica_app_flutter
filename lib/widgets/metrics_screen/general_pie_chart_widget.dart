@@ -34,19 +34,19 @@ class PieChartWidget extends ConsumerWidget {
       error: (e,st) => Center(child: Text("error al cargar la data $e"),), 
       loading: () => Center(child: CircularProgressIndicator(),),
       data: (data) {
-              final adaptedData = adaptData(selectedValue, data);
-
-              for (var item in adaptedData) {
-              final itemID = item.id;
+            final adaptedData = adaptData(selectedValue, data);
+            
+            for (var item in adaptedData) {
+              final itemID = (selectedValue == "Ingreso Neto") ? item.type : item.id;
               final amount = item.value;
               if (summary.containsKey(itemID)) {
                 summary[itemID] = summary[itemID]! + amount;
               } else {
                 summary[itemID] = amount;
-                itemNames[itemID] = item.label;
+                itemNames[itemID] = (selectedValue == "Ingreso Neto") ? item.type : item.label;
               }
               total += amount;
-            }
+            }         
 
             for (var itemID in summary.keys) {
               final value = summary[itemID]! / total * 100; // Calculate percentage
@@ -67,6 +67,7 @@ class PieChartWidget extends ConsumerWidget {
                   ),
                 );
             }
+
          return Center(
             child: SizedBox(
               height: 400, // or any fixed height
@@ -120,7 +121,7 @@ class PieChartWidget extends ConsumerWidget {
   }
 
   Column chartInfo(
-       Map<String, double> summary,
+      Map<String, double> summary,
       Map<String, String> itemNames,
       List<PieChartSectionData> sections,
       double totalAmount,
@@ -163,7 +164,7 @@ class PieChartWidget extends ConsumerWidget {
             id: plan.plan!.id,
             label: plan.plan!.type!, 
             value: plan.amount!,
-            type: "payment",
+            type: "Planes",
             );
           financialItems.add(item);
         }
@@ -172,16 +173,7 @@ class PieChartWidget extends ConsumerWidget {
             id: sale.product!.id,
             label: sale.product!.name!, 
             value: sale.price!,
-            type: "sale",
-            );
-          financialItems.add(item);
-        }
-        for(var expense in data.expenses.rangelist){
-          final item = PieChartItem(
-            id: expense.name.toLowerCase().trim(),
-            label: expense.name.toLowerCase().trim(), 
-            value: expense.amount,
-            type: "expense",
+            type: "Productos",
             );
           financialItems.add(item);
         }
@@ -192,7 +184,7 @@ class PieChartWidget extends ConsumerWidget {
             id: plan.plan!.id,
             label: plan.plan!.type!, 
             value: plan.amount!,
-            type: "payment",
+            type: "Planes",
             );
           financialItems.add(item);
         }
@@ -203,7 +195,7 @@ class PieChartWidget extends ConsumerWidget {
             id: sale.product!.id,
             label: sale.product!.name!, 
             value: sale.price!,
-            type: "sale",
+            type: "Productos",
             );
           financialItems.add(item);
         }
@@ -214,7 +206,7 @@ class PieChartWidget extends ConsumerWidget {
             id: expense.name.toLowerCase().trim(),
             label: expense.name.toLowerCase().trim(), 
             value: expense.amount,
-            type: "expense",
+            type: "Gastos",
             );
           financialItems.add(item);
         }

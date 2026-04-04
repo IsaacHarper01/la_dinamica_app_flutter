@@ -39,37 +39,59 @@ class _LineGraphWidgetState extends ConsumerState<LineGraphWidget> {
    return Center(
     child:
       LineChart(
-            LineChartData(
-              minY: 0,
-              gridData: const FlGridData(show: true),
-              titlesData: const FlTitlesData(
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles:false),
-                ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-              ),
-              lineBarsData: [
-                LineChartBarData(
-                  isCurved: true,
-                  curveSmoothness: 0.2,
-                  spots: yData,
-                  gradient: const LinearGradient(
-                    colors: [Colors.blue, Colors.lightBlue],
-                  ), // Use gradient instead of colors
-                  barWidth: 3,
-                  isStrokeCapRound: true,
-                  belowBarData: BarAreaData(
-                    show: true,
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.withOpacity(0.2), Colors.lightBlue.withOpacity(0.1)],
-                    ),
-                  ),
-                ),
-              ],
+        LineChartData(
+          minY: yData.map((e) => e.y).reduce((a, b) => a < b ? a : b) - 5,
+          maxY: yData.map((e) => e.y).reduce((a, b) => a > b ? a : b) + 5,
+          gridData: FlGridData(
+            show: true,
+            getDrawingHorizontalLine: (value) {
+              if (value == 0) {
+                // 👇 Highlight the zero line
+                return FlLine(
+                  color: Colors.grey,
+                  strokeWidth: 2,
+                );
+              }
+              return FlLine(
+                color: Colors.grey.withOpacity(0.3),
+                strokeWidth: 1,
+              );
+            },
+            ),
+          
+          titlesData: const FlTitlesData(
+            rightTitles: AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            topTitles: AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
             ),
           ),
+          lineBarsData: [
+            LineChartBarData(
+              isCurved: true,
+              curveSmoothness: 0.2,
+              spots: yData,
+              gradient: LinearGradient(
+                colors: yData.any((e) => e.y < 0)
+                    ? [Colors.red, Colors.blue]
+                    : [Colors.blue, Colors.lightBlue],
+              ),
+              barWidth: 3,
+              isStrokeCapRound: true,
+              belowBarData: BarAreaData(
+                show: true,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.blue.withOpacity(0.2),
+                    Colors.lightBlue.withOpacity(0.1),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
     );
   
   }

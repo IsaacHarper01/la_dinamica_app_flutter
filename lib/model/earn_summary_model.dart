@@ -68,7 +68,7 @@ class FinancialSummary {
           if (map.containsKey(dateKey)) {
             map[dateKey] = map[dateKey]! - amount;
           } else {
-            map[dateKey] = amount;
+            map[dateKey] = -amount;
           }
         }
         break;

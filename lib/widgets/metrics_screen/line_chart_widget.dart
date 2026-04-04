@@ -86,7 +86,7 @@ class LineChartWidget extends ConsumerWidget {
                         ),
                         Expanded(
                           child: Column(children: [
-                            AverageWidget(average: "\$${financialPerDay['average'].toStringAsFixed(2)}", title1: 'Ingresos promedio',title2: "por día",),
+                            AverageWidget(average: "\$${financialPerDay['average'].toStringAsFixed(2)}", title1: 'Promedio',title2: "por día",),
                             const SizedBox(height: 20),
                             AverageWidget(average: studentsPerDay['average'].toStringAsFixed(2),title1: 'Estudiantes promedio',title2: "por día",),
                             ]),

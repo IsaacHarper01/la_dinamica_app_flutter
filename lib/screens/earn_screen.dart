@@ -13,8 +13,6 @@ import 'package:la_dinamica_app/widgets/metrics_screen/add_expenses_widget.dart'
 import 'package:la_dinamica_app/widgets/metrics_screen/box_info_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/general_pie_chart_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/line_chart_widget.dart';
-import 'package:la_dinamica_app/widgets/metrics_screen/pie_chart_products_widget.dart';
-import 'package:la_dinamica_app/widgets/metrics_screen/pie_chart_widget.dart';
 
 
 class EarnScreen extends ConsumerStatefulWidget {
@@ -249,20 +247,6 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   child: PieChartWidget(
                     screenWidth: screenWidth, 
                     selectedValue: selectedValue)
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  width: screenWidth,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: colorList[1], width: 1),
-                  ),
-                  child: PieChartWidgetProducts(
-                    startDate: startDate, 
-                    endDate: endDate, 
-                    tenantId: user.tenant.tenant_id,
-                    screenWidth: screenWidth,
-                  ),
                 ),
               ],
             ),
