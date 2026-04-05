@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
+import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/history_expenses_screen.dart';
 
 class AddExpensesWidget extends ConsumerStatefulWidget {
-  const AddExpensesWidget({super.key});
+  final bool onEdit;
+  final Expense? expense;
+
+  const AddExpensesWidget({super.key, this.onEdit=false, this.expense});
 
   @override
   ConsumerState<AddExpensesWidget> createState() => _AddExpensesWidgetState();
@@ -18,6 +22,22 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
   final amountController = TextEditingController();
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
+
+
+  @override
+  void initState() {
+    super.initState();
+    if(widget.onEdit){
+      amountController.text = widget.expense!.amount.toString();
+      nameController.text = widget.expense!.name;
+      descriptionController.text = widget.expense!.description ?? "";
+    }
+  }
+
+  Future<bool> updateExpense()async{
+    final result = true;
+    return result;
+  }
 
   Future<bool> submitExpense(UserLocal user, String date)async{
     final aws = DataStoreService();
@@ -63,6 +83,8 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider).value!;
     final date = ref.watch(dateProvider).today;
+    final label = widget.onEdit ? "Editar Gasto": "Añadir Gasto";
+    final finishState = widget.onEdit ? "Actualizar" : "Registrar";
     return Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
@@ -75,7 +97,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
             mainAxisSize: MainAxisSize.min,
             spacing: 10,
             children: [
-              Text("Añadir Gasto"),
+              Text(label),
               SizedBox(height: 20),
               TextField(controller: nameController,
                         decoration: InputDecoration(
@@ -102,6 +124,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
               Row(children: [
                 FilledButton(onPressed: (){Navigator.pop(context);}, child: Text("Cancelar")),
                 Spacer(),
+                if(widget.onEdit==false)...[
                 FilledButton.icon(onPressed:() async{
                   await Navigator.push(context, MaterialPageRoute(
                         builder: (context) => 
@@ -109,14 +132,14 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
                         )
                       );
                 }, 
-                label: Text("Historial"), icon: Icon(Icons.list_alt),),
+                label: Text("Historial"), icon: Icon(Icons.list_alt),),],
                 Spacer(),
                 FilledButton(onPressed: ()async{
-                  final status = await submitExpense(user, date);
+                  final status = widget.onEdit ?  await updateExpense() : await submitExpense(user, date);
                   if(status){
                     Navigator.pop(context);
                   }
-                }, child: Text("Registrar"))
+                }, child: Text(finishState))
               ],)
             ],
           ),

@@ -31,7 +31,6 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
     final userAsync = ref.watch(userProvider);
     final colorScheme = ColorScheme.of(context);
     final textTheme = TextTheme.of(context);
-    final defaultPlan = ref.watch(defaultPlanProvider);
     
     return Scaffold(
       appBar: AppBar(

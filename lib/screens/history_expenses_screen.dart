@@ -2,8 +2,8 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/expenses_provider.dart';
+import 'package:la_dinamica_app/widgets/metrics_screen/add_expenses_widget.dart';
 
 class HistoryExpensesScreen extends ConsumerStatefulWidget {
 
@@ -25,7 +25,6 @@ class _HistoryExpensesScreenState extends ConsumerState<HistoryExpensesScreen> {
   @override
   Widget build(BuildContext context) {
     final expensesAsync = ref.watch(expensesProvider);
-    final date = ref.watch(dateProvider).today;
     return expensesAsync.when(
       data:(expenses) => Scaffold(
         appBar: AppBar(title: Center(child: Text("Gastos del periodo"))),
@@ -145,7 +144,9 @@ class ExpenseCard extends StatelessWidget {
                   }
                 }
               if (value == 'edit'){
-                 
+                 Navigator.push(context, MaterialPageRoute(builder: (_)=>
+                 AddExpensesWidget(onEdit: true,expense: expense )
+                 ));
               }
             },
               itemBuilder:
