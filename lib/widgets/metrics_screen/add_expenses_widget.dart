@@ -5,6 +5,7 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/screens/history_expenses_screen.dart';
 
 class AddExpensesWidget extends ConsumerStatefulWidget {
   const AddExpensesWidget({super.key});
@@ -100,6 +101,15 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
               SizedBox(height: 20),
               Row(children: [
                 FilledButton(onPressed: (){Navigator.pop(context);}, child: Text("Cancelar")),
+                Spacer(),
+                FilledButton.icon(onPressed:() async{
+                  await Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => 
+                        HistoryExpensesScreen()
+                        )
+                      );
+                }, 
+                label: Text("Historial"), icon: Icon(Icons.list_alt),),
                 Spacer(),
                 FilledButton(onPressed: ()async{
                   final status = await submitExpense(user, date);
