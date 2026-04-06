@@ -35,6 +35,7 @@ import 'Payment.dart';
 import 'Product.dart';
 import 'Sale.dart';
 import 'Student.dart';
+import 'StudentExamResults.dart';
 import 'Tenant.dart';
 import 'User.dart';
 import 'UserAccess.dart';
@@ -54,15 +55,16 @@ export 'Payment.dart';
 export 'Product.dart';
 export 'Sale.dart';
 export 'Student.dart';
+export 'StudentExamResults.dart';
 export 'Tenant.dart';
 export 'User.dart';
 export 'UserAccess.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "80766f44c04796e806b181717afe17c9";
+  String version = "4e1003630b2ca3a0dc866edc920fff87";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Evaluations.schema, ExamResults.schema, Expense.schema, Groups.schema, JoinGroups.schema, JoinMetric.schema, JoinResults.schema, LocalPlan.schema, Metric.schema, Payment.schema, Product.schema, Sale.schema, Student.schema, Tenant.schema, User.schema, UserAccess.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [AppPlan.schema, Attendance.schema, Evaluations.schema, ExamResults.schema, Expense.schema, Groups.schema, JoinGroups.schema, JoinMetric.schema, JoinResults.schema, LocalPlan.schema, Metric.schema, Payment.schema, Product.schema, Sale.schema, Student.schema, StudentExamResults.schema, Tenant.schema, User.schema, UserAccess.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -101,6 +103,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return Sale.classType;
       case "Student":
         return Student.classType;
+      case "StudentExamResults":
+        return StudentExamResults.classType;
       case "Tenant":
         return Tenant.classType;
       case "User":

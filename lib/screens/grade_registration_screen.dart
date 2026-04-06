@@ -91,7 +91,7 @@ bool saveGrades(BuildContext context) {
     final length = students.length;
     
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: 
         SingleChildScrollView(
@@ -119,10 +119,8 @@ bool saveGrades(BuildContext context) {
                     itemCount: length,
                     itemBuilder: (context, index) {
                       return PreviewStudentContainerText(
-                        type: types[currentTest.name]!,
-                        name: students[index].name!,
-                        id: students[index].user_id!,
-                        image: students[index].image!,
+                        student: students[index],
+                        metric: currentTest,
                         backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                         controller: controllers[index],
                       );

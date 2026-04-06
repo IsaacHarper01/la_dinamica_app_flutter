@@ -20,6 +20,7 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
 
   who: [JoinMetric] @hasMany(fields: ["id"])
   examresults: [ExamResults] @hasMany(fields: ["id"])
+  studentexamresults: [StudentExamResults] @hasMany(fields: ["id"])
 }
 
 type LocalPlan @model @auth(rules: [{allow: public}]) {
@@ -63,6 +64,7 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   attendances: [Attendance] @hasMany(fields: ["id"])
   examresults: [JoinResults] @hasMany(fields: ["id"])
   groups: [JoinGroups] @hasMany(fields: ["id"])
+  studentexamresults: [StudentExamResults] @hasMany(fields: ["id"])
 }
 
 type Attendance @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
@@ -202,4 +204,19 @@ type Expense @model @auth(rules: [{allow: public, operations: [create, read, upd
   description: String
 
   tenant: Tenant @belongsTo(fields: ["tenant_id"])
+}
+
+type StudentExamResults @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  date: AWSDate
+  tenant_id: ID
+  grades: AWSJSON
+  types: AWSJSON
+  metric_names: AWSJSON
+  higgerBetter: AWSJSON
+  evaluation_id: ID! @index
+  student_id: ID! @index
+
+  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
+  student: Student @belongsTo(fields: ["student_id"])
 }

@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/stop_watch_provider.dart';
 
 class PreviewStudentContainerText extends ConsumerStatefulWidget {
-  final String type;
-  final String name;
-  final int id;
-  final String image;
+  final Student student;
+  final Metric metric;
   final Color backgroundColor;
   final TextEditingController controller;
 
   const PreviewStudentContainerText({
     super.key,
-    required this.type,
-    required this.name,
-    required this.id,
-    required this.image,
+    required this.student,
+    required this.metric,
     required this.backgroundColor,
     required this.controller,
   });
@@ -40,17 +37,25 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
     final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
     
-    final imageUrl = ref.watch(imageProvider(widget.image));
+    final imageUrl = ref.watch(imageProvider(widget.student.image!));
     final state = ref.watch(examProvider);
+    final actualMetric = widget.metric.name;
+    if(state.grades.isNotEmpty){
+      if(state.grades.containsKey(widget.metric)){
+        if(state.grades[widget.metric]!.containsKey(widget.student.id)){
+          widget.controller.text = state.grades[widget.metric]![widget.student.id]!.toString();
+        }
+      }
+    }
 
     String textDecorator = "";
-      if(widget.type == "Tiempo"){
+      if(actualMetric == "Tiempo"){
         textDecorator ='Tiempo(s)'; 
-      }else if(widget.type == "Repeticiones"){
+      }else if(actualMetric == "Repeticiones"){
         textDecorator ='# Repeticiones';
-      }else if(widget.type == "Distancia"){
+      }else if(actualMetric == "Distancia"){
         textDecorator ='Distancia(m)';
-      }else if(widget.type == "Base10"){
+      }else if(actualMetric == "Base10"){
         textDecorator ='Nota(0-10)';
       }
       
@@ -111,7 +116,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
                   children: [
                     Flexible(
                       child: Text(
-                        widget.name,
+                        widget.student.name!,
                         style: GoogleFonts.gochiHand(
                           fontSize: screenHeight * 0.03,
                           color: Colors.white,
@@ -122,7 +127,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
                       ),
                     ),
                     Text(
-                      'ID: ${widget.id}',
+                      'ID: ${widget.student.user_id}',
                       style: GoogleFonts.gochiHand(
                         fontSize: screenHeight * 0.017,
                         color: Colors.white70,
@@ -132,7 +137,7 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
                 ),
               ),
             ),
-            widget.type == "Tiempo"
+            actualMetric == "Tiempo"
                 ? Expanded(
                   flex: 3,
                   child: ElevatedButton(
