@@ -8,7 +8,7 @@ class ExamState {
   final List<Metric> metrics;
   final Map<String, String?> descriptions;
   final Map<String, String> types;
-  final Map<Metric, Map<String, double>> grades; // Metric -> (StudentID -> Grade)
+  final Map<Metric, Map<Student, double>> grades; // Metric -> (StudentID -> Grade)
   final Map<String, bool> higgerBetter;
   final Metric? actualState;
   final Map<String, String> metricNames;
@@ -31,7 +31,7 @@ class ExamState {
     List<Metric>? metrics,
     Map<String, String?>? descriptions,
     Map<String, String>? types,
-    Map<Metric, Map<String, double>>? grades,
+    Map<Metric, Map<Student, double>>? grades,
     Map<String, String>? metricNames,
     Map<String, bool>? higgerBetter,
     Metric? actualState,

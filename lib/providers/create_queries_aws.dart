@@ -184,16 +184,34 @@ class DataStoreService {
   Future<Evaluations> saveEvaluation({
   required String name,
   required String gymId,
-}) async {
-  final evaluation = Evaluations(
-    name: name,
-    tenant_id: gymId,
-  );
+    }) async {
+      final evaluation = Evaluations(
+        name: name,
+        tenant_id: gymId,
+      );
 
-  await Amplify.DataStore.save(evaluation);
-  safePrint('✅ Evaluation saved: ${evaluation.id}, ${evaluation.name}');
-  return evaluation;
-}
+      await Amplify.DataStore.save(evaluation);
+      safePrint('✅ Evaluation saved: ${evaluation.id}, ${evaluation.name}');
+      return evaluation;
+    }
+
+  Future<StudentExamResults> saveStudentExamResults({
+    required Student student,
+    required Evaluations eval,
+    required String grades,
+    required String tenantId,
+    required DateTime date,
+  })async{
+    final newGrade = StudentExamResults(
+      tenant_id: tenantId,
+      student: student,
+      evaluation: eval,
+      grades: grades,
+      date: TemporalDate(date),
+    );
+    await Amplify.DataStore.save(newGrade);
+    return newGrade;
+  }
 
   Future<Metric> saveMetric({
   required String name,

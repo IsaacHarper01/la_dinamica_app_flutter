@@ -39,11 +39,11 @@ class _PreviewStudentContainerTextState extends ConsumerState<PreviewStudentCont
     
     final imageUrl = ref.watch(imageProvider(widget.student.image!));
     final state = ref.watch(examProvider);
-    final actualMetric = widget.metric.name;
+    final actualMetric = widget.metric.type;
     if(state.grades.isNotEmpty){
       if(state.grades.containsKey(widget.metric)){
-        if(state.grades[widget.metric]!.containsKey(widget.student.id)){
-          widget.controller.text = state.grades[widget.metric]![widget.student.id]!.toString();
+        if(state.grades[widget.metric]!.containsKey(widget.student)){
+          widget.controller.text = state.grades[widget.metric]![widget.student]!.toString();
         }
       }
     }

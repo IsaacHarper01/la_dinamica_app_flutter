@@ -3,14 +3,11 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/exam_state.dart';
 import 'package:la_dinamica_app/models/Evaluations.dart';
-import 'package:la_dinamica_app/models/ExamResults.dart';
 import 'package:la_dinamica_app/models/Metric.dart';
 import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'dart:math';
-
-import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 
 class ExamNotifier extends Notifier<ExamState> {
@@ -60,14 +57,14 @@ class ExamNotifier extends Notifier<ExamState> {
   }
 
   void setGrade({
-    required String studentId,
+    required Student student,
     required Metric metric,
     required double grade,
   }) {
-    final newGrades = Map<Metric, Map<String, double>>.from(state.grades);
+    final newGrades = Map<Metric, Map<Student, double>>.from(state.grades);
 
     newGrades.putIfAbsent(metric, () => {});
-    newGrades[metric]![studentId] = grade;
+    newGrades[metric]![student] = grade;
 
     state = state.copyWith(grades: newGrades);
   }
@@ -108,25 +105,89 @@ class ExamNotifier extends Notifier<ExamState> {
   }
 
   Duration? stringToTime(String timeString) {
-    //Time should be in format HH:MM:SS:MS("00:00:00.00")
-    try{
-    final parts = timeString.split(':');
-    final secondsParts = parts[2].split('.');
-    final seconds = int.parse(secondsParts[0]);
-    final milliseconds = int.parse(secondsParts[1]);
+  try {
+    timeString = timeString.trim();
 
-    return Duration(
-      hours:int.parse(parts[0]),
-      minutes: int.parse(parts[1]),
-      seconds: seconds,
-      milliseconds: milliseconds*10,
+    // -------------------------------
+    // Case 1: HH:MM:SS.MS
+    // -------------------------------
+    if (timeString.contains(':')) {
+      final parts = timeString.split(':');
+      if (parts.length != 3) throw FormatException();
+
+      final secondsParts = parts[2].split('.');
+      final seconds = int.parse(secondsParts[0]);
+      final milliseconds = secondsParts.length > 1
+          ? _parseMilliseconds(secondsParts[1])
+          : 0;
+
+      return Duration(
+        hours: int.parse(parts[0]),
+        minutes: int.parse(parts[1]),
+        seconds: seconds,
+        milliseconds: milliseconds,
       );
-    }catch(e){
-      safePrint("Foramto der tiempo invalido");
-      return null;
-    }  
-  }
+    }
 
+    // -------------------------------
+    // Case 2: "1m 23.5s" or "2m"
+    // -------------------------------
+    if (timeString.contains('m')) {
+      int minutes = 0;
+      int seconds = 0;
+      int milliseconds = 0;
+
+      final minuteMatch = RegExp(r'(\d+)m').firstMatch(timeString);
+      if (minuteMatch != null) {
+        minutes = int.parse(minuteMatch.group(1)!);
+      }
+
+      final secondMatch = RegExp(r'(\d+)(\.\d+)?s').firstMatch(timeString);
+      if (secondMatch != null) {
+        seconds = int.parse(secondMatch.group(1)!);
+
+        if (secondMatch.group(2) != null) {
+          final msString = secondMatch.group(2)!.replaceFirst('.', '');
+          milliseconds = _parseMilliseconds(msString);
+        }
+      }
+
+      return Duration(
+        minutes: minutes,
+        seconds: seconds,
+        milliseconds: milliseconds,
+      );
+    }
+
+    // -------------------------------
+    // Case 3: "123.15s" or "75s"
+    // -------------------------------
+    if (timeString.endsWith('s')) {
+      final clean = timeString.replaceAll('s', '');
+      final parts = clean.split('.');
+
+      final seconds = int.parse(parts[0]);
+      final milliseconds =
+          parts.length > 1 ? _parseMilliseconds(parts[1]) : 0;
+
+      return Duration(
+        seconds: seconds,
+        milliseconds: milliseconds,
+      );
+    }
+
+    throw FormatException();
+  } catch (e) {
+    safePrint("Formato de tiempo inválido: $timeString");
+    return null;
+  }
+}
+
+int _parseMilliseconds(String msStr) {
+  if (msStr.length == 1) return int.parse(msStr) * 100;
+  if (msStr.length == 2) return int.parse(msStr) * 10;
+  return int.parse(msStr.substring(0, 3));
+}
   void getMetricNames(){
     final Map<String, String> newMetricNames = {};
     for (var metric in state.metrics){
@@ -135,13 +196,23 @@ class ExamNotifier extends Notifier<ExamState> {
     setMetricNames(newMetricNames);
   }
 
-  Map<String, Map<String, double>> adaptGrades(Map<Metric, Map<String, double>> grades){// recive Map<Metric, Map<StudentID, Grade>>
-    Map<String, Map<String, double>> result = {};
-    for(var metric in grades.keys){
-      result[metric.id] = grades[metric]!;
-    }
-    return result;// return Map<MetricID, Map<StudentID, double>>
-  }
+  Map<Student, Map<String, double>> adaptMapGrades(Map<Metric, Map<Student, double>> grades,) { // recive Map<Metric, Map<StudentID, Grade>>
+        final Map<Student, Map<String, double>> result = {};
+
+        for (final entry in grades.entries) {
+          final metric = entry.key;
+          final studentMap = entry.value;
+
+          for (final studentEntry in studentMap.entries) {
+            final student = studentEntry.key;
+            final grade = studentEntry.value;
+
+            result.putIfAbsent(student, () => {});
+            result[student]![metric.id] = grade;
+          }
+        }
+        return result; // return Map<StudentID, Map<MetricID, Grade>>
+      }
 
   Map<Metric, Map<String, double>> readaptGrades(Map<String, Map<String, double>> grades){// recive Map<MetricID, Map<StudentID, Grade>>
     Map<Metric, Map<String, double>> result = {};
@@ -186,23 +257,21 @@ class ExamNotifier extends Notifier<ExamState> {
     return double.parse(tscore.toStringAsFixed(2));
   }
 
-  Future<void> uploadGrades(String tenantId, String profId)async{
+  Future<void> uploadStudentsGrades(String tenantId, bool mix)async{
     final aws = DataStoreService();
     final date = ref.watch(dateProvider).today;
-    
-    final newGrades = await aws.saveGrade(
-        eval: state.eval,
-        date: DateTime.parse(date), 
-        profName: profId,
-        tenantID: tenantId,
-        grades: jsonEncode(adaptGrades(state.grades)), // Model in amplify should recive (Map<MetricID, Map<StudentID, Grade>>)
-        types: jsonEncode(state.types),
-        tscore: jsonEncode(adaptGrades(calculateTscore(state.grades))),
-        metricNames: jsonEncode(state.metricNames),
-        higgerBetter: jsonEncode(state.higgerBetter)
-       );
-    await uploadJoinResults(newGrades, tenantId, date, state.students);
-    await updateLastExamDate();
+    final currentExam = state.eval;
+    final adaptedGrades = adaptMapGrades(state.grades); //Map<StudentID, Map<MetricID, Grade>>
+
+    for (var student in adaptedGrades.keys){
+      await aws.saveStudentExamResults(
+        student: student, 
+        eval: currentExam, 
+        grades: jsonEncode(adaptedGrades[student]), 
+        tenantId: tenantId, 
+        date: DateTime.parse(date));
+    }
+    updateLastExamDate();
   }
 
   Future<void> updateLastExamDate()async{
@@ -211,78 +280,6 @@ class ExamNotifier extends Notifier<ExamState> {
     await Amplify.DataStore.save(newEval);
   }
 
-  Future<void> uploadJoinResults(ExamResults result, String tenaniId, String date, List<Student> students)async{
-    final aws = DataStoreService();
-    for(var student in students){
-      aws.saveJoinResult(tenaniId: tenaniId, date: date, student: student, result: result);
-    }
-  }
-
-  Map<Metric, Map<String, double>> mixResults(Map<String, dynamic> lastData, Map<String, Map<String, double>> actualData){
-    
-    Map<String, Metric> metyricById = {for(var metric in state.metrics) metric.id : metric};
-
-    for(var metricId in lastData.keys){
-      Map<String, dynamic> lastGrades = lastData[metricId] as Map<String, dynamic>;
-      for(var studentId in actualData[metricId]!.keys){
-          lastGrades[studentId] = actualData[metricId]![studentId];
-      }
-      lastData[metricId] = lastGrades;
-    }
-
-    Map<Metric, Map<String, double>> finalResult =
-    lastData.map((metricId, gradesMap) {
-        return MapEntry(
-          metyricById[metricId]!,
-          (gradesMap as Map<String, dynamic>).map((studentId, value) =>
-              MapEntry(studentId, (value as num).toDouble())),
-        );
-      });
-    return finalResult;//Map<MetricID, Map<StudentID, Grade>>
-  }
-
-  List<Student> getStudentsWithoutGrades(Map<String, dynamic> lastDataDecoded){
-    List<Student> studentsWithoutGrades = [];
-    final List<Student> actualStudents = state.students;
-    safePrint("Students in exam: $actualStudents");
-    final List<String> studentsWithGrades = lastDataDecoded[state.metrics.first.id].keys.toList();
-    safePrint("Students with grades: $studentsWithGrades");
-    for(var student in actualStudents){
-      if(!studentsWithGrades.contains(student.id)){
-        studentsWithoutGrades.add(student);
-      }
-    }
-    
-    return studentsWithoutGrades;
-  }
-
-  Future<void> updateEvalResults(String tenaniId, String profId)async{
-
-    final actualEval = state.eval;
-    final aws = DataStoreReadService();
-    final date = ref.watch(dateProvider).today;
-    final lastDatalist = await aws.getLastEvaluationResult(actualEval.id, actualEval.lastDate.toString());
-    final lastDataDecoded = jsonDecode(lastDatalist.first.grades!) as Map<String, dynamic>;
-
-    final newStudentsWithoutGrades = getStudentsWithoutGrades(lastDataDecoded);
-    
-    final mixedGrades = mixResults(lastDataDecoded, adaptGrades(state.grades));
-
-    final newTscores = calculateTscore(mixedGrades);
-    final newResult = lastDatalist.first.copyWith(
-      date: TemporalDate(DateTime.parse(date)),
-      grades: jsonEncode(adaptGrades(mixedGrades)),
-      tscore: jsonEncode(adaptGrades(newTscores)),
-    );
-    // safePrint("NEW RESULT GRADES: $newTscores");
-    await Amplify.DataStore.save(newResult);
-
-    
-    if(newStudentsWithoutGrades.isNotEmpty){
-      await uploadJoinResults(newResult, tenaniId, date, newStudentsWithoutGrades);
-    }
-    await updateLastExamDate();
-  }
 }
 
 final examProvider = NotifierProvider<ExamNotifier, ExamState>(() => ExamNotifier());
