@@ -72,6 +72,16 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Expense>>>{
       }
   }
 
+  Future<void> updateExpense(Expense oldExpense, String? newName, double? newAmount, String? newDescription)async{
+    final newExpense = oldExpense.copyWith(
+      name: newName,
+      amount: newAmount,
+      description: newDescription,
+    );
+    await Amplify.DataStore.save(newExpense);
+    await setAllExpenses();
+  }
+
   Future<void> deleteExpense(Expense expenseToDelete)async{
     try {
       final awsDelete = DataStoreDeleteService();

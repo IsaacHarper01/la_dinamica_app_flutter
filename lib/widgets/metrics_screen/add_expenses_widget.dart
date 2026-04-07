@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -5,6 +6,7 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/Expense.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
+import 'package:la_dinamica_app/providers/expenses_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/history_expenses_screen.dart';
 
@@ -34,8 +36,19 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
     }
   }
 
-  Future<bool> updateExpense()async{
-    final result = true;
+  Future<bool> updateExpense(Expense oldExpense)async{
+    bool result = false;
+    try {
+      ref.read(expensesProvider.notifier).updateExpense(
+        oldExpense, 
+        nameController.text, 
+        double.parse(amountController.text), 
+        descriptionController.text,
+        );
+      result = true;
+    } catch (e) {
+      safePrint("Error al actualizar Gasto");
+    }
     return result;
   }
 
@@ -135,7 +148,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
                 label: Text("Historial"), icon: Icon(Icons.list_alt),),],
                 Spacer(),
                 FilledButton(onPressed: ()async{
-                  final status = widget.onEdit ?  await updateExpense() : await submitExpense(user, date);
+                  final status = widget.onEdit ?  await updateExpense(widget.expense!) : await submitExpense(user, date);
                   if(status){
                     Navigator.pop(context);
                   }
