@@ -129,6 +129,15 @@ class DataStoreDeleteService {
       }
     }
 
+  Future<void> deleteSale(Sale saleToDelete)async{
+    try {
+      await Amplify.DataStore.delete(saleToDelete);
+    safePrint('✅ Venta eliminada correctamente');
+    } catch (e) {
+      safePrint('❌ Error al eliminar Pago: $e');
+    }
+  }
+
   Future<void> deleteProduct(Product product)async{
       Amplify.DataStore.delete(product);
   }

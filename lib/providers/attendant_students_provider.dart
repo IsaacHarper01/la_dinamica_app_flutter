@@ -43,7 +43,6 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
         attendancebyDate: dateMap,
         );
       state = AsyncValue.data(model);
-      safePrint("PROVIDER: ${state.value!.attendancebyDate}");
     } catch (e, st) {
       if(!mounted) return;
       state = AsyncValue.error(e, st);

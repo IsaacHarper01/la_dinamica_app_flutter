@@ -3,6 +3,7 @@ import 'package:la_dinamica_app/model/finacial_model.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
@@ -25,6 +26,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Sale>>>{
       await setTodaySales();
       await setRangeSales();
     } catch (e) {
+      if(!mounted) return;
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
@@ -39,6 +41,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Sale>>>{
         totalDay: sales.fold(0,(sum,sale)=>sum! +sale.price!) ?? 0.0
         ));
     } catch (e, st) {
+      if(!mounted) return;
       state = AsyncValue.error(e, st);
     }
   }
@@ -55,6 +58,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Sale>>>{
         totalRange: sales.fold(0,(sum,sale)=>sum! +sale.price!) ?? 0.0
       ));
     } catch (e, st) {
+      if(!mounted) return;
       state = AsyncValue.error(e, st);
     }
   }
@@ -64,7 +68,15 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Sale>>>{
         awsSave.saveSale(tenaniId: tenantId, price: price, product: product, date: date, profName: profName);
         setAllSales();
       } catch (e,st) {
+        if(!mounted) return;
         state = AsyncValue.error(e, st);
       }
   }
+
+  Future<void> deleteSale(Sale saleToDelete)async{
+    final awsDelete = DataStoreDeleteService();
+    await awsDelete.deleteSale(saleToDelete);
+    await setAllSales();
+  }
+
 }

@@ -49,6 +49,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                   },
                   onDelete: () async {
                     safePrint('Eliminando pago con ID: ${sale.id}');
+                    ref.read(salesProvider.notifier).deleteSale(sale);
                   },
                 );
               },
