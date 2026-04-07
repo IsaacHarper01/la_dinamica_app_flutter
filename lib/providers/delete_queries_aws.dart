@@ -132,17 +132,31 @@ class DataStoreDeleteService {
   Future<void> deleteSale(Sale saleToDelete)async{
     try {
       await Amplify.DataStore.delete(saleToDelete);
-    safePrint('✅ Venta eliminada correctamente');
+      safePrint('✅ Venta eliminada correctamente');
     } catch (e) {
-      safePrint('❌ Error al eliminar Pago: $e');
+      safePrint('❌ Error al eliminar Venta: $e');
     }
   }
 
   Future<void> deleteProduct(Product product)async{
-      Amplify.DataStore.delete(product);
+      try {
+        Amplify.DataStore.delete(product);
+        safePrint('✅ Producto eliminado correctamente');
+      } catch (e) {
+        safePrint('❌ Error al eliminar Producto: $e');
+      }
   }
 
   Future<void> deleteUserAccess(UserAccess userAccess)async{
       Amplify.DataStore.delete(userAccess);
   }
+
+  Future<void> deleteExpense(Expense expenseToDelete)async{
+    try {
+      await Amplify.DataStore.delete(expenseToDelete);
+      safePrint('✅ Gasto eliminado correctamente');
+    } catch (e) {
+      safePrint('❌ Error al eliminar el Gasto: $e');
+    }
+  }  
 }

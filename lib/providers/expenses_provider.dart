@@ -4,6 +4,7 @@ import 'package:la_dinamica_app/model/finacial_model.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
@@ -69,5 +70,16 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Expense>>>{
       } catch (e,st) {
         state = AsyncValue.error(e, st);
       }
+  }
+
+  Future<void> deleteExpense(Expense expenseToDelete)async{
+    try {
+      final awsDelete = DataStoreDeleteService();
+      await awsDelete.deleteExpense(expenseToDelete);
+      await setAllExpenses();
+    } catch (e, st) {
+      if(!mounted) return;
+        state = AsyncValue.error(e, st);
+    }
   }
 }

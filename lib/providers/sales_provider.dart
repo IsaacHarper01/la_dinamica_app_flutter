@@ -74,9 +74,14 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Sale>>>{
   }
 
   Future<void> deleteSale(Sale saleToDelete)async{
-    final awsDelete = DataStoreDeleteService();
-    await awsDelete.deleteSale(saleToDelete);
-    await setAllSales();
+    try {
+      final awsDelete = DataStoreDeleteService();
+      await awsDelete.deleteSale(saleToDelete);
+      await setAllSales();
+    } catch (e,st) {
+      if(!mounted) return;
+        state = AsyncValue.error(e, st);
+    }
   }
 
 }

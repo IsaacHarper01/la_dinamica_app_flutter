@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +38,7 @@ class _HistoryExpensesScreenState extends ConsumerState<HistoryExpensesScreen> {
                   expense: expense,
                   onDelete: () async {
                     safePrint('Eliminando gasto con ID: ${expense.id}');
+                    ref.read(expensesProvider.notifier).deleteExpense(expense);
                   },
                 );
               },
