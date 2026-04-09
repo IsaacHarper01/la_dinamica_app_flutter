@@ -6,6 +6,7 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/lastPayments_provider.dart';
+import 'package:la_dinamica_app/widgets/edit_payment_dialog_widget.dart';
 import 'package:la_dinamica_app/widgets/payment_box.dart';
 
 class EditpaymentsScreen extends ConsumerStatefulWidget {
@@ -29,7 +30,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
     super.initState();
     Future.microtask(() {
       ref.read(paymentsProvider.notifier)
-         .fetchLastPayments(widget.user, widget.student);
+         .fetchLastPayments(widget.student);
     });
   }
   
@@ -43,7 +44,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
         appBar: AppBar(title: Center(child: Text("Ultimos Pagos"))),
         body: RefreshIndicator(
           onRefresh: () async{
-            ref.read(paymentsProvider.notifier).fetchLastPayments(widget.user, widget.student);
+            ref.read(paymentsProvider.notifier).fetchLastPayments(widget.student);
           },
           child: ListView.builder(
                 itemCount: payments.length,
@@ -51,6 +52,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
                   final payment = payments[index];
                   final payStatus = payment.debt == true ? false : true;
                   return PayCard(
+                    student: widget.student,
                     payment: payment,
                     permision: widget.user.permissions["deletePayments"]!,
                     setDebt: ()async{
@@ -69,7 +71,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
           onPressed: () async{
               await showPaymentDialog(context, ref, student: widget.student,name: widget.student.name! , date: date, user: widget.user);
               ref.read(paymentsProvider.notifier)
-                 .fetchLastPayments(widget.user, widget.student);
+                 .fetchLastPayments(widget.student);
             }, 
           child: Icon(Icons.add),
           ),
@@ -81,6 +83,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
 }
 
 class PayCard extends StatelessWidget {
+  final Student student;
   final Payment payment;
   final VoidCallback onDelete;
   final VoidCallback setDebt;
@@ -88,6 +91,7 @@ class PayCard extends StatelessWidget {
 
   const PayCard({
     super.key, 
+    required this.student,
     required this.payment, 
     required this.onDelete,
     required this.setDebt,
@@ -126,7 +130,7 @@ class PayCard extends StatelessWidget {
                     spacing: 4,
                     children: [
                       Icon(
-                        Icons.class_,
+                        Icons.date_range,
                         size: 18,
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -142,6 +146,15 @@ class PayCard extends StatelessWidget {
                       ),
                       Text(
                         payment.amount!.toStringAsFixed(2),
+                        style: textTheme.labelLarge,
+                      ),
+                      Icon(
+                        Icons.class_,
+                        size: 18,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      Text(
+                        payment.clases!.toString(),
                         style: textTheme.labelLarge,
                       ),
                     ],
@@ -182,7 +195,9 @@ class PayCard extends StatelessWidget {
                   }
                 }
               if (value == 'edit'){
-                 
+                  Navigator.push(context, MaterialPageRoute(builder: (_)=>
+                  EditPaymentDialogWidget(student: student, payment: payment)
+                 ));
               }
               if (value=='debt'){
                setDebt();

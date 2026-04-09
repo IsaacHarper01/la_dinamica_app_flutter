@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -16,7 +17,7 @@ class PaymentsNotifier extends StateNotifier<AsyncValue<List<Payment>>>{
 
   PaymentsNotifier(this.ref,) : super(const AsyncValue.loading());
 
-  Future<void> fetchLastPayments(UserLocal user, Student student)async{
+  Future<void> fetchLastPayments(Student student)async{
     final user = await ref.watch(userProvider.future);
     final aws = DataStoreReadService(); 
     final payments = await aws.getLastTenPayments(student.user_id!, user.tenant.tenant_id);
@@ -26,12 +27,30 @@ class PaymentsNotifier extends StateNotifier<AsyncValue<List<Payment>>>{
   Future<void> markDebt(UserLocal user, Student student, Payment payment, bool status)async{
     final aws = DataStoreService();
     await aws.markDebtStatus(pay: payment,status: status);
-    await fetchLastPayments(user, student);
+    await fetchLastPayments(student);
   }
 
   Future<void> deletePay(String id, UserLocal user, Student student)async{
     final aws = DataStoreDeleteService();
     await aws.deletePaymentByID(id, user.tenant.tenant_id);
-    await fetchLastPayments(user, student);
+    await fetchLastPayments(student);
   }
+
+  Future<bool> updatePayment(Payment oldPayment, Student student , double? newAmount, int newClasses, TemporalDate? newDate)async{
+    bool status = false;
+    try {
+      final newPayment = oldPayment.copyWith(
+      amount: newAmount,
+      clases: newClasses,
+      date: newDate
+      );
+      await Amplify.DataStore.save(newPayment);
+      await fetchLastPayments(student);
+      status = true;
+      return status;
+    } catch (e) {
+      return status;
+    }
+  }
+
 }
