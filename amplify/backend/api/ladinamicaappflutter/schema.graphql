@@ -17,10 +17,12 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
   name: String
   tenant_id: String
   lastDate: AWSDate
+  higgerBetter: AWSJSON
 
   who: [JoinMetric] @hasMany(fields: ["id"])
   examresults: [ExamResults] @hasMany(fields: ["id"])
   studentexamresults: [StudentExamResults] @hasMany(fields: ["id"])
+  studentscoresults: [StudentScoreResults] @hasMany(fields: ["id"])
 }
 
 type LocalPlan @model @auth(rules: [{allow: public}]) {
@@ -219,4 +221,17 @@ type StudentExamResults @model @auth(rules: [{allow: public, operations: [create
 
   evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
   student: Student @belongsTo(fields: ["student_id"])
+}
+
+type StudentScoreResults @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
+  id: ID!
+  date: AWSDate
+  tenant_id: ID
+  scores: AWSJSON
+  types: AWSJSON
+  metric_names: AWSJSON
+  higgerBetter: AWSJSON
+  evaluation_id: ID! @index
+
+  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
 }
