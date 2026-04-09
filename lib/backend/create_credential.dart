@@ -34,13 +34,13 @@ Future<void> generateCredentialandSend(
   final image = await QrPainter(
     data: qrCodeData,
     version: QrVersions.auto,
-    gapless: false,
+    gapless: true,
     dataModuleStyle: const QrDataModuleStyle(
       dataModuleShape: QrDataModuleShape.square,
       color: Color.fromRGBO(0, 0, 0, 1.0),
     ),
     eyeStyle: const QrEyeStyle(color: Color.fromRGBO(0, 0, 0, 1.0)),
-  ).toImage(120); // 120 is the size of the image
+  ).toImage(400); // 120 is the size of the image
 
   final byteData = await image.toByteData(format: ImageByteFormat.png);
   final qrImageBytes = byteData!.buffer.asUint8List();
