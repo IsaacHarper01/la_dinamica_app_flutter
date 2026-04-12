@@ -30,9 +30,7 @@ class StudentExamResults extends amplify_core.Model {
   final amplify_core.TemporalDate? _date;
   final String? _tenant_id;
   final String? _grades;
-  final String? _types;
-  final String? _metric_names;
-  final String? _higgerBetter;
+  final String? _tscores;
   final Evaluations? _evaluation;
   final Student? _student;
   final amplify_core.TemporalDateTime? _createdAt;
@@ -63,16 +61,8 @@ class StudentExamResults extends amplify_core.Model {
     return _grades;
   }
   
-  String? get types {
-    return _types;
-  }
-  
-  String? get metric_names {
-    return _metric_names;
-  }
-  
-  String? get higgerBetter {
-    return _higgerBetter;
+  String? get tscores {
+    return _tscores;
   }
   
   Evaluations? get evaluation {
@@ -91,17 +81,15 @@ class StudentExamResults extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const StudentExamResults._internal({required this.id, date, tenant_id, grades, types, metric_names, higgerBetter, evaluation, student, createdAt, updatedAt}): _date = date, _tenant_id = tenant_id, _grades = grades, _types = types, _metric_names = metric_names, _higgerBetter = higgerBetter, _evaluation = evaluation, _student = student, _createdAt = createdAt, _updatedAt = updatedAt;
+  const StudentExamResults._internal({required this.id, date, tenant_id, grades, tscores, evaluation, student, createdAt, updatedAt}): _date = date, _tenant_id = tenant_id, _grades = grades, _tscores = tscores, _evaluation = evaluation, _student = student, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory StudentExamResults({String? id, amplify_core.TemporalDate? date, String? tenant_id, String? grades, String? types, String? metric_names, String? higgerBetter, Evaluations? evaluation, Student? student}) {
+  factory StudentExamResults({String? id, amplify_core.TemporalDate? date, String? tenant_id, String? grades, String? tscores, Evaluations? evaluation, Student? student}) {
     return StudentExamResults._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       date: date,
       tenant_id: tenant_id,
       grades: grades,
-      types: types,
-      metric_names: metric_names,
-      higgerBetter: higgerBetter,
+      tscores: tscores,
       evaluation: evaluation,
       student: student);
   }
@@ -118,9 +106,7 @@ class StudentExamResults extends amplify_core.Model {
       _date == other._date &&
       _tenant_id == other._tenant_id &&
       _grades == other._grades &&
-      _types == other._types &&
-      _metric_names == other._metric_names &&
-      _higgerBetter == other._higgerBetter &&
+      _tscores == other._tscores &&
       _evaluation == other._evaluation &&
       _student == other._student;
   }
@@ -137,9 +123,7 @@ class StudentExamResults extends amplify_core.Model {
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
     buffer.write("grades=" + "$_grades" + ", ");
-    buffer.write("types=" + "$_types" + ", ");
-    buffer.write("metric_names=" + "$_metric_names" + ", ");
-    buffer.write("higgerBetter=" + "$_higgerBetter" + ", ");
+    buffer.write("tscores=" + "$_tscores" + ", ");
     buffer.write("evaluation=" + (_evaluation != null ? _evaluation!.toString() : "null") + ", ");
     buffer.write("student=" + (_student != null ? _student!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
@@ -149,15 +133,13 @@ class StudentExamResults extends amplify_core.Model {
     return buffer.toString();
   }
   
-  StudentExamResults copyWith({amplify_core.TemporalDate? date, String? tenant_id, String? grades, String? types, String? metric_names, String? higgerBetter, Evaluations? evaluation, Student? student}) {
+  StudentExamResults copyWith({amplify_core.TemporalDate? date, String? tenant_id, String? grades, String? tscores, Evaluations? evaluation, Student? student}) {
     return StudentExamResults._internal(
       id: id,
       date: date ?? this.date,
       tenant_id: tenant_id ?? this.tenant_id,
       grades: grades ?? this.grades,
-      types: types ?? this.types,
-      metric_names: metric_names ?? this.metric_names,
-      higgerBetter: higgerBetter ?? this.higgerBetter,
+      tscores: tscores ?? this.tscores,
       evaluation: evaluation ?? this.evaluation,
       student: student ?? this.student);
   }
@@ -166,9 +148,7 @@ class StudentExamResults extends amplify_core.Model {
     ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<String?>? tenant_id,
     ModelFieldValue<String?>? grades,
-    ModelFieldValue<String?>? types,
-    ModelFieldValue<String?>? metric_names,
-    ModelFieldValue<String?>? higgerBetter,
+    ModelFieldValue<String?>? tscores,
     ModelFieldValue<Evaluations?>? evaluation,
     ModelFieldValue<Student?>? student
   }) {
@@ -177,9 +157,7 @@ class StudentExamResults extends amplify_core.Model {
       date: date == null ? this.date : date.value,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       grades: grades == null ? this.grades : grades.value,
-      types: types == null ? this.types : types.value,
-      metric_names: metric_names == null ? this.metric_names : metric_names.value,
-      higgerBetter: higgerBetter == null ? this.higgerBetter : higgerBetter.value,
+      tscores: tscores == null ? this.tscores : tscores.value,
       evaluation: evaluation == null ? this.evaluation : evaluation.value,
       student: student == null ? this.student : student.value
     );
@@ -190,9 +168,7 @@ class StudentExamResults extends amplify_core.Model {
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
       _tenant_id = json['tenant_id'],
       _grades = json['grades'],
-      _types = json['types'],
-      _metric_names = json['metric_names'],
-      _higgerBetter = json['higgerBetter'],
+      _tscores = json['tscores'],
       _evaluation = json['evaluation'] != null
         ? json['evaluation']['serializedData'] != null
           ? Evaluations.fromJson(new Map<String, dynamic>.from(json['evaluation']['serializedData']))
@@ -207,7 +183,7 @@ class StudentExamResults extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'date': _date?.format(), 'tenant_id': _tenant_id, 'grades': _grades, 'types': _types, 'metric_names': _metric_names, 'higgerBetter': _higgerBetter, 'evaluation': _evaluation?.toJson(), 'student': _student?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'date': _date?.format(), 'tenant_id': _tenant_id, 'grades': _grades, 'tscores': _tscores, 'evaluation': _evaluation?.toJson(), 'student': _student?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -215,9 +191,7 @@ class StudentExamResults extends amplify_core.Model {
     'date': _date,
     'tenant_id': _tenant_id,
     'grades': _grades,
-    'types': _types,
-    'metric_names': _metric_names,
-    'higgerBetter': _higgerBetter,
+    'tscores': _tscores,
     'evaluation': _evaluation,
     'student': _student,
     'createdAt': _createdAt,
@@ -229,9 +203,7 @@ class StudentExamResults extends amplify_core.Model {
   static final DATE = amplify_core.QueryField(fieldName: "date");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
   static final GRADES = amplify_core.QueryField(fieldName: "grades");
-  static final TYPES = amplify_core.QueryField(fieldName: "types");
-  static final METRIC_NAMES = amplify_core.QueryField(fieldName: "metric_names");
-  static final HIGGERBETTER = amplify_core.QueryField(fieldName: "higgerBetter");
+  static final TSCORES = amplify_core.QueryField(fieldName: "tscores");
   static final EVALUATION = amplify_core.QueryField(
     fieldName: "evaluation",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Evaluations'));
@@ -279,19 +251,7 @@ class StudentExamResults extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: StudentExamResults.TYPES,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: StudentExamResults.METRIC_NAMES,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: StudentExamResults.HIGGERBETTER,
+      key: StudentExamResults.TSCORES,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));

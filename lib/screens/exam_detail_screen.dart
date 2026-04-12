@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/screens/add_students_evaluation.dart';
 
@@ -61,7 +62,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+    final date = ref.read(dateProvider).today;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.exam.name!),
@@ -89,6 +90,11 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                   },
                   child: const Text("Volver"),
                 ),
+                ElevatedButton(
+                  onPressed: (){ref.read(examProvider.notifier).calculateTscoreOnCloud(
+                    widget.exam, widget.user.tenant.tenant_id, date);}, 
+                  child: const Text("calcular scores")
+                  ),
                 ElevatedButton(
                   onPressed: () {
                     ref.read(examProvider.notifier).disposeAll();

@@ -386,7 +386,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                         MaterialPageRoute(
                           builder:
                               (context) => MetricsPage(
-                                studentId: student.user_id!.toString(),
+                                student: student,
                                 name: student.name!,
                                 image: student.image!,
                               ),

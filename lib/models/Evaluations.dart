@@ -31,6 +31,9 @@ class Evaluations extends amplify_core.Model {
   final String? _name;
   final String? _tenant_id;
   final amplify_core.TemporalDate? _lastDate;
+  final String? _higgerBetter;
+  final String? _types;
+  final String? _metric_names;
   final List<JoinMetric>? _who;
   final List<ExamResults>? _examresults;
   final List<StudentExamResults>? _studentexamresults;
@@ -62,6 +65,18 @@ class Evaluations extends amplify_core.Model {
     return _lastDate;
   }
   
+  String? get higgerBetter {
+    return _higgerBetter;
+  }
+  
+  String? get types {
+    return _types;
+  }
+  
+  String? get metric_names {
+    return _metric_names;
+  }
+  
   List<JoinMetric>? get who {
     return _who;
   }
@@ -82,14 +97,17 @@ class Evaluations extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Evaluations._internal({required this.id, name, tenant_id, lastDate, who, examresults, studentexamresults, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _lastDate = lastDate, _who = who, _examresults = examresults, _studentexamresults = studentexamresults, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Evaluations._internal({required this.id, name, tenant_id, lastDate, higgerBetter, types, metric_names, who, examresults, studentexamresults, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _lastDate = lastDate, _higgerBetter = higgerBetter, _types = types, _metric_names = metric_names, _who = who, _examresults = examresults, _studentexamresults = studentexamresults, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Evaluations({String? id, String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, List<JoinMetric>? who, List<ExamResults>? examresults, List<StudentExamResults>? studentexamresults}) {
+  factory Evaluations({String? id, String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, String? higgerBetter, String? types, String? metric_names, List<JoinMetric>? who, List<ExamResults>? examresults, List<StudentExamResults>? studentexamresults}) {
     return Evaluations._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
       tenant_id: tenant_id,
       lastDate: lastDate,
+      higgerBetter: higgerBetter,
+      types: types,
+      metric_names: metric_names,
       who: who != null ? List<JoinMetric>.unmodifiable(who) : who,
       examresults: examresults != null ? List<ExamResults>.unmodifiable(examresults) : examresults,
       studentexamresults: studentexamresults != null ? List<StudentExamResults>.unmodifiable(studentexamresults) : studentexamresults);
@@ -107,6 +125,9 @@ class Evaluations extends amplify_core.Model {
       _name == other._name &&
       _tenant_id == other._tenant_id &&
       _lastDate == other._lastDate &&
+      _higgerBetter == other._higgerBetter &&
+      _types == other._types &&
+      _metric_names == other._metric_names &&
       DeepCollectionEquality().equals(_who, other._who) &&
       DeepCollectionEquality().equals(_examresults, other._examresults) &&
       DeepCollectionEquality().equals(_studentexamresults, other._studentexamresults);
@@ -124,6 +145,9 @@ class Evaluations extends amplify_core.Model {
     buffer.write("name=" + "$_name" + ", ");
     buffer.write("tenant_id=" + "$_tenant_id" + ", ");
     buffer.write("lastDate=" + (_lastDate != null ? _lastDate!.format() : "null") + ", ");
+    buffer.write("higgerBetter=" + "$_higgerBetter" + ", ");
+    buffer.write("types=" + "$_types" + ", ");
+    buffer.write("metric_names=" + "$_metric_names" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -131,12 +155,15 @@ class Evaluations extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Evaluations copyWith({String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, List<JoinMetric>? who, List<ExamResults>? examresults, List<StudentExamResults>? studentexamresults}) {
+  Evaluations copyWith({String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, String? higgerBetter, String? types, String? metric_names, List<JoinMetric>? who, List<ExamResults>? examresults, List<StudentExamResults>? studentexamresults}) {
     return Evaluations._internal(
       id: id,
       name: name ?? this.name,
       tenant_id: tenant_id ?? this.tenant_id,
       lastDate: lastDate ?? this.lastDate,
+      higgerBetter: higgerBetter ?? this.higgerBetter,
+      types: types ?? this.types,
+      metric_names: metric_names ?? this.metric_names,
       who: who ?? this.who,
       examresults: examresults ?? this.examresults,
       studentexamresults: studentexamresults ?? this.studentexamresults);
@@ -146,6 +173,9 @@ class Evaluations extends amplify_core.Model {
     ModelFieldValue<String?>? name,
     ModelFieldValue<String?>? tenant_id,
     ModelFieldValue<amplify_core.TemporalDate?>? lastDate,
+    ModelFieldValue<String?>? higgerBetter,
+    ModelFieldValue<String?>? types,
+    ModelFieldValue<String?>? metric_names,
     ModelFieldValue<List<JoinMetric>?>? who,
     ModelFieldValue<List<ExamResults>?>? examresults,
     ModelFieldValue<List<StudentExamResults>?>? studentexamresults
@@ -155,6 +185,9 @@ class Evaluations extends amplify_core.Model {
       name: name == null ? this.name : name.value,
       tenant_id: tenant_id == null ? this.tenant_id : tenant_id.value,
       lastDate: lastDate == null ? this.lastDate : lastDate.value,
+      higgerBetter: higgerBetter == null ? this.higgerBetter : higgerBetter.value,
+      types: types == null ? this.types : types.value,
+      metric_names: metric_names == null ? this.metric_names : metric_names.value,
       who: who == null ? this.who : who.value,
       examresults: examresults == null ? this.examresults : examresults.value,
       studentexamresults: studentexamresults == null ? this.studentexamresults : studentexamresults.value
@@ -166,6 +199,9 @@ class Evaluations extends amplify_core.Model {
       _name = json['name'],
       _tenant_id = json['tenant_id'],
       _lastDate = json['lastDate'] != null ? amplify_core.TemporalDate.fromString(json['lastDate']) : null,
+      _higgerBetter = json['higgerBetter'],
+      _types = json['types'],
+      _metric_names = json['metric_names'],
       _who = json['who']  is Map
         ? (json['who']['items'] is List
           ? (json['who']['items'] as List)
@@ -209,7 +245,7 @@ class Evaluations extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'lastDate': _lastDate?.format(), 'who': _who?.map((JoinMetric? e) => e?.toJson()).toList(), 'examresults': _examresults?.map((ExamResults? e) => e?.toJson()).toList(), 'studentexamresults': _studentexamresults?.map((StudentExamResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'lastDate': _lastDate?.format(), 'higgerBetter': _higgerBetter, 'types': _types, 'metric_names': _metric_names, 'who': _who?.map((JoinMetric? e) => e?.toJson()).toList(), 'examresults': _examresults?.map((ExamResults? e) => e?.toJson()).toList(), 'studentexamresults': _studentexamresults?.map((StudentExamResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -217,6 +253,9 @@ class Evaluations extends amplify_core.Model {
     'name': _name,
     'tenant_id': _tenant_id,
     'lastDate': _lastDate,
+    'higgerBetter': _higgerBetter,
+    'types': _types,
+    'metric_names': _metric_names,
     'who': _who,
     'examresults': _examresults,
     'studentexamresults': _studentexamresults,
@@ -229,6 +268,9 @@ class Evaluations extends amplify_core.Model {
   static final NAME = amplify_core.QueryField(fieldName: "name");
   static final TENANT_ID = amplify_core.QueryField(fieldName: "tenant_id");
   static final LASTDATE = amplify_core.QueryField(fieldName: "lastDate");
+  static final HIGGERBETTER = amplify_core.QueryField(fieldName: "higgerBetter");
+  static final TYPES = amplify_core.QueryField(fieldName: "types");
+  static final METRIC_NAMES = amplify_core.QueryField(fieldName: "metric_names");
   static final WHO = amplify_core.QueryField(
     fieldName: "who",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JoinMetric'));
@@ -271,6 +313,24 @@ class Evaluations extends amplify_core.Model {
       key: Evaluations.LASTDATE,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Evaluations.HIGGERBETTER,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Evaluations.TYPES,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Evaluations.METRIC_NAMES,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(

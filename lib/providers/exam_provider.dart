@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:la_dinamica_app/model/exam_state.dart';
-import 'package:la_dinamica_app/models/Evaluations.dart';
-import 'package:la_dinamica_app/models/Metric.dart';
-import 'package:la_dinamica_app/models/Student.dart';
+import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'dart:math';
@@ -271,7 +271,33 @@ int _parseMilliseconds(String msStr) {
         tenantId: tenantId, 
         date: DateTime.parse(date));
     }
-    updateLastExamDate();
+    await updateLastExamDate();
+  }
+
+  Future<void> calculateTscoreOnCloud(Evaluations eval, String tenantId, String date)async{
+    final session = await Amplify.Auth.fetchAuthSession();
+    if (session is CognitoAuthSession) {
+      final tokensResult = session.userPoolTokensResult;
+      final accessToken = tokensResult.value.accessToken.raw;
+      
+      final response = await http.post(
+        Uri.parse("https://k424jq6fj1.execute-api.us-east-1.amazonaws.com/laDinamicaApp/calculateTscores"),
+        headers: {
+          'Content-Type':'application/json',
+          'Authorization':'Bearer $accessToken'
+        },
+        body: jsonEncode(
+          {
+            "evaluation_id":eval.id,
+            "tenant_id":tenantId,
+            "date":date,
+          }),
+      );
+      safePrint("RESPUESTA: ${response.statusCode}");
+      return; 
+      }else{
+        return;
+      }
   }
 
   Future<void> updateLastExamDate()async{

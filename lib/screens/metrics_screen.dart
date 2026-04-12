@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
+import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -16,11 +17,11 @@ import 'package:la_dinamica_app/widgets/metrics_screen/total_grades.dart';
 
 
 class MetricsPage extends ConsumerStatefulWidget {
-  final String studentId;
+  final Student student;
   final String name;
   final String image;
 
-  const MetricsPage({super.key, required this.studentId ,required this.name, required this.image});
+  const MetricsPage({super.key, required this.student ,required this.name, required this.image});
 
   @override
   ConsumerState<MetricsPage> createState() => _MetricsPageState();
@@ -60,7 +61,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth =isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
-    final resultsAsync = ref.watch(studentGradesProvider(widget.studentId));
+    final resultsAsync = ref.watch(studentGradesProvider(widget.student.id));
 
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
@@ -131,7 +132,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                                   child: ButtonsMenu(
                                     options: ["Último Examen","Último mes","Último Año","Todo"], 
                                     screenWidth: screenWidth,
-                                    studentId: widget.studentId,
+                                    studentId: widget.student.id,
                                     )
                                 ),
                               ),
@@ -165,7 +166,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                                   final examResult = results.filteredActualResults[index];
                                   return TotalGrades(
                                     exam: examResult,
-                                    studentId: widget.studentId,
+                                    studentId: widget.student.id,
                                   );
                                 },
                               ),
@@ -187,20 +188,20 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                     children: [
                       OptionDropdown(
                         options: results.allExamNames,
-                        onSelected: (String selected) => ref.read(studentGradesProvider(widget.studentId).notifier).setActualExam(selected),
+                        onSelected: (String selected) => ref.read(studentGradesProvider(widget.student.id).notifier).setActualExam(selected),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                                 Expanded(
                                   child: ProgresionTimeLine(
-                                    studentId: widget.studentId,
-                                    onSelected:(String selected) => ref.read(studentGradesProvider(widget.studentId).notifier).setActualMetric(selected),
+                                    studentId: widget.student.id,
+                                    onSelected:(String selected) => ref.read(studentGradesProvider(widget.student.id).notifier).setActualMetric(selected),
                                     )),
                                 SizedBox(width: 10,),
                                 Expanded(
                                   child: 
-                                  RadarChartExam(studentId: widget.studentId)),
+                                  RadarChartExam(studentId: widget.student.id)),
                                   ],
                                 ),
                             ]
@@ -218,7 +219,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                   width: double.infinity,
                   child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 30),
-                      child: RadarChartAllExams(studentId: widget.studentId),
+                      child: RadarChartAllExams(studentId: widget.student.id),
                       ),
                   
                   ),
