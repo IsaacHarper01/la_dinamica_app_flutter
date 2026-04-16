@@ -63,6 +63,9 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   email: String
   image: String
   client_id: String
+  hasDebt: Boolean
+  remainClasses: Int
+  expirationPlan: AWSDate
   
   attendances: [Attendance] @hasMany(fields: ["id"])
   examresults: [JoinResults] @hasMany(fields: ["id"])

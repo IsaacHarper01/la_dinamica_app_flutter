@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
@@ -8,13 +9,13 @@ import 'package:la_dinamica_app/providers/select_date_range_metrics.dart';
 class ButtonsMenu extends ConsumerWidget {
   final List<String> options;
   final double screenWidth;
-  final String studentId;
+  final Student student;
 
   const ButtonsMenu({
     super.key, 
     required this.options,
     required this.screenWidth,
-    required this.studentId
+    required this.student
     });
 
   @override
@@ -33,17 +34,17 @@ class ButtonsMenu extends ConsumerWidget {
             ref.read(selectedDateProviderMetrics.notifier).state = value;
             switch (value) {
               case 1:
-                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'last',null,null);
+                ref.read(studentGradesProvider(student).notifier).loadExamResults(student,'last',null,null);
               case 2:
                 lastDate = today.subtract(Duration(days: 30));
-                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'range',lastDate, today);
+                ref.read(studentGradesProvider(student).notifier).loadExamResults(student,'range',lastDate, today);
               case 3:
                 lastDate = today.subtract(Duration(days: 360));
-                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'range',lastDate, today);
+                ref.read(studentGradesProvider(student).notifier).loadExamResults(student,'range',lastDate, today);
               case 4:
-                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'all',null,null);
+                ref.read(studentGradesProvider(student).notifier).loadExamResults(student,'all',null,null);
               default:
-                ref.read(studentGradesProvider(studentId).notifier).loadExamResults(studentId,'last',null,null);
+                ref.read(studentGradesProvider(student).notifier).loadExamResults(student,'last',null,null);
             }
           },
           child: Container(

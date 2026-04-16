@@ -8,76 +8,74 @@ import 'package:la_dinamica_app/providers/user_provider.dart';
 
 
 final studentGradesProvider = 
-  StateNotifierProvider.family<GradeNotifier, AsyncValue<StudentGrades>, String>(
-      (ref, studentId) => GradeNotifier(ref, studentId)); 
+  StateNotifierProvider.family<GradeNotifier, AsyncValue<StudentGrades>, Student>(
+      (ref, student) => GradeNotifier(ref, student)); 
 
 class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
   final Ref ref;
-  final String studentId;
+  final Student student;
 
-  GradeNotifier(this.ref, this.studentId) : super(const AsyncValue.loading()) {  //by defafult load last exam
-    loadExamResults(studentId,'last',null,null);
+  GradeNotifier(this.ref, this.student) : super(const AsyncValue.loading()) {  //by defafult load last exam
+    loadExamResults(student,'last',null,null);
   }
 
-  Future<void> loadExamResults(String studentId, String mode, DateTime? start, DateTime? end)async{
+  Future<void> loadExamResults(Student student, String mode, DateTime? start, DateTime? end)async{
     final user = await ref.watch(userProvider.future);
     final aws = DataStoreReadService();
 
-    Map<String,Map<String,double>> tscores = {}; //Map<EvalName, Map<StudentID, grade>>
-    Map<String,Map<String,double>> grades = {}; //Map<EvalName, Map<StudentID, grade>>
+    Map<String,Map<String,dynamic>> tscores = {}; //Map<EvalName, Map<MetricID, grade>>
+    Map<String,Map<String,dynamic>> grades = {}; //Map<EvalName, Map<MetricID, grade>>
     Map<String, double> allTotals = {};
-    List<ExamResults> results = [];
-    List<ExamResults> filteredResults = [];
+    List<StudentExamResults> filteredResults = [];
     Set<String> allExamNamesSet = {};
     List<String> allExamNames = [];
     List<dynamic> metricsPerExam = [];
     Map<String, Map<String, dynamic>> metricsIds = {};
     Map<String,Map<String,Map<String, dynamic>>> historicalExamgrades = {}; //Evalname, metric, date
     StudentGrades newStudentGrades;
-    List<JoinResults> joinResults;
+    List<StudentExamResults> studentResults;
     String actualExam='';
 
     switch (mode) {
       case 'last':
-        joinResults = await aws.getLastExamResult(user.tenant.tenant_id, studentId);
+        studentResults = await aws.getLastStudentExamResult(user.tenant.tenant_id, student.id);
         break;
       case 'range':
-        joinResults = await aws.getJoinResultsRange(studentId, user.tenant.tenant_id, start!, end!);
+        studentResults = await aws.getStudentResultsRange(student.id, user.tenant.tenant_id, start!, end!);
         break;
       case 'all':
-        joinResults = await aws.getAllJoinResults(user.tenant.tenant_id, studentId);
+        studentResults = await aws.getAllStudentResults(user.tenant.tenant_id, student.id);
         break;
       default:
-        joinResults = await aws.getLastExamResult(user.tenant.tenant_id, studentId);
+        studentResults = await aws.getLastStudentExamResult(user.tenant.tenant_id, student.id);
         break;
     }
     
-    if(joinResults.isNotEmpty)
+    if(studentResults.isNotEmpty)
     {
       
-      for(var exam in joinResults) {
+      for(var exam in studentResults) {
        
-        results.add(exam.result!);
-        final evalName = exam.result!.evaluation!.name!;
-        final Map<String, double> auxGrades = adaptGradesperStudent(exam.result!)[studentId]!;
+        final evalName = exam.evaluation!.name!;
+        final Map<String, dynamic> auxGrades = jsonDecode(exam.grades!);
         
         if(allExamNamesSet.contains(evalName)){
           for(var metricId in auxGrades.keys){
-            historicalExamgrades[evalName]![metricId]![exam.result!.date.toString()] = auxGrades[metricId];
+            historicalExamgrades[evalName]![metricId]![exam.date.toString()] = auxGrades[metricId];
           }
         }else{
-          filteredResults.add(exam.result!);
+          filteredResults.add(exam);
 
-          final examTscores = adaptTscoresperStudent(exam.result!)[studentId]!;
+          final Map<String, dynamic> examTscores = jsonDecode(exam.tscores!);
           allTotals[evalName] = calculateActualTotal(examTscores);
           grades[evalName] = auxGrades;
-          metricsIds[evalName] = jsonDecode(exam.result!.metric_names!);
+          metricsIds[evalName] = jsonDecode(exam.evaluation!.metric_names!);
           tscores[evalName] = examTscores;
 
           historicalExamgrades.putIfAbsent(evalName, ()=>{});
           for(var metricId in grades[evalName]!.keys){
             historicalExamgrades[evalName]!.putIfAbsent(metricId, ()=>{});
-            historicalExamgrades[evalName]![metricId]![exam.result!.date.toString()] = grades[evalName]![metricId];
+            historicalExamgrades[evalName]![metricId]![exam.date.toString()] = grades[evalName]![metricId];
            }
           }
 
@@ -89,7 +87,7 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
       metricsPerExam = metricsIds[actualExam]!.values.toList();
 
       newStudentGrades = StudentGrades(
-        actualResults: results, 
+        actualResults: studentResults, 
         filteredActualResults: filteredResults,
         gradesPerStudent: grades, 
         tscoresPerStudent: tscores,
@@ -152,7 +150,7 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
     return tscoresPerStudent;
   }
 
-  double calculateActualTotal(Map<String, double> allGrades){ //(Metric,value)
+  double calculateActualTotal(Map<String, dynamic> allGrades){ //(Metric,value)
     final gradesList = allGrades.values.toList();
     final total = gradesList.reduce((a,b)=>a+b)/gradesList.length;
     return total;

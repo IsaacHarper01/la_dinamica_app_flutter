@@ -61,7 +61,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
     final screenWidth =isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
-    final resultsAsync = ref.watch(studentGradesProvider(widget.student.id));
+    final resultsAsync = ref.watch(studentGradesProvider(widget.student));
 
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
@@ -132,7 +132,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                                   child: ButtonsMenu(
                                     options: ["Último Examen","Último mes","Último Año","Todo"], 
                                     screenWidth: screenWidth,
-                                    studentId: widget.student.id,
+                                    student: widget.student,
                                     )
                                 ),
                               ),
@@ -166,7 +166,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                                   final examResult = results.filteredActualResults[index];
                                   return TotalGrades(
                                     exam: examResult,
-                                    studentId: widget.student.id,
+                                    student: widget.student,
                                   );
                                 },
                               ),
@@ -188,20 +188,20 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                     children: [
                       OptionDropdown(
                         options: results.allExamNames,
-                        onSelected: (String selected) => ref.read(studentGradesProvider(widget.student.id).notifier).setActualExam(selected),
+                        onSelected: (String selected) => ref.read(studentGradesProvider(widget.student).notifier).setActualExam(selected),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                                 Expanded(
                                   child: ProgresionTimeLine(
-                                    studentId: widget.student.id,
-                                    onSelected:(String selected) => ref.read(studentGradesProvider(widget.student.id).notifier).setActualMetric(selected),
+                                    student: widget.student,
+                                    onSelected:(String selected) => ref.read(studentGradesProvider(widget.student).notifier).setActualMetric(selected),
                                     )),
                                 SizedBox(width: 10,),
                                 Expanded(
                                   child: 
-                                  RadarChartExam(studentId: widget.student.id)),
+                                  RadarChartExam(student: widget.student)),
                                   ],
                                 ),
                             ]
@@ -219,7 +219,7 @@ class _MetricsPageState extends ConsumerState<MetricsPage> {
                   width: double.infinity,
                   child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 30),
-                      child: RadarChartAllExams(studentId: widget.student.id),
+                      child: RadarChartAllExams(student: widget.student),
                       ),
                   
                   ),

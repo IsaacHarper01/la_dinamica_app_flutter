@@ -1,12 +1,12 @@
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class StudentGrades {
-  final List<ExamResults> actualResults;
-  final List<ExamResults> filteredActualResults;
+  final List<StudentExamResults> actualResults;
+  final List<StudentExamResults> filteredActualResults;
 
   Map<String,Map<String,Map<String, dynamic>>> historicalExamgrades; //Map<EvalName, Map<MetricID, Map<Date, Grade>>>: EvalName not repeated
   Map<String,Map<String, dynamic>> gradesPerStudent; // Map<EvalName,Map<MetricID, Grade>>
-  Map<String,Map<String, double>>  tscoresPerStudent; // Map<EvalName,Map<MetricID, Tscore>>
+  Map<String,Map<String, dynamic>>  tscoresPerStudent; // Map<EvalName,Map<MetricID, Tscore>>
   
   Map<String, Map<String, dynamic>> metricsIds; // Map<EvalName, Map<MetricID, MetricName>>
   Map<String, double> examsTotals;//Map<EvalName,TscoreTotal>
@@ -31,10 +31,10 @@ class StudentGrades {
   });
 
   StudentGrades copyWith({
-    List<ExamResults>? actualResults,
-    List<ExamResults>? filteredActualResults,
+    List<StudentExamResults>? actualResults,
+    List<StudentExamResults>? filteredActualResults,
     Map<String,Map<String, dynamic>>? gradesPerStudent,
-    Map<String,Map<String, double>>? tscoresPerStudent,
+    Map<String,Map<String, dynamic>>? tscoresPerStudent,
     Map<String,Map<String,Map<String, dynamic>>>? historicalExamgrades,
     Map<String, double>? examsTotals,
     Map<String, Map<String, dynamic>>? metricsIds,

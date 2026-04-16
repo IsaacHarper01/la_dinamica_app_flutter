@@ -742,38 +742,150 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<JoinResults>> getJoinResultsRange(String studentId,String tenaniId, DateTime start, DateTime end)async{
-    try {
-      final exams = await Amplify.DataStore.query(
-        JoinResults.classType,
-        where: JoinResults.STUDENT.eq(studentId)
-        .and(JoinResults.TENANT_ID.eq(tenaniId))
-        .and(JoinResults.DATE.between(TemporalDate(start), TemporalDate(end))),
-        sortBy: [JoinResults.DATE.descending()],
+  Future<List<StudentExamResults>> getStudentResultsRange(
+      String studentId,
+      String tenantId,
+      DateTime start,
+      DateTime end,
+    ) async {
+      List<StudentExamResults> allItems = [];
+      String? nextToken;
+
+      do {
+        final request = GraphQLRequest<String>(
+          document: '''
+          query GetStudentResultsRange(
+            \$studentId: ID!,
+            \$tenantId: ID!,
+            \$start: String!,
+            \$end: String!
+            \$nextToken: String
+          ) {
+            listStudentExamResults(
+              filter: {
+                student_id: { eq: \$studentId }
+                tenant_id: { eq: \$tenantId }
+                date: { between: [\$start, \$end] }
+              }
+              nextToken: \$nextToken
+            ) {
+              items {
+              id
+              date
+              tenant_id
+              grades
+              tscores
+              evaluation{
+                id
+                name
+                tenant_id
+                lastDate
+                higgerBetter
+                types
+                metric_names
+              }
+              createdAt
+              updatedAt
+            }
+            nextToken
+            }
+          }
+        ''',
+          variables: {
+            "studentId": studentId,
+            "tenantId": tenantId,
+            "start": start.toIso8601String().split("T").first,
+            "end": end.toIso8601String().split("T").first,
+            "nextToken": nextToken,
+          },
         );
-      return exams;
-    } catch (e) {
-      rethrow;
-    }
-  }
 
-  Future<List<JoinResults>> getLastExamResult(String tenaniId, String studentId)async{
-    final results = await Amplify.DataStore.query(
-      JoinResults.classType,
-      where: JoinResults.STUDENT.eq(studentId)
-      .and(JoinResults.TENANT_ID.eq(tenaniId)),
-      sortBy: [JoinResults.DATE.descending()],
-      pagination: const QueryPagination.firstResult()
+        final response = await Amplify.API.query(request: request).response;
+
+        if (response.errors.isNotEmpty) {
+          throw Exception(response.errors.first.message);
+        }
+
+        final data = jsonDecode(response.data!);
+        final result = data['listStudentExamResults'];
+
+        final items = result['items'] as List;
+        allItems.addAll(
+          items.map((e) => StudentExamResults.fromJson(e)),
+        );
+
+        nextToken = result['nextToken'];
+
+      } while (nextToken != null);
+
+      return allItems;
+}
+
+   Future<List<StudentExamResults>> getLastStudentExamResult(
+      String tenantId,
+      String studentId,
+    ) async {
+      const graphQLDocument = r'''
+        query ListStudentExamResultsByStudent($studentId: ID!) {
+          listStudentExamResults(
+            filter: { student_id: { eq: $studentId } }
+          ) {
+            items {
+              id
+              date
+              tenant_id
+              grades
+              tscores
+              evaluation{
+                id
+                name
+                tenant_id
+                lastDate
+                higgerBetter
+                types
+                metric_names
+              }
+              createdAt
+              updatedAt
+            }
+          }
+        }
+      ''';
+
+      final request = GraphQLRequest<String>(
+        document: graphQLDocument,
+        variables: {
+          "studentId": studentId,
+        },
       );
-    return results.isNotEmpty ? [results.first] : [];
-  }
 
-  Future<List<JoinResults>> getAllJoinResults(String tenaniId, String studentId)async{
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.errors.isNotEmpty) {
+        throw Exception(response.errors.first.message);
+      }
+
+      final data = jsonDecode(response.data!);
+      final items = data['listStudentExamResults']['items'] as List;
+
+      // 🔥 filter + sort locally
+      final filtered = items
+          .where((e) => e['tenant_id'] == tenantId)
+          .toList();
+
+      filtered.sort((a, b) => b['date'].compareTo(a['date']));
+
+      if (filtered.isEmpty) return [];
+
+      return [StudentExamResults.fromJson(filtered.first)];
+    }
+
+  Future<List<StudentExamResults>> getAllStudentResults(String tenaniId, String studentId)async{
     final results = await Amplify.DataStore.query(
-      JoinResults.classType,
-      where: JoinResults.STUDENT.eq(studentId)
-      .and(JoinResults.TENANT_ID.eq(tenaniId)),
-      sortBy: [JoinResults.DATE.descending()],
+      StudentExamResults.classType,
+      where: StudentExamResults.STUDENT.eq(studentId)
+      .and(StudentExamResults.TENANT_ID.eq(tenaniId)),
+      sortBy: [StudentExamResults.DATE.descending()],
       );
     return results;
   }

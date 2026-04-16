@@ -1,11 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 
 class RadarChartExam extends ConsumerStatefulWidget {
-  final String studentId;
-  const RadarChartExam({super.key, required this.studentId});
+  final Student student;
+  const RadarChartExam({super.key, required this.student});
 
   @override
   ConsumerState<RadarChartExam> createState() => _nameState();
@@ -15,7 +16,7 @@ class _nameState extends ConsumerState<RadarChartExam> {
   
   @override
   Widget build(BuildContext context) {
-    final examGrades = ref.watch(studentGradesProvider(widget.studentId));
+    final examGrades = ref.watch(studentGradesProvider(widget.student));
     
     return examGrades.when(
       error: (e,st)=>Center(child: Text('Error al cargar datos: $e'),), 

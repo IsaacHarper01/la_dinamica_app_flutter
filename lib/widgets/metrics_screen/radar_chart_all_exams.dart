@@ -2,14 +2,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 
 class RadarChartAllExams extends ConsumerStatefulWidget {
-  final String studentId;
+  final Student student;
 
   const RadarChartAllExams({
     super.key,
-    required this.studentId,
+    required this.student,
     });
 
   @override
@@ -19,7 +20,7 @@ class RadarChartAllExams extends ConsumerStatefulWidget {
 class _nameState extends ConsumerState<RadarChartAllExams> {
   @override
   Widget build(BuildContext context) {
-    final examGrades = ref.watch(studentGradesProvider(widget.studentId));
+    final examGrades = ref.watch(studentGradesProvider(widget.student));
     List<String> options = [];
     
     return examGrades.when(

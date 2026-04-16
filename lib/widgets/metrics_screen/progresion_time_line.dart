@@ -1,15 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/widgets/dropown_button.dart';
 
 class ProgresionTimeLine extends ConsumerStatefulWidget {
-  final String studentId;
+  final Student student;
   final Future<void> Function(String) onSelected;
   const ProgresionTimeLine({
     super.key, 
-    required this.studentId,
+    required this.student,
     required this.onSelected
     });
 
@@ -21,7 +22,7 @@ class _nameState extends ConsumerState<ProgresionTimeLine> {
   
   @override
   Widget build(BuildContext context) {
-    final examGrades = ref.watch(studentGradesProvider(widget.studentId));
+    final examGrades = ref.watch(studentGradesProvider(widget.student));
 
     return examGrades.when(
       error: (e,st) => Center(child:  Text("Error al cargar datos $e"),), 

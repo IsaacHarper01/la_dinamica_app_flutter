@@ -8,13 +8,13 @@ import 'package:la_dinamica_app/providers/actual_student_grades_provider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/bar_grades_indicator.dart';
 
 class TotalGrades extends ConsumerStatefulWidget {
-  final ExamResults exam;
-  final String studentId;
+  final StudentExamResults exam;
+  final Student student;
 
   const TotalGrades({
     super.key,
     required this.exam,
-    required this.studentId,
+    required this.student,
   });
 
   @override
@@ -24,7 +24,7 @@ class TotalGrades extends ConsumerStatefulWidget {
 class _TotalGradesState extends ConsumerState<TotalGrades> {
   @override
   Widget build(BuildContext context) {
-    final gradesState = ref.watch(studentGradesProvider(widget.studentId));
+    final gradesState = ref.watch(studentGradesProvider(widget.student));
     
     return gradesState.when(
       error: (e,st)=> Center(child: Text('Error al cargar los datos $e'),), 
@@ -39,7 +39,7 @@ class _TotalGradesState extends ConsumerState<TotalGrades> {
                 ExpandableList(
                       title: examName, 
                       metricIds: grades.tscoresPerStudent[examName]!.keys.toList(),
-                      metricNames: jsonDecode(widget.exam.metric_names!),
+                      metricNames: jsonDecode(widget.exam.evaluation!.metric_names!),
                       totalMetric: grades.examsTotals[examName]!,
                       tscores: grades.tscoresPerStudent[examName]!,
                       grades: grades.gradesPerStudent[examName]!,

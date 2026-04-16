@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +8,6 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/screens/add_students_evaluation.dart';
-import 'package:la_dinamica_app/backend/upload_from_csv.dart';
 
 class ExamDetailScreen extends ConsumerStatefulWidget{
 
@@ -95,8 +95,10 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                   // onPressed: ()async{
                   //  await uploadStudentsGradesFromCsv(widget.user.tenant.tenant_id);
                   // },
-                  onPressed: (){ref.read(examProvider.notifier).calculateTscoreOnCloud(
-                   widget.exam, widget.user.tenant.tenant_id, date);}, 
+                  onPressed: ()async{ 
+                   await ref.read(examProvider.notifier).calculateTscoreOnCloud(
+                   widget.exam, widget.user.tenant.tenant_id, date);
+                   },
                   child: const Text("calcular scores")
                   ),
                 ElevatedButton(
