@@ -23,8 +23,8 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
     final user = await ref.watch(userProvider.future);
     final aws = DataStoreReadService();
 
-    Map<String,Map<String,double>> tscores = {};
-    Map<String,Map<String,double>> grades = {};
+    Map<String,Map<String,double>> tscores = {}; //Map<EvalName, Map<StudentID, grade>>
+    Map<String,Map<String,double>> grades = {}; //Map<EvalName, Map<StudentID, grade>>
     Map<String, double> allTotals = {};
     List<ExamResults> results = [];
     List<ExamResults> filteredResults = [];
@@ -32,7 +32,7 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
     List<String> allExamNames = [];
     List<dynamic> metricsPerExam = [];
     Map<String, Map<String, dynamic>> metricsIds = {};
-    Map<String,Map<String,Map<String, dynamic>>> historicalExamgrades = {};
+    Map<String,Map<String,Map<String, dynamic>>> historicalExamgrades = {}; //Evalname, metric, date
     StudentGrades newStudentGrades;
     List<JoinResults> joinResults;
     String actualExam='';
@@ -131,7 +131,7 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
         gradesPerStudent[studentId]![metricId] = grades[metricId]![studentId]!;
       }
     }
-    return gradesPerStudent;
+    return gradesPerStudent; //return Map<StudentID, Map<MetricId, Grade>>
   }
 
   Map<String, Map<String, double>> adaptTscoresperStudent(ExamResults actualExam){ //change (Map<MetricId,Map<StudentId,Value>>) to (Map<StudentID,Map<MetricId, Value>>)

@@ -7,6 +7,7 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/exam_provider.dart';
 import 'package:la_dinamica_app/screens/add_students_evaluation.dart';
+import 'package:la_dinamica_app/backend/upload_from_csv.dart';
 
 class ExamDetailScreen extends ConsumerStatefulWidget{
 
@@ -91,8 +92,11 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                   child: const Text("Volver"),
                 ),
                 ElevatedButton(
+                  // onPressed: ()async{
+                  //  await uploadStudentsGradesFromCsv(widget.user.tenant.tenant_id);
+                  // },
                   onPressed: (){ref.read(examProvider.notifier).calculateTscoreOnCloud(
-                    widget.exam, widget.user.tenant.tenant_id, date);}, 
+                   widget.exam, widget.user.tenant.tenant_id, date);}, 
                   child: const Text("calcular scores")
                   ),
                 ElevatedButton(

@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:la_dinamica_app/backend/resistencia.dart';
 import 'package:la_dinamica_app/backend/results.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 
 Future<void> uploadPaymentsFromCsv()async{
@@ -53,4 +57,59 @@ Future<void> uploadAttendanceFromCsv()async{
     await Amplify.DataStore.save(newAttendance);
     safePrint('Finished Column $i');
     }
+}
+
+Map<String, Map<String, dynamic>> adaptMapGrades(Map<String, Map<String, dynamic>> grades,) { // recive Map<Metric, Map<StudentID, Grade>>
+        final Map<String, Map<String, dynamic>> result = {};
+
+        for (final entry in grades.entries) {
+          final metric = entry.key;
+          final studentMap = entry.value;
+
+          for (final studentEntry in studentMap.entries) {
+            final student = studentEntry.key;
+            final grade = studentEntry.value;
+
+            result.putIfAbsent(student, () => {});
+            result[student]![metric] = grade;
+          }
+        }
+        return result; // return Map<StudentID, Map<MetricID, Grade>>
+      }
+
+Future<void> uploadStudentsGradesFromCsv(String tenantId)async{
+  final aws = DataStoreService();
+  final aws2 = DataStoreReadService();
+  final students = await aws2.getAllStudents();
+  final evalID = "2998469a-2c88-4665-9f69-56b31d059a35";
+  final date = "2026-03-28";
+  final allEval = await aws2.getEvaluations(tenantId);
+  final grades = adaptMapGrades(gradesPerMetricCsv);
+  safePrint("GRADES CONVERTED: $grades");
+  Map<String, Evaluations> mapEvals = {};
+    for(var eval in allEval!){
+      mapEvals[eval.id] = eval;
+    }
+
+  Map<String, Student> mapStudents = {};
+    for(var student in students){
+      mapStudents[student.id] = student;
+    }
+
+  for(var student in grades.keys){
+      if(mapStudents[student] != null){
+        safePrint("STUDENT: ${mapStudents[student]!.name}");  
+        await aws.saveStudentExamResults(
+          student: mapStudents[student]!, 
+          eval: mapEvals[evalID]!, 
+          grades: jsonEncode(grades[student]), 
+          tenantId: tenantId, 
+          date: DateTime.parse(date)
+          );
+      }
+
+    }
   }
+
+
+        

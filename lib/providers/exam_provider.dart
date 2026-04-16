@@ -275,6 +275,9 @@ int _parseMilliseconds(String msStr) {
   }
 
   Future<void> calculateTscoreOnCloud(Evaluations eval, String tenantId, String date)async{
+    safePrint("EVAL ID: ${eval.id}");
+    safePrint(tenantId);
+    safePrint(date);
     final session = await Amplify.Auth.fetchAuthSession();
     if (session is CognitoAuthSession) {
       final tokensResult = session.userPoolTokensResult;
