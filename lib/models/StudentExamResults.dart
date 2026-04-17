@@ -226,6 +226,7 @@ class StudentExamResults extends amplify_core.Model {
     ];
     
     modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["id", "tenant_id", "date"], name: "byStudentTenantDate"),
       amplify_core.ModelIndex(fields: const ["evaluation_id"], name: "studentExamResultsByEvaluation_id"),
       amplify_core.ModelIndex(fields: const ["student_id"], name: "studentExamResultsByStudent_id")
     ];

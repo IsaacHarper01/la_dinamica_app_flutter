@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
@@ -22,9 +23,22 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
         .of(context)
         .orientation;
     final bool isPortatil = orientation == Orientation.portrait;
+    final date = ref.watch(dateProvider).today;
     final screenHeight = isPortatil ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 2;
     final screenWidth = MediaQuery.of(context).size.width;
     final imageUrl = ref.watch(imageProvider(student.image!));
+    Color containerColor;
+
+    if(student.expirationPlan != null){
+      final remainingDays = student.expirationPlan!.getDateTime().difference(DateTime.parse(date)).inDays;  
+      containerColor = (student.remainClasses!<3 || remainingDays<3) ? Color.fromRGBO(240, 61, 61, 0.2) : Color.fromRGBO(95, 211, 49, 0.2);
+    }else{
+      if(student.remainClasses!=null){
+        containerColor = (student.remainClasses!<3) ? Color.fromRGBO(240, 61, 61, 0.2): Color.fromRGBO(95, 211, 49, 0.2);
+      }else{
+        containerColor = backgroundColor;
+      }
+    }
 
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -34,7 +48,7 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
             height: screenHeight * 0.07,
             width: screenWidth,
             decoration: BoxDecoration(
-              color: backgroundColor,
+              color: containerColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(

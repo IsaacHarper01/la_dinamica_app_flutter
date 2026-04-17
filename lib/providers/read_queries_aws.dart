@@ -455,12 +455,9 @@ class DataStoreReadService {
     }
   }
 
-  Future<void> verifyPayment(int userId, String date, String tenantId, String profId, LocalPlan defaultPlan) async {
+  Future<void> verifyPayment(Student student, String date, String tenantId, String profId, LocalPlan defaultPlan) async {
      try {
-      safePrint("USER ID: $userId");
-      safePrint("DEFAULT PLAN: $defaultPlan");
-      Payment? lastPayment = await getLastPayment(userId, tenantId);
-      safePrint("LAST PAY $lastPayment");
+      Payment? lastPayment = await getLastPayment(student.user_id!, tenantId);
       if(lastPayment != null){
         final newPayment = lastPayment.copyWith(clases: lastPayment.clases! - 1);
         await Amplify.DataStore.save(newPayment);
@@ -468,7 +465,7 @@ class DataStoreReadService {
       }else {
         if(defaultPlan.client_id!='none'){
         final newPayment = Payment(
-          user_id: userId,
+          user_id: student.user_id,
           amount: defaultPlan.price,
           clases: defaultPlan.clases,
           plan: defaultPlan,
@@ -953,55 +950,6 @@ class DataStoreReadService {
       }
     } 
   
-  Future<List<ExamResults>> getLastEvaluationResult(String evaluation_id, String date) async {
-  final request = GraphQLRequest<String>(
-    document: '''
-      query CheckExamExists(\$evaluation_id: ID!, \$date: String!) {
-        listExamResults(
-          filter: {
-            evaluation_id: { eq: \$evaluation_id }
-            date: { eq: \$date }
-          }
-
-        ) {
-          items {
-            id
-            date
-            prof_id
-            tenant_id
-            grades
-            types
-            tscore
-            metric_names
-            higgerBetter
-            evaluation_id
-            evaluation{
-              id
-              name
-              lastDate
-            }
-          }
-        }
-      }
-    ''',
-    variables: {
-      'evaluation_id': evaluation_id,
-      'date': date,
-    },
-  );
-
-  final response = await Amplify.API.query(request: request).response;
-
-  if(response.data == null){
-    return [];
-  }
-  final data = jsonDecode(response.data!);
-  final items = data['listExamResults']['items'] as List;
-
-  // Convert each item to your ExamResults model
-  return items.map((item) => ExamResults.fromJson(item)).toList();
-}
-
   Future<String> apiAssistant()async{
     final session = await Amplify.Auth.fetchAuthSession();
     if (session is CognitoAuthSession) {

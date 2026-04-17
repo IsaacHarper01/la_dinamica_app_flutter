@@ -85,7 +85,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       final image = await pickAndSaveImage(data['name']!, gymId, false, false);
       data['image'] = image!;
 
-      final id = await awsDb.saveGeneral(
+      final id = await awsDb.saveStudent(
         name: data['name']!,
         address: data['address']!,
         phone: data['phone']!,

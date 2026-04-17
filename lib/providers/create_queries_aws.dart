@@ -51,7 +51,7 @@ class DataStoreService {
     }
   }
 
-  Future<int> saveGeneral({
+  Future<int> saveStudent({
     required String name,
     required String address,
     required String phone,
@@ -60,6 +60,8 @@ class DataStoreService {
     required String email,
     required String image,
     required String? gymId,
+    int? remainClases,
+    TemporalDate? expirationDate,
   }) async {
     try {
       final students = await Amplify.DataStore.query(
@@ -80,6 +82,8 @@ class DataStoreService {
         email: email,
         image: image,
         client_id: gymId,
+        remainClasses: remainClases,
+        expirationPlan: expirationDate,
       );
 
       await Amplify.DataStore.save(item);
@@ -249,48 +253,6 @@ class DataStoreService {
   safePrint('✅ JoinMetric saved: ${joinMetric.id}');
   return joinMetric;
 }
-
-  Future<ExamResults> saveGrade({
-    required String tenantID,
-    required String profName,
-    required Evaluations eval,
-    required DateTime date,
-    required String grades,
-    required String types,
-    required String tscore,
-    required String higgerBetter,
-    required String metricNames,
-  }) async {
-    final newGrades = ExamResults(
-      evaluation: eval,
-      date: TemporalDate(date),
-      prof_id: profName,
-      tenant_id: tenantID,
-      grades: grades,
-      types: types,
-      tscore: tscore,
-      metric_names: metricNames,
-      higgerBetter: higgerBetter,
-    );
-    await Amplify.DataStore.save(newGrades);
-    return newGrades;
-  }
-
-  Future<JoinResults> saveJoinResult({
-    required String tenaniId,
-    required String date,
-    required Student student,
-    required ExamResults result
-  })async{
-    final newJoinResult = JoinResults(
-      tenant_id: tenaniId,
-      date: TemporalDate(DateTime.parse(date)),
-      student: student,
-      result: result
-    );
-    await Amplify.DataStore.save(newJoinResult); 
-    return newJoinResult;
-  }
 
   Future<void> markDebtStatus({
     required Payment pay,

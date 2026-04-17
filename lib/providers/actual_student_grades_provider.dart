@@ -114,42 +114,6 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
     return result;
   }
 
-  Map<String, Map<String, double>> adaptGradesperStudent(ExamResults actualExam){
-    final decoded = jsonDecode(actualExam.grades!) as Map<String, dynamic>;
-    final grades = decoded.map((key, value) {
-      return MapEntry(
-        key,
-        (value as Map<String, dynamic>).map((k, v) => MapEntry(k, (v as num).toDouble())),
-      );
-    });
-    final Map<String, Map<String, double>> gradesPerStudent = {};
-    for (var metricId in grades.keys){
-      for (var studentId in grades[metricId]!.keys){
-        gradesPerStudent.putIfAbsent(studentId, ()=>{});
-        gradesPerStudent[studentId]![metricId] = grades[metricId]![studentId]!;
-      }
-    }
-    return gradesPerStudent; //return Map<StudentID, Map<MetricId, Grade>>
-  }
-
-  Map<String, Map<String, double>> adaptTscoresperStudent(ExamResults actualExam){ //change (Map<MetricId,Map<StudentId,Value>>) to (Map<StudentID,Map<MetricId, Value>>)
-    final decoded = jsonDecode(actualExam.tscore!) as Map<String, dynamic>;
-    final tscores = decoded.map((key, value) {
-      return MapEntry(
-        key,
-        (value as Map<String, dynamic>).map((k, v) => MapEntry(k, (v as num).toDouble())),
-      );
-    });
-    final Map<String, Map<String, double>> tscoresPerStudent = {};
-    for (var metricId in tscores.keys){
-      for (var studentId in tscores[metricId]!.keys){
-        tscoresPerStudent.putIfAbsent(studentId, ()=>{});
-        tscoresPerStudent[studentId]![metricId] = tscores[metricId]![studentId]!;
-      }
-    }
-    return tscoresPerStudent;
-  }
-
   double calculateActualTotal(Map<String, dynamic> allGrades){ //(Metric,value)
     final gradesList = allGrades.values.toList();
     final total = gradesList.reduce((a,b)=>a+b)/gradesList.length;

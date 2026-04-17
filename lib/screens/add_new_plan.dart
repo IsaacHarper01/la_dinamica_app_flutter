@@ -15,9 +15,9 @@ class AddNewPlan extends ConsumerStatefulWidget {
 }
 
 class _AddNewPlanState extends ConsumerState<AddNewPlan> {
-  final List<String> labels = ['Tipo de plan', 'Clases', 'Precio'];
+  final List<String> labels = ['Tipo de plan', 'Clases', 'Precio','Expiracion(días)(opcional)'];
   final List<TextEditingController> _controllers = List.generate(
-    3,
+    4,
     (index) => TextEditingController(),
   );
 
@@ -30,6 +30,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
       _controllers[0].text = widget.oldPlan?.type ?? '';
       _controllers[1].text = widget.oldPlan?.clases.toString() ?? '';
       _controllers[2].text = widget.oldPlan?.price.toString() ?? '';
+      _controllers[3].text = widget.oldPlan?.expiration.toString() ?? '';
     }
   }
 
@@ -41,7 +42,8 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
             widget.oldPlan!, 
             _controllers[0].text,
             int.parse(_controllers[1].text),
-            double.parse(_controllers[2].text));
+            double.parse(_controllers[2].text),
+            _controllers[3].text != "" ? int.parse(_controllers[3].text) : null);
         Navigator.pop(context, true);
         }
       } catch (e) {
@@ -61,6 +63,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
         clases: int.parse(_controllers[1].text),
         price: double.parse(_controllers[2].text),
         client_id: gymId,
+        expiration: int.parse(_controllers[3].text),
       );
 
       try {
@@ -142,7 +145,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
                               ),
                             ),
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
+                              if ((value == null || value.isEmpty) & (i != 3)) {
                                 return 'Por favor, ingrese ${labels[i].toLowerCase()}';
                               }
                               return null;

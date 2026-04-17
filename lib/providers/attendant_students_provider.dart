@@ -128,7 +128,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
         profId: profId,
         status: true,
       );
-      await awsDb2.verifyPayment(student.user_id!, date, gymid, profId, ref.watch(defaultPlanProvider));
+      await awsDb2.verifyPayment(student, date, gymid, profId, ref.watch(defaultPlanProvider));
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {

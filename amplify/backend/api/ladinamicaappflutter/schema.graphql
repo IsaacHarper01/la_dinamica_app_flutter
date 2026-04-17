@@ -22,7 +22,6 @@ type Evaluations @model @auth(rules: [{allow: public}]) {
   metric_names: AWSJSON
 
   who: [JoinMetric] @hasMany(fields: ["id"])
-  examresults: [ExamResults] @hasMany(fields: ["id"])
   studentexamresults: [StudentExamResults] @hasMany(fields: ["id"])
 }
 
@@ -33,6 +32,7 @@ type LocalPlan @model @auth(rules: [{allow: public}]) {
   price: Float
   client_id: String
   defaultPlan: Boolean
+  expiration: Int
 
   pays: [Payment] @hasMany(fields: ["id"])
 }
@@ -68,7 +68,6 @@ type Student @model @auth(rules: [{allow: public, operations: [create, read, upd
   expirationPlan: AWSDate
   
   attendances: [Attendance] @hasMany(fields: ["id"])
-  examresults: [JoinResults] @hasMany(fields: ["id"])
   groups: [JoinGroups] @hasMany(fields: ["id"])
   studentexamresults: [StudentExamResults] @hasMany(fields: ["id"])
 }
@@ -153,34 +152,6 @@ type JoinMetric @model @auth(rules: [{allow: public}]) {
   evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
 }
 
-type ExamResults @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  date: AWSDate
-  prof_id: String
-  tenant_id: ID
-  grades: AWSJSON
-  types: AWSJSON
-  tscore: AWSJSON
-  metric_names: AWSJSON
-  higgerBetter: AWSJSON
-  evaluation_id: ID! @index(name: "byEvaluationDate", sortKeyFields: ["date"])
-
-  evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
-  joinresult: [JoinResults] @hasMany(fields: ["id"])
-}
-
-type JoinResults @model @auth(rules: [{allow: public}]) {
-  id: ID!
-
-  student_id: ID! @index
-  result_id: ID! @index
-  tenant_id: ID
-  date: AWSDate
-
-  student: Student @belongsTo(fields: ["student_id"])
-  result: ExamResults @belongsTo(fields: ["result_id"])
-}
-
 type JoinGroups @model @auth(rules: [{allow: public}]) {
   id: ID!
 
@@ -212,8 +183,13 @@ type Expense @model @auth(rules: [{allow: public, operations: [create, read, upd
   tenant: Tenant @belongsTo(fields: ["tenant_id"])
 }
 
-type StudentExamResults @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
+type StudentExamResults @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}])
+  {
+  id: ID! @index(
+    name: "byStudentTenantDate",
+    queryField: "resultsByStudentDate",
+    sortKeyFields: ["tenant_id", "date"]
+  )
   date: AWSDate
   tenant_id: ID
   grades: AWSJSON

@@ -35,7 +35,6 @@ class Evaluations extends amplify_core.Model {
   final String? _types;
   final String? _metric_names;
   final List<JoinMetric>? _who;
-  final List<ExamResults>? _examresults;
   final List<StudentExamResults>? _studentexamresults;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -81,10 +80,6 @@ class Evaluations extends amplify_core.Model {
     return _who;
   }
   
-  List<ExamResults>? get examresults {
-    return _examresults;
-  }
-  
   List<StudentExamResults>? get studentexamresults {
     return _studentexamresults;
   }
@@ -97,9 +92,9 @@ class Evaluations extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Evaluations._internal({required this.id, name, tenant_id, lastDate, higgerBetter, types, metric_names, who, examresults, studentexamresults, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _lastDate = lastDate, _higgerBetter = higgerBetter, _types = types, _metric_names = metric_names, _who = who, _examresults = examresults, _studentexamresults = studentexamresults, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Evaluations._internal({required this.id, name, tenant_id, lastDate, higgerBetter, types, metric_names, who, studentexamresults, createdAt, updatedAt}): _name = name, _tenant_id = tenant_id, _lastDate = lastDate, _higgerBetter = higgerBetter, _types = types, _metric_names = metric_names, _who = who, _studentexamresults = studentexamresults, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Evaluations({String? id, String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, String? higgerBetter, String? types, String? metric_names, List<JoinMetric>? who, List<ExamResults>? examresults, List<StudentExamResults>? studentexamresults}) {
+  factory Evaluations({String? id, String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, String? higgerBetter, String? types, String? metric_names, List<JoinMetric>? who, List<StudentExamResults>? studentexamresults}) {
     return Evaluations._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       name: name,
@@ -109,7 +104,6 @@ class Evaluations extends amplify_core.Model {
       types: types,
       metric_names: metric_names,
       who: who != null ? List<JoinMetric>.unmodifiable(who) : who,
-      examresults: examresults != null ? List<ExamResults>.unmodifiable(examresults) : examresults,
       studentexamresults: studentexamresults != null ? List<StudentExamResults>.unmodifiable(studentexamresults) : studentexamresults);
   }
   
@@ -129,7 +123,6 @@ class Evaluations extends amplify_core.Model {
       _types == other._types &&
       _metric_names == other._metric_names &&
       DeepCollectionEquality().equals(_who, other._who) &&
-      DeepCollectionEquality().equals(_examresults, other._examresults) &&
       DeepCollectionEquality().equals(_studentexamresults, other._studentexamresults);
   }
   
@@ -155,7 +148,7 @@ class Evaluations extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Evaluations copyWith({String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, String? higgerBetter, String? types, String? metric_names, List<JoinMetric>? who, List<ExamResults>? examresults, List<StudentExamResults>? studentexamresults}) {
+  Evaluations copyWith({String? name, String? tenant_id, amplify_core.TemporalDate? lastDate, String? higgerBetter, String? types, String? metric_names, List<JoinMetric>? who, List<StudentExamResults>? studentexamresults}) {
     return Evaluations._internal(
       id: id,
       name: name ?? this.name,
@@ -165,7 +158,6 @@ class Evaluations extends amplify_core.Model {
       types: types ?? this.types,
       metric_names: metric_names ?? this.metric_names,
       who: who ?? this.who,
-      examresults: examresults ?? this.examresults,
       studentexamresults: studentexamresults ?? this.studentexamresults);
   }
   
@@ -177,7 +169,6 @@ class Evaluations extends amplify_core.Model {
     ModelFieldValue<String?>? types,
     ModelFieldValue<String?>? metric_names,
     ModelFieldValue<List<JoinMetric>?>? who,
-    ModelFieldValue<List<ExamResults>?>? examresults,
     ModelFieldValue<List<StudentExamResults>?>? studentexamresults
   }) {
     return Evaluations._internal(
@@ -189,7 +180,6 @@ class Evaluations extends amplify_core.Model {
       types: types == null ? this.types : types.value,
       metric_names: metric_names == null ? this.metric_names : metric_names.value,
       who: who == null ? this.who : who.value,
-      examresults: examresults == null ? this.examresults : examresults.value,
       studentexamresults: studentexamresults == null ? this.studentexamresults : studentexamresults.value
     );
   }
@@ -215,19 +205,6 @@ class Evaluations extends amplify_core.Model {
               .map((e) => JoinMetric.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
               .toList()
           : null),
-      _examresults = json['examresults']  is Map
-        ? (json['examresults']['items'] is List
-          ? (json['examresults']['items'] as List)
-              .where((e) => e != null)
-              .map((e) => ExamResults.fromJson(new Map<String, dynamic>.from(e)))
-              .toList()
-          : null)
-        : (json['examresults'] is List
-          ? (json['examresults'] as List)
-              .where((e) => e?['serializedData'] != null)
-              .map((e) => ExamResults.fromJson(new Map<String, dynamic>.from(e?['serializedData'])))
-              .toList()
-          : null),
       _studentexamresults = json['studentexamresults']  is Map
         ? (json['studentexamresults']['items'] is List
           ? (json['studentexamresults']['items'] as List)
@@ -245,7 +222,7 @@ class Evaluations extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'lastDate': _lastDate?.format(), 'higgerBetter': _higgerBetter, 'types': _types, 'metric_names': _metric_names, 'who': _who?.map((JoinMetric? e) => e?.toJson()).toList(), 'examresults': _examresults?.map((ExamResults? e) => e?.toJson()).toList(), 'studentexamresults': _studentexamresults?.map((StudentExamResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'name': _name, 'tenant_id': _tenant_id, 'lastDate': _lastDate?.format(), 'higgerBetter': _higgerBetter, 'types': _types, 'metric_names': _metric_names, 'who': _who?.map((JoinMetric? e) => e?.toJson()).toList(), 'studentexamresults': _studentexamresults?.map((StudentExamResults? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -257,7 +234,6 @@ class Evaluations extends amplify_core.Model {
     'types': _types,
     'metric_names': _metric_names,
     'who': _who,
-    'examresults': _examresults,
     'studentexamresults': _studentexamresults,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -274,9 +250,6 @@ class Evaluations extends amplify_core.Model {
   static final WHO = amplify_core.QueryField(
     fieldName: "who",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'JoinMetric'));
-  static final EXAMRESULTS = amplify_core.QueryField(
-    fieldName: "examresults",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'ExamResults'));
   static final STUDENTEXAMRESULTS = amplify_core.QueryField(
     fieldName: "studentexamresults",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'StudentExamResults'));
@@ -338,13 +311,6 @@ class Evaluations extends amplify_core.Model {
       isRequired: false,
       ofModelName: 'JoinMetric',
       associatedKey: JoinMetric.EVALUATION
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: Evaluations.EXAMRESULTS,
-      isRequired: false,
-      ofModelName: 'ExamResults',
-      associatedKey: ExamResults.EVALUATION
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
