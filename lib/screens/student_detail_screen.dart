@@ -465,7 +465,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                InfoCard(id: student.user_id!, clases: paymentData.clases!, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
+                InfoCard(id: student.user_id!, clases: student.remainClasses!, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
                 const SizedBox(height: 10),
                 FilledButton.icon(
                   onPressed: () {

@@ -35,12 +35,9 @@ class PreviewStudentContainer extends ConsumerWidget {
         containerColor = Color.fromRGBO(241, 142, 28, 0.2);
       }
     }else{
-      if(student.remainClasses!=null){
-        containerColor = (student.remainClasses!<3) ? Color.fromRGBO(206, 209, 36, 0.2): Color.fromRGBO(24, 135, 240, 0.2);
-      }else{
         containerColor = Colors.transparent;
-      }
     }
+    
     return Dismissible(
       key: UniqueKey(),
       direction: DismissDirection.endToStart,
