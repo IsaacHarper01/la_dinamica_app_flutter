@@ -244,8 +244,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                                         ),
                                       );},
                                       child: PreviewStudentContainer(
-                                          name: student.name!,
-                                          image: student.image!,
+                                          student: student,
                                           onDismissed: () {
                                             ref
                                                 .read(studentsAttendanceProvider.notifier)

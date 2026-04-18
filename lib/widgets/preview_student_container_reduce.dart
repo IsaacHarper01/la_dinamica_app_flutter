@@ -30,11 +30,17 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
     Color containerColor;
 
     if(student.expirationPlan != null){
-      final remainingDays = student.expirationPlan!.getDateTime().difference(DateTime.parse(date)).inDays;  
-      containerColor = (student.remainClasses!<3 || remainingDays<3) ? Color.fromRGBO(240, 61, 61, 0.2) : Color.fromRGBO(95, 211, 49, 0.2);
+      final remainingDays = student.expirationPlan!.getDateTime().difference(DateTime.parse(date)).inDays;
+      if(student.remainClasses!>3 || remainingDays>3){
+        containerColor = Color.fromRGBO(24, 135, 240, 0.2);
+      }else if(student.remainClasses!>1 || remainingDays>1){
+       containerColor = Color.fromRGBO(206, 209, 36, 0.2);
+      }else{
+        containerColor = Color.fromRGBO(241, 142, 28, 0.2);
+      }
     }else{
       if(student.remainClasses!=null){
-        containerColor = (student.remainClasses!<3) ? Color.fromRGBO(240, 61, 61, 0.2): Color.fromRGBO(95, 211, 49, 0.2);
+        containerColor = (student.remainClasses!<3) ? Color.fromRGBO(206, 209, 36, 0.2): Color.fromRGBO(24, 135, 240, 0.2);
       }else{
         containerColor = backgroundColor;
       }

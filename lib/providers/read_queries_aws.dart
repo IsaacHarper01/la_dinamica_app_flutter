@@ -458,6 +458,12 @@ class DataStoreReadService {
   Future<void> verifyPayment(Student student, String date, String tenantId, String profId, LocalPlan defaultPlan) async {
      try {
       Payment? lastPayment = await getLastPayment(student.user_id!, tenantId);
+      if(student.remainClasses != null){
+        if(student.remainClasses! > 0){
+          final updatedStudent = student.copyWith(remainClasses: student.remainClasses! - 1);
+          await Amplify.DataStore.save(updatedStudent);
+        }
+      }
       if(lastPayment != null){
         final newPayment = lastPayment.copyWith(clases: lastPayment.clases! - 1);
         await Amplify.DataStore.save(newPayment);
