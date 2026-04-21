@@ -8,6 +8,7 @@ import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
+import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/groups.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
@@ -22,7 +23,6 @@ class StudentsScreen extends ConsumerStatefulWidget {
 }
 
 class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBindingObserver{
-  UserLocal? user;
   String? selectedDate;
   final TextEditingController _searchController = TextEditingController();
 
@@ -51,9 +51,10 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
   }
 
   void _deleteAttendance(Student student) {
+    final user = ref.read(userProvider).value!;
     ref.read(studentsAttendanceProvider.notifier)
                 .deleteAttendance(
-                  student, ref.read(dateProvider).today, user!.tenant.tenant_id);
+                  student, ref.read(dateProvider).today, user.tenant.tenant_id);
   }
 
   void handleDeleteDash(context, Student student) async {
@@ -98,14 +99,14 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final _studentsFuture = ref.watch(studentsProvider);
+    final studentsFuture = ref.watch(studentsProvider);
     final attendedIds = ref.watch(attendedIdsProvider);
     final date = ref.watch(dateProvider).today;
     final filteredStudents = ref.watch(filteredStudentsProvider);
     final searchTerm = ref.watch(searchTermProvider);
 
     return Scaffold(
-      body: _studentsFuture.when(
+      body: studentsFuture.when(
       error: (e,s) => Center(child: Text("Error al obtener la lista de Alumnos"),),
       loading: () => Center(child: CircularProgressIndicator(),),
       data:(students) {
@@ -270,11 +271,11 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
                                     child: PreviewStudentContainerReduce(
                                       student: student,
                                       backgroundColor:
-                                          attendedIds.contains(student)
+                                          attendedIds.any((person)=> person.id == student.id)
                                               ? Colors.green.withAlpha(20)
                                               : Colors.transparent,
                                       trailingIcon:
-                                          attendedIds.contains(student)
+                                          attendedIds.any((person)=> person.id == student.id)
                                               ? const Icon(
                                                 Icons.check_circle,
                                                 color: Colors.green,

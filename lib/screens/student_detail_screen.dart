@@ -72,7 +72,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             : MediaQuery.of(context).size.width * 0.8;
 
     final attendedIds = ref.watch(attendedIdsProvider);
-    final bool hasAttendance = attendedIds.contains(widget.student);
+    final bool hasAttendance = attendedIds.any((student)=> student.id == widget.student.id);
     final userAsync = ref.watch(userProvider);
 
     return userAsync.when(
@@ -95,6 +95,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             if(snapshot.data['debts'] != null){
               debts = snapshot.data['debts'];
             }
+            
             return infoScreen(
               screenHeight,
               context,
@@ -116,7 +117,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
     bool hasAttendance,
     UserLocal user,
   ) {
-    isActive = paymentData.clases != 0;
+    isActive = studentData.remainClasses != 0;
     final student = widget.student;
     final tenantId = user.tenant.tenant_id;
     final imageUrl = ref.watch(imageProvider(studentData.image!));
@@ -165,7 +166,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      awsDelete.deleteStudentByID(id, tenantId);
+      awsDelete.deleteStudentByID(student);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Registro Eliminado'),

@@ -27,20 +27,11 @@ class DataStoreDeleteService {
     }
   }
 
-  Future<void> deleteStudentByID(int id, String tenantId) async {
+  Future<void> deleteStudentByID(Student student) async {
       try {
-        List<Student> students = await Amplify.DataStore.query(
-          Student.classType,
-          where: Student.USER_ID.eq(id).and(Student.CLIENT_ID.eq(tenantId)),
-        );
-        if (students.isNotEmpty) {
-          for (var student in students) {
-            await Amplify.DataStore.delete(student);
-          }
+          await Amplify.DataStore.delete(student);
           safePrint('✅ Alumno eliminado correctamente');
-        } else {
-          safePrint('❌ No se encontró el Alumno con el ID proporcionado');
-        }
+        
       } catch (e) {
         safePrint('❌ Error al eliminar Alumno: $e');
         rethrow;

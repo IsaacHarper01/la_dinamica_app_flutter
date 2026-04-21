@@ -1,4 +1,3 @@
-import 'package:aws_common/aws_common.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/model/attendance_model.dart';
