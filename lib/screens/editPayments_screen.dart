@@ -60,7 +60,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
                         safePrint("Adeudo guardado correctamente");
                     },
                     onDelete: () async {
-                      await ref.read(paymentsProvider.notifier).deletePay(payment.id, widget.user, widget.student);
+                      await ref.read(paymentsProvider.notifier).deltePay(payment, widget.user, widget.student);
                       safePrint('Eliminando pago con ID: ${payment.id}');
                     },
                   );
@@ -70,8 +70,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
         floatingActionButton: FloatingActionButton(
           onPressed: () async{
               await showPaymentDialog(context, ref, student: widget.student,name: widget.student.name! , date: date, user: widget.user);
-              ref.read(paymentsProvider.notifier)
-                 .fetchLastPayments(widget.student);
+              await ref.read(paymentsProvider.notifier).fetchLastPayments(widget.student);
             }, 
           child: Icon(Icons.add),
           ),

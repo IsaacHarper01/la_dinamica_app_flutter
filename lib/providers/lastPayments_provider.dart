@@ -30,9 +30,9 @@ class PaymentsNotifier extends StateNotifier<AsyncValue<List<Payment>>>{
     await fetchLastPayments(student);
   }
 
-  Future<void> deletePay(String id, UserLocal user, Student student)async{
+  Future<void> deltePay(Payment pay, UserLocal user, Student student)async{
     final aws = DataStoreDeleteService();
-    await aws.deletePaymentByID(id, user.tenant.tenant_id);
+    await aws.deletePayment(pay);
     await fetchLastPayments(student);
   }
 

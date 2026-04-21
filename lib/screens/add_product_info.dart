@@ -44,7 +44,7 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
     'code',
   ];
 
-  void _submitForm(BuildContext context) async {
+  Future<void> _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final user = await ref.watch(userProvider.future);
@@ -188,8 +188,8 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    _submitForm(context);
+                  onPressed: () async{
+                    await _submitForm(context);
                   },
                   child: const Text('Registrar'),
                 ),

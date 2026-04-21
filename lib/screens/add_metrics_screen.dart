@@ -120,8 +120,8 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
                   ),
                   Flexible(
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        saveData(userAsync);
+                      onPressed: () async{
+                        await saveData(userAsync);
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.arrow_forward),

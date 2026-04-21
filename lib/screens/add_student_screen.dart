@@ -58,7 +58,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
         }
       }
 
-  void _submitForm(BuildContext context) async {
+  Future<void> _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final awsDb = DataStoreService();
@@ -224,8 +224,8 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    _submitForm(context);
+                  onPressed: () async{
+                    await _submitForm(context);
                   },
                   child: const Text('Registrar'),
                 ),

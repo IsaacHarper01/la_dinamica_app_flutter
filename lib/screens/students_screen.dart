@@ -2,7 +2,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
-import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
@@ -55,6 +54,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     ref.read(studentsAttendanceProvider.notifier)
                 .deleteAttendance(
                   student, ref.read(dateProvider).today, user.tenant.tenant_id);
+    ref.read(attendedIdsProvider).remove(student);
   }
 
   void handleDeleteDash(context, Student student) async {
@@ -214,7 +214,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
                   Expanded(
                     child: RefreshIndicator(
                       onRefresh: () async{
-                        ref.read(studentsProvider.notifier).fetchStudents();
+                        await ref.read(studentsProvider.notifier).fetchStudents();
                       },
                       child: ListView.builder(
                         itemCount: filteredStudents.length,
@@ -240,9 +240,8 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
                                   ),
                                   confirmDismiss: (direction) async {
                                     if (direction == DismissDirection.startToEnd) {
-                                      ref
-                                          .read(studentsAttendanceProvider.notifier)
-                                          .insertAttendance(student, date);
+                                      await ref.read(studentsAttendanceProvider.notifier)
+                                            .insertAttendance(student, date);
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text('Asistencia Registrada'),

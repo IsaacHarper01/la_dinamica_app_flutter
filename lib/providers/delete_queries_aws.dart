@@ -27,7 +27,7 @@ class DataStoreDeleteService {
     }
   }
 
-  Future<void> deleteStudentByID(Student student) async {
+  Future<void> deleteStudent(Student student) async {
       try {
           await Amplify.DataStore.delete(student);
           safePrint('✅ Alumno eliminado correctamente');
@@ -38,7 +38,7 @@ class DataStoreDeleteService {
       }
     }
 
-  Future<void> deleteAttendanceByID(Student student, String date, String tenantId) async {
+  Future<void> deleteAttendance(Student student, String date, String tenantId) async {
       try {
         List<Attendance> attendance = await Amplify.DataStore.query(
           Attendance.classType,
@@ -101,20 +101,10 @@ class DataStoreDeleteService {
     }
   }
 
-  Future<void> deletePaymentByID(String id, String tenantId) async {
+  Future<void> deletePayment(Payment pay) async {
       try {
-        List<Payment> payments = await Amplify.DataStore.query(
-          Payment.classType,
-          where: Payment.ID.eq(id).and(Payment.CLIENT_ID.eq(tenantId)),
-        );
-        if (payments.isNotEmpty) {
-          for (var payment in payments) {
-            await Amplify.DataStore.delete(payment);
-          }
+          await Amplify.DataStore.delete(pay);
           safePrint('✅ Pago eliminado correctamente');
-        } else {
-          safePrint('❌ No se encontró el Pago con el ID proporcionado');
-        }
       } catch (e) {
         safePrint('❌ Error al eliminar Pago: $e');
       }

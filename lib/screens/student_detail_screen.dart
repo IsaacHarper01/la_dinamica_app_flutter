@@ -166,7 +166,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      awsDelete.deleteStudentByID(student);
+      awsDelete.deleteStudent(student);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Registro Eliminado'),

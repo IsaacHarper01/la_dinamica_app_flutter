@@ -142,7 +142,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
   ) async {
     try {
       final awsDb = DataStoreDeleteService();
-      await awsDb.deleteAttendanceByID(deleted, date, tenantId);
+      await awsDb.deleteAttendance(deleted, date, tenantId);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }finally {

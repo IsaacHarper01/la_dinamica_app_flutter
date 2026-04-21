@@ -214,7 +214,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                 }
                 return RefreshIndicator(
                   onRefresh: () async{
-                    ref.read(studentsAttendanceProvider.notifier).setAttendanceToday(
+                    await ref.read(studentsAttendanceProvider.notifier).setAttendanceToday(
                       ref.read(dateProvider).today);
                   },
                   child: SingleChildScrollView(

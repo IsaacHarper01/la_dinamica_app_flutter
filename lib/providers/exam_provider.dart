@@ -7,7 +7,6 @@ import 'package:la_dinamica_app/model/exam_state.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
-import 'dart:math';
 
 
 class ExamNotifier extends Notifier<ExamState> {
@@ -213,49 +212,6 @@ int _parseMilliseconds(String msStr) {
         }
         return result; // return Map<StudentID, Map<MetricID, Grade>>
       }
-
-  Map<Metric, Map<String, double>> readaptGrades(Map<String, Map<String, double>> grades){// recive Map<MetricID, Map<StudentID, Grade>>
-    Map<Metric, Map<String, double>> result = {};
-    final metrics = state.metrics;
-    Map<String, Metric> metyricById = {for(var metric in metrics) metric.id : metric};
-    for(var metricId in grades.keys){
-      final metric = metyricById[metricId];
-      if(metric != null){
-        result[metric] = grades[metricId]!;
-      }
-    }
-    return result;// return Map<Metric, Map<StudentID, double>>
-  }
-
-  Map<Metric, Map<String, double>> calculateTscore(Map<Metric, Map<String, double>> grades){ //consider the entry like Map<Metric, Map<Student, Grade>>
-    Map<Metric, Map<String, double>> tscores = {};
-
-    for(var metric in grades.keys){
-      final metricGrades = grades[metric]!.values.toList();
-      final mean = metricGrades.reduce((a,b)=>a+b)/metricGrades.length;
-      final standartDev = stdDev(metricGrades, mean);
-      for (var student in grades[metric]!.keys){
-        tscores.putIfAbsent(metric, ()=>{});
-        tscores[metric]![student] = tscore(zscore(grades[metric]![student]!, mean, standartDev, metric.higgerBetter!));
-      }
-    }
-      return tscores;
-    }
-
-  double stdDev(List<double> values, double mean){
-      final variance = values.map((v)=>pow(v-mean,2)).reduce((a,b)=>a+b)/values.length;
-      return sqrt(variance);
-  } 
-  
-  double zscore(double value, double mean, double stdev, bool higgerBetter){
-    final zscore = higgerBetter ? ((value-mean)/stdev) : ((mean-value)/stdev);
-    return zscore;
-  }
-
-  double tscore(double value){
-    final tscore = (50+(25*value));
-    return double.parse(tscore.toStringAsFixed(2));
-  }
 
   Future<void> uploadStudentsGrades(String tenantId, bool mix)async{
     final aws = DataStoreService();
