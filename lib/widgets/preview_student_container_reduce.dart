@@ -40,7 +40,7 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
       }else{
         containerColor = backgroundColor;
     }
-    }else{
+    }else if(student.remainClasses != null){
         if(student.remainClasses! > 3 ){
         containerColor = Color.fromRGBO(24, 135, 240, 0.2);
         }else if(student.remainClasses! > 1){
@@ -50,6 +50,8 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
         }else{
           containerColor = backgroundColor;
       }
+    }else{
+      containerColor = backgroundColor;
     }
 
         return Padding(

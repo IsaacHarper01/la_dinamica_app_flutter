@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
+import 'package:la_dinamica_app/providers/storageS3.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 
@@ -48,6 +50,20 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     } catch (e) {
       if (!mounted) return;
       state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  Future<void> deleteStudent(Student student)async{
+    try {
+      final awsConnection = DataStoreDeleteService();
+      final s3Connection = Storages3();
+      await s3Connection.deleteFile(student.image!);
+      await awsConnection.deleteStudent(student);
+    } catch (e) {
+      if (!mounted) return;
+      state = AsyncValue.error(e, StackTrace.current);
+    }finally{
+      await fetchStudents();
     }
   }
 }

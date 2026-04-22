@@ -27,15 +27,27 @@ class PreviewStudentContainer extends ConsumerWidget {
 
     if(student.expirationPlan != null){
       final remainingDays = student.expirationPlan!.getDateTime().difference(DateTime.parse(date)).inDays;
-      if(student.remainClasses!>3 || remainingDays>3){
+      if( remainingDays > 3){
         containerColor = Color.fromRGBO(24, 135, 240, 0.2);
-      }else if(student.remainClasses!>1 || remainingDays>1){
+      }else if( remainingDays > 1){
        containerColor = Color.fromRGBO(206, 209, 36, 0.2);
-      }else{
+      }else if( remainingDays > 0 ){
         containerColor = Color.fromRGBO(241, 142, 28, 0.2);
+      }else{
+        containerColor = Colors.transparent;
+    }
+    }else if(student.remainClasses != null){
+        if(student.remainClasses! > 3 ){
+        containerColor = Color.fromRGBO(24, 135, 240, 0.2);
+        }else if(student.remainClasses! > 1){
+        containerColor = Color.fromRGBO(206, 209, 36, 0.2);
+        }else if(student.remainClasses! > 0 ){
+          containerColor = Color.fromRGBO(241, 142, 28, 0.2);
+        }else{
+          containerColor = Colors.transparent;
       }
     }else{
-        containerColor = Colors.transparent;
+      containerColor = Colors.transparent;
     }
     
     return Dismissible(

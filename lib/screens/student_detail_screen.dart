@@ -7,7 +7,7 @@ import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
-import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
+import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
@@ -56,7 +56,6 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   List<Payment>? debts;
 
   final awsDb = DataStoreReadService();
-  final awsDelete = DataStoreDeleteService();
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +165,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
 
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      awsDelete.deleteStudent(student);
+      await ref.read(studentsProvider.notifier).deleteStudent(student);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Registro Eliminado'),
@@ -466,7 +465,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                InfoCard(id: student.user_id!, clases: student.remainClasses!, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
+                InfoCard(id: student.user_id!, clases: student.remainClasses ?? 0, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
                 const SizedBox(height: 10),
                 FilledButton.icon(
                   onPressed: () {

@@ -82,7 +82,7 @@ class DataStoreService {
         email: email,
         image: image,
         client_id: gymId,
-        remainClasses: remainClases,
+        remainClasses: remainClases ?? 0,
         expirationPlan: expirationDate,
       );
 
