@@ -76,8 +76,17 @@ class ProductCardSell extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
                 child: ElevatedButton.icon(
                   onPressed: (){
-                    aws.sellProduct(product, user, date);
-                    Navigator.pop(context);
+                    if (product.stock! > 0) {
+                      aws.sellProduct(product, user, date);
+                      Navigator.pop(context);
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                      content: Text('Este producto no tiene unidades'),
+                      backgroundColor: Colors.red,
+                      ),);
+                      Navigator.pop(context);
+                    }
                   },
                   icon: const Icon(Icons.add_shopping_cart_outlined, size: 20),
                   label: const Text('Vender'),

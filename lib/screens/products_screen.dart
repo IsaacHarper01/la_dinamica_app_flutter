@@ -1,3 +1,4 @@
+import 'package:aws_common/aws_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -154,6 +155,7 @@ class ProductCard extends ConsumerStatefulWidget {
 
 class _ProductCardState extends ConsumerState<ProductCard> {
   late final DataStoreReadService aws;
+  bool isUploading = false;
 
   @override
   void initState() {
@@ -251,8 +253,14 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               // Sell button
               if(widget.user.permissions["sellProducts"]==true&&widget.product.stock!>0)...[
                 ElevatedButton(
-                onPressed: () async{
-                  if(widget.product.stock!>0)
+                onPressed: isUploading ? 
+                null : 
+                () async{
+                  setState(() {
+                    isUploading = true;
+                  });
+                  try
+                  {if(widget.product.stock!>0)
                   {
                   await aws.sellProduct(widget.product, widget.user, widget.date);
                   await ref.read(productProvider.notifier).loadProducts();
@@ -268,6 +276,13 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                       content: Text('Este producto no tiene unidades'),
                       backgroundColor: Colors.red,
                       ),);
+                  }}
+                  catch(e){
+                    safePrint("Error al intentar vender producto $e");
+                  }finally{
+                    setState(() {
+                      isUploading = false;
+                    });
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -279,7 +294,9 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text("Vender", style: TextStyle(fontSize: 13)),
+                child: isUploading ? 
+                CircularProgressIndicator():
+                const Text("Vender", style: TextStyle(fontSize: 13)),
                 ),
               ],
 

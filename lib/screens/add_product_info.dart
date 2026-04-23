@@ -22,6 +22,7 @@ class AddProductInfo extends ConsumerStatefulWidget {
 class AddStudentScreenState extends ConsumerState<AddProductInfo> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
+  bool isUploading = false;
   
   final List<TextEditingController> _controllers = List.generate(
     5,
@@ -188,10 +189,25 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () async{
+                  onPressed: isUploading ? 
+                  null : 
+                  () async{
+                  try {
+                    setState(() {
+                      isUploading = true;
+                    });
                     await _submitForm(context);
+                  }catch(e){
+                    safePrint("Error al subir el producto");
+                  }finally{
+                    setState(() {
+                      isUploading = false;
+                    });
+                  }
                   },
-                  child: const Text('Registrar'),
+                  child: isUploading ? 
+                  CircularProgressIndicator():
+                  const Text('Registrar'),
                 ),
               ],
             ),

@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
@@ -15,6 +16,7 @@ class AddStudentScreen extends ConsumerStatefulWidget {
 
 class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool isUploading = false;
   
   final List<TextEditingController> _controllers = List.generate(
     6,
@@ -223,11 +225,24 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async{
+                ElevatedButton(onPressed: isUploading ? 
+                null : 
+                ()async{
+                  setState(() {
+                    isUploading = true;
+                  });
+                  try {
                     await _submitForm(context);
-                  },
-                  child: const Text('Registrar'),
+                  } catch (e) {
+                    safePrint("Error al subir información del alumno");
+                  } finally{
+                    setState(() {
+                      isUploading = false;
+                    });
+                  }
+                }, child: isUploading ? 
+                CircularProgressIndicator(): 
+                const Text("Registrar")
                 ),
               ],
             ),

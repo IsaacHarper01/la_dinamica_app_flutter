@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -23,6 +24,7 @@ class EditProductInfo extends ConsumerStatefulWidget {
 class AddStudentScreenState extends ConsumerState<EditProductInfo> {
   final _formKey = GlobalKey<FormState>();
   final logger = Logger();
+  bool isUploading = false;
   
   final List<TextEditingController> _controllers = List.generate(
     5,
@@ -55,7 +57,7 @@ void initState(){
   _controllers[4].text = widget.product.code!;
 }
 
-  void _submitForm(BuildContext context) async {
+  Future<void> _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
   
@@ -197,10 +199,24 @@ void initState(){
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    _submitForm(context);
+                  onPressed: isUploading ? null : 
+                  () async{
+                   try {
+                     setState(() {
+                       isUploading = true;
+                     });
+                     await _submitForm(context);
+                   } catch (e) {
+                     safePrint("Error al actualizar producto $e");
+                   }finally{
+                    setState(() {
+                      isUploading = false;
+                    });
+                   }
                   },
-                  child: const Text('Actualizar'),
+                  child: isUploading ? 
+                  CircularProgressIndicator():
+                  const Text('Actualizar'),
                 ),
               ],
             ),
