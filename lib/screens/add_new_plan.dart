@@ -1,3 +1,4 @@
+import 'package:aws_common/aws_common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -22,7 +23,8 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
   );
 
   final _formKey = GlobalKey<FormState>(); // Clave global para el formulario
-  
+  bool isUploading = false;
+
   @override
   void initState(){
     super.initState();
@@ -34,7 +36,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
     }
   }
 
-  void _updatedPlan() async{
+  Future<void> _updatedPlan() async{
       try {
         if (_formKey.currentState?.validate() ?? false){
         await ref.read(planProvider.notifier)
@@ -51,7 +53,7 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
       }
   }
 
-  void _registerPlan() async {
+  Future<void> _registerPlan() async {
     // Verificar si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final user = await ref.watch(userProvider.future);
@@ -163,9 +165,26 @@ class _AddNewPlanState extends ConsumerState<AddNewPlan> {
                       }),
                       const SizedBox(height: 24),
                       FilledButton.icon(
-                        onPressed: widget.edit ? _updatedPlan : _registerPlan,
+                        onPressed: isUploading ? 
+                        null:
+                        ()async{
+                         try {
+                           setState(() {
+                             isUploading = true;
+                           });
+                           widget.edit ? await _updatedPlan() : await _registerPlan();
+                         } catch (e) {
+                           safePrint("Error al registrar plan");
+                         }finally{
+                          setState(() {
+                            isUploading = false;
+                          });
+                         }
+                        },
                         icon: const Icon(Icons.save),
-                        label: widget.edit ?Text('Actualizar') : Text('Registrar'),
+                        label: isUploading ? 
+                        CircularProgressIndicator():
+                        (widget.edit ?Text('Actualizar') : Text('Registrar')),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           backgroundColor: colorScheme.primary,
