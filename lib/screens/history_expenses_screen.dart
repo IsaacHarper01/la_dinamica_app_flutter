@@ -41,6 +41,12 @@ class _HistoryExpensesScreenState extends ConsumerState<HistoryExpensesScreen> {
                 );
               },
             ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            showDialog(context: context, builder: (_) => AddExpensesWidget());
+          },
+          child: Icon(Icons.add),
+        )
     ),
     error: (error, stackTrace) => Center(),
     loading: () => Center(child: CircularProgressIndicator()),

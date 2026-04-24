@@ -42,7 +42,7 @@ class PaymentsNotifier extends StateNotifier<AsyncValue<List<Payment>>>{
       final newPayment = oldPayment.copyWith(
       amount: newAmount,
       clases: newClasses,
-      date: newDate
+      date: newDate,
       );
       await Amplify.DataStore.save(newPayment);
       await fetchLastPayments(student);

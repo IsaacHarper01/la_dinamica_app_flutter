@@ -9,6 +9,7 @@ import 'package:la_dinamica_app/model/earn_summary_model.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/income_summary_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/screens/history_expenses_screen.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/add_expenses_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/box_info_widget.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/general_pie_chart_widget.dart';
@@ -82,7 +83,12 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
             months,),
         floatingActionButton: FloatingActionButton(
           onPressed: ()async{
-            showDialog(context: context, builder: (_) => AddExpensesWidget());
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HistoryExpensesScreen(),
+              ),
+            );
           },
           child: Icon(Icons.receipt_long),
           ),

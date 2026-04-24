@@ -98,6 +98,8 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
     final date = ref.watch(dateProvider).today;
     final label = widget.onEdit ? "Editar Gasto": "Añadir Gasto";
     final finishState = widget.onEdit ? "Actualizar" : "Registrar";
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeigth = MediaQuery.of(context).size.height;
     return Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
@@ -107,6 +109,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             spacing: 10,
             children: [
@@ -134,26 +137,58 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
                             border: const OutlineInputBorder(),
                           ),),
               SizedBox(height: 20),
-              Row(children: [
-                FilledButton(onPressed: (){Navigator.pop(context);}, child: Text("Cancelar")),
-                Spacer(),
-                if(widget.onEdit==false)...[
-                FilledButton.icon(onPressed:() async{
-                  await Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => 
-                        HistoryExpensesScreen()
-                        )
-                      );
-                }, 
-                label: Text("Historial"), icon: Icon(Icons.list_alt),),],
-                Spacer(),
-                FilledButton(onPressed: ()async{
-                  final status = widget.onEdit ?  await updateExpense(widget.expense!) : await submitExpense(user, date);
-                  if(status){
-                    Navigator.pop(context);
-                  }
-                }, child: Text(finishState))
-              ],)
+              LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth;
+
+                    double fontSize;
+                    if (width > 500) {
+                      fontSize = 14;
+                    } else if (width > 350) {
+                      fontSize = 12;
+                    } else {
+                      fontSize = 10;
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "Cancelar",
+                              style: TextStyle(fontSize: fontSize),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () async {
+                              final status = widget.onEdit
+                                  ? await updateExpense(widget.expense!)
+                                  : await submitExpense(user, date);
+
+                              if (status) {
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Text(
+                              finishState,
+                              style: TextStyle(fontSize: fontSize),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                )
             ],
           ),
         ),
