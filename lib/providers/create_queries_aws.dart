@@ -59,7 +59,7 @@ class DataStoreService {
     required String birthday,
     required String email,
     required String image,
-    required String? gymId,
+    required String gymId,
     int? remainClases,
     TemporalDate? expirationDate,
   }) async {
@@ -71,8 +71,9 @@ class DataStoreService {
         pagination: const QueryPagination(limit: 1),
       );
       final lastNumId = students.isNotEmpty ? students.first.user_id : 0;
-
+      final newUUID = name.toLowerCase().replaceAll(" ", "")+birthday+gymId;
       final item = Student(
+        id: newUUID,
         user_id: lastNumId! + 1,
         name: name,
         address: address,
@@ -104,7 +105,9 @@ class DataStoreService {
     required String profId,
     required bool status
   }) async {
+    final newUUID = student.id+date;
     final item = Attendance(
+      id: newUUID,
       student: student,
       date: TemporalDate(DateTime.parse(date)),
       client_id: gymId,
