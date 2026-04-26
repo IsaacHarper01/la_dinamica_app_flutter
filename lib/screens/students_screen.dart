@@ -1,4 +1,3 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,10 +30,6 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     _searchController.addListener(() {
       ref.read(searchTermProvider.notifier).state = _searchController.text;
     });
-  }
-
-  void loadStudents(){
-    ref.read(studentsProvider.notifier).fetchStudents();
   }
 
   @override
@@ -248,9 +243,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
                                         ),
                                       );
                                     } else {
-                                      safePrint("LISTA DE ASISTENCIA1: $attendedIds");
                                       await handleDeleteDash(context, attendedIds.firstWhere((element)=>element.student!.id == student.id));
-                                      safePrint("LISTA DE ASISTENCIA1: $attendedIds");
                                     }
                                 
                                     return false;

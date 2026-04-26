@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,6 +18,14 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
     this.trailingIcon,
   });
 
+  Future<void> restartPlan(Student student)async{
+    final newStudent = student.copyWith(
+      remainClasses: 0,
+      expirationPlan: null
+      );
+    await Amplify.DataStore.save(newStudent);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final Orientation orientation = MediaQuery
@@ -31,14 +40,16 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
 
     if(student.expirationPlan != null){
       final remainingDays = student.expirationPlan!.getDateTime().difference(DateTime.parse(date)).inDays;
+      final remainRealDays = student.expirationPlan!.getDateTime().difference(DateTime.now()).inDays;
       if( remainingDays > 3){
         containerColor = Color.fromRGBO(24, 135, 240, 0.2);
       }else if( remainingDays > 1){
        containerColor = Color.fromRGBO(206, 209, 36, 0.2);
       }else if( remainingDays > 0 ){
-        containerColor = Color.fromRGBO(241, 142, 28, 0.2);
+        containerColor = Color.fromRGBO(236, 130, 9, 0.2);
       }else{
         containerColor = backgroundColor;
+        if (remainRealDays<1){restartPlan(student);}
     }
     }else if(student.remainClasses != null){
         if(student.remainClasses! > 3 ){
@@ -46,7 +57,7 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
         }else if(student.remainClasses! > 1){
         containerColor = Color.fromRGBO(206, 209, 36, 0.2);
         }else if(student.remainClasses! > 0 ){
-          containerColor = Color.fromRGBO(241, 142, 28, 0.2);
+          containerColor = Color.fromRGBO(236, 130, 9, 0.2);
         }else{
           containerColor = backgroundColor;
       }
