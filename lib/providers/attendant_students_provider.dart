@@ -61,17 +61,17 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
     return newMap;
   }
 
-  Future<List<Student>> fetchAttendanceToday(String date) async {
+  Future<List<Attendance>> fetchAttendanceToday(String date) async {
     try {
       final awsDb = DataStoreReadService();
       final user = await ref.read(userProvider.future);
       final tenenatId = user.tenant.tenant_id;
-      final snapshot = await awsDb.getAttendanceByDate(date, tenenatId);
-      if (snapshot.isEmpty) {
+      final attendants = await awsDb.getAttendanceByDate(date, tenenatId);
+      if (attendants.isEmpty) {
         return [];
       }else{
-     List<Student> students = snapshot.map((att) => att.student!).toList();
-     return students;
+     //List<Student> students = attendants.map((att) => att.student!).toList();
+     return attendants;
      }
     } catch (e) {
       return [];
@@ -79,10 +79,10 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
   }
 
   Future<void> setAttendanceToday(String date)async{
-    final students = await fetchAttendanceToday(date);
-    if (students.isNotEmpty){
+    final attendants = await fetchAttendanceToday(date);
+    if (attendants.isNotEmpty){
       final current = state.value ?? AttendanceModel(attendanceToday: [], attendanceInRange: []);
-      state = AsyncValue.data(current.copyWith(attendanceToday: students));
+      state = AsyncValue.data(current.copyWith(attendanceToday: attendants));
     }
   }
 
@@ -131,22 +131,21 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     } finally {
-      await setAttendanceToday(date);
+      await loadValues();
     }
   }
 
   Future<void> deleteAttendance(
-    Student deleted,
+    Attendance deleted,
     String date,
-    String tenantId,
   ) async {
     try {
       final awsDb = DataStoreDeleteService();
-      await awsDb.deleteAttendance(deleted, date, tenantId);
+      await awsDb.deleteAttendance(deleted);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }finally {
-      await fetchAttendanceToday(date);
+      await loadValues();
     }
   }
 }

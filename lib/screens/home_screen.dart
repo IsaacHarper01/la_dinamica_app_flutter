@@ -56,10 +56,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
     final decodedResult = decodeInfo(result, user!.tenant.tenant_id);
     if(decodedResult!=null){
       if (decodedResult['codeType']=='QR'){
-       final bool status = await manageQR(decodedResult['info'], currentDate, user!);
+        await manageQR(decodedResult['info'], currentDate, user!);
       }
       else{
-       final bool status = await manageBarcode(decodedResult['info'], currentDate, user!);
+       await manageBarcode(decodedResult['info'], currentDate, user!);
       }
     }
     else{
@@ -230,7 +230,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                           Column(
                             children:
                                 allStudents.asMap().entries.map((entry) {
-                                  Student student = entry.value;
+                                  Student student = entry.value.student!;
                                   return Column(
                                     children: [
                                       InkWell(
@@ -249,9 +249,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                                             ref
                                                 .read(studentsAttendanceProvider.notifier)
                                                 .deleteAttendance(
-                                                  student,
+                                                  allStudents.firstWhere((element)=>element.student!.id ==student.id),
                                                   ref.read(dateProvider).today,
-                                                  user.tenant.tenant_id,
                                                 );
                                           },
                                         ),

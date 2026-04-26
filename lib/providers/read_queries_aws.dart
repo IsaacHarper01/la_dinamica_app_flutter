@@ -345,7 +345,7 @@ class DataStoreReadService {
     }
   }
 
-  Future<List<Attendance>> getAttendance(String tenantId) async {
+  Future<List<Attendance>> getAtendance(String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Attendance> attendance = await Amplify.DataStore.query(
@@ -365,7 +365,9 @@ class DataStoreReadService {
       List<Attendance> attendance = await Amplify.DataStore.query(
         Attendance.classType,
         where: Attendance.DATE.eq(date) 
-            .and(Attendance.CLIENT_ID.eq(tenantId)),
+            .and(Attendance.CLIENT_ID.eq(tenantId)
+            .and(Attendance.STATUS.eq(true))
+            ),
       );
       return attendance;
     } catch (e) {
@@ -383,7 +385,8 @@ class DataStoreReadService {
       List<Attendance> attendance = await Amplify.DataStore.query(
         Attendance.classType,
         where: Attendance.DATE.between(TemporalDate(startDate),TemporalDate(endDate),) 
-            .and(Attendance.CLIENT_ID.eq(tenantId)),
+            .and(Attendance.CLIENT_ID.eq(tenantId)
+            .and(Attendance.STATUS.eq(true)))
       );
       safePrint('✅ Asistencias obtenidas correctamente');
       return attendance;

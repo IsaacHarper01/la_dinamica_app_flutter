@@ -1,7 +1,7 @@
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class AttendanceModel {
-  final List<Student> attendanceToday;
+  final List<Attendance> attendanceToday;
   final List<Attendance> attendanceInRange;
   final Map<DateTime, double>? attendancebyDate;
 
@@ -12,7 +12,7 @@ class AttendanceModel {
   });
 
   AttendanceModel copyWith({
-    List<Student>? attendanceToday,
+    List<Attendance>? attendanceToday,
     List<Attendance>? attendanceInRange,
     Map<DateTime, double>? attendancebyDate,
   }){

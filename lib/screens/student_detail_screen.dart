@@ -71,7 +71,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
             : MediaQuery.of(context).size.width * 0.8;
 
     final attendedIds = ref.watch(attendedIdsProvider);
-    final bool hasAttendance = attendedIds.any((student)=> student.id == widget.student.id);
+    final bool hasAttendance = attendedIds.any((attendant)=> attendant.student!.id == widget.student.id);
     final userAsync = ref.watch(userProvider);
 
     return userAsync.when(

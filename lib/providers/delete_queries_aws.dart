@@ -38,15 +38,14 @@ class DataStoreDeleteService {
       }
     }
 
-  Future<void> deleteAttendance(Student student, String date, String tenantId) async {
+  Future<void> deleteAttendance(Attendance attendance) async {
       try {
-        List<Attendance> attendance = await Amplify.DataStore.query(
-          Attendance.classType,
-          where: Attendance.STUDENT.eq(student.id.toString())
-          .and(Attendance.CLIENT_ID.eq(tenantId))
-          .and(Attendance.DATE.eq(date)),
-          sortBy: [Attendance.DATE.descending()],
-        );
+        final newAttendance = attendance.copyWith(status: false);
+        final student = attendance.student!;
+        final tenantId = attendance.client_id;
+        final date = attendance.date;
+        await Amplify.DataStore.save(newAttendance);
+        safePrint("Asistencia eliminada correctamente"); 
         List<Payment> payments = await Amplify.DataStore.query(
           Payment.classType,
           where: Payment.USER_ID.eq(student.user_id)
@@ -54,11 +53,6 @@ class DataStoreDeleteService {
           .and(Payment.DATE.eq(date)),
           sortBy: [Payment.DATE.descending()],
         );
-
-        if (attendance.isNotEmpty) {
-            await Amplify.DataStore.delete(attendance.first);
-            safePrint('✅ Asistencia eliminada correctamente');
-        } 
 
         Payment? lastPayment = payments.isNotEmpty ? payments.last : null;
 

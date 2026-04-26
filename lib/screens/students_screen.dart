@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +8,6 @@ import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/providers/attendance_provider.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
-import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/groups.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
@@ -49,15 +49,14 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     ref.read(searchTermProvider.notifier).state = '';
   }
 
-  void _deleteAttendance(Student student) {
-    final user = ref.read(userProvider).value!;
-    ref.read(studentsAttendanceProvider.notifier)
+  Future<void> _deleteAttendance(Attendance attendance) async{
+    ref.read(attendedIdsProvider).remove(attendance);
+    await ref.read(studentsAttendanceProvider.notifier)
                 .deleteAttendance(
-                  student, ref.read(dateProvider).today, user.tenant.tenant_id);
-    ref.read(attendedIdsProvider).remove(student);
+                  attendance, ref.read(dateProvider).today);
   }
 
-  void handleDeleteDash(context, Student student) async {
+  Future<void> handleDeleteDash(context, Attendance attendance) async {
     // Mostrar un cuadro de diálogo para confirmar la eliminación
     bool? shouldDelete = await showDialog(
       context: context,
@@ -86,7 +85,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     );
     // Si el usuario confirma, eliminar el registro
     if (shouldDelete == true) {
-      _deleteAttendance(student);
+      await _deleteAttendance(attendance);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Asistencia Eliminada'),
@@ -249,7 +248,9 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
                                         ),
                                       );
                                     } else {
-                                      handleDeleteDash(context, student);
+                                      safePrint("LISTA DE ASISTENCIA1: $attendedIds");
+                                      await handleDeleteDash(context, attendedIds.firstWhere((element)=>element.student!.id == student.id));
+                                      safePrint("LISTA DE ASISTENCIA1: $attendedIds");
                                     }
                                 
                                     return false;
@@ -270,11 +271,11 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
                                     child: PreviewStudentContainerReduce(
                                       student: student,
                                       backgroundColor:
-                                          attendedIds.any((person)=> person.id == student.id)
+                                          attendedIds.any((attendant)=> attendant.student!.id == student.id)
                                               ? Colors.green.withAlpha(20)
                                               : Colors.transparent,
                                       trailingIcon:
-                                          attendedIds.any((person)=> person.id == student.id)
+                                          attendedIds.any((attendant)=> attendant.student!.id == student.id)
                                               ? const Icon(
                                                 Icons.check_circle,
                                                 color: Colors.green,
