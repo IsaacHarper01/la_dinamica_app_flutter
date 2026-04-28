@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:la_dinamica_app/backend/resistencia.dart';
 import 'package:la_dinamica_app/backend/results.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
@@ -84,7 +83,7 @@ Future<void> uploadStudentsGradesFromCsv(String tenantId)async{
   final evalID = "2998469a-2c88-4665-9f69-56b31d059a35";
   final date = "2026-03-28";
   final allEval = await aws2.getEvaluations(tenantId);
-  final grades = adaptMapGrades(gradesPerMetricCsv);
+  final grades = {};
   safePrint("GRADES CONVERTED: $grades");
   Map<String, Evaluations> mapEvals = {};
     for(var eval in allEval!){
