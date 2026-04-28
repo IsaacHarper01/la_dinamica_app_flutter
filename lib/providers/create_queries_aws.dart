@@ -31,7 +31,9 @@ class DataStoreService {
     required String? dbId,
     required String? profId,
   }) async {
+    final newUUID = dbId! + date + plan.id + userId.toString();
     final item = Payment(
+      id: newUUID,
       user_id: userId,
       amount: amount,
       clases: clases,

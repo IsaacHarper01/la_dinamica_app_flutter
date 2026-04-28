@@ -4,11 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/backend/create_credential.dart';
 import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
+import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
+import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class AddStudentScreen extends ConsumerStatefulWidget {
-  const AddStudentScreen({super.key});
+  final bool edit;
+  final Student? student;
+  const AddStudentScreen({super.key, this.edit=false, this.student});
 
   @override
   ConsumerState<AddStudentScreen> createState() => AddStudentScreenState();
@@ -17,33 +21,78 @@ class AddStudentScreen extends ConsumerStatefulWidget {
 class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   final _formKey = GlobalKey<FormState>();
   bool isUploading = false;
-  
-  final List<TextEditingController> _controllers = List.generate(
-    6,
-    (index) => TextEditingController(),
-  );
+  List<TextEditingController> controllers = [];
+  List<String> _fieldNames = [];
+  List<String> _namesdb = [];
 
-  final List<String> _fieldNames = [
-    'Nombre',
-    'Localidad',
-    'Teléfono',
-    'Edad',
-    'Fecha de nacimiento(yyyy-mm-dd)',
-    'Correo Electrónico',
-  ];
+  @override
+  void initState(){
+    super.initState();
+    if (widget.edit){
+      controllers = List.generate(
+      8,
+      (index) => TextEditingController(),
+        );
 
-  final List<String> _namesdb = [
-    'name',
-    'address',
-    'phone',
-    'age',
-    'birthday',
-    'email',
-  ];
+         _fieldNames = [
+          'Nombre',
+          'Localidad',
+          'Teléfono',
+          'Edad',
+          'Fecha de nacimiento(yyyy-mm-dd)',
+          'Correo Electrónico',
+          'Clases Restantes',
+          'Expiración del plan'
+        ];
+
+        _namesdb = [
+          'name',
+          'address',
+          'phone',
+          'age',
+          'birthday',
+          'email',
+          'remainClasses',
+          'expirationPlan'
+        ];
+
+        controllers[0].text = widget.student?.name ?? '';
+        controllers[1].text = widget.student?.address ?? '';
+        controllers[2].text = widget.student?.phone.toString() ?? '';
+        controllers[3].text = widget.student?.age.toString() ?? '';
+        controllers[4].text = widget.student?.birthday.toString() ?? '';
+        controllers[5].text = widget.student?.email.toString() ?? '';
+        controllers[6].text = widget.student?.remainClasses.toString() ?? '';
+        controllers[7].text = widget.student?.expirationPlan.toString() ?? '';
+    }else{
+      controllers = List.generate(
+      6,
+      (index) => TextEditingController(),
+        );
+
+        _fieldNames = [
+          'Nombre',
+          'Localidad',
+          'Teléfono',
+          'Edad',
+          'Fecha de nacimiento(yyyy-mm-dd)',
+          'Correo Electrónico',
+        ];
+
+        _namesdb = [
+          'name',
+          'address',
+          'phone',
+          'age',
+          'birthday',
+          'email',
+        ];
+    }
+  }
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
+    for (var controller in controllers) {
       controller.dispose();
     }
     super.dispose();
@@ -68,8 +117,8 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       final gymId = user.tenant.tenant_id; 
 
       final data = {
-        for (var i = 0; i < _controllers.length; i++)
-          _namesdb[i]: _controllers[i].text,
+        for (var i = 0; i < controllers.length; i++)
+          _namesdb[i]: controllers[i].text,
       };
 
       if(checkDateFormat(data['birthday']!) == false){
@@ -130,8 +179,36 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
     }
   }
 
+  Future<void> _updateStudent(BuildContext context, List<TextEditingController> controllers, Student student)async{
+    TemporalDate? expirationPlan;
+    try {
+      expirationPlan = TemporalDate(DateTime.parse(controllers[7].text));
+    } catch (e) {
+      expirationPlan = null;
+    }
+    final newStudent = student.copyWith(
+      name: controllers[0].text,
+      address: controllers[1].text,
+      phone: controllers[2].text,
+      age: int.parse(controllers[3].text),
+      birthday: TemporalDate(DateTime.parse(controllers[4].text)),
+      email: controllers[5].text,
+      remainClasses: int.parse(controllers[6].text),
+      expirationPlan: expirationPlan,
+    );
+    await Amplify.DataStore.save(newStudent);
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Datos actualizados'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final buttonText = widget.edit ? "Actualizar" : "Registrar";
     return Scaffold(
       appBar: AppBar(title: const Text('Add Student')),
       body: Container(
@@ -180,7 +257,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                                     Expanded(
                                       child: TextFormField(
                                       style: const TextStyle(color: Colors.black),
-                                      controller: _controllers[index],
+                                      controller: controllers[index],
                                       decoration: InputDecoration(
                                         labelStyle: const TextStyle(
                                           color: Colors.black,
@@ -208,7 +285,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                                           firstDate: DateTime(1990), 
                                           lastDate: DateTime(2050));
                                           if(pickDate != null){
-                                            _controllers[index].text = pickDate.toIso8601String().split('T').first;
+                                            controllers[index].text = pickDate.toIso8601String().split('T').first;
                                           }
                                       },
                                 
@@ -232,7 +309,12 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                     isUploading = true;
                   });
                   try {
-                    await _submitForm(context);
+                    if (widget.edit){
+                      await _updateStudent(context, controllers, widget.student!);
+                    }else{
+                      await _submitForm(context);
+                    }
+                    
                   } catch (e) {
                     safePrint("Error al subir información del alumno");
                   } finally{
@@ -242,7 +324,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
                   }
                 }, child: isUploading ? 
                 CircularProgressIndicator(): 
-                const Text("Registrar")
+                Text(buttonText)
                 ),
               ],
             ),

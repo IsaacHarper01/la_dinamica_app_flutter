@@ -11,6 +11,7 @@ import 'package:la_dinamica_app/providers/all_students_provider.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/screens/add_student_screen.dart';
 import 'package:la_dinamica_app/screens/editPayments_screen.dart';
 import 'package:la_dinamica_app/screens/metrics_screen.dart';
 import 'package:la_dinamica_app/widgets/student_info_profile.dart';
@@ -251,6 +252,21 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  IconButton(onPressed:()async{
+                    await pickAndSaveImage(student.image!, tenantId, true, false).then((newPath) {
+                            if (newPath != null) {
+                              setState(() {
+                                studentData = studentData.copyWith(image: newPath);
+                              });
+                            }
+                          });
+                  }, 
+                  icon: Icon(Icons.camera_alt_rounded),
+                  style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(colorList[1]),
+                          shape: WidgetStateProperty.all(const CircleBorder()),
+                          )
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -315,15 +331,10 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                         child: SizedBox()),
                       Expanded(child: IconButton(
                         onPressed: () async{
-                          await pickAndSaveImage(student.image!, tenantId, true, false).then((newPath) {
-                            if (newPath != null) {
-                              setState(() {
-                                studentData = studentData.copyWith(image: newPath);
-                              });
-                            }
-                          });
+                          Navigator.push(context, 
+                          MaterialPageRoute(builder: (builder) => AddStudentScreen(edit: true,student: student)));
                         },
-                        icon: const Icon(Icons.camera_alt_outlined, color: Colors.white,),
+                        icon: const Icon(Icons.edit, color: Colors.white,),
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(colorList[1]),
                           shape: WidgetStateProperty.all(const CircleBorder()),
@@ -465,7 +476,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                InfoCard(id: student.user_id!, clases: student.remainClasses ?? 0, payDate: paymentData.date.toString(), phone: studentData.phone!, totalDebt: calculateTotalDebt()),
+                InfoCard(id: student.user_id!, clases: student.remainClasses ?? 0, payDate: paymentData.date.toString(), phone: student.phone!, totalDebt: calculateTotalDebt()),
                 const SizedBox(height: 10),
                 FilledButton.icon(
                   onPressed: () {
