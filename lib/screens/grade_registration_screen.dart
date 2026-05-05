@@ -153,7 +153,7 @@ bool saveGrades(BuildContext context) {
                               if(saveGrades(context))
                                 {
                                   //await ref.read(examProvider.notifier).uploadGrades(user!.tenant.tenant_id, user!.userId);
-                                  await ref.read(examProvider.notifier).uploadStudentsGrades(user!.tenant.tenant_id, false);
+                                  await ref.read(examProvider.notifier).uploadStudentsGrades(user!.tenant!.tenant_id, false);
                                   ref.read(selectedStudentsProvider.notifier).clear();
                                   Navigator.pop(context);
                                   Navigator.pop(context);

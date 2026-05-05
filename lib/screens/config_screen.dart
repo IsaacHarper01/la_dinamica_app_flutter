@@ -45,17 +45,17 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
           ),
         ],
       ),
-      body: plansState.when(
+      body: userAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text('Error: $e')),
-        data: (planes) => userAsync.when(
+        data: (userAsync) => plansState.when(
           loading:() =>  Center(child: CircularProgressIndicator(),),
           error: (error, stackTrace) => Center(child: Text("Error al cargar usuario $error"),),
-          data: (userAsync) => Padding(
+          data: (planes) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
           child: ListView(
             children: [
-              if(userAsync.permissions["addProfesor"]!)...
+              if(userAsync.permissions!["addProfesor"]!)...
               [
                 ElevatedButton.icon(
                 icon: const Icon(Icons.school_outlined),
@@ -84,7 +84,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                   icon: const Icon(Icons.qr_code),
                   label: const Text('QR para nuevo acceso'),
                   onPressed: () async{
-                      _showQrCodeDialog(context, '{"action":"newAccess","profID":"${userAsync.userId}"}');
+                      _showQrCodeDialog(context, '{"action":"newAccess","profID":"${userAsync.user}"}');
                   } ,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
@@ -101,7 +101,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
               SectionCard(
                 title: 'Planes disponibles',
                 actions: [
-                  userAsync.permissions["setPlans"]! ?
+                  userAsync.permissions!["setPlans"]! ?
                   OutlinedButton.icon(
                       onPressed: () 
                       async {
@@ -127,7 +127,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 6.0),
                             child: PlanCard(
                               plan: plan,
-                              permission: userAsync.permissions["setPlans"]!,
+                              permission: userAsync.permissions!["setPlans"]!,
                               onSetDefault: () {
                                 setPlanDefault(plan, ref);
                               },

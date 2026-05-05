@@ -38,16 +38,16 @@ class GradeNotifier extends StateNotifier<AsyncValue<StudentGrades>> {
 
     switch (mode) {
       case 'last':
-        studentResults = await aws.getLastStudentExamResult(user.tenant.tenant_id, student.id);
+        studentResults = await aws.getLastStudentExamResult(user.tenant!.tenant_id, student.id);
         break;
       case 'range':
-        studentResults = await aws.getStudentResultsRange(student.id, user.tenant.tenant_id, start!, end!);
+        studentResults = await aws.getStudentResultsRange(student.id, user.tenant!.tenant_id, start!, end!);
         break;
       case 'all':
-        studentResults = await aws.getAllStudentResults(user.tenant.tenant_id, student.id);
+        studentResults = await aws.getAllStudentResults(user.tenant!.tenant_id, student.id);
         break;
       default:
-        studentResults = await aws.getLastStudentExamResult(user.tenant.tenant_id, student.id);
+        studentResults = await aws.getLastStudentExamResult(user.tenant!.tenant_id, student.id);
         break;
     }
     

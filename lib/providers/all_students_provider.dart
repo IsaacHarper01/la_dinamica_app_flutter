@@ -39,7 +39,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<List<Student>>> {
     try {
       final awsDb = DataStoreReadService();
       final user = await ref.watch(userProvider.future);
-      final tenenatId = user.tenant.tenant_id;
+      final tenenatId = user.tenant!.tenant_id;
       final students = await awsDb.getStudents(tenenatId);
       if (students.isEmpty) {
         state = const AsyncValue.data([]);

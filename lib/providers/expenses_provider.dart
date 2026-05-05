@@ -35,7 +35,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Expense>>>{
     final today = ref.read(dateProvider).today;
     try {
       final user = await ref.watch(userProvider.future);
-      final expenses = await aws.getTodayExpenses(user.tenant.tenant_id, today);
+      final expenses = await aws.getTodayExpenses(user.tenant!.tenant_id, today);
       final current = state.value ?? FinancialModel<Expense>();
       state = AsyncData(current.copyWith(
         dayList: expenses, 
@@ -51,7 +51,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Expense>>>{
     final end = ref.read(dateProvider).end;
     try {
       final user = await ref.watch(userProvider.future);
-      final expenses = await aws.getExpensesRange(user.tenant, start, end);
+      final expenses = await aws.getExpensesRange(user.tenant!, start, end);
       safePrint(expenses);
       final current = state.value ?? FinancialModel<Expense>();
       state = AsyncData(current.copyWith(

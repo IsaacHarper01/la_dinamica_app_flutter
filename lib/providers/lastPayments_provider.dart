@@ -20,7 +20,7 @@ class PaymentsNotifier extends StateNotifier<AsyncValue<List<Payment>>>{
   Future<void> fetchLastPayments(Student student)async{
     final user = await ref.watch(userProvider.future);
     final aws = DataStoreReadService(); 
-    final payments = await aws.getLastTenPayments(student.user_id!, user.tenant.tenant_id);
+    final payments = await aws.getLastTenPayments(student.user_id!, user.tenant!.tenant_id);
     state = AsyncValue.data(payments!);
   }
 

@@ -10,6 +10,7 @@ import 'package:la_dinamica_app/screens/new_evaluation_screen.dart';
 import 'package:la_dinamica_app/screens/products_screen.dart';
 import 'package:la_dinamica_app/screens/students_screen.dart';
 import 'package:la_dinamica_app/widgets/payment_not_complete_widget.dart';
+import 'package:la_dinamica_app/widgets/register_gym_widget.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -48,47 +49,53 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     return userAsync.when(
       loading: ()=> Scaffold(body: CircularProgressIndicator(),),
       error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
-      data: (userAsync) => 
-      userAsync.tenant.status! ?
-      Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: Container(
-        color: colorList[0],
-        height: screenHeight * 0.07,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children:
-              appMenuItmes.asMap().entries.map((entry) {
-                int idx = entry.key;
-                MenuItem item = entry.value;
-                final isSelected = _selectedIndex == idx;
-                return TextButton(
-                  onPressed:
-                      () => _onItemTapped(
-                        idx,
-                      ), // Cambia la pantalla al hacer clic
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        item.icon,
-                        color: isSelected ? colorList[4] : colorList[5],
-                        size: screenHeight * 0.018,
+      data:(data) {
+        if(data.tenant != null){
+          return data.tenant!.status! ?
+          Scaffold(
+          body: _screens[_selectedIndex],
+          bottomNavigationBar: Container(
+            color: colorList[0],
+            height: screenHeight * 0.07,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children:
+                  appMenuItmes.asMap().entries.map((entry) {
+                    int idx = entry.key;
+                    MenuItem item = entry.value;
+                    final isSelected = _selectedIndex == idx;
+                    return TextButton(
+                      onPressed:
+                          () => _onItemTapped(
+                            idx,
+                          ), // Cambia la pantalla al hacer clic
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            item.icon,
+                            color: isSelected ? colorList[4] : colorList[5],
+                            size: screenHeight * 0.018,
+                          ),
+                          Text(
+                            item.title,
+                            style: TextStyle(
+                              color: isSelected ? colorList[4] : colorList[5],
+                              fontSize: screenHeight * 0.013,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        item.title,
-                        style: TextStyle(
-                          color: isSelected ? colorList[4] : colorList[5],
-                          fontSize: screenHeight * 0.013,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-          ),
-        ),
-      ): UpdatePaymentStatusDialog() 
-    );
+                    );
+                  }).toList(),
+              ),
+            ),
+          ): 
+          UpdatePaymentStatusDialog();
+        }else{
+          return RegisterGymWidget();
+        }
+      },
+      );
   }
 }

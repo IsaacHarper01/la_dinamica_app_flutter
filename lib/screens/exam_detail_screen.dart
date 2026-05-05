@@ -97,7 +97,7 @@ class _ExamDetailScreenState extends ConsumerState<ExamDetailScreen> {
                   // },
                   onPressed: ()async{ 
                    await ref.read(examProvider.notifier).calculateTscoreOnCloud(
-                   widget.exam, widget.user.tenant.tenant_id, date);
+                   widget.exam, widget.user.tenant!.tenant_id, date);
                    },
                   child: const Text("calcular scores")
                   ),

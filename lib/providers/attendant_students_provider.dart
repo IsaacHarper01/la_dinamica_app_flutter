@@ -65,7 +65,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
     try {
       final awsDb = DataStoreReadService();
       final user = await ref.read(userProvider.future);
-      final tenenatId = user.tenant.tenant_id;
+      final tenenatId = user.tenant!.tenant_id;
       final attendants = await awsDb.getAttendanceByDate(date, tenenatId);
       if (attendants.isEmpty) {
         return [];
@@ -92,7 +92,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
       final user = await ref.read(userProvider.future);
       final startDate = ref.read(dateProvider).start;
       final endDate = ref.read(dateProvider).end;
-      final tenenatId = user.tenant.tenant_id;
+      final tenenatId = user.tenant!.tenant_id;
       final snapshot = await awsDb.getAttendanceRange(startDate, endDate, tenenatId);
       if (snapshot.isEmpty) {
         return [];
@@ -117,7 +117,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
       final awsDb = DataStoreService();
       final awsDb2 = DataStoreReadService();
       final user = await ref.watch(userProvider.future);
-      final gymid = user.tenant.tenant_id;
+      final gymid = user.tenant!.tenant_id;
       final profId = user.name;
 
       await awsDb.saveAttendance(

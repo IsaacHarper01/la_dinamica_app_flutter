@@ -98,7 +98,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>  with WidgetsBin
     final date = ref.watch(dateProvider).today;
     final filteredStudents = ref.watch(filteredStudentsProvider);
     final searchTerm = ref.watch(searchTermProvider);
-  
+
     return Scaffold(
       body: studentsFuture.when(
       error: (e,s) => Center(child: Text("Error al obtener la lista de Alumnos"),),

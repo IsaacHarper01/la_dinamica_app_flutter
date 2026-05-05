@@ -1,28 +1,28 @@
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class UserLocal{
-  final String userId;
+  final User user;
   final String name;
-  final Tenant tenant;
-  final String schoolname;
-  final Map<String, bool> permissions;
-  final String plan;
-  final bool status;
-  final List<UserAccess> userAccess;
+  final Tenant? tenant;
+  final String? schoolname;
+  final Map<String, bool>? permissions;
+  final String? plan;
+  final bool? status;
+  final List<UserAccess>? userAccess;
 
   UserLocal({
-    required this.userId,
+    required this.user,
     required this.name,
-    required this.tenant,
-    required this.schoolname,
-    required this.permissions,
-    required this.plan,
-    required this.status,
-    required this.userAccess,
+    this.tenant,
+    this.schoolname,
+    this.permissions,
+    this.plan,
+    this.status,
+    this.userAccess,
   });
 
   UserLocal copyWith({
-    String? userId,
+    User? user,
     String? name,
     Tenant? tenant,
     String? schoolname,
@@ -32,7 +32,7 @@ class UserLocal{
     List<UserAccess>? userAccess,
   }) {
     return UserLocal(
-      userId: userId ?? this.userId,
+      user: user ?? this.user,
       name: name ?? this.name,
       tenant: tenant ?? this.tenant,
       schoolname: schoolname ?? this.schoolname,

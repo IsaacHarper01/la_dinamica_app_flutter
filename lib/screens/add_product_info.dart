@@ -49,7 +49,7 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
       final user = await ref.watch(userProvider.future);
-      final gymId = user.tenant.tenant_id; 
+      final gymId = user.tenant!.tenant_id; 
 
       final data = {
         for (var i = 0; i < _controllers.length; i++)
@@ -64,7 +64,7 @@ class AddStudentScreenState extends ConsumerState<AddProductInfo> {
         data['name']!,
         image,
         data['code']!,
-        user.tenant.tenant_id,
+        user.tenant!.tenant_id,
         int.parse(data['stock']!),
         double.parse(data['price']!),
         data['category']!,

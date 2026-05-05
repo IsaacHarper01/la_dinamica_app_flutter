@@ -54,7 +54,7 @@ class _EditpaymentsScreenState extends ConsumerState<EditpaymentsScreen> {
                   return PayCard(
                     student: widget.student,
                     payment: payment,
-                    permision: widget.user.permissions["deletePayments"]!,
+                    permision: widget.user.permissions!["deletePayments"]!,
                     setDebt: ()async{
                         await ref.read(paymentsProvider.notifier).markDebt(widget.user, widget.student, payment, payStatus);
                         safePrint("Adeudo guardado correctamente");

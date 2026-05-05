@@ -181,7 +181,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                     Flexible(
                       child: ElevatedButton(
                         onPressed: () {
-                          generateAttendanceReport(startDate, endDate, user.tenant.tenant_id);
+                          generateAttendanceReport(startDate, endDate, user.tenant!.tenant_id);
                         },
                         child: const Text(
                           'Reporte de asistencias',
@@ -192,7 +192,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                     Flexible(
                       child: ElevatedButton(
                         onPressed: () {
-                          generateIncomeReport(startDate, endDate, user.tenant.tenant_id);
+                          generateIncomeReport(startDate, endDate, user.tenant!.tenant_id);
                         },
                         child: const Text(
                           'Reporte de Ingresos',

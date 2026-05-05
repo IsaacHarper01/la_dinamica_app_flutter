@@ -28,7 +28,7 @@ class _nameState extends State<ProfesorsScreen> {
 
   void loadProfesors()async{
     final aws = DataStoreReadService();
-    List<UserAccess> profesors = await aws.getUserPermisions(widget.user.tenant.tenant_id);
+    List<UserAccess> profesors = await aws.getUserPermisions(widget.user.tenant!.tenant_id);
     setState(() {
       this.profesors = profesors;
     });

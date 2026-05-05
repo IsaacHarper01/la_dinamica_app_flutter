@@ -43,7 +43,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                 final sale = sales.dayList[index];
                 return SaleCard(
                   sale: sale,
-                  permision: widget.user.permissions["deletePayments"]!,
+                  permision: widget.user.permissions!["deletePayments"]!,
                   setDebt: ()async{
                       safePrint("Adeudo guardado correctamente");
                   },

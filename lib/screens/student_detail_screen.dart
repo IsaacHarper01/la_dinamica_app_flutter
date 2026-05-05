@@ -81,7 +81,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
       data: (userAsync) => Scaffold(
       appBar: AppBar(title: Text(widget.student.name!)),
       body: FutureBuilder(
-        future: awsDb.getLastPayandStudentData(widget.student.user_id!, userAsync.tenant.tenant_id),
+        future: awsDb.getLastPayandStudentData(widget.student.user_id!, userAsync.tenant!.tenant_id),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -119,7 +119,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
   ) {
     isActive = studentData.remainClasses != 0;
     final student = widget.student;
-    final tenantId = user.tenant.tenant_id;
+    final tenantId = user.tenant!.tenant_id;
     final imageUrl = ref.watch(imageProvider(studentData.image!));
 
     void handleDeleteDash(context, id, bool permision) async {
@@ -357,7 +357,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                 Expanded(
                   child: FilledButton(
                     onPressed: (){
-                      handleDeleteDash(context, student.user_id, user.permissions['deleteStudents'] ?? false);
+                      handleDeleteDash(context, student.user_id, user.permissions!['deleteStudents'] ?? false);
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(colorList[4]),

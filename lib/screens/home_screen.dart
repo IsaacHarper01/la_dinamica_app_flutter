@@ -53,7 +53,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
     final currentDate = ref.read(dateProvider).today;
     final result = await scannerQR(context,);
     safePrint('QR Result: $result');
-    final decodedResult = decodeInfo(result, user!.tenant.tenant_id);
+    final decodedResult = decodeInfo(result, user!.tenant!.tenant_id);
     if(decodedResult!=null){
       if (decodedResult['codeType']=='QR'){
         await manageQR(decodedResult['info'], currentDate, user!);
@@ -81,7 +81,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
             }
 
             String name = info['name'];
-            final student = await awsDb.checkIfStudentExists(id, user.tenant.tenant_id);
+            final student = await awsDb.checkIfStudentExists(id, user.tenant!.tenant_id);
             if (student!=null) {
               //check if student exist in General table
               await showPaymentDialog(context, ref, student: student, name: name, date: date, user: user);
@@ -90,7 +90,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
               return Future.value(false);
             }
           }
-        else if(info['action']=='newAccess' && user.permissions['addProfesor']==true){
+        else if(info['action']=='newAccess' && user.permissions!['addProfesor']==true){
           String profId = info['profID'];
           final permissions = await Navigator.push(
             context,
@@ -99,7 +99,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
             ),
           );
           safePrint('Permisos otorgados: $permissions');
-          awsDb.giveUserAccess(user.tenant, jsonEncode(permissions), profId);
+          awsDb.giveUserAccess(user.tenant!, jsonEncode(permissions), profId);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
             content: Text('Profesor añadido correctamente'),
@@ -115,7 +115,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
 
   Future<bool> manageBarcode(String productCode, String date, UserLocal user)async{
       final aws = DataStoreReadService();
-      final product = await aws.productExists(productCode, user.tenant.tenant_id);
+      final product = await aws.productExists(productCode, user.tenant!.tenant_id);
       if(product != null){
         await showProductInfoDialog(context, product, user);
         return Future.value(true);
@@ -165,7 +165,6 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
     final studentsState = ref.watch(studentsAttendanceProvider);
     final userState = ref.watch(userProvider);
 
-    
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -177,7 +176,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
                 child: SelectSchoolWidget(),
               ) 
             ),
-            user!.permissions["editPast"] == true ?
+            user!.permissions!["editPast"] == true ?
             CalendarButton() : SizedBox(),
           ],
         ),

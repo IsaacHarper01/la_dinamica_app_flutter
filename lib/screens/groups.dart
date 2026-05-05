@@ -51,7 +51,7 @@ class NameState extends ConsumerState<GroupsPage> {
 
   void saveGroup(BuildContext context) async{
     final user = await ref.watch(userProvider.future); 
-    final tenantId = user.tenant.tenant_id;
+    final tenantId = user.tenant!.tenant_id;
     final studentsinGroup = ref.watch(groupStudentsProvider);
     final aws = DataStoreService();
     if(groupName.text == "" || groupDescription.text == "" || studentsinGroup.isEmpty){

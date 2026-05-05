@@ -56,7 +56,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
     final aws = DataStoreService();
     if (checkFileds()){
       await aws.saveExpense(
-      tenant: user.tenant, 
+      tenant: user.tenant!, 
       date: DateTime.parse(date), 
       name: nameController.text, 
       amount: double.parse(amountController.text), 

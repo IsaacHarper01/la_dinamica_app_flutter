@@ -49,14 +49,14 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
 
   final evaluation = await awsDb.saveEvaluation(
     name: examName,
-    gymId: user.tenant.tenant_id,
+    gymId: user.tenant!.tenant_id,
   );
 
   for (var metric in _metrics) {
     
       final metricObject = await awsDb.saveMetric(
         name: metric._metricController.text,
-        tenantId: user.tenant.tenant_id,
+        tenantId: user.tenant!.tenant_id,
         description: metric._descriptionController.text,
         type: metric._selectedOption,
         higgerBetter: metric.higgerBetter,
@@ -65,7 +65,7 @@ class MetricsPageState extends ConsumerState<NewMetricsPage> {
       await awsDb.saveJoinedMetric(
         metric: metricObject,
         evaluation: evaluation,
-        tenantId: user.tenant.tenant_id,
+        tenantId: user.tenant!.tenant_id,
       );
 
       safePrint('✅ Métrica guardada: ${metricObject.name}');

@@ -23,15 +23,13 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
       final attributes = await Amplify.Auth.fetchUserAttributes();
       userAtributes = {for (var attr in attributes) attr.userAttributeKey.toString(): attr.value};
       final userId = userAtributes['sub']!;
-      final email = userAtributes['email']!;
-      safePrint("Comprobando existencia de usuario: $userId");
-      safePrint("Detalles de inicio de sesión: $userAtributes");
+      
       if (await awsDb.userExists(userId)) {
         final dbUser = await awsDb.getUser(userId);
         final userAccess = await awsDb.getUserAccess(dbUser!.user_id,); 
         final Map<String, bool> decodedPermisions = Map<String, bool>.from(jsonDecode(userAccess!.first.permissions!));
         final newUser = UserLocal(
-          userId: dbUser.user_id,
+          user: dbUser,
           tenant: userAccess.first.tenant!,
           name: userAccess.first.user!.name,
           schoolname: userAccess.first.tenant!.name,
@@ -41,14 +39,12 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           userAccess: userAccess,
         );
         safePrint(
-          '✅ Usuario cargado correctamente: ${newUser.userId}, ${newUser.tenant}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
+          '✅ Usuario cargado correctamente: $newUser, ${newUser.tenant}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
         );
 
         return newUser;
       } else {
         final name = userAtributes['name']!;
-        final nameSchool = userAtributes['nickname']!;
-        final newTenantId = Uuid().v4();
         final plan = "Free";
         final status = true;
 
@@ -56,41 +52,12 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
           id: userId, 
           name: name
           );
-        final tenant = await awsDb2.saveTenant(
-          tenantId: newTenantId,
-          name: nameSchool,
-          plan: plan,
-          status: status,
-        );
-        final permisions = {
-            'deleteStudents': true,
-            'watchIncome': true,
-            'setPlans': true,
-            'setEvaluations': true,
-            'deletePayments': true,
-            'addProfesor' : true,
-            'editPast': true,
-            'editProducts': true,
-            'sellProducts': true,
-            };
-        final userAccess = await awsDb2.saveUserAccess(
-          user: user,
-          tenant: tenant,
-          permissions: permisions,
-          status: true,
-          isAdmin: true,
-        );
-
+       
         final newUser = UserLocal(
-          userId: userId,
-          tenant: tenant,
-          name: email,
-          schoolname: nameSchool,
-          permissions: permisions,
-          // Default permissions
+          user: user,
+          name: user.name,
           plan: plan,
           status: status,
-          userAccess: [userAccess],
         );
 
         return newUser;
@@ -105,8 +72,57 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
     state = AsyncValue.data(user);
   }
 
+  Future<UserLocal> registerGym(String name, String sport, User user)async{
+        
+        final awsDb2 = DataStoreService();
+        final nameSchool = name;
+        final newTenantId = Uuid().v4();
+        final plan = "Free";
+        final status = true;
+
+        
+        final tenant = await awsDb2.saveTenant(
+          tenantId: newTenantId,
+          name: nameSchool,
+          plan: plan,
+          status: status,
+        );
+
+        final permisions = {
+            'deleteStudents': true,
+            'watchIncome': true,
+            'setPlans': true,
+            'setEvaluations': true,
+            'deletePayments': true,
+            'addProfesor' : true,
+            'editPast': true,
+            'editProducts': true,
+            'sellProducts': true,
+            };
+
+        final userAccess = await awsDb2.saveUserAccess(
+          user: user,
+          tenant: tenant,
+          permissions: permisions,
+          status: true,
+          isAdmin: true,
+        );
+
+        final newUser = UserLocal(
+          user: user,
+          tenant: tenant,
+          name: user.name,
+          schoolname: nameSchool,
+          permissions: permisions, // Default permissions
+          plan: plan,
+          status: status,
+          userAccess: [userAccess],
+        );
+        return newUser;
+  }
+
   void updateUser({
-    String? userId,
+    User? user,
     String? name,
     Tenant? tenant,
     String? schoolname,
@@ -117,7 +133,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
     final currentUser = state.value;
     if (currentUser != null) {
       final updatedUser = currentUser.copyWith(
-        userId: userId ?? currentUser.userId,
+        user: user ?? currentUser.user,
         name: name ?? currentUser.name,
         tenant: tenant ?? currentUser.tenant,
         schoolname: schoolname ?? currentUser.schoolname,
@@ -127,7 +143,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
       );
       state = AsyncValue.data(updatedUser);
       safePrint(
-        '✅ Usuario actualizado: ${updatedUser.userId}, ${updatedUser.tenant}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}',
+        '✅ Usuario actualizado: ${updatedUser.user.name}, ${updatedUser.tenant}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}',
       );
     }
   }

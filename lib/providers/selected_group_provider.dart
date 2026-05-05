@@ -17,7 +17,7 @@ class GroupNotifier extends StateNotifier<AsyncValue<GroupState>> {
   Future<void> _init()async{
     try {
       final user = await ref.watch(userProvider.future);
-      final newGroupState = await setGroupState(user.tenant.tenant_id);
+      final newGroupState = await setGroupState(user.tenant!.tenant_id);
       state = AsyncData(newGroupState);
     } catch (e,st) {
       state = AsyncError(e,st);

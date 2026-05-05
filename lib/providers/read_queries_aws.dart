@@ -741,7 +741,7 @@ class DataStoreReadService {
         final oldStock = product.stock;
         final newProduct = product.copyWith(stock: oldStock!-1);
         await Amplify.DataStore.save(newProduct);
-        await aws.saveSale(tenaniId: user.tenant.tenant_id, price: product.price!, product: product, date: date, profName: user.name);
+        await aws.saveSale(tenaniId: user.tenant!.tenant_id, price: product.price!, product: product, date: date, profName: user.name);
     } catch (e) {
       rethrow;
     }

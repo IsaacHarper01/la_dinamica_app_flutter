@@ -31,7 +31,7 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
       user = _user;
     });
     final awsDb = DataStoreReadService();
-    final exams = await awsDb.getEvaluations(user!.tenant.tenant_id);
+    final exams = await awsDb.getEvaluations(user!.tenant!.tenant_id);
     setState(() {
       _evaluations = exams;
     });
@@ -54,7 +54,7 @@ class _NewEvaluationScreenState extends ConsumerState<NewEvaluationScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              user!.permissions["setEvaluations"]! ?
+              user!.permissions!["setEvaluations"]! ?
               ElevatedButton(
                   onPressed: () {
                     Navigator.push(

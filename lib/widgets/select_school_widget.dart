@@ -31,7 +31,7 @@ class _SelectSchoolState extends ConsumerState<SelectSchoolWidget> {
                   return CupertinoActionSheet(
                     title: const Text('Selecciona una escuela'),
                     actions: [
-                      ...user.userAccess.map((access) {
+                      ...user.userAccess!.map((access) {
                         final permissions = Map<String, bool>.from(
                           jsonDecode(access.permissions!),
                         ); 

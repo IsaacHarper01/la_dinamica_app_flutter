@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
-import 'package:la_dinamica_app/models/JoinMetric.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
@@ -54,7 +53,7 @@ class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
   },
     );
     if (shouldDelete == true) {
-      awsDelete.deleteExamn(exam, widget.user.tenant.tenant_id);//aws.deleteExamn() I have to implement this method
+      awsDelete.deleteExamn(exam, widget.user.tenant!.tenant_id);//aws.deleteExamn() I have to implement this method
       debugPrint("Examen eliminado: ${exam.name}");
     } else {
       debugPrint("Eliminación cancelada");
@@ -108,7 +107,7 @@ class _ViewExamsBoxState extends ConsumerState<ViewExamsBox> {
                   if (selectedExamId != null){
                     final selectedExam = widget.evaluations?.firstWhere((exam) => exam == selectedExamId);
                     debugPrint("Proceeding with exam: ${selectedExam?.name}");
-                    examMetrics = await awsDb.getJoinMetrics(widget.user.tenant.tenant_id, selectedExam!);
+                    examMetrics = await awsDb.getJoinMetrics(widget.user.tenant!.tenant_id, selectedExam!);
                     Navigator.push(
                       context,
                       MaterialPageRoute(

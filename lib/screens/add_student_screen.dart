@@ -114,7 +114,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       final awsDb = DataStoreService();
       final user = await ref.watch(userProvider.future);
-      final gymId = user.tenant.tenant_id; 
+      final gymId = user.tenant!.tenant_id; 
 
       final data = {
         for (var i = 0; i < controllers.length; i++)

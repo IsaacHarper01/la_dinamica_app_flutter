@@ -251,7 +251,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               ),
 
               // Sell button
-              if(widget.user.permissions["sellProducts"]==true&&widget.product.stock!>0)...[
+              if(widget.user.permissions!["sellProducts"]==true&&widget.product.stock!>0)...[
                 ElevatedButton(
                 onPressed: isUploading ? 
                 null : 
@@ -303,7 +303,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               const SizedBox(width: 4),
 
               // Popup menu
-              if(widget.user.permissions["editProducts"]==true)...[
+              if(widget.user.permissions!["editProducts"]==true)...[
                 PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, size: 20),
                 onSelected: (value) async {

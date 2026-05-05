@@ -32,8 +32,8 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<Product>>>{
   Future<void> loadProducts()async{
     final user = await ref.watch(userProvider.future);
     try{
-      safePrint('Getting products for tenant: ${user.tenant.tenant_id}');
-      final allproducts = await _dataStoreReadService.getProducts(user.tenant.tenant_id);
+      safePrint('Getting products for tenant: ${user.tenant!.tenant_id}');
+      final allproducts = await _dataStoreReadService.getProducts(user.tenant!.tenant_id);
       state = AsyncValue.data(allproducts);
       safePrint('Productos: $allproducts');
     }
