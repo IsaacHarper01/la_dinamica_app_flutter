@@ -476,7 +476,13 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                InfoCard(id: student.user_id!, clases: student.remainClasses ?? 0, payDate: paymentData.date.toString(), phone: student.phone!, totalDebt: calculateTotalDebt()),
+                InfoCard(
+                  id: student.user_id!, 
+                  clases: student.remainClasses ?? 0, 
+                  payDate: paymentData.date!, 
+                  phone: student.phone!,
+                  expiration: student.expirationPlan, 
+                  totalDebt: calculateTotalDebt()),
                 const SizedBox(height: 10),
                 FilledButton.icon(
                   onPressed: () {
@@ -495,15 +501,7 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                       backgroundColor: WidgetStateProperty.all(colorList[4]),
                     ),
                 ),
-                FilledButton.icon(
-                  onPressed: () {
-                    
-                  },
-                  label: const Text('Eliminar Plan'),
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(colorList[4]),
-                    ),
-                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),

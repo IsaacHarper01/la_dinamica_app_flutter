@@ -209,7 +209,7 @@ class EarnScreenState extends ConsumerState<EarnScreen> {
                   productData: incomeData.sales.totalDay, 
                   expenses: incomeData.expenses.totalDay, 
                   date: date,
-                  text: "Ingresos del día: $date"),
+                  text: "Ingresos de hoy"),
                 const SizedBox(height: 20),
                 DropdownButton<String>(
                     value: selectedValue,

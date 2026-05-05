@@ -65,10 +65,11 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Expense>>>{
 
   Future<void> newExpense(Tenant tenant, double amount, String name, DateTime date, String description)async{
       try {
-        awsSave.saveExpense(tenant: tenant, amount: amount,name: name, date: date, description: description);
-        await setAllExpenses();
+        await awsSave.saveExpense(tenant: tenant, amount: amount,name: name, date: date, description: description);
       } catch (e,st) {
         state = AsyncValue.error(e, st);
+      }finally{
+        await setAllExpenses();
       }
   }
 

@@ -165,6 +165,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
     final studentsState = ref.watch(studentsAttendanceProvider);
     final userState = ref.watch(userProvider);
 
+    
     return Scaffold(
       appBar: AppBar(
         title: Row(

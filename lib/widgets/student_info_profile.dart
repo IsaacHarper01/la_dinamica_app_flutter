@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
@@ -5,7 +6,8 @@ import 'package:la_dinamica_app/config/theme/app_theme.dart';
 class InfoCard extends StatelessWidget {
   final int id;
   final int clases;
-  final String payDate;
+  final TemporalDate payDate;
+  final TemporalDate? expiration;
   final String phone;
   final double totalDebt;
 
@@ -16,13 +18,22 @@ class InfoCard extends StatelessWidget {
     required this.payDate,
     required this.phone,
     required this.totalDebt,
+    this.expiration,
   });
+
+  String formatDate(TemporalDate date){
+    DateTime datetime = date.getDateTime();
+    List<String> months = ["ENE","FEB","MAR","ABR","MAY","JUN","JUL","AGO","SEP","OCT","NOV","DIC"];
+    final newString = "${datetime.day}-${months[datetime.month-1]}-${datetime.year}";
+    return newString;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final expirationDate = expiration!=null ? formatDate(expiration!) : "Desconocido"; 
     return SizedBox(
       width: 500,
-      height: 400,
+      height: 500,
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -80,7 +91,24 @@ class InfoCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.calendar_today),
-                      Text(' Fecha del ultimo pago:    $payDate',
+                      Text(' Fecha del ultimo pago:  ${formatDate(payDate)}',
+                      style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold),),
+                    ],
+                  ),
+                ),
+              ),
+            Card(
+                elevation: 3,
+                shadowColor: colorList[5],
+                color: colorList[2],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calendar_today),
+                      Text(' Fecha de expiración:  $expirationDate',
                       style: GoogleFonts.gochiHand(fontSize: 20, fontWeight: FontWeight.bold),),
                     ],
                   ),

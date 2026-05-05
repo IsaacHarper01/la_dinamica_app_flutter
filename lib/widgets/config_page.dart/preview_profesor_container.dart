@@ -94,7 +94,8 @@ class PreviewProfesorContainer extends ConsumerWidget {
                     ),
                   ),
                 ),
-                PopupMenuButton<String>(
+                if(access.isAdmin! == false)...
+                [PopupMenuButton<String>(
                   onSelected: (value) async {
                     if (value == 'delete') {
                       final confirm = await showDialog<bool>(
@@ -154,7 +155,7 @@ class PreviewProfesorContainer extends ConsumerWidget {
                           ),
                         ),
                       ],
-                ),
+                ),]
               ],
             ),
           ),
