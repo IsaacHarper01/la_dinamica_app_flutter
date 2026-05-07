@@ -6,7 +6,6 @@ import 'package:la_dinamica_app/backend/image_capture.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/models/Student.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
-import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 
 class AddStudentScreen extends ConsumerStatefulWidget {
@@ -108,7 +107,16 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
           return false;
         }
       }
-
+  bool checkAgeFormat(String age){
+    bool status = false;
+    try {
+      int.parse(age);
+      status = true;
+    } catch (e) {
+      return status;
+    } 
+    return status;
+  }
   Future<void> _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
@@ -120,12 +128,21 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
         for (var i = 0; i < controllers.length; i++)
           _namesdb[i]: controllers[i].text,
       };
-
+      if(checkAgeFormat(data['age']!) == false){
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Formato de edad incorrecto, ingresa un número'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
       if(checkDateFormat(data['birthday']!) == false){
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Formato de fecha incorrecto. Use yyyy-mm-dd'),
+            content: Text('Formato de fecha incorrecto. Usa yyyy-mm-dd'),
             backgroundColor: Colors.red,
           ),
         );

@@ -45,7 +45,7 @@ class _RegisterGymWidgetState extends ConsumerState<RegisterGymWidget> {
                   label: const Text('QR para nuevo acceso'),
                   onPressed: () async{
                       _showQrCodeDialog(context, '{"action":"newAccess","profID":"${userModel!.user}"}');
-                  } ,
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
