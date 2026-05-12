@@ -17,32 +17,47 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
   Future<UserLocal> build() async {
     final awsDb = DataStoreReadService();
     final awsDb2 = DataStoreService();
-    final Map<String, String> userAtributes;  
-
+    final attributes = await Amplify.Auth.fetchUserAttributes();
+    final Map<String, String> userAtributes = {for (var attr in attributes) attr.userAttributeKey.toString(): attr.value};
+    final userId = userAtributes['sub']!;
+    safePrint("Usuario actual: $userId");
+    
     try {
-      final attributes = await Amplify.Auth.fetchUserAttributes();
-      userAtributes = {for (var attr in attributes) attr.userAttributeKey.toString(): attr.value};
-      final userId = userAtributes['sub']!;
-      
       if (await awsDb.userExists(userId)) {
         final dbUser = await awsDb.getUser(userId);
-        final userAccess = await awsDb.getUserAccess(dbUser!.user_id,); 
-        final Map<String, bool> decodedPermisions = Map<String, bool>.from(jsonDecode(userAccess!.first.permissions!));
-        final newUser = UserLocal(
-          user: dbUser,
-          tenant: userAccess.first.tenant!,
-          name: userAccess.first.user!.name,
-          schoolname: userAccess.first.tenant!.name,
-          permissions: decodedPermisions,
-          plan: userAccess.first.tenant!.plan!,
-          status: userAccess.first.tenant!.status!,
-          userAccess: userAccess,
-        );
-        safePrint(
-          '✅ Usuario cargado correctamente: $newUser, ${newUser.tenant}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
-        );
-
-        return newUser;
+        safePrint("Usuario existe");
+        final userAccess = await awsDb.getUserAccess(dbUser!.user_id,);
+        if(userAccess!= null){
+          safePrint("Tenant actual: ${userAccess.first.tenant!.tenant_id}"); 
+          final Map<String, bool> decodedPermisions = Map<String, bool>.from(jsonDecode(userAccess.first.permissions!));
+          final newUser = UserLocal(
+            user: dbUser,
+            tenant: userAccess.first.tenant!,
+            name: userAccess.first.user!.name,
+            schoolname: userAccess.first.tenant!.name,
+            permissions: decodedPermisions,
+            plan: userAccess.first.tenant!.plan!,
+            status: userAccess.first.tenant!.status!,
+            userAccess: userAccess,
+          );
+          safePrint(
+            '✅ Usuario cargado correctamente: $newUser, ${newUser.tenant}, ${newUser.name}, ${newUser.schoolname}, ${newUser.permissions}, ${newUser.plan}, ${newUser.status}',
+          );
+          return newUser;
+          }
+          else{
+            final newUser = UserLocal(
+            user: dbUser,
+            tenant: null,
+            name: userAtributes['name']!,
+            schoolname: "",
+            permissions: null,
+            plan: "Free",
+            status: true,
+            userAccess: null,
+          );
+          return newUser;
+          }
       } else {
         final name = userAtributes['name']!;
         final plan = "Free";

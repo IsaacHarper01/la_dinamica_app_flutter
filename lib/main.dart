@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/config/theme/app_theme.dart';
 import 'package:la_dinamica_app/config/theme/util.dart';
+import 'package:la_dinamica_app/screens/app_gate_screen.dart';
 import 'package:la_dinamica_app/screens/login.dart';
-import 'package:la_dinamica_app/screens/main_screen.dart';
+
 // import the Amplify API plugin
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
@@ -126,7 +127,7 @@ class MyApp extends ConsumerWidget {
         theme: theme.light(),
         darkTheme: theme.dark(),
         themeMode: themeMode,
-        home: const MainScreen(),
+        home: const AppGate(),
       )
     );
   }

@@ -9,8 +9,6 @@ import 'package:la_dinamica_app/screens/home_screen.dart';
 import 'package:la_dinamica_app/screens/new_evaluation_screen.dart';
 import 'package:la_dinamica_app/screens/products_screen.dart';
 import 'package:la_dinamica_app/screens/students_screen.dart';
-import 'package:la_dinamica_app/widgets/payment_not_complete_widget.dart';
-import 'package:la_dinamica_app/widgets/register_gym_widget.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
   const MainScreen({super.key});
@@ -50,9 +48,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       loading: ()=> Scaffold(body: CircularProgressIndicator(),),
       error: (e, _) => Scaffold(body: Center(child: Text('Error al cargar usuario: $e')),),
       data:(data) {
-        if(data.tenant != null){
-          return data.tenant!.status! ?
-          Scaffold(
+        return Scaffold(
           body: _screens[_selectedIndex],
           bottomNavigationBar: Container(
             color: colorList[0],
@@ -90,11 +86,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   }).toList(),
               ),
             ),
-          ): 
-          UpdatePaymentStatusDialog();
-        }else{
-          return RegisterGymWidget();
-        }
+          );
       },
       );
   }
