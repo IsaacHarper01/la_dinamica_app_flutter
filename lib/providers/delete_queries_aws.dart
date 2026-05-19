@@ -134,4 +134,14 @@ class DataStoreDeleteService {
       safePrint('❌ Error al eliminar el Gasto: $e');
     }
   }  
+
+  Future<void> deleteFromGroup(JoinGroups joinGroup)async{
+    try {
+      await Amplify.DataStore.delete(joinGroup);
+      safePrint("✅ Alumno removido correctamente");
+    } catch (e) {
+      safePrint('❌ Error al remover alumno: $e');
+    }
+  }
+
 }

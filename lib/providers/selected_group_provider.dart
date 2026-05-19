@@ -1,6 +1,6 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/group_state.dart';
+import 'package:la_dinamica_app/providers/delete_queries_aws.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
@@ -30,7 +30,6 @@ class GroupNotifier extends StateNotifier<AsyncValue<GroupState>> {
     Set<String> setGroups = {};
     List<String> listGroups = [];
     String actualGroup = "";
-    safePrint("enter");
     final joinGroups = await DataStoreReadService().getJoinGroups(tenantId);
     if (joinGroups.isNotEmpty){
       for(var member in joinGroups){
@@ -61,5 +60,12 @@ class GroupNotifier extends StateNotifier<AsyncValue<GroupState>> {
     });
   }
 
+  Future<void> removeStudent(Student student, String groupName)async{
+    state.whenData((currentState)async{
+      final toRemoveJoin = currentState.groupJoinList.firstWhere((joinGroup)=>(joinGroup.student==student && joinGroup.group!.name ==groupName));
+      await DataStoreDeleteService().deleteFromGroup(toRemoveJoin);
+    },);
+    await _init();
+  }
 }
 

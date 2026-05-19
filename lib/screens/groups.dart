@@ -48,6 +48,12 @@ class NameState extends ConsumerState<GroupsPage> {
     });
   }
 
+  void setonEdit(){
+    setState(() {
+      onEdit = !onEdit;
+    });
+  }
+
 
   void saveGroup(BuildContext context) async{
     final user = await ref.watch(userProvider.future); 
@@ -128,17 +134,19 @@ class NameState extends ConsumerState<GroupsPage> {
                             ),
                             const Spacer(),
                             FilledButton.icon(
-                              onPressed: (){},
+                              onPressed: (){
+                                setonEdit();
+                              },
                               label: const Text(
                                 'Editar',
-                                style: TextStyle(color: Colors.white),
+                              style: TextStyle(color: Colors.white),
                               ),
                               icon: const Icon(
                                 Icons.edit,
                                 color: Colors.white,
                               ),
                               style: ButtonStyle(
-                                backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                                backgroundColor: onEdit ? WidgetStatePropertyAll(Color.fromRGBO(1, 177, 162, 0.498)) : WidgetStatePropertyAll(colorList[3]),
                               ),
                             ),
                         ],
@@ -215,11 +223,15 @@ class NameState extends ConsumerState<GroupsPage> {
                                 Text("Mostar todos")
                               ]
                             ),
+                            if(onEdit)...[Text("dezliza a la izquierda para quitar alumnos del grupo y a la derecha para agregarlos")],
                             StudentsByGroupListWidget(
                               allstudents: widget.allStudents, 
                               filterStudents: groupState.filteredStudents, 
                               showAll: showAllStudents, 
-                              screenHeight: widget.screenHeight),
+                              screenHeight: widget.screenHeight,
+                              onEdit: onEdit,
+                              groupName: groupState.actualGroup,
+                              ),
                             GroupDescriptionBox(groupName: groupState.actualGroup, description: groupState.groupDescriptions[groupState.actualGroup]!,),
                             Padding(
                               padding: EdgeInsets.all(16.0),
