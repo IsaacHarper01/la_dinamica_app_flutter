@@ -3,18 +3,36 @@ import 'dart:convert';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
+import 'graphql_service.dart';
+
 class DataStoreService {
 
-  Future<void> savePlan({
+  Future<void> savePlan({//tested and works
     required String type,
     required int clases,
     required double price,
     required String gymId,
   }) async {
-    final item = LocalPlan(type: type, clases: clases, price: price, client_id: gymId);
-
     try {
-      await Amplify.DataStore.save(item);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateLocalPlan(\$input: CreateLocalPlanInput!) {
+            createLocalPlan(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'type': type,
+            'clases': clases,
+            'price': price,
+            'client_id': gymId,
+            'defaultPlan': false,
+            'expiration': 0,
+          },
+        },
+      );
       safePrint('✅ Plan guardado correctamente');
     } catch (e) {
       safePrint('❌ Error al guardar el plan: $e');
@@ -22,7 +40,7 @@ class DataStoreService {
     }
   }
   
-  Future<void> savePayment({
+  Future<void> savePayment({//tested and works
     required int userId,
     required double amount,
     required int clases,
@@ -32,20 +50,30 @@ class DataStoreService {
     required String? profId,
   }) async {
     final newUUID = dbId! + date + plan.id + userId.toString();
-    final item = Payment(
-      id: newUUID,
-      user_id: userId,
-      amount: amount,
-      clases: clases,
-      plan: plan,
-      date: TemporalDate(DateTime.parse(date)),
-      client_id: dbId,
-      prof_id: profId,
-      debt: false,
-    );
 
     try {
-      await Amplify.DataStore.save(item);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreatePayment(\$input: CreatePaymentInput!) {
+            createPayment(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'id': newUUID,
+            'plan_id': plan.id,
+            'user_id': userId,
+            'amount': amount,
+            'clases': clases,
+            'date': date,
+            'client_id': dbId,
+            'prof_id': profId,
+            'debt': false,
+          },
+        },
+      );
       safePrint('✅ Pago guardado correctamente');
     } catch (e) {
       safePrint('❌ Error al guardar el Pago: $e');
@@ -53,7 +81,7 @@ class DataStoreService {
     }
   }
 
-  Future<int> saveStudent({
+  Future<int> saveStudent({//tested and works
     required String name,
     required String address,
     required String phone,
@@ -66,17 +94,34 @@ class DataStoreService {
     TemporalDate? expirationDate,
   }) async {
     try {
-      final students = await Amplify.DataStore.query(
-        Student.classType,
-        where: Student.CLIENT_ID.eq(gymId),
-        sortBy: [Student.USER_ID.descending()],
-        pagination: const QueryPagination(limit: 1),
+      const listStudents = '''
+        query ListStudents(\$filter: ModelStudentFilterInput, \$limit: Int) {
+          listStudents(filter: \$filter, limit: \$limit) {
+            items {
+              user_id
+            }
+          }
+        }
+      ''';
+
+      final items = await GraphQLService.queryList(
+        document: listStudents,
+        variables: {
+          'filter': {
+            'client_id': {'eq': gymId},
+          },
+          'limit': 1000,
+        },
+        key: 'listStudents',
       );
-      final lastNumId = students.isNotEmpty ? students.first.user_id : 0;
+      final lastNumId = items
+          .map<int>((item) => (item['user_id'] as num? ?? 0).toInt())
+          .fold<int>(0, (max, value) => value > max ? value : max);
+
       final newUUID = name.toLowerCase().replaceAll(" ", "")+birthday+gymId;
       final item = Student(
         id: newUUID,
-        user_id: lastNumId! + 1,
+        user_id: lastNumId + 1,
         name: name,
         address: address,
         phone: phone,
@@ -89,7 +134,32 @@ class DataStoreService {
         expirationPlan: expirationDate,
       );
 
-      await Amplify.DataStore.save(item);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateStudent(\$input: CreateStudentInput!) {
+            createStudent(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'id': newUUID,
+            'user_id': lastNumId + 1,
+            'name': name,
+            'address': address,
+            'phone': phone,
+            'age': age,
+            'birthday': birthday,
+            'email': email,
+            'image': image,
+            'client_id': gymId,
+            'hasDebt': false,
+            'remainClasses': remainClases ?? 0,
+            'expirationPlan': expirationDate?.format(),
+          },
+        },
+      );
       safePrint('✅ Alumno guardado correctamente');
       final id = item.id;
       safePrint('ID del Alumno guardado: $id');
@@ -100,7 +170,7 @@ class DataStoreService {
     }
   }
 
-  Future<void> saveAttendance({
+  Future<void> saveAttendance({//tested and works
     required Student student,
     required String date,
     required String gymId,
@@ -108,17 +178,27 @@ class DataStoreService {
     required bool status
   }) async {
     final newUUID = student.id+date;
-    final item = Attendance(
-      id: newUUID,
-      student: student,
-      date: TemporalDate(DateTime.parse(date)),
-      client_id: gymId,
-      prof_id: profId,
-      status: status,
-    );
 
     try {
-      await Amplify.DataStore.save(item);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateAttendance(\$input: CreateAttendanceInput!) {
+            createAttendance(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'id': newUUID,
+            'studentID': student.id,
+            'date': date,
+            'client_id': gymId,
+            'prof_id': profId,
+            'status': status,
+          },
+        },
+      );
       safePrint('✅ Asistencia guardada correctamente');
     } catch (e) {
       safePrint('❌ Error al guardar la Asistencia: $e');
@@ -135,7 +215,21 @@ class DataStoreService {
       name: name,
     );
     try {
-      await Amplify.DataStore.save(item);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateUser(\$input: CreateUserInput!) {
+            createUser(input: \$input) {
+              user_id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'user_id': id,
+            'name': name,
+          },
+        },
+      );
       safePrint('✅ Usuario guardado correctamente');
       return item;
     } catch (e) {
@@ -159,7 +253,24 @@ class DataStoreService {
       isAdmin: isAdmin,
     );
     try {
-      await Amplify.DataStore.save(item);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateUserAccess(\$input: CreateUserAccessInput!) {
+            createUserAccess(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'user_id': user.user_id,
+            'tenant_id': tenant.tenant_id,
+            'permissions': jsonEncode(permissions),
+            'status': status,
+            'isAdmin': isAdmin,
+          },
+        },
+      );
       safePrint('✅ Acceso de usuario guardado correctamente');
       return item;
     } catch (e) {
@@ -181,7 +292,23 @@ class DataStoreService {
       status: status,
     );
     try {
-      await Amplify.DataStore.save(item);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateTenant(\$input: CreateTenantInput!) {
+            createTenant(input: \$input) {
+              tenant_id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'tenant_id': tenantId,
+            'name': name,
+            'plan': plan,
+            'status': status,
+          },
+        },
+      );
       safePrint('✅ Gimnasio guardado correctamente');
       return item;
     } catch (e) {
@@ -190,7 +317,7 @@ class DataStoreService {
     }
   }
 
-  Future<Evaluations> saveEvaluation({
+  Future<Evaluations> saveEvaluation({//tested and works
   required String name,
   required String gymId,
     }) async {
@@ -199,7 +326,21 @@ class DataStoreService {
         tenant_id: gymId,
       );
 
-      await Amplify.DataStore.save(evaluation);
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateEvaluations(\$input: CreateEvaluationsInput!) {
+            createEvaluations(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'name': name,
+            'tenant_id': gymId,
+          },
+        },
+      );
       safePrint('✅ Evaluation saved: ${evaluation.id}, ${evaluation.name}');
       return evaluation;
     }
@@ -218,11 +359,28 @@ class DataStoreService {
       grades: grades,
       date: TemporalDate(date),
     );
-    await Amplify.DataStore.save(newGrade);
+    await GraphQLService.mutate(
+      document: '''
+        mutation CreateStudentExamResults(\$input: CreateStudentExamResultsInput!) {
+          createStudentExamResults(input: \$input) {
+            id
+          }
+        }
+      ''',
+      variables: {
+        'input': {
+          'tenant_id': tenantId,
+          'student_id': student.id,
+          'evaluation_id': eval.id,
+          'grades': grades,
+          'date': date.toIso8601String().split('T').first,
+        },
+      },
+    );
     return newGrade;
   }
 
-  Future<Metric> saveMetric({
+  Future<Metric> saveMetric({//tested and works
   required String name,
   required String tenantId,
   required String description,
@@ -238,12 +396,29 @@ class DataStoreService {
     higgerBetter: higgerBetter,
   );
 
-  await Amplify.DataStore.save(metric);
+  await GraphQLService.mutate(
+    document: '''
+      mutation CreateMetric(\$input: CreateMetricInput!) {
+        createMetric(input: \$input) {
+          id
+        }
+      }
+    ''',
+    variables: {
+      'input': {
+        'name': name,
+        'tenant_id': tenantId,
+        'description': description,
+        'type': type,
+        'higgerBetter': higgerBetter,
+      },
+    },
+  );
   safePrint('✅ Metric saved: ${metric.id}, ${metric.name}');
   return metric;
 }
 
-  Future<JoinMetric> saveJoinedMetric({
+  Future<JoinMetric> saveJoinedMetric({//tested and works
   required Metric metric,
   required Evaluations evaluation,
   required String tenantId,
@@ -254,20 +429,48 @@ class DataStoreService {
     tenant_id: tenantId,
   );
 
-  await Amplify.DataStore.save(joinMetric);
+  await GraphQLService.mutate(
+    document: '''
+      mutation CreateJoinMetric(\$input: CreateJoinMetricInput!) {
+        createJoinMetric(input: \$input) {
+          id
+        }
+      }
+    ''',
+    variables: {
+      'input': {
+        'metric_id': metric.id,
+        'evaluation_id': evaluation.id,
+        'tenant_id': tenantId,
+      },
+    },
+  );
   safePrint('✅ JoinMetric saved: ${joinMetric.id}');
   return joinMetric;
 }
 
-  Future<void> markDebtStatus({
+  Future<void> markDebtStatus({//tested and NO working
     required Payment pay,
     required bool status,
     })async{
-      final newPay = pay.copyWith(debt:status);
-      Amplify.DataStore.save(newPay);
+      await GraphQLService.mutate(
+        document: '''
+          mutation UpdatePayment(\$input: UpdatePaymentInput!) {
+            updatePayment(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'id': pay.id,
+            'debt': status,
+          },
+        },
+      );
     }
 
-  Future<void> saveProduct({
+  Future<void> saveProduct({//tested and works
     required String code,
     required String name,
     required String tenaniId,
@@ -276,36 +479,56 @@ class DataStoreService {
     required int stock,
     required String category,
   })async{
-      final newProduct = Product(
-        name: name,
-        code: code,
-        tenant_id: tenaniId,
-        price: price,
-        image: image,
-        stock: stock,
-        category: category
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateProduct(\$input: CreateProductInput!) {
+            createProduct(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'name': name,
+            'code': code,
+            'tenant_id': tenaniId,
+            'price': price,
+            'image': image,
+            'stock': stock,
+            'category': category,
+          },
+        },
       );
-      Amplify.DataStore.save(newProduct);
   }
 
-  Future<void> saveSale({
+  Future<void> saveSale({//tested and works
     required String tenaniId,
     required double price,
     required Product product,
     required String date,
     required String profName,
   })async{
-      final newSale = Sale(
-        tenant_id: tenaniId,
-        price: price,
-        product: product,
-        date: TemporalDate(DateTime.parse(date)),
-        profname: profName
+      await GraphQLService.mutate(
+        document: '''
+          mutation CreateSale(\$input: CreateSaleInput!) {
+            createSale(input: \$input) {
+              id
+            }
+          }
+        ''',
+        variables: {
+          'input': {
+            'tenant_id': tenaniId,
+            'price': price,
+            'product_id': product.id,
+            'date': date,
+            'profname': profName,
+          },
+        },
       );
-      Amplify.DataStore.save(newSale);
   }
 
-  Future<Groups> saveGroup({
+  Future<Groups> saveGroup({//tested and works
     required String name,
     required String tenantId,
     required String description,
@@ -315,37 +538,73 @@ class DataStoreService {
       tenant_id: tenantId,
       description: description
     );
-    Amplify.DataStore.save(newGroup);
+    await GraphQLService.mutate(
+      document: '''
+        mutation CreateGroups(\$input: CreateGroupsInput!) {
+          createGroups(input: \$input) {
+            id
+          }
+        }
+      ''',
+      variables: {
+        'input': {
+          'name': name,
+          'tenant_id': tenantId,
+          'description': description,
+        },
+      },
+    );
     return newGroup;
   }
 
-  Future<void> saveJoinGroup({
+  Future<void> saveJoinGroup({//tested and works
     required Student student,
     required Groups group,
     required String tenantId
   })async{
-    final newJoinGroup = JoinGroups(
-      tenant_id: tenantId,
-      student: student,
-      group: group
+    await GraphQLService.mutate(
+      document: '''
+        mutation CreateJoinGroups(\$input: CreateJoinGroupsInput!) {
+          createJoinGroups(input: \$input) {
+            id
+          }
+        }
+      ''',
+      variables: {
+        'input': {
+          'tenant_id': tenantId,
+          'student_id': student.id,
+          'group_id': group.id,
+        },
+      },
     );
-    Amplify.DataStore.save(newJoinGroup);
   }
 
-  Future<void> saveExpense({
+  Future<void> saveExpense({//tested and works
     required Tenant tenant,
     required DateTime date,
     required String name,
     required double amount,
     required String? description,
   })async{
-    final newExpense = Expense(
-      tenant: tenant,
-      name: name, 
-      amount: amount,
-      description: description,
-      date: TemporalDate(date));
-    Amplify.DataStore.save(newExpense);
+    await GraphQLService.mutate(
+      document: '''
+        mutation CreateExpense(\$input: CreateExpenseInput!) {
+          createExpense(input: \$input) {
+            id
+          }
+        }
+      ''',
+      variables: {
+        'input': {
+          'tenant_id': tenant.tenant_id,
+          'name': name,
+          'amount': amount,
+          'description': description,
+          'date': date.toIso8601String().split('T').first,
+        },
+      },
+    );
   }
 
 }
