@@ -8,34 +8,97 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 
 class DataStoreReadService {
-
-  Future<List<LocalPlan>> getPlans(String tenantId) async {
+  Future<List<T>> _queryGraphQLList<T>({
+    required String operationName,
+    required String document,
+    required Map<String, dynamic> variables,
+    required T Function(Map<String, dynamic>) fromJson,
+  }) async {
     try {
-      // Consultar los datos almacenados en DataStore
-      List<LocalPlan> plans = await Amplify.DataStore.query(
-        LocalPlan.classType,
-        where: LocalPlan.CLIENT_ID.eq(tenantId),
+      final request = GraphQLRequest<String>(
+        document: document,
+        variables: variables,
       );
-      safePrint('✅ Planes obtenidos correctamente');
-      return plans;
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.errors.isNotEmpty) {
+        throw Exception('GraphQL errors: ${response.errors}');
+      }
+
+      if (response.data == null) {
+        return <T>[];
+      }
+
+      final decoded = jsonDecode(response.data!) as Map<String, dynamic>;
+      final items = decoded[operationName]?['items'] as List<dynamic>? ?? <dynamic>[];
+
+      return items
+          .map((item) => fromJson(Map<String, dynamic>.from(item as Map)))
+          .toList();
     } catch (e) {
-      safePrint('❌ Error al obtener los planes: $e');
+      safePrint('❌ La consulta GraphQL falló para $operationName: $e');
       rethrow;
     }
   }
 
+
+  Future<List<LocalPlan>> getPlans(String tenantId) async {//tested and works
+    const document = '''
+      query ListLocalPlans(
+        \$filter: ModelLocalPlanFilterInput
+      ) {
+        listLocalPlans(filter: \$filter) {
+          items {
+            id
+            type
+            clases
+            price
+            client_id
+            defaultPlan
+            expiration
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<LocalPlan>(
+      operationName: 'listLocalPlans',
+      document: document,
+      variables: {
+        'filter': {'client_id': {'eq': tenantId}},
+      },
+      fromJson: LocalPlan.fromJson,
+    );
+  }
+
   Future<List<LocalPlan>> getallPlans() async {
-    try {
-      // Consultar los datos almacenados en DataStore
-      List<LocalPlan> plans = await Amplify.DataStore.query(
-        LocalPlan.classType,
-      );
-      safePrint('✅ Planes obtenidos correctamente');
-      return plans;
-    } catch (e) {
-      safePrint('❌ Error al obtener los planes: $e');
-      rethrow;
-    }
+    const document = '''
+      query ListLocalPlans {
+        listLocalPlans {
+          items {
+            id
+            type
+            clases
+            price
+            client_id
+            defaultPlan
+            expiration
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<LocalPlan>(
+      operationName: 'listLocalPlans',
+      document: document,
+      variables: const {},
+      fromJson: LocalPlan.fromJson,
+    );
   }
 
   Future<List<Payment>> getPaymentsRange(
@@ -43,46 +106,123 @@ class DataStoreReadService {
     DateTime endDate,
     String tenantId,
   ) async {
-    try {
-      List<Payment> payments = await Amplify.DataStore.query(
-        Payment.classType,
-        where: Payment.DATE.between(TemporalDate(startDate), TemporalDate(endDate)) 
-            .and(Payment.CLIENT_ID.eq(tenantId)),
-      );
-      safePrint('✅ Pagos obtenidos correctamente');
-      return payments;
-    } catch (e) {
-      safePrint('❌ Error al obtener los pagos: $e');
-      rethrow;
-    }
+    const document = '''
+      query ListPayments(
+        \$filter: ModelPaymentFilterInput
+      ) {
+        listPayments(filter: \$filter) {
+          items {
+            id
+            plan_id
+            composite_key
+            user_id
+            amount
+            clases
+            date
+            client_id
+            prof_id
+            debt
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    ''';
+
+    final payments = await _queryGraphQLList<Payment>(
+      operationName: 'listPayments',
+      document: document,
+      variables: {
+        'filter': {
+          'client_id': {'eq': tenantId},
+          'date': {
+            'between': [
+              startDate.toIso8601String().split('T').first,
+              endDate.toIso8601String().split('T').first,
+            ],
+          },
+        },
+      },
+      fromJson: Payment.fromJson,
+    );
+
+    payments.sort((a, b) => (a.date ?? TemporalDate(DateTime(1970))).format().compareTo((b.date ?? TemporalDate(DateTime(1970))).format()));
+    return payments;
   }
 
-  Future<List<Payment>> getTodayPayments(String tenantId, String date)async{
-    try {
-      final expenses = await Amplify.DataStore.query(
-        Payment.classType,
-        where: Payment.DATE.eq(date).and(Payment.CLIENT_ID.eq(tenantId))
-        );
-      return expenses;
-      } catch (e) {
-        rethrow;
+  Future<List<Payment>> getTodayPayments(String tenantId, String date) async {
+    const document = '''
+      query ListPayments(
+        \$filter: ModelPaymentFilterInput
+      ) {
+        listPayments(filter: \$filter) {
+          items {
+            id
+            plan_id
+            composite_key
+            user_id
+            amount
+            clases
+            date
+            client_id
+            prof_id
+            debt
+            createdAt
+            updatedAt
+          }
+        }
       }
-    }
+    ''';
 
-  Future<List<Sale>> getSalesPerRange(DateTime startDate,DateTime endDate,String tenantId,) async {
-    try {
-      List<Sale> sales = await Amplify.DataStore.query(
-        Sale.classType,
-        where: (Sale.TENANT_ID.eq(tenantId))
-        .and(Sale.DATE.between(TemporalDate(startDate), TemporalDate(endDate)))
-        ,
-      );
-      safePrint('✅ Ventas obtenidas correctamente');
-      return sales;
-    } catch (e) {
-      safePrint('❌ Error al obtener las ventas: $e');
-      rethrow;
-    }
+    return _queryGraphQLList<Payment>(
+      operationName: 'listPayments',
+      document: document,
+      variables: {
+        'filter': {
+          'client_id': {'eq': tenantId},
+          'date': {'eq': date},
+        },
+      },
+      fromJson: Payment.fromJson,
+    );
+  }
+
+  Future<List<Sale>> getSalesPerRange(DateTime startDate, DateTime endDate, String tenantId) async {
+    const document = '''
+      query ListSales(
+        \$filter: ModelSaleFilterInput
+      ) {
+        listSales(filter: \$filter) {
+          items {
+            id
+            product_id
+            tenant_id
+            price
+            date
+            profname
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<Sale>(
+      operationName: 'listSales',
+      document: document,
+      variables: {
+        'filter': {
+          'tenant_id': {'eq': tenantId},
+          'date': {
+            'between': [
+              startDate.toIso8601String().split('T').first,
+              endDate.toIso8601String().split('T').first,
+            ],
+          },
+        },
+      },
+      fromJson: Sale.fromJson,
+    );
   }
 
   Future<Map<String, dynamic>> getLastPayandStudentData(int userId, String tenantId) async {
@@ -91,112 +231,300 @@ class DataStoreReadService {
     dynamic debts;
 
     try {
-      List<Student> general = await Amplify.DataStore.query(
-        Student.classType,
-        where: Student.USER_ID.eq(userId)
-          .and(Student.CLIENT_ID.eq(tenantId)),);
-      studentData = general.first;
+      final students = await _queryGraphQLList<Student>(
+        operationName: 'listStudents',
+        document: '''
+          query ListStudents(
+            \$filter: ModelStudentFilterInput
+          ) {
+            listStudents(filter: \$filter) {
+              items {
+                id
+                user_id
+                name
+                address
+                age
+                phone
+                birthday
+                email
+                image
+                client_id
+                hasDebt
+                remainClasses
+                expirationPlan
+              }
+            }
+          }
+        ''',
+        variables: {
+          'filter': {
+            'user_id': {'eq': userId},
+            'client_id': {'eq': tenantId},
+          },
+        },
+        fromJson: Student.fromJson,
+      );
+      studentData = students.isNotEmpty ? students.first : null;
     } catch (e) {
-      safePrint('❌ Error al obtener los datos del usuario: $e'); 
+      safePrint('❌ Error al obtener los datos del usuario: $e');
     }
-    try{
-      List<Payment> payments = await Amplify.DataStore.query(
-        Payment.classType,
-        where: Payment.USER_ID.eq(userId) 
-            .and(Payment.CLIENT_ID.eq(tenantId))
-            .and(Payment.CLASES.gt(0)),
-        sortBy: [Payment.DATE.descending()],);
-        lastPay = payments.last;
 
-    }catch(e){
+    try {
+      final payments = await _queryGraphQLList<Payment>(
+        operationName: 'listPayments',
+        document: '''
+          query ListPayments(
+            \$filter: ModelPaymentFilterInput
+          ) {
+            listPayments(filter: \$filter) {
+              items {
+                id
+                plan_id
+                user_id
+                amount
+                clases
+                date
+                client_id
+                prof_id
+                debt
+              }
+            }
+          }
+        ''',
+        variables: {
+          'filter': {
+            'user_id': {'eq': userId},
+            'client_id': {'eq': tenantId},
+            'clases': {'gt': 0},
+          },
+        },
+        fromJson: Payment.fromJson,
+      );
+      lastPay = payments.isNotEmpty
+          ? payments.reduce((a, b) =>
+              (a.date?.format() ?? '').compareTo(b.date?.format() ?? '') >= 0 ? a : b)
+          : null;
+    } catch (e) {
       safePrint('❌ Error al obtener el ultimo pago del usuario: $e');
     }
 
-    try{
-      List<Payment> debtPays = await Amplify.DataStore.query(
-        Payment.classType,
-        where: Payment.USER_ID.eq(userId) 
-            .and(Payment.CLIENT_ID.eq(tenantId))
-            .and(Payment.DEBT.eq(true))
-        );
-      debts = debtPays;
-    }catch(e){
+    try {
+      debts = await _queryGraphQLList<Payment>(
+        operationName: 'listPayments',
+        document: '''
+          query ListPayments(
+            \$filter: ModelPaymentFilterInput
+          ) {
+            listPayments(filter: \$filter) {
+              items {
+                id
+                plan_id
+                user_id
+                amount
+                clases
+                date
+                client_id
+                prof_id
+                debt
+              }
+            }
+          }
+        ''',
+        variables: {
+          'filter': {
+            'user_id': {'eq': userId},
+            'client_id': {'eq': tenantId},
+            'debt': {'eq': true},
+          },
+        },
+        fromJson: Payment.fromJson,
+      );
+    } catch (e) {
       safePrint('❌ Error al obtener el ultimo pago del usuario: $e');
     }
-      
-      Map<String, dynamic> result = {
-        'lastPay': lastPay,
-        'studentData': studentData,
-        'debts' : debts,
-      };
-      return result;
+
+    return {
+      'lastPay': lastPay,
+      'studentData': studentData,
+      'debts': debts,
+    };
   }
   
-  Future<List<Student>> getStudents(String tenantId) async {
-    try {
-      // Consultar los datos almacenados en DataStore
-      List<Student> general = await Amplify.DataStore.query(
-        Student.classType,
-        where: Student.CLIENT_ID.eq(tenantId),
-        sortBy: [Student.USER_ID.ascending()],
-        );
-        
-      safePrint('✅ Alumnos obtenidos correctamente');
-      return general;
-    } catch (e) {
-      safePrint('❌ Error al obtener los Alumnos: $e');
-      rethrow;
-    }
+  Future<List<Student>> getStudents(String tenantId) async {//tested and works
+    final List<Student> students = <Student>[];
+    String? nextToken;
+
+    do {
+      final request = GraphQLRequest<String>(
+        document: '''
+          query ListStudents(
+            \$filter: ModelStudentFilterInput,
+            \$nextToken: String,
+            \$limit: Int
+          ) {
+            listStudents(
+              filter: \$filter,
+              nextToken: \$nextToken,
+              limit: \$limit
+            ) {
+              items {
+                id
+                user_id
+                name
+                address
+                age
+                phone
+                birthday
+                email
+                image
+                client_id
+                hasDebt
+                remainClasses
+                expirationPlan
+                createdAt
+                updatedAt
+              }
+              nextToken
+            }
+          }
+        ''',
+        variables: {
+          'filter': {'client_id': {'eq': tenantId}},
+          'nextToken': nextToken,
+          'limit': 1000,
+        },
+      );
+
+      final response = await Amplify.API.query(request: request).response;
+
+      if (response.errors.isNotEmpty) {
+        throw Exception('Errores de GraphQL: ${response.errors}');
+      }
+
+      if (response.data == null) {
+        break;
+      }
+
+      final data = jsonDecode(response.data!) as Map<String, dynamic>;
+      final result = data['listStudents'] as Map<String, dynamic>? ?? <String, dynamic>{};
+      final items = result['items'] as List<dynamic>? ?? <dynamic>[];
+
+      students.addAll(
+        items
+            .map((item) => Student.fromJson(Map<String, dynamic>.from(item as Map)))
+            .toList(),
+      );
+
+      nextToken = result['nextToken'] as String?;
+    } while (nextToken != null && nextToken.isNotEmpty);
+
+    students.sort((a, b) => (a.user_id ?? 0).compareTo(b.user_id ?? 0));
+    return students;
   }
 
   Future<List<Student>> getAllStudents() async {
-    try {
-      // Consultar los datos almacenados en DataStore
-      List<Student> general = await Amplify.DataStore.query(
-        Student.classType,
-        );
-        
-      safePrint('✅ Alumnos obtenidos correctamente');
-      return general;
-    } catch (e) {
-      safePrint('❌ Error al obtener los Alumnos: $e');
-      rethrow;
-    }
+    const document = '''
+      query ListStudents {
+        listStudents {
+          items {
+            id
+            user_id
+            name
+            address
+            age
+            phone
+            birthday
+            email
+            image
+            client_id
+            hasDebt
+            remainClasses
+            expirationPlan
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<Student>(
+      operationName: 'listStudents',
+      document: document,
+      variables: const {},
+      fromJson: Student.fromJson,
+    );
   }
 
-  Future<Student?> checkIfStudentExists(int id, String tenantId) async {
-    try {
-      // Consultar los datos almacenados en DataStore
-      List<Student> general = await Amplify.DataStore.query(
-        Student.classType,
-        where: Student.USER_ID.eq(id) 
-            .and(Student.CLIENT_ID.eq(tenantId)),
-      );
-      if (general.isNotEmpty) {
-        safePrint('✅ El alumno con ID $id existe');
-        return general.first;
-      } else {
-        safePrint('❌ El alumno con ID $id no existe');
-        return null;
-      }
-    } catch (e) {
-      safePrint('❌ Error al verificar la existencia del alumno: $e');
-      rethrow;
+  Future<Student?> checkIfStudentExists(int id, String tenantId) async {//tested and works
+    final students = await _queryGraphQLList<Student>(
+      operationName: 'listStudents',
+      document: '''
+        query ListStudents(
+          \$filter: ModelStudentFilterInput
+        ) {
+          listStudents(filter: \$filter) {
+            items {
+              id
+              user_id
+              name
+              address
+              age
+              phone
+              birthday
+              email
+              image
+              client_id
+              hasDebt
+              remainClasses
+              expirationPlan
+            }
+          }
+        }
+      ''',
+      variables: {
+        'filter': {
+          'user_id': {'eq': id},
+          'client_id': {'eq': tenantId},
+        },
+      },
+      fromJson: Student.fromJson,
+    );
+
+    if (students.isNotEmpty) {
+      safePrint('✅ El alumno con ID $id existe');
+      return students.first;
     }
+    safePrint('❌ El alumno con ID $id no existe');
+    return null;
   }
 
   Future<List<List<String>>> getAgesandAddress(List<int> ids, String tenantId) async {
     try {
-      List<Student> general = [];
-      for (var id in ids) {
-        general.addAll(
-          await Amplify.DataStore.query(
-            Student.classType,
-            where: Student.USER_ID.eq(id)
-              .and(Student.CLIENT_ID.eq(tenantId)),
-          )
-        );
-      }
+      final students = await _queryGraphQLList<Student>(
+        operationName: 'listStudents',
+        document: '''
+          query ListStudents(
+            \$filter: ModelStudentFilterInput
+          ) {
+            listStudents(filter: \$filter) {
+              items {
+                id
+                user_id
+                age
+                address
+              }
+            }
+          }
+        ''',
+        variables: {
+          'filter': {
+            'client_id': {'eq': tenantId},
+            'or': ids.map((id) => {'user_id': {'eq': id}}).toList(),
+          },
+        },
+        fromJson: Student.fromJson,
+      );
+      final general = students.where((student) => ids.contains(student.user_id)).toList();
       List<String> ages = [];
       List<String> addresses = [];
       if (general.isNotEmpty) {
@@ -217,19 +545,35 @@ class DataStoreReadService {
   }
 
   Future<List<Attendance>> getAttendanceByDate(String date, String tenantId) async {
-    try {
-      List<Attendance> attendance = await Amplify.DataStore.query(
-        Attendance.classType,
-        where: Attendance.DATE.eq(date) 
-            .and(Attendance.CLIENT_ID.eq(tenantId)
-            .and(Attendance.STATUS.eq(true))
-            ),
-      );
-      return attendance;
-    } catch (e) {
-      safePrint('❌ Error al obtener las asistencias: $e');
-      rethrow;
-    }
+    const document = '''
+      query ListAttendances(
+        \$filter: ModelAttendanceFilterInput
+      ) {
+        listAttendances(filter: \$filter) {
+          items {
+            id
+            studentID
+            date
+            client_id
+            prof_id
+            status
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<Attendance>(
+      operationName: 'listAttendances',
+      document: document,
+      variables: {
+        'filter': {
+          'date': {'eq': date},
+          'client_id': {'eq': tenantId},
+          'status': {'eq': true},
+        },
+      },
+      fromJson: Attendance.fromJson,
+    );
   }
 
   Future<List<Attendance>> getAttendanceRange(
@@ -237,56 +581,145 @@ class DataStoreReadService {
     DateTime endDate,
     String tenantId,
   ) async {
-    try {
-      List<Attendance> attendance = await Amplify.DataStore.query(
-        Attendance.classType,
-        where: Attendance.DATE.between(TemporalDate(startDate),TemporalDate(endDate),) 
-            .and(Attendance.CLIENT_ID.eq(tenantId)
-            .and(Attendance.STATUS.eq(true)))
-      );
-      safePrint('✅ Asistencias obtenidas correctamente');
-      return attendance;
-    } catch (e) {
-      safePrint('❌ Error al obtener las asistencias: $e');
-      rethrow;
-    }
-  }
-
-  Future<List<Expense>> getExpensesRange(Tenant tenant, DateTime start, DateTime end)async{
-    try{
-      final List<Expense> allexpenses = await Amplify.DataStore.query(
-      Expense.classType,
-      where: Expense.DATE.between(TemporalDate(start), TemporalDate(end))
-      .and(Expense.TENANT.eq(tenant.tenant_id)));
-
-      return allexpenses;
-    }catch(e){
-      return [];
-    }
-  }
-
-  Future<List<Expense>> getTodayExpenses(String tenantId, String date)async{
-    try {
-      final expenses = await Amplify.DataStore.query(
-        Expense.classType,
-        where: Expense.DATE.eq(date).and(Expense.TENANT.eq(tenantId))
-        );
-      return expenses;
-      } catch (e) {
-        rethrow;
+    const document = '''
+      query ListAttendances(
+        \$filter: ModelAttendanceFilterInput
+      ) {
+        listAttendances(filter: \$filter) {
+          items {
+            id
+            studentID
+            date
+            client_id
+            prof_id
+            status
+          }
+        }
       }
-    } 
+    ''';
 
-  Future<List<Payment>?> getLastTenPayments(int userId, String tenaniId)async{
-    try{
-      List<Payment> payments = await Amplify.DataStore.query(
-        Payment.classType,
-        where: Payment.USER_ID.eq(userId).and(Payment.CLIENT_ID.eq(tenaniId)),
-        sortBy: [Payment.DATE.descending()],
-        pagination: const QueryPagination.firstPage(),
-        );
-        return payments;
-    }catch(e){
+    return _queryGraphQLList<Attendance>(
+      operationName: 'listAttendances',
+      document: document,
+      variables: {
+        'filter': {
+          'date': {
+            'between': [
+              startDate.toIso8601String().split('T').first,
+              endDate.toIso8601String().split('T').first,
+            ],
+          },
+          'client_id': {'eq': tenantId},
+          'status': {'eq': true},
+        },
+      },
+      fromJson: Attendance.fromJson,
+    );
+  }
+
+  Future<List<Expense>> getExpensesRange(Tenant tenant, DateTime start, DateTime end) async {
+    const document = '''
+      query ListExpenses(
+        \$filter: ModelExpenseFilterInput
+      ) {
+        listExpenses(filter: \$filter) {
+          items {
+            id
+            tenant_id
+            name
+            amount
+            date
+            description
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<Expense>(
+      operationName: 'listExpenses',
+      document: document,
+      variables: {
+        'filter': {
+          'tenant_id': {'eq': tenant.tenant_id},
+          'date': {
+            'between': [
+              start.toIso8601String().split('T').first,
+              end.toIso8601String().split('T').first,
+            ],
+          },
+        },
+      },
+      fromJson: Expense.fromJson,
+    );
+  }
+
+  Future<List<Expense>> getTodayExpenses(String tenantId, String date) async {
+    const document = '''
+      query ListExpenses(
+        \$filter: ModelExpenseFilterInput
+      ) {
+        listExpenses(filter: \$filter) {
+          items {
+            id
+            tenant_id
+            name
+            amount
+            date
+            description
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<Expense>(
+      operationName: 'listExpenses',
+      document: document,
+      variables: {
+        'filter': {
+          'tenant_id': {'eq': tenantId},
+          'date': {'eq': date},
+        },
+      },
+      fromJson: Expense.fromJson,
+    );
+  }
+
+  Future<List<Payment>?> getLastTenPayments(int userId, String tenaniId) async {
+    const document = '''
+      query ListPayments(
+        \$filter: ModelPaymentFilterInput
+      ) {
+        listPayments(filter: \$filter) {
+          items {
+            id
+            plan_id
+            user_id
+            amount
+            clases
+            date
+            client_id
+            prof_id
+            debt
+          }
+        }
+      }
+    ''';
+
+    try {
+      final payments = await _queryGraphQLList<Payment>(
+        operationName: 'listPayments',
+        document: document,
+        variables: {
+          'filter': {
+            'user_id': {'eq': userId},
+            'client_id': {'eq': tenaniId},
+          },
+        },
+        fromJson: Payment.fromJson,
+      );
+      payments.sort((a, b) => (b.date ?? TemporalDate(DateTime(1970))).format().compareTo((a.date ?? TemporalDate(DateTime(1970))).format()));
+      return payments.take(10).toList();
+    } catch (e) {
       safePrint('❌ Error al obtener los ultimos 10 pagos: $e');
       return null;
     }
@@ -344,7 +777,7 @@ class DataStoreReadService {
       final response = await Amplify.API.query(request: request).response;
 
       if (response.errors.isNotEmpty) {
-        safePrint('❌ GraphQL errors: ${response.errors}');
+        safePrint('❌ Errores de GraphQL: ${response.errors}');
         return false;
       }
 
@@ -356,7 +789,7 @@ class DataStoreReadService {
 
       return items.isNotEmpty;
     } catch (e) {
-      safePrint('❌ Error checking user via GraphQL: $e');
+      safePrint('❌ Error al verificar el usuario mediante GraphQL: $e');
       return false;
     }
   }
@@ -391,12 +824,12 @@ class DataStoreReadService {
       final response = await Amplify.API.query(request: request).response;
 
       if (response.errors.isNotEmpty) {
-        safePrint('❌ GraphQL errors: ${response.errors}');
+        safePrint('❌ Errores de GraphQL: ${response.errors}');
         return null;
       }
 
       if (response.data == null) {
-        safePrint('⚠️ User not found with ID: $userId');
+        safePrint('⚠️ No se encontró ningún usuario con ID: $userId');
         return null;
       }
 
@@ -404,7 +837,7 @@ class DataStoreReadService {
       final userJson = data['getUser'];
 
       if (userJson == null) {
-        safePrint('⚠️ User not found with ID: $userId');
+        safePrint('⚠️ No se encontró ningún usuario con ID: $userId');
         return null;
       }
 
@@ -413,24 +846,40 @@ class DataStoreReadService {
 
       return user;
     } catch (e) {
-      safePrint('❌ Error getting user: $e');
+      safePrint('❌ Error al obtener el usuario: $e');
       rethrow;
     }
   }
 
-  Future<List<UserAccess>> userHasAccess(User user, Tenant tenant)async{
-    try {
-      final access = await Amplify.DataStore.query(
-        UserAccess.classType,
-        where: UserAccess.USER.eq(user.user_id)
-        .and(UserAccess.TENANT.eq(tenant.tenant_id)
-          )
-        );
-        return access;
-    } catch (e) {
-      safePrint('');
-      rethrow;
-    }
+  Future<List<UserAccess>> userHasAccess(User user, Tenant tenant) async {
+    const document = '''
+      query ListUserAccesses(
+        \$filter: ModelUserAccessFilterInput
+      ) {
+        listUserAccesses(filter: \$filter) {
+          items {
+            id
+            user_id
+            tenant_id
+            permissions
+            status
+            isAdmin
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<UserAccess>(
+      operationName: 'listUserAccesses',
+      document: document,
+      variables: {
+        'filter': {
+          'user_id': {'eq': user.user_id},
+          'tenant_id': {'eq': tenant.tenant_id},
+        },
+      },
+      fromJson: UserAccess.fromJson,
+    );
   }
 
   Future<void> giveUserAccess(Tenant tenant, String permissions, String userid) async {
@@ -456,7 +905,7 @@ class DataStoreReadService {
         }
     }
     }catch (e) {
-      safePrint('❌ Error giving user access: $e');
+      safePrint('❌ Error al otorgar acceso al usuario: $e');
       rethrow;
     }
   }
@@ -495,7 +944,7 @@ class DataStoreReadService {
     final response = await Amplify.API.query(request: request).response;
 
     if (response.errors.isNotEmpty) {
-      safePrint('❌ GraphQL Errors: ${response.errors}');
+      safePrint('❌ Errores de GraphQL: ${response.errors}');
       return null;
     }
 
@@ -503,7 +952,7 @@ class DataStoreReadService {
     final items = data['listUserAccesses']?['items'] as List?;
     
     if (items == null || items.isEmpty) {
-      safePrint('⚠️ User access not found for user ID: $userId');
+      safePrint('⚠️ No se encontró acceso para el usuario con ID: $userId');
       return null;
     }
 
@@ -513,29 +962,66 @@ class DataStoreReadService {
         .toList();
     return userAccessList;
   } catch (e) {
-    safePrint('❌ Error getting user access: $e');
+    safePrint('❌ Error al obtener el acceso del usuario: $e');
     return null;
   }
 }
 
   Future<List<UserAccess>> getUserPermisions(String tenaniId) async {
-    List<UserAccess> userAccess = [];
-    try {
-      userAccess = await Amplify.DataStore.query(
-        UserAccess.classType,
-        where: UserAccess.TENANT.eq(tenaniId)
-        );
-      return userAccess;
-    } catch (e) {
-      return [];
-    }
+    const document = '''
+      query ListUserAccesses(
+        \$filter: ModelUserAccessFilterInput
+      ) {
+        listUserAccesses(filter: \$filter) {
+          items {
+            id
+            user_id
+            tenant_id
+            permissions
+            status
+            isAdmin
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<UserAccess>(
+      operationName: 'listUserAccesses',
+      document: document,
+      variables: {
+        'filter': {
+          'tenant_id': {'eq': tenaniId},
+        },
+      },
+      fromJson: UserAccess.fromJson,
+    );
   }
 
-  Future<List<Evaluations>?> getEvaluations(String tenantId) async {
+  Future<List<Evaluations>?> getEvaluations(String tenantId) async {//tested and works
     try {
-      final evaluations = await Amplify.DataStore.query(
-        Evaluations.classType,
-        where: Evaluations.TENANT_ID.eq(tenantId),
+      final evaluations = await _queryGraphQLList<Evaluations>(
+        operationName: 'listEvaluations',
+        document: '''
+          query ListEvaluations(
+            \$filter: ModelEvaluationsFilterInput
+          ) {
+            listEvaluations(filter: \$filter) {
+              items {
+                id
+                name
+                tenant_id
+                lastDate
+                higgerBetter
+                types
+                metric_names
+              }
+            }
+          }
+        ''',
+        variables: {
+          'filter': {'tenant_id': {'eq': tenantId}},
+        },
+        fromJson: Evaluations.fromJson,
       );
       safePrint('✅ Evaluaciones obtenidas correctamente');
       return evaluations;
@@ -545,11 +1031,48 @@ class DataStoreReadService {
     }
   }
    
-  Future<List<JoinMetric>?> getJoinMetrics(String tenantId, Evaluations exam) async {
+  Future<List<JoinMetric>?> getJoinMetrics(String tenantId, Evaluations exam) async {//tested and works
     try {
-      final joinMetrics = await Amplify.DataStore.query(
-        JoinMetric.classType,
-        where: JoinMetric.TENANT_ID.eq(tenantId).and(JoinMetric.EVALUATION.eq(exam.id)),
+      final joinMetrics = await _queryGraphQLList<JoinMetric>(
+        operationName: 'listJoinMetrics',
+        document: '''
+          query ListJoinMetrics(
+            \$filter: ModelJoinMetricFilterInput
+          ) {
+            listJoinMetrics(filter: \$filter) {
+              items {
+                id
+                metric_id
+                evaluation_id
+                tenant_id
+                metric {
+                  id
+                  name
+                  tenant_id
+                  description
+                  type
+                  higgerBetter
+                }
+                evaluation {
+                  id
+                  name
+                  tenant_id
+                  lastDate
+                  higgerBetter
+                  types
+                  metric_names
+                }
+              }
+            }
+          }
+        ''',
+        variables: {
+          'filter': {
+            'tenant_id': {'eq': tenantId},
+            'evaluation_id': {'eq': exam.id},
+          },
+        },
+        fromJson: JoinMetric.fromJson,
       );
       safePrint('✅ Métricas conjuntas obtenidas correctamente ${joinMetrics.first.metric!.name}');
       return joinMetrics;
@@ -697,40 +1220,105 @@ class DataStoreReadService {
       return [StudentExamResults.fromJson(filtered.first)];
     }
 
-  Future<List<StudentExamResults>> getAllStudentResults(String tenaniId, String studentId)async{
-    final results = await Amplify.DataStore.query(
-      StudentExamResults.classType,
-      where: StudentExamResults.STUDENT.eq(studentId)
-      .and(StudentExamResults.TENANT_ID.eq(tenaniId)),
-      sortBy: [StudentExamResults.DATE.descending()],
-      );
+  Future<List<StudentExamResults>> getAllStudentResults(String tenaniId, String studentId) async {
+    const document = '''
+      query ListStudentExamResults(
+        \$filter: ModelStudentExamResultsFilterInput
+      ) {
+        listStudentExamResults(filter: \$filter) {
+          items {
+            id
+            date
+            tenant_id
+            grades
+            tscores
+            evaluation_id
+            student_id
+          }
+        }
+      }
+    ''';
+
+    final results = await _queryGraphQLList<StudentExamResults>(
+      operationName: 'listStudentExamResults',
+      document: document,
+      variables: {
+        'filter': {
+          'student_id': {'eq': studentId},
+          'tenant_id': {'eq': tenaniId},
+        },
+      },
+      fromJson: StudentExamResults.fromJson,
+    );
+
+    results.sort((a, b) => (b.date ?? TemporalDate(DateTime(1970))).format().compareTo((a.date ?? TemporalDate(DateTime(1970))).format()));
     return results;
   }
 
-  Future<List<Product>> getProducts(String tenaniId)async{
-      try {
-        safePrint("Obteniendo productos para $tenaniId");
-        final products = await Amplify.DataStore.query(
-          Product.classType, 
-          where: Product.TENANT_ID.eq(tenaniId));
-        safePrint("Productos obtenidos correctamente: $products");
-        return products;
-      } catch (e) {
-        rethrow;
+  Future<List<Product>> getProducts(String tenaniId) async {//tested and works
+    const document = '''
+      query ListProducts(
+        \$filter: ModelProductFilterInput
+      ) {
+        listProducts(filter: \$filter) {
+          items {
+            id
+            code
+            name
+            tenant_id
+            price
+            image
+            stock
+            category
+          }
+        }
       }
+    ''';
+
+    return _queryGraphQLList<Product>(
+      operationName: 'listProducts',
+      document: document,
+      variables: {
+        'filter': {'tenant_id': {'eq': tenaniId}},
+      },
+      fromJson: Product.fromJson,
+    );
   }
 
-  Future<Product?> productExists(String productCode, String tenaniId)async {
+  Future<Product?> productExists(String productCode, String tenaniId) async {
     safePrint("🔍 Buscando el producto: $productCode");
     try {
-      final products = await Amplify.DataStore.query(
-        Product.classType,
-        where: Product.TENANT_ID.eq(tenaniId)
-        .and(Product.CODE.eq(productCode))
-        );
-        return products.first;
+      final products = await _queryGraphQLList<Product>(
+        operationName: 'listProducts',
+        document: '''
+          query ListProducts(
+            \$filter: ModelProductFilterInput
+          ) {
+            listProducts(filter: \$filter) {
+              items {
+                id
+                code
+                name
+                tenant_id
+                price
+                image
+                stock
+                category
+              }
+            }
+          }
+        ''',
+        variables: {
+          'filter': {
+            'tenant_id': {'eq': tenaniId},
+            'code': {'eq': productCode},
+          },
+        },
+        fromJson: Product.fromJson,
+      );
+      return products.isNotEmpty ? products.first : null;
     } catch (e) {
-      safePrint('❌ Error checking product via GraphQL: $e');
+      safePrint('❌ Error al verificar el producto mediante GraphQL: $e');
       return null;
     }
   }
@@ -747,17 +1335,36 @@ class DataStoreReadService {
     }
   }
   
-  Future<List<Sale>> fetchSales(String tenantId, String date)async{
-    try {
-      final sales = await Amplify.DataStore.query(
-        Sale.classType,
-        where: Sale.DATE.eq(date).and(Sale.TENANT_ID.eq(tenantId))
-        );
-      return sales;
-      } catch (e) {
-        rethrow;
+  Future<List<Sale>> fetchSales(String tenantId, String date) async {
+    const document = '''
+      query ListSales(
+        \$filter: ModelSaleFilterInput
+      ) {
+        listSales(filter: \$filter) {
+          items {
+            id
+            product_id
+            tenant_id
+            price
+            date
+            profname
+          }
+        }
       }
-    } 
+    ''';
+
+    return _queryGraphQLList<Sale>(
+      operationName: 'listSales',
+      document: document,
+      variables: {
+        'filter': {
+          'tenant_id': {'eq': tenantId},
+          'date': {'eq': date},
+        },
+      },
+      fromJson: Sale.fromJson,
+    );
+  }
   
   Future<String> apiAssistant()async{
     final session = await Amplify.Auth.fetchAuthSession();
@@ -802,17 +1409,30 @@ class DataStoreReadService {
       }
   }
 
-  Future<List<JoinGroups>> getJoinGroups(String tenantId)async{
-    try {
-      final joinGroups = await Amplify.DataStore.query(
-        JoinGroups.classType, 
-        where: JoinGroups.TENANT_ID.eq(tenantId)
-        );
-      safePrint("Grupos obtenidos correctamente $joinGroups");
-      return joinGroups;
-    } catch (e) {
-      return [];
-    }
+  Future<List<JoinGroups>> getJoinGroups(String tenantId) async {
+    const document = '''
+      query ListJoinGroups(
+        \$filter: ModelJoinGroupsFilterInput
+      ) {
+        listJoinGroups(filter: \$filter) {
+          items {
+            id
+            student_id
+            group_id
+            tenant_id
+          }
+        }
+      }
+    ''';
+
+    return _queryGraphQLList<JoinGroups>(
+      operationName: 'listJoinGroups',
+      document: document,
+      variables: {
+        'filter': {'tenant_id': {'eq': tenantId}},
+      },
+      fromJson: JoinGroups.fromJson,
+    );
   }
 
 }
