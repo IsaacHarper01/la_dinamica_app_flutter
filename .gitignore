@@ -27,9 +27,33 @@ migrate_working_dir/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
 /build/
+coverage/
+.fvm/
+
+# Android generated files
+/android/.gradle/
+/android/app/.cxx/
+/android/app/build/
+/android/local.properties
+
+# iOS/macOS/Linux/Windows generated files
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+/ios/Runner/GeneratedPluginRegistrant.*
+/macos/Flutter/ephemeral/
+/linux/flutter/ephemeral/
+/windows/flutter/ephemeral/
+
+# IDE / local configuration
+*.iml
+*.xcuserdata
+*.xcworkspace/xcuserdata/
 
 # Symbolication related
 app.*.symbols
@@ -57,6 +81,7 @@ aws-exports.js
 awsconfiguration.json
 amplifyconfiguration.json
 amplifyconfiguration.dart
+lib/amplifyconfiguration.dart
 amplify-build-config.json
 amplify-gradle-config.json
 amplifytools.xcconfig
