@@ -144,22 +144,30 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
     Map<String, bool>? permissions,
     String? plan,
     bool? status,
+    List<UserAccess>? userAccess,
   }) {
     final currentUser = state.value;
-    if (currentUser != null) {
-      final updatedUser = currentUser.copyWith(
-        user: user ?? currentUser.user,
-        name: name ?? currentUser.name,
-        tenant: tenant ?? currentUser.tenant,
-        schoolname: schoolname ?? currentUser.schoolname,
-        permissions: permissions ?? currentUser.permissions,
-        plan: plan ?? currentUser.plan,
-        status: status ?? currentUser.status,
-      );
-      state = AsyncValue.data(updatedUser);
-      safePrint(
-        '✅ Usuario actualizado: ${updatedUser.user.name}, ${updatedUser.tenant}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}',
-      );
+
+    if (currentUser == null) {
+      safePrint('⚠️ No hay usuario actual para actualizar.');
+      return;
     }
+
+    final updatedUser = UserLocal(
+      user: user ?? currentUser.user,
+      name: name ?? currentUser.name,
+      tenant: tenant ?? currentUser.tenant,
+      schoolname: schoolname ?? currentUser.schoolname,
+      permissions: permissions ?? currentUser.permissions,
+      plan: plan ?? currentUser.plan,
+      status: status ?? currentUser.status,
+      userAccess: userAccess ?? currentUser.userAccess,
+    );
+
+    state = AsyncValue.data(updatedUser);
+
+    safePrint(
+      '✅ Usuario actualizado: ${updatedUser.user.name}, ${updatedUser.tenant}, ${updatedUser.name}, ${updatedUser.schoolname}, ${updatedUser.permissions}, ${updatedUser.plan}, ${updatedUser.status}, access=${updatedUser.userAccess?.length ?? 0}',
+    );
   }
 }

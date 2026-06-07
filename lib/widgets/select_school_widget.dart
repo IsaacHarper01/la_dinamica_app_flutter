@@ -40,10 +40,14 @@ class _SelectSchoolState extends ConsumerState<SelectSchoolWidget> {
                             ref
                                 .read(userProvider.notifier)
                                 .updateUser(
-                                  tenant: access.tenant!,
-                                  schoolname: access.tenant!.name,
+                                  user: access.user ?? user.user,
+                                  name: access.user?.name ?? user.name,
+                                  tenant: access.tenant ?? user.tenant,
+                                  schoolname: access.tenant?.name ?? user.schoolname,
                                   permissions: permissions,
-                                  plan: access.tenant!.plan!,
+                                  plan: access.tenant?.plan ?? user.plan,
+                                  status: access.tenant?.status ?? user.status,
+                                  userAccess: [access],
                                 );
                             ref.read(studentsAttendanceProvider.notifier).setAttendanceToday(ref.read(dateProvider).today);
                             ref.read(incomeSummaryProvider.notifier).clear();
