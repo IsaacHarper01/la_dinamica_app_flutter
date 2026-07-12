@@ -488,12 +488,12 @@ class _StudentDetailScreenState extends ConsumerState<StudentDetailScreen> {
                   onPressed: () {
                     generateCredentialandSend(
                       student.user_id!,
+                      student.id,
                       student.name!,
                       student.address!,
                       student.phone!,
                       student.age.toString(),
                       student.image!,
-                      tenantId,
                     );
                   },
                   label: const Text('Generar Credencial'),

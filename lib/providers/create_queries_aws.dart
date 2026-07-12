@@ -53,7 +53,7 @@ class DataStoreService {
     }
   }
 
-  Future<int> saveStudent({
+  Future<Student> saveStudent({
     required String name,
     required String address,
     required String phone,
@@ -93,7 +93,7 @@ class DataStoreService {
       safePrint('✅ Alumno guardado correctamente');
       final id = item.id;
       safePrint('ID del Alumno guardado: $id');
-      return item.user_id!;
+      return item;
     } catch (e) {
       safePrint('❌ Error al consultar los alumnos: $e');
       rethrow;

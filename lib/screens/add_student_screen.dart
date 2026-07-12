@@ -153,7 +153,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       final image = await pickAndSaveImage(data['name']!, gymId, false, false);
       data['image'] = image!;
 
-      final id = await awsDb.saveStudent(
+      final student = await awsDb.saveStudent(
         name: data['name']!,
         address: data['address']!,
         phone: data['phone']!,
@@ -165,14 +165,14 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
       );
 
       generateCredentialandSend(
-        id,
-        data['name']!,
-        data['address']!,
-        data['phone']!,
-        data['age']!,
-        image,
-        gymId,
-      );
+        student.user_id!, 
+        student.id, 
+        student.name!, 
+        student.address!, 
+        student.phone!, 
+        student.age.toString(), 
+        student.image!
+        );
 
       if (!mounted) return;
       // Mostrar SnackBar confirmando el registro

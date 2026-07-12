@@ -11,17 +11,16 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 Future<void> generateCredentialandSend(
   int id,
+  String uuid,
   String name,
   String address,
   String number,
   String age,
   String photo,
-  String dbId,
-
 ) async {
   // 1. Generate the QR code widget
   final awsStorage = Storages3();
-  final qrCodeData = '{"action":"attendance","id":$id,"name":"$name","address":"$address","phone":"$number","age":"$age"}';
+  final qrCodeData = '{"action":"attendance","id":"$uuid"}';
   final Uint8List photoBytes = await awsStorage.downloadFile(photo); 
   final ByteData wallpaperData = await rootBundle.load(
     'assets/images/fondo6.jpg',

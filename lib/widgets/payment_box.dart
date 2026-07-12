@@ -5,7 +5,39 @@ import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/providers/income_plan_provider.dart';
 import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
+import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+
+Widget _buildStudentPhoto(WidgetRef ref, Student student) {
+  final imageKey = student.image;
+
+  if (imageKey == null || imageKey.isEmpty) {
+    return Image.asset(
+      'assets/images/default_profile.jpg',
+      fit: BoxFit.cover,
+    );
+  }
+
+  final imageUrl = ref.watch(imageProvider(imageKey));
+
+  return imageUrl.when(
+    data: (url) => Image.network(
+      url ?? '',
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(
+          'assets/images/default_profile.jpg',
+          fit: BoxFit.cover,
+        );
+      },
+    ),
+    loading: () => const Center(child: CircularProgressIndicator()),
+    error: (_, __) => Image.asset(
+      'assets/images/default_profile.jpg',
+      fit: BoxFit.cover,
+    ),
+  );
+}
 
 Future<void> showPaymentDialog(
   BuildContext context,
@@ -50,9 +82,27 @@ Future<void> showPaymentDialog(
       title: Center(child: const Text('Selecciona un plan')),
       content: SizedBox(
         width: double.maxFinite,
-        height: 350,
+        height: 420,
         child: Column(
           children: [
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(60),
+              child: SizedBox(
+                width: 90,
+                height: 90,
+                child: _buildStudentPhoto(ref, student),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              student.name ?? name,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
             Center(child: 
               Padding(
                 padding: const EdgeInsets.all(16.0),

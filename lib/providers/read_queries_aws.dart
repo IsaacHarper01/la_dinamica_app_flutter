@@ -164,19 +164,19 @@ class DataStoreReadService {
     }
   }
 
-  Future<Student?> checkIfStudentExists(int id, String tenantId) async {
+  Future<Student?> checkIfStudentExists(String uuid, String tenantId) async {
     try {
       // Consultar los datos almacenados en DataStore
       List<Student> general = await Amplify.DataStore.query(
         Student.classType,
-        where: Student.USER_ID.eq(id) 
+        where: Student.ID.eq(uuid) 
             .and(Student.CLIENT_ID.eq(tenantId)),
       );
       if (general.isNotEmpty) {
-        safePrint('✅ El alumno con ID $id existe');
+        safePrint('✅ El alumno con ID $uuid existe');
         return general.first;
       } else {
-        safePrint('❌ El alumno con ID $id no existe');
+        safePrint('❌ El alumno con ID $uuid no existe');
         return null;
       }
     } catch (e) {

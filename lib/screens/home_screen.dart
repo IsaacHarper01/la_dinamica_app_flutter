@@ -53,7 +53,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
     final currentDate = ref.read(dateProvider).today;
     final result = await scannerQR(context,);
     safePrint('QR Result: $result');
-    final decodedResult = decodeInfo(result, user!.tenant!.tenant_id);
+    final decodedResult = decodeInfo(result);
+    safePrint('DECODED Result: $decodedResult');
     if(decodedResult!=null){
       if (decodedResult['codeType']=='QR'){
         await manageQR(decodedResult['info'], currentDate, user!);
@@ -75,16 +76,15 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
   Future<bool> manageQR(Map<String, dynamic> info, String date, UserLocal user)async{
       final awsDb = DataStoreReadService();
         if (info['action']=='attendance'){
-            int id = info['id'] ?? -1;
-            if (id == -1) {
+            String id = info['id'] ?? "-1";
+            if (id == "-1") {
               return Future.value(false);
             }
 
-            String name = info['name'];
             final student = await awsDb.checkIfStudentExists(id, user.tenant!.tenant_id);
             if (student!=null) {
               //check if student exist in General table
-              await showPaymentDialog(context, ref, student: student, name: name, date: date, user: user);
+              await showPaymentDialog(context, ref, student: student, name: student.name!, date: date, user: user);
               return Future.value(true);
             } else {
               return Future.value(false);
@@ -129,7 +129,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
         }
   }
 
-  Map<String, dynamic>? decodeInfo(Barcode? data, String tenantId){
+  Map<String, dynamic>? decodeInfo(Barcode? data){
     try {
       if (data != null){
         if (data.format == BarcodeFormat.qrCode){
