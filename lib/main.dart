@@ -10,7 +10,6 @@ import 'package:la_dinamica_app/screens/login.dart';
 
 // import the Amplify API plugin
 import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 import "amplifyconfiguration.dart";
@@ -28,14 +27,14 @@ void main() async {
 }
 
 Future<void> _configureAmplify() async {
-  final datastorePlugin = AmplifyDataStore(modelProvider: ModelProvider.instance);
-  final apiPlugin = AmplifyAPI();
+  final apiPlugin = AmplifyAPI(
+  options: APIPluginOptions(modelProvider: ModelProvider.instance),);
   final storage = AmplifyStorageS3();
   final auth = AmplifyAuthCognito();
   
   if (!Amplify.isConfigured) {
     try {
-      await Amplify.addPlugins([datastorePlugin, apiPlugin, storage, auth]);
+      await Amplify.addPlugins([apiPlugin, storage, auth]);
       await Amplify.configure(amplifyconfig);
       safePrint('✅ Amplify configurado correctamente');
     } on AmplifyAlreadyConfiguredException {

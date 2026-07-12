@@ -13,7 +13,6 @@ dependencies:
   amplify_api: ^2.6.1
   amplify_auth_cognito: ^2.6.1
   amplify_authenticator: ^2.3.3
-  amplify_datastore: ^2.6.1
   amplify_storage_s3: ^2.6.2
   amplify_flutter: ^2.6.2
   animate_do: null

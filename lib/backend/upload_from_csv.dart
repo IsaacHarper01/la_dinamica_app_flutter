@@ -10,6 +10,7 @@ Future<void> uploadPaymentsFromCsv()async{
   final rows = data.split('\n');
   safePrint('Filas leídas del CSV: ${rows.length}');
   final aws = DataStoreReadService();
+  final aws2 = DataStoreService();
   final plans = await aws.getallPlans();
   Map<String, LocalPlan> mapPlans = {};
   for(var plan in plans){
@@ -30,7 +31,6 @@ Future<void> uploadPaymentsFromCsv()async{
 
       plan: mapPlans[columns[1]],
     );
-    await Amplify.DataStore.save(newPay);
     safePrint('Finished Column $i');
     }
 }
@@ -53,7 +53,6 @@ Future<void> uploadAttendanceFromCsv()async{
       student: mapStudents[columns[2]],
       status: true
     ); 
-    await Amplify.DataStore.save(newAttendance);
     safePrint('Finished Column $i');
     }
 }

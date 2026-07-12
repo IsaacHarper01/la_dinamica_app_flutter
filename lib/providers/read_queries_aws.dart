@@ -74,7 +74,7 @@ class DataStoreReadService {
     );
   }
 
-  Future<List<LocalPlan>> getallPlans() async {
+  Future<List<LocalPlan>> getallPlans() async { //tested and works
     const document = '''
       query ListLocalPlans {
         listLocalPlans {
@@ -732,17 +732,15 @@ class DataStoreReadService {
           await Amplify.DataStore.save(updatedStudent);
         } else {
         if(defaultPlan.client_id!='none'){
-        final newPayment = Payment(
-          user_id: student.user_id,
-          amount: defaultPlan.price,
-          clases: defaultPlan.clases,
-          plan: defaultPlan,
-          date: TemporalDate(DateTime.parse(date)),
-          client_id: tenantId,
-          prof_id: profId,
-          debt: false,
-        );
-        await Amplify.DataStore.save(newPayment);
+        final aWSService = DataStoreService(); 
+        await aWSService.savePayment(
+          userId: student.user_id!, 
+          amount: defaultPlan.price!, 
+          clases: defaultPlan.clases!, 
+          plan: defaultPlan, 
+          date: date, 
+          dbId: tenantId, 
+          profId: profId);
         safePrint('✅ Pago por defecto creado correctamente');
         }else{
           return;
