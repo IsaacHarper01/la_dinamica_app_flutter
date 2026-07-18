@@ -181,9 +181,21 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => checkAction(context),
-        child: const Icon(Icons.qr_code_scanner_outlined),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(left: 30),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FloatingActionButton(
+              onPressed: (){},
+              child: const Icon(Icons.monetization_on_outlined),
+            ),
+            FloatingActionButton(
+              onPressed: () => checkAction(context),
+              child: const Icon(Icons.qr_code_scanner_outlined),
+            ),
+          ],
+        ),
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       body: userState.when(
