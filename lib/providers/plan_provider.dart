@@ -20,7 +20,7 @@ class PlanNotifier extends StateNotifier<AsyncValue<List<LocalPlan>>> {
   }
 
   DataStoreReadService dataStoreReadService = DataStoreReadService();
-  DataStoreService dataStoreService = DataStoreService();
+  GraphqlServiceCreate dataStoreService = GraphqlServiceCreate();
   DataStoreDeleteService dataStoreDeleteService = DataStoreDeleteService();
 
 

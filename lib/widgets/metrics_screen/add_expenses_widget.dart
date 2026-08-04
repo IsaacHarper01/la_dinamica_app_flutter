@@ -8,7 +8,6 @@ import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/expenses_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
-import 'package:la_dinamica_app/screens/history_expenses_screen.dart';
 
 class AddExpensesWidget extends ConsumerStatefulWidget {
   final bool onEdit;
@@ -53,7 +52,7 @@ class _AddExpensesWidgetState extends ConsumerState<AddExpensesWidget> {
   }
 
   Future<bool> submitExpense(UserLocal user, String date)async{
-    final aws = DataStoreService();
+    final aws = GraphqlServiceCreate();
     if (checkFileds()){
       await aws.saveExpense(
       tenant: user.tenant!, 

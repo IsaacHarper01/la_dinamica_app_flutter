@@ -16,7 +16,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
   @override
   Future<UserLocal> build() async {
     final awsDb = DataStoreReadService();
-    final awsDb2 = DataStoreService();
+    final awsDb2 = GraphqlServiceCreate();
     final attributes = await Amplify.Auth.fetchUserAttributes();
     final Map<String, String> userAtributes = {for (var attr in attributes) attr.userAttributeKey.toString(): attr.value};
     final userId = userAtributes['sub']!;
@@ -89,7 +89,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
 
   Future<UserLocal> registerGym(String name, String sport, User user)async{
         
-        final awsDb2 = DataStoreService();
+        final awsDb2 = GraphqlServiceCreate();
         final nameSchool = name;
         final newTenantId = Uuid().v4();
         final plan = "Free";

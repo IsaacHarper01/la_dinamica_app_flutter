@@ -120,7 +120,7 @@ class AddStudentScreenState extends ConsumerState<AddStudentScreen> {
   Future<void> _submitForm(BuildContext context) async {
     // Verifica si el formulario es válido
     if (_formKey.currentState?.validate() ?? false) {
-      final awsDb = DataStoreService();
+      final awsDb = GraphqlServiceCreate();
       final user = await ref.watch(userProvider.future);
       final gymId = user.tenant!.tenant_id; 
 

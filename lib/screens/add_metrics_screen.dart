@@ -16,7 +16,7 @@ class NewMetricsPage extends ConsumerStatefulWidget {
 class MetricsPageState extends ConsumerState<NewMetricsPage> {
   final List<_MetricForm> _metrics = [];
   final TextEditingController _examNameController = TextEditingController();
-  final awsDb = DataStoreService();
+  final awsDb = GraphqlServiceCreate();
 
   @override
   void initState() {

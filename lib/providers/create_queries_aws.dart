@@ -5,7 +5,7 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 import 'graphql_service.dart';
 
-class DataStoreService {
+class GraphqlServiceCreate {
 
   Future<void> savePlan({//tested and works
     required String type,
@@ -170,7 +170,7 @@ class DataStoreService {
     }
   }
 
-  Future<void> saveAttendance({//tested and works
+  Future<void> saveAttendance({
     required Student student,
     required String date,
     required String gymId,

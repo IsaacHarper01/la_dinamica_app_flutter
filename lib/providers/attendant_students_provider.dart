@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/model/UserLocal.dart';
 import 'package:la_dinamica_app/model/attendance_model.dart';
@@ -65,8 +66,13 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
     try {
       final awsDb = DataStoreReadService();
       final user = await ref.read(userProvider.future);
-      final tenenatId = user.tenant!.tenant_id;
-      final attendants = await awsDb.getAttendanceByDate(date, tenenatId);
+      safePrint("USER $user");
+      final tenantId = user.tenant!.tenant_id;
+      safePrint("TEANAT : $tenantId");
+      safePrint("DATE: $date");
+      safePrint("LENGHT: ${date.length}");
+      final attendants = await awsDb.getAttendanceByDate(date, tenantId);
+      safePrint("ALL ATTENDANTS: $attendants");
       if (attendants.isEmpty) {
         return [];
       }else{
@@ -78,12 +84,18 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
     }
   }
 
-  Future<void> setAttendanceToday(String date)async{
+  Future<void> setAttendanceToday(String date) async {
     final attendants = await fetchAttendanceToday(date);
-    if (attendants.isNotEmpty){
-      final current = state.value ?? AttendanceModel(attendanceToday: [], attendanceInRange: []);
-      state = AsyncValue.data(current.copyWith(attendanceToday: attendants));
-    }
+
+    final current = state.value ??
+        AttendanceModel(
+          attendanceToday: [],
+          attendanceInRange: [],
+        );
+
+    state = AsyncValue.data(
+      current.copyWith(attendanceToday: attendants),
+    );
   }
 
   Future<List<Attendance>> fetchAttendanceInRange() async {
@@ -114,7 +126,7 @@ class StudentsNotifier extends StateNotifier<AsyncValue<AttendanceModel>> {
 
   Future<void> insertAttendance(Student student , String date) async {
     try {
-      final awsDb = DataStoreService();
+      final awsDb = GraphqlServiceCreate();
       final awsDb2 = DataStoreReadService();
       final user = await ref.watch(userProvider.future);
       final gymid = user.tenant!.tenant_id;

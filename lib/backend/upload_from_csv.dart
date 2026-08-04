@@ -10,7 +10,7 @@ Future<void> uploadPaymentsFromCsv()async{
   final rows = data.split('\n');
   safePrint('Filas leídas del CSV: ${rows.length}');
   final aws = DataStoreReadService();
-  final aws2 = DataStoreService();
+  final aws2 = GraphqlServiceCreate();
   final plans = await aws.getallPlans();
   Map<String, LocalPlan> mapPlans = {};
   for(var plan in plans){
@@ -76,7 +76,7 @@ Map<String, Map<String, dynamic>> adaptMapGrades(Map<String, Map<String, dynamic
       }
 
 Future<void> uploadStudentsGradesFromCsv(String tenantId)async{
-  final aws = DataStoreService();
+  final aws = GraphqlServiceCreate();
   final aws2 = DataStoreReadService();
   final students = await aws2.getAllStudents();
   final evalID = "2998469a-2c88-4665-9f69-56b31d059a35";

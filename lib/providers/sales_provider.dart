@@ -19,7 +19,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Sale>>>{
   }
 
   DataStoreReadService aws =  DataStoreReadService();
-  DataStoreService awsSave = DataStoreService();
+  GraphqlServiceCreate awsSave = GraphqlServiceCreate();
 
   Future<void> setAllSales()async{
     try {

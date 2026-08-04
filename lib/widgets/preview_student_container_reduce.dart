@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:la_dinamica_app/providers/create_queries_aws.dart';
 import 'package:la_dinamica_app/providers/date_provider_new.dart';
 import 'package:la_dinamica_app/providers/image_fromS3_provider.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:la_dinamica_app/providers/update_queries.dart';
 
 class PreviewStudentContainerReduce extends ConsumerWidget{
   final Student student;
@@ -19,21 +19,13 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
   });
 
   Future<void> restartPlan(Student student)async{
-    final newStudent = student.copyWith(
+    final aws = GraphqlServiceUpdate();
+
+    await aws.updateStudent(
+      id: student.id,
       remainClasses: 0,
       expirationPlan: null
-      );
-    final aws = DataStoreService();
-
-    await aws.saveStudent(
-      name: newStudent.name!, 
-      address: newStudent.address!, 
-      phone: newStudent.phone!, 
-      age: newStudent.age!, 
-      birthday: newStudent.birthday.toString(), 
-      email: newStudent.email!, 
-      image: newStudent.image!, 
-      gymId: newStudent.client_id!);
+    );
   }
 
   @override

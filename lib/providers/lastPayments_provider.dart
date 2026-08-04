@@ -25,7 +25,7 @@ class PaymentsNotifier extends StateNotifier<AsyncValue<List<Payment>>>{
   }
 
   Future<void> markDebt(UserLocal user, Student student, Payment payment, bool status)async{
-    final aws = DataStoreService();
+    final aws = GraphqlServiceCreate();
     await aws.markDebtStatus(pay: payment,status: status);
     await fetchLastPayments(student);
   }

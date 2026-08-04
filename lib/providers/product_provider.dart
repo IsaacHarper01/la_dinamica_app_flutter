@@ -19,7 +19,7 @@ class ProductNotifier extends StateNotifier<AsyncValue<List<Product>>>{
     _observeProducts();
   }
   final DataStoreReadService _dataStoreReadService = DataStoreReadService();
-  final DataStoreService _dataStoreService = DataStoreService();
+  final GraphqlServiceCreate _dataStoreService = GraphqlServiceCreate();
   final DataStoreDeleteService _dataStoreDeleteService = DataStoreDeleteService();
   final Storages3 _s3service = Storages3();
   

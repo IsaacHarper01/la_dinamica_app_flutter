@@ -214,7 +214,7 @@ int _parseMilliseconds(String msStr) {
       }
 
   Future<void> uploadStudentsGrades(String tenantId, bool mix)async{
-    final aws = DataStoreService();
+    final aws = GraphqlServiceCreate();
     final date = ref.watch(dateProvider).today;
     final currentExam = state.eval;
     final adaptedGrades = adaptMapGrades(state.grades); //Map<StudentID, Map<MetricID, Grade>>

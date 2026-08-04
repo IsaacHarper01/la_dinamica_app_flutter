@@ -20,7 +20,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Payment>>>{
   }
 
   DataStoreReadService aws =  DataStoreReadService();
-  DataStoreService awsSave = DataStoreService();
+  GraphqlServiceCreate awsSave = GraphqlServiceCreate();
 
   Future<void> setAllPayments()async{
     try {
@@ -63,7 +63,7 @@ class SalesNotifier extends StateNotifier<AsyncValue<FinancialModel<Payment>>>{
   }
 
   Future<void> addPay(Student student, LocalPlan plan, String date, UserLocal user)async{
-    final aws = DataStoreService();
+    final aws = GraphqlServiceCreate();
     final date = ref.read(dateProvider).today;
     DateTime? expirationDate;
     Student newStudent;

@@ -557,6 +557,20 @@ class DataStoreReadService {
             client_id
             prof_id
             status
+            student {
+              id
+              name
+              user_id
+              remainClasses
+              expirationPlan
+              address
+              phone
+              age
+              birthday
+              email
+              image
+              client_id
+            }
           }
         }
       }
@@ -567,7 +581,6 @@ class DataStoreReadService {
       document: document,
       variables: {
         'filter': {
-          'date': {'eq': date},
           'client_id': {'eq': tenantId},
           'status': {'eq': true},
         },
@@ -732,7 +745,7 @@ class DataStoreReadService {
           await Amplify.DataStore.save(updatedStudent);
         } else {
         if(defaultPlan.client_id!='none'){
-        final aWSService = DataStoreService(); 
+        final aWSService = GraphqlServiceCreate(); 
         await aWSService.savePayment(
           userId: student.user_id!, 
           amount: defaultPlan.price!, 
@@ -1323,7 +1336,7 @@ class DataStoreReadService {
 
   Future<void> sellProduct(Product product, UserLocal user, String date)async{
     try {
-        final aws = DataStoreService();
+        final aws = GraphqlServiceCreate();
         final oldStock = product.stock;
         final newProduct = product.copyWith(stock: oldStock!-1);
         await Amplify.DataStore.save(newProduct);

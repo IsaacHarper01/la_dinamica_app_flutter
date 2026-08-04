@@ -59,7 +59,7 @@ class NameState extends ConsumerState<GroupsPage> {
     final user = await ref.watch(userProvider.future); 
     final tenantId = user.tenant!.tenant_id;
     final studentsinGroup = ref.watch(groupStudentsProvider);
-    final aws = DataStoreService();
+    final aws = GraphqlServiceCreate();
     if(groupName.text == "" || groupDescription.text == "" || studentsinGroup.isEmpty){
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
