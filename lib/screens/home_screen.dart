@@ -13,6 +13,7 @@ import 'package:la_dinamica_app/providers/plan_provider.dart';
 import 'package:la_dinamica_app/providers/read_queries_aws.dart';
 import 'package:la_dinamica_app/providers/attendant_students_provider.dart';
 import 'package:la_dinamica_app/providers/user_provider.dart';
+import 'package:la_dinamica_app/screens/daily_ledger_screen.dart';
 import 'package:la_dinamica_app/screens/permissions_screen.dart';
 import 'package:la_dinamica_app/screens/scanner.dart';
 import 'package:la_dinamica_app/screens/student_detail_screen.dart';
@@ -182,15 +183,24 @@ class HomeScreenState extends ConsumerState<HomeScreen> with WidgetsBindingObser
         ),
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(left: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 30),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             FloatingActionButton(
-              onPressed: (){},
+              heroTag: 'ledgerButton',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DailyLedgerScreen(user: user!),
+                  ),
+                );
+              },
               child: const Icon(Icons.monetization_on_outlined),
             ),
             FloatingActionButton(
+              heroTag: 'qrButton',
               onPressed: () => checkAction(context),
               child: const Icon(Icons.qr_code_scanner_outlined),
             ),
