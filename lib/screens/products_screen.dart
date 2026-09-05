@@ -13,7 +13,6 @@ import 'package:la_dinamica_app/providers/user_provider.dart';
 import 'package:la_dinamica_app/screens/add_product_info.dart';
 import 'package:la_dinamica_app/screens/sales_screen.dart';
 
-
 class ProductsScreen extends ConsumerStatefulWidget {
   const ProductsScreen({super.key});
 
@@ -22,118 +21,198 @@ class ProductsScreen extends ConsumerStatefulWidget {
 }
 
 class _nameState extends ConsumerState<ProductsScreen> {
+  static const allCategories = 'Todas las categorías';
   String? productInfo;
   UserLocal? user;
+  String selectedCategory = allCategories;
 
   @override
   Widget build(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
     final bool isPortatil = orientation == Orientation.portrait;
-    final screenWidth = isPortatil ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.8;
-    final screenHeight =isPortatil? MediaQuery.of(context).size.height: MediaQuery.of(context).size.height * 1.2;
+    final screenWidth =
+        isPortatil
+            ? MediaQuery.of(context).size.width
+            : MediaQuery.of(context).size.width * 0.8;
+    final screenHeight =
+        isPortatil
+            ? MediaQuery.of(context).size.height
+            : MediaQuery.of(context).size.height * 1.2;
     final userAsync = ref.watch(userProvider);
 
     return userAsync.when(
-    data: (user) =>
-    Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 40,),
-          Padding(
-              padding: EdgeInsets.only(right: screenWidth * 0.01),
-              child: Row(
-                children: [
-                  FilledButton.icon(
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) => SalesScreen(user: user), 
-                        )
-                      );
-                    },
-                    label: const Text(
-                      'Ventas del día',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    icon: const Icon(
-                      Icons.sell,
-                      color: Colors.white,
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(colorList[3]),
-                    ),
+      data:
+          (user) => Scaffold(
+            body: Column(
+              children: [
+                SizedBox(height: 40),
+                Padding(
+                  padding: EdgeInsets.only(right: screenWidth * 0.01),
+                  child: Row(
+                    children: [
+                      FilledButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SalesScreen(user: user),
+                            ),
+                          );
+                        },
+                        label: const Text(
+                          'Ventas del día',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        icon: const Icon(Icons.sell, color: Colors.white),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                        ),
+                      ),
+                      const Spacer(),
+                      FilledButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddProductInfo(),
+                            ),
+                          );
+                        },
+                        label: const Text(
+                          'Agregar Producto',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        icon: const Icon(
+                          Icons.add_shopping_cart,
+                          color: Colors.white,
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStatePropertyAll(colorList[3]),
+                        ),
+                      ),
+                    ],
                   ),
-                  const Spacer(),
-                  FilledButton.icon(
-                    onPressed: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) => AddProductInfo(), 
-                        )
-                      );
-                    },
-                    label: const Text(
-                      'Agregar Producto',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    icon: const Icon(
-                      Icons.add_shopping_cart,
-                      color: Colors.white,
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(colorList[3]),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                productsBox(user, screenWidth, screenHeight),
+              ],
             ),
-          productsBox(user, screenWidth, screenHeight),
-        ],
-      ),
-    )
-    , error: (e,_)=> Scaffold(body: Center(child: Text('Error al obtener los productos'),),), 
-    loading: ()=> Scaffold(body: Center(child: CircularProgressIndicator(),),)
+          ),
+      error:
+          (e, _) => Scaffold(
+            body: Center(child: Text('Error al obtener los productos')),
+          ),
+      loading: () => Scaffold(body: Center(child: CircularProgressIndicator())),
     );
   }
-    
-  Widget productsBox(UserLocal user, double screenWidth, double screenHeight){
+
+  Widget productsBox(UserLocal user, double screenWidth, double screenHeight) {
     final productsAsync = ref.watch(productProvider);
     final date = ref.watch(dateProvider).today;
-    
+
     return productsAsync.when(
-      error: (e, st) => Center(child: Text('Error: $e')), 
-      loading:() => const Center(child: CircularProgressIndicator()),
-      data:(products) {
+      error: (e, st) => Center(child: Text('Error: $e')),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      data: (products) {
+        final categories =
+            products
+                .map((product) => productCategoryLabel(product))
+                .toSet()
+                .toList()
+              ..sort();
+        final activeCategory =
+            categories.contains(selectedCategory)
+                ? selectedCategory
+                : allCategories;
+        final visibleProducts =
+            products
+                .where(
+                  (product) =>
+                      activeCategory == allCategories ||
+                      productCategoryLabel(product) == activeCategory,
+                )
+                .toList()
+              ..sort((first, second) {
+                final categoryComparison = productCategoryLabel(
+                  first,
+                ).compareTo(productCategoryLabel(second));
+                if (categoryComparison != 0) {
+                  return categoryComparison;
+                }
+                return (first.name ?? '').toLowerCase().compareTo(
+                  (second.name ?? '').toLowerCase(),
+                );
+              });
+
         return SizedBox(
-              height: screenHeight-180, //Change this to sizeHeight of the screen
-              width: screenWidth,
-              child: RefreshIndicator(
-                onRefresh: () async{
-                  ref.read(productProvider.notifier).loadProducts();
-                },
-                child: ListView.builder(
-                  itemCount: products.length,
-                  itemBuilder: 
-                  (context,index){
-                    return ProductCard(
-                      product: products[index], 
-                      user: user,
-                      date: date,
-                      onDelete:(){
-                        ref.read(productProvider.notifier)
-                          .deleteProduct(products[index]);
+          height: screenHeight - 180, //Change this to sizeHeight of the screen
+          width: screenWidth,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: DropdownButtonFormField<String>(
+                  value: activeCategory,
+                  decoration: const InputDecoration(
+                    labelText: 'Filtrar por categoría',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.filter_list),
+                  ),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: allCategories,
+                      child: Text(allCategories),
+                    ),
+                    ...categories.map(
+                      (category) => DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category),
+                      ),
+                    ),
+                  ],
+                  onChanged: (category) {
+                    if (category != null) {
+                      setState(() {
+                        selectedCategory = category;
+                      });
+                    }
+                  },
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await ref.read(productProvider.notifier).loadProducts();
+                  },
+                  child: ListView.builder(
+                    itemCount: visibleProducts.length,
+                    itemBuilder: (context, index) {
+                      final product = visibleProducts[index];
+                      return ProductCard(
+                        product: product,
+                        user: user,
+                        date: date,
+                        onDelete: () {
+                          ref
+                              .read(productProvider.notifier)
+                              .deleteProduct(product);
                         },
                       );
-                      }
-                    ),
-              ), 
-                ); 
-              }
-            );
-          }
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
+}
+
+String productCategoryLabel(Product product) {
+  final category = product.category?.trim().toLowerCase();
+  return category == null || category.isEmpty ? 'Sin categoría' : category;
+}
 
 class ProductCard extends ConsumerStatefulWidget {
   final Product product;
@@ -142,12 +221,12 @@ class ProductCard extends ConsumerStatefulWidget {
   final String date;
 
   const ProductCard({
-    super.key, 
+    super.key,
     required this.product,
     required this.user,
     required this.onDelete,
     required this.date,
-    });
+  });
 
   @override
   ConsumerState<ProductCard> createState() => _ProductCardState();
@@ -173,7 +252,10 @@ class _ProductCardState extends ConsumerState<ProductCard> {
         elevation: 6,
         shadowColor: Colors.black26,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: widget.product.stock!>0 ? colorList[1] : Color.fromRGBO(109, 36, 36, 0.498),
+        color:
+            widget.product.stock! > 0
+                ? colorList[1]
+                : Color.fromRGBO(109, 36, 36, 0.498),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
           child: Row(
@@ -185,21 +267,20 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                   width: 65,
                   height: 65,
                   child: imageUrl.when(
-                    data: (url) => Image.network(
-                      url ?? "",
-                      fit: BoxFit.cover,
-                    ),
-                    error: (e, _) => Image.asset(
-                      'assets/images/default_product.jpg',
-                      fit: BoxFit.cover,
-                    ),
-                    loading: () => const Center(
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
+                    data: (url) => Image.network(url ?? "", fit: BoxFit.cover),
+                    error:
+                        (e, _) => Image.asset(
+                          'assets/images/default_product.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                    loading:
+                        () => const Center(
+                          child: SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
                   ),
                 ),
               ),
@@ -225,22 +306,16 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     const SizedBox(height: 4),
                     Text(
                       "\$${widget.product.price!.toStringAsFixed(2)}",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       "${widget.product.code}",
-                      style: const TextStyle(
-                        fontSize: 8,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 8, color: Colors.grey),
                     ),
                   ],
                 ),
-              ),               
+              ),
               Expanded(
                 flex: 1,
                 child: Text(
@@ -251,100 +326,119 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               ),
 
               // Sell button
-              if(widget.user.permissions!["sellProducts"]==true&&widget.product.stock!>0)...[
+              if (widget.user.permissions!["sellProducts"] == true &&
+                  widget.product.stock! > 0) ...[
                 ElevatedButton(
-                onPressed: isUploading ? 
-                null : 
-                () async{
-                  setState(() {
-                    isUploading = true;
-                  });
-                  try
-                  {if(widget.product.stock!>0)
-                  {
-                  await aws.sellProduct(widget.product, widget.user, widget.date);
-                  await ref.read(productProvider.notifier).loadProducts();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                    content: Text('Producto descontado del inventario'),
+                  onPressed:
+                      isUploading
+                          ? null
+                          : () async {
+                            setState(() {
+                              isUploading = true;
+                            });
+                            try {
+                              if (widget.product.stock! > 0) {
+                                await aws.sellProduct(
+                                  widget.product,
+                                  widget.user,
+                                  widget.date,
+                                );
+                                await ref
+                                    .read(productProvider.notifier)
+                                    .loadProducts();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Producto descontado del inventario',
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Este producto no tiene unidades',
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              safePrint("Error al intentar vender producto $e");
+                            } finally {
+                              setState(() {
+                                isUploading = false;
+                              });
+                            }
+                          },
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
-                      ),
-                    );
-                  }else{
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                      content: Text('Este producto no tiene unidades'),
-                      backgroundColor: Colors.red,
-                      ),);
-                  }}
-                  catch(e){
-                    safePrint("Error al intentar vender producto $e");
-                  }finally{
-                    setState(() {
-                      isUploading = false;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
-                ),
-                child: isUploading ? 
-                CircularProgressIndicator():
-                const Text("Vender", style: TextStyle(fontSize: 13)),
+                  child:
+                      isUploading
+                          ? CircularProgressIndicator()
+                          : const Text(
+                            "Vender",
+                            style: TextStyle(fontSize: 13),
+                          ),
                 ),
               ],
 
               const SizedBox(width: 4),
 
               // Popup menu
-              if(widget.user.permissions!["editProducts"]==true)...[
+              if (widget.user.permissions!["editProducts"] == true) ...[
                 PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, size: 20),
-                onSelected: (value) async {
-                  if (value == 'delete') {
-                    widget.onDelete();
-                  } else if (value == 'update') {
-                    await Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => 
-                        EditProductInfo(
-                          product: widget.product
-                          )
-                        )
+                  icon: const Icon(Icons.more_vert, size: 20),
+                  onSelected: (value) async {
+                    if (value == 'delete') {
+                      widget.onDelete();
+                    } else if (value == 'update') {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  EditProductInfo(product: widget.product),
+                        ),
                       );
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem<String>(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Eliminar'),
+                    }
+                  },
+                  itemBuilder:
+                      (context) => [
+                        const PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text('Eliminar'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'update',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, color: Colors.blueAccent),
+                              SizedBox(width: 8),
+                              Text('Editar'),
+                            ],
+                          ),
+                        ),
                       ],
-                    ),
-                  ),
-                  const PopupMenuItem<String>(
-                    value: 'update',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, color: Colors.blueAccent),
-                        SizedBox(width: 8),
-                        Text('Editar'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              ]
+                ),
+              ],
             ],
           ),
         ),
@@ -352,4 +446,3 @@ class _ProductCardState extends ConsumerState<ProductCard> {
     );
   }
 }
-

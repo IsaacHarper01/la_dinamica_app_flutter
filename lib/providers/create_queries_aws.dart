@@ -4,14 +4,18 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
 
 class DataStoreService {
-
   Future<void> savePlan({
     required String type,
     required int clases,
     required double price,
     required String gymId,
   }) async {
-    final item = LocalPlan(type: type, clases: clases, price: price, client_id: gymId);
+    final item = LocalPlan(
+      type: type,
+      clases: clases,
+      price: price,
+      client_id: gymId,
+    );
 
     try {
       await Amplify.DataStore.save(item);
@@ -21,7 +25,7 @@ class DataStoreService {
       rethrow;
     }
   }
-  
+
   Future<void> savePayment({
     required int userId,
     required double amount,
@@ -73,7 +77,7 @@ class DataStoreService {
         pagination: const QueryPagination(limit: 1),
       );
       final lastNumId = students.isNotEmpty ? students.first.user_id : 0;
-      final newUUID = name.toLowerCase().replaceAll(" ", "")+birthday+gymId;
+      final newUUID = name.toLowerCase().replaceAll(" ", "") + birthday + gymId;
       final item = Student(
         id: newUUID,
         user_id: lastNumId! + 1,
@@ -105,9 +109,9 @@ class DataStoreService {
     required String date,
     required String gymId,
     required String profId,
-    required bool status
+    required bool status,
   }) async {
-    final newUUID = student.id+date;
+    final newUUID = student.id + date;
     final item = Attendance(
       id: newUUID,
       student: student,
@@ -126,14 +130,8 @@ class DataStoreService {
     }
   }
 
-  Future<User> saveUser({
-    required String id,
-    required String name,
-  }) async {
-    final item = User(
-      user_id: id,
-      name: name,
-    );
+  Future<User> saveUser({required String id, required String name}) async {
+    final item = User(user_id: id, name: name);
     try {
       await Amplify.DataStore.save(item);
       safePrint('✅ Usuario guardado correctamente');
@@ -190,19 +188,24 @@ class DataStoreService {
     }
   }
 
-  Future<Evaluations> saveEvaluation({
-  required String name,
-  required String gymId,
-    }) async {
-      final evaluation = Evaluations(
-        name: name,
-        tenant_id: gymId,
-      );
+  Future<void> changeTenantName({
+    required Tenant tenant,
+    required String name,
+  }) async {
+    final newTenant = tenant.copyWith(name: name);
+    await Amplify.DataStore.save(newTenant);
+  }
 
-      await Amplify.DataStore.save(evaluation);
-      safePrint('✅ Evaluation saved: ${evaluation.id}, ${evaluation.name}');
-      return evaluation;
-    }
+  Future<Evaluations> saveEvaluation({
+    required String name,
+    required String gymId,
+  }) async {
+    final evaluation = Evaluations(name: name, tenant_id: gymId);
+
+    await Amplify.DataStore.save(evaluation);
+    safePrint('✅ Evaluation saved: ${evaluation.id}, ${evaluation.name}');
+    return evaluation;
+  }
 
   Future<StudentExamResults> saveStudentExamResults({
     required Student student,
@@ -210,7 +213,7 @@ class DataStoreService {
     required String grades,
     required String tenantId,
     required DateTime date,
-  })async{
+  }) async {
     final newGrade = StudentExamResults(
       tenant_id: tenantId,
       student: student,
@@ -223,49 +226,51 @@ class DataStoreService {
   }
 
   Future<Metric> saveMetric({
-  required String name,
-  required String tenantId,
-  required String description,
-  required String type,
-  required bool higgerBetter
-}) async {
-  safePrint('nombre: $name, tenant: $tenantId, description $description, type: $type');
-  final metric = Metric(
-    name: name,
-    tenant_id: tenantId,
-    description: description,
-    type: type,
-    higgerBetter: higgerBetter,
-  );
+    required String name,
+    required String tenantId,
+    required String description,
+    required String type,
+    required bool higgerBetter,
+  }) async {
+    safePrint(
+      'nombre: $name, tenant: $tenantId, description $description, type: $type',
+    );
+    final metric = Metric(
+      name: name,
+      tenant_id: tenantId,
+      description: description,
+      type: type,
+      higgerBetter: higgerBetter,
+    );
 
-  await Amplify.DataStore.save(metric);
-  safePrint('✅ Metric saved: ${metric.id}, ${metric.name}');
-  return metric;
-}
+    await Amplify.DataStore.save(metric);
+    safePrint('✅ Metric saved: ${metric.id}, ${metric.name}');
+    return metric;
+  }
 
   Future<JoinMetric> saveJoinedMetric({
-  required Metric metric,
-  required Evaluations evaluation,
-  required String tenantId,
-}) async {
-  final joinMetric = JoinMetric(
-    metric: metric,          // Pass the object
-    evaluation: evaluation,  // Pass the object
-    tenant_id: tenantId,
-  );
+    required Metric metric,
+    required Evaluations evaluation,
+    required String tenantId,
+  }) async {
+    final joinMetric = JoinMetric(
+      metric: metric, // Pass the object
+      evaluation: evaluation, // Pass the object
+      tenant_id: tenantId,
+    );
 
-  await Amplify.DataStore.save(joinMetric);
-  safePrint('✅ JoinMetric saved: ${joinMetric.id}');
-  return joinMetric;
-}
+    await Amplify.DataStore.save(joinMetric);
+    safePrint('✅ JoinMetric saved: ${joinMetric.id}');
+    return joinMetric;
+  }
 
   Future<void> markDebtStatus({
     required Payment pay,
     required bool status,
-    })async{
-      final newPay = pay.copyWith(debt:status);
-      Amplify.DataStore.save(newPay);
-    }
+  }) async {
+    final newPay = pay.copyWith(debt: status);
+    Amplify.DataStore.save(newPay);
+  }
 
   Future<void> saveProduct({
     required String code,
@@ -275,17 +280,17 @@ class DataStoreService {
     required String image,
     required int stock,
     required String category,
-  })async{
-      final newProduct = Product(
-        name: name,
-        code: code,
-        tenant_id: tenaniId,
-        price: price,
-        image: image,
-        stock: stock,
-        category: category
-      );
-      Amplify.DataStore.save(newProduct);
+  }) async {
+    final newProduct = Product(
+      name: name,
+      code: code,
+      tenant_id: tenaniId,
+      price: price,
+      image: image,
+      stock: stock,
+      category: category,
+    );
+    Amplify.DataStore.save(newProduct);
   }
 
   Future<void> saveSale({
@@ -294,26 +299,26 @@ class DataStoreService {
     required Product product,
     required String date,
     required String profName,
-  })async{
-      final newSale = Sale(
-        tenant_id: tenaniId,
-        price: price,
-        product: product,
-        date: TemporalDate(DateTime.parse(date)),
-        profname: profName
-      );
-      Amplify.DataStore.save(newSale);
+  }) async {
+    final newSale = Sale(
+      tenant_id: tenaniId,
+      price: price,
+      product: product,
+      date: TemporalDate(DateTime.parse(date)),
+      profname: profName,
+    );
+    Amplify.DataStore.save(newSale);
   }
 
   Future<Groups> saveGroup({
     required String name,
     required String tenantId,
     required String description,
-  })async{
+  }) async {
     final newGroup = Groups(
       name: name,
       tenant_id: tenantId,
-      description: description
+      description: description,
     );
     Amplify.DataStore.save(newGroup);
     return newGroup;
@@ -322,12 +327,12 @@ class DataStoreService {
   Future<void> saveJoinGroup({
     required Student student,
     required Groups group,
-    required String tenantId
-  })async{
+    required String tenantId,
+  }) async {
     final newJoinGroup = JoinGroups(
       tenant_id: tenantId,
       student: student,
-      group: group
+      group: group,
     );
     Amplify.DataStore.save(newJoinGroup);
   }
@@ -338,14 +343,14 @@ class DataStoreService {
     required String name,
     required double amount,
     required String? description,
-  })async{
+  }) async {
     final newExpense = Expense(
       tenant: tenant,
-      name: name, 
+      name: name,
       amount: amount,
       description: description,
-      date: TemporalDate(date));
+      date: TemporalDate(date),
+    );
     Amplify.DataStore.save(newExpense);
   }
-
 }

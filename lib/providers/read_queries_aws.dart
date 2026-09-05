@@ -471,6 +471,7 @@ class DataStoreReadService {
           tenant_id
           permissions
           status
+          isAdmin
           user {
             user_id
             name

@@ -28,7 +28,7 @@ class UserNotifier extends AsyncNotifier<UserLocal> {
         safePrint("Usuario existe");
         final userAccess = await awsDb.getUserAccess(dbUser!.user_id,);
         if(userAccess!= null){
-          safePrint("Tenant actual: ${userAccess.first.tenant!.tenant_id}"); 
+          safePrint("Tenant actual: ${userAccess.first}"); 
           final Map<String, bool> decodedPermisions = Map<String, bool>.from(jsonDecode(userAccess.first.permissions!));
           final newUser = UserLocal(
             user: dbUser,
