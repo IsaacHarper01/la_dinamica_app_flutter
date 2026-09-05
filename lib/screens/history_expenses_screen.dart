@@ -6,51 +6,128 @@ import 'package:la_dinamica_app/providers/expenses_provider.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/add_expenses_widget.dart';
 
 class HistoryExpensesScreen extends ConsumerStatefulWidget {
-
-  const HistoryExpensesScreen({
-    super.key,
-    });
+  const HistoryExpensesScreen({super.key});
 
   @override
-  ConsumerState<HistoryExpensesScreen> createState() => _HistoryExpensesScreenState();
+  ConsumerState<HistoryExpensesScreen> createState() =>
+      _HistoryExpensesScreenState();
 }
 
 class _HistoryExpensesScreenState extends ConsumerState<HistoryExpensesScreen> {
-  
+  static const allCategories = 'Todas las categorías';
+  String selectedCategory = allCategories;
+  String descriptionFilter = '';
+
   @override
   void initState() {
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final expensesAsync = ref.watch(expensesProvider);
     return expensesAsync.when(
-      data:(expenses) => Scaffold(
-        appBar: AppBar(title: Center(child: Text("Gastos del periodo"))),
-        body: ListView.builder(
-              itemCount: expenses.rangelist.length,
-              itemBuilder: (context, index) {
-                final expense = expenses.rangelist[index];
-                return ExpenseCard(
-                  expense: expense,
-                  onDelete: () async {
-                    safePrint('Eliminando gasto con ID: ${expense.id}');
-                    ref.read(expensesProvider.notifier).deleteExpense(expense);
+      data: (expenses) {
+        final categories =
+            expenses.rangelist.map((expense) => expense.name).toSet().toList()
+              ..sort();
+        final activeCategory =
+            categories.contains(selectedCategory)
+                ? selectedCategory
+                : allCategories;
+        final normalizedDescription = descriptionFilter.trim().toLowerCase();
+        final filteredExpenses =
+            expenses.rangelist.where((expense) {
+              final matchesCategory =
+                  activeCategory == allCategories ||
+                  expense.name == activeCategory;
+              final matchesDescription =
+                  normalizedDescription.isEmpty ||
+                  (expense.description ?? '').toLowerCase().contains(
+                    normalizedDescription,
+                  );
+              return matchesCategory && matchesDescription;
+            }).toList();
+
+        return Scaffold(
+          appBar: AppBar(title: Center(child: Text("Gastos del periodo"))),
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                child: DropdownButtonFormField<String>(
+                  value: activeCategory,
+                  decoration: const InputDecoration(
+                    labelText: 'Filtrar por categoría',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.category),
+                  ),
+                  items: [
+                    const DropdownMenuItem<String>(
+                      value: allCategories,
+                      child: Text(allCategories),
+                    ),
+                    ...categories.map(
+                      (category) => DropdownMenuItem<String>(
+                        value: category,
+                        child: Text(category),
+                      ),
+                    ),
+                  ],
+                  onChanged: (category) {
+                    if (category != null) {
+                      setState(() {
+                        selectedCategory = category;
+                      });
+                    }
                   },
-                );
-              },
-            ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            showDialog(context: context, builder: (_) => AddExpensesWidget());
-          },
-          child: Icon(Icons.add),
-        )
-    ),
-    error: (error, stackTrace) => Center(),
-    loading: () => Center(child: CircularProgressIndicator()),
-  );
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Buscar por descripción',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      descriptionFilter = value;
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredExpenses.length,
+                  itemBuilder: (context, index) {
+                    final expense = filteredExpenses[index];
+                    return ExpenseCard(
+                      expense: expense,
+                      onDelete: () async {
+                        safePrint('Eliminando gasto con ID: ${expense.id}');
+                        ref
+                            .read(expensesProvider.notifier)
+                            .deleteExpense(expense);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              showDialog(context: context, builder: (_) => AddExpensesWidget());
+            },
+            child: Icon(Icons.add),
+          ),
+        );
+      },
+      error: (error, stackTrace) => Center(),
+      loading: () => Center(child: CircularProgressIndicator()),
+    );
   }
 }
 
@@ -58,11 +135,7 @@ class ExpenseCard extends StatelessWidget {
   final Expense expense;
   final VoidCallback onDelete;
 
-  const ExpenseCard({
-    super.key, 
-    required this.expense, 
-    required this.onDelete,
-    });
+  const ExpenseCard({super.key, required this.expense, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -99,10 +172,7 @@ class ExpenseCard extends StatelessWidget {
                         size: 18,
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      Text(
-                        '${expense.date}',
-                        style: textTheme.labelLarge,
-                      ),
+                      Text('${expense.date}', style: textTheme.labelLarge),
                       const SizedBox(width: 8),
                       Icon(
                         Icons.attach_money,
@@ -115,11 +185,15 @@ class ExpenseCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Text('Registrado por: ${payment.prof_id}',
-                  //     style: GoogleFonts.mulish(
-                  //       fontSize: screenWidth * 0.02,
-                  //       color: colorScheme.onSurfaceVariant,
-                  //     )),
+                  if (expense.description?.trim().isNotEmpty ?? false)
+                    Text(
+                      expense.description!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -150,12 +224,17 @@ class ExpenseCard extends StatelessWidget {
                     onDelete();
                   }
                 }
-              if (value == 'edit'){
-                 Navigator.push(context, MaterialPageRoute(builder: (_)=>
-                 AddExpensesWidget(onEdit: true,expense: expense )
-                 ));
-              }
-            },
+                if (value == 'edit') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) =>
+                              AddExpensesWidget(onEdit: true, expense: expense),
+                    ),
+                  );
+                }
+              },
               itemBuilder:
                   (context) => [
                     const PopupMenuItem<String>(
