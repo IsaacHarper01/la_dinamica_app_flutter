@@ -1,0 +1,8 @@
+{
+  "dev": {
+    "configLevel": "amplifyAdmin"
+  },
+  "gentwoenv": {
+    "configLevel": "amplifyAdmin"
+  }
+}

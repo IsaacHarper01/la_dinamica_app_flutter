@@ -64,8 +64,17 @@ class Sale extends amplify_core.Model {
     return _profname;
   }
   
-  Product? get product {
-    return _product;
+  Product get product {
+    try {
+      return _product!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -76,9 +85,9 @@ class Sale extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Sale._internal({required this.id, tenant_id, price, date, profname, product, createdAt, updatedAt}): _tenant_id = tenant_id, _price = price, _date = date, _profname = profname, _product = product, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Sale._internal({required this.id, tenant_id, price, date, profname, required product, createdAt, updatedAt}): _tenant_id = tenant_id, _price = price, _date = date, _profname = profname, _product = product, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Sale({String? id, String? tenant_id, double? price, amplify_core.TemporalDate? date, String? profname, Product? product}) {
+  factory Sale({String? id, String? tenant_id, double? price, amplify_core.TemporalDate? date, String? profname, required Product product}) {
     return Sale._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       tenant_id: tenant_id,
@@ -140,7 +149,7 @@ class Sale extends amplify_core.Model {
     ModelFieldValue<double?>? price,
     ModelFieldValue<amplify_core.TemporalDate?>? date,
     ModelFieldValue<String?>? profname,
-    ModelFieldValue<Product?>? product
+    ModelFieldValue<Product>? product
   }) {
     return Sale._internal(
       id: id,
@@ -233,7 +242,7 @@ class Sale extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
       key: Sale.PRODUCT,
-      isRequired: false,
+      isRequired: true,
       targetNames: ['product_id'],
       ofModelName: 'Product'
     ));

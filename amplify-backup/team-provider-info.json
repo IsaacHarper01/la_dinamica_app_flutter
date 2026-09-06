@@ -1,0 +1,33 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ladinamicaappflutter-dev-41253-authRole",
+      "UnauthRoleArn": "arn:aws:iam::730335326941:role/amplify-ladinamicaappflutter-dev-41253-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::730335326941:role/amplify-ladinamicaappflutter-dev-41253-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-ladinamicaappflutter-dev-41253-deployment",
+      "UnauthRoleName": "amplify-ladinamicaappflutter-dev-41253-unauthRole",
+      "StackName": "amplify-ladinamicaappflutter-dev-41253",
+      "StackId": "arn:aws:cloudformation:us-east-1:730335326941:stack/amplify-ladinamicaappflutter-dev-41253/e8616c80-45c8-11f0-b959-0e999d3095ab",
+      "AmplifyAppId": "d24gvanke2yj7x"
+    },
+    "categories": {
+      "api": {
+        "ladinamicaappflutter": {}
+      },
+      "storage": {
+        "s3ladinamicaappstorage": {}
+      },
+      "auth": {
+        "ladinamicaappflutter0199681f": {}
+      }
+    }
+  },
+  "gentwoenv": {
+    "categories": {
+      "auth": {
+        "ladinamicaappflutter0199681f": {}
+      }
+    }
+  }
+}

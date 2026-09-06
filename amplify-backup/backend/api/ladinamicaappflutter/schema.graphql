@@ -200,11 +200,3 @@ type StudentExamResults @model @auth(rules: [{allow: public, operations: [create
   evaluation: Evaluations @belongsTo(fields: ["evaluation_id"])
   student: Student @belongsTo(fields: ["student_id"])
 }
-
-type ExtraPay @model @auth(rules: [{allow: public, operations: [create, read, update, delete]}]) {
-  id: ID!
-  amount: Float
-  date: AWSDate
-  category: String
-  prof_id: String
-}
