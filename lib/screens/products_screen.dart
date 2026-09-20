@@ -235,6 +235,7 @@ class ProductCard extends ConsumerStatefulWidget {
 class _ProductCardState extends ConsumerState<ProductCard> {
   late final DataStoreReadService aws;
   bool isUploading = false;
+  int quantity = 1;
 
   @override
   void initState() {
@@ -328,6 +329,24 @@ class _ProductCardState extends ConsumerState<ProductCard> {
               // Sell button
               if (widget.user.permissions!["sellProducts"] == true &&
                   widget.product.stock! > 0) ...[
+                IconButton(
+                  onPressed:
+                      quantity > 1 ? () => setState(() => quantity--) : null,
+                  icon: const Icon(Icons.remove),
+                  tooltip: 'Reducir cantidad',
+                ),
+                Text(
+                  '$quantity',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed:
+                      quantity < widget.product.stock!
+                          ? () => setState(() => quantity++)
+                          : null,
+                  icon: const Icon(Icons.add),
+                  tooltip: 'Aumentar cantidad',
+                ),
                 ElevatedButton(
                   onPressed:
                       isUploading
@@ -337,33 +356,33 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                               isUploading = true;
                             });
                             try {
-                              if (widget.product.stock! > 0) {
-                                await aws.sellProduct(
-                                  widget.product,
-                                  widget.user,
-                                  widget.date,
-                                );
-                                await ref
-                                    .read(productProvider.notifier)
-                                    .loadProducts();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Producto descontado del inventario',
-                                    ),
-                                    backgroundColor: Colors.green,
+                              await aws.sellProduct(
+                                widget.product,
+                                widget.user,
+                                widget.date,
+                                quantity: quantity,
+                              );
+                              await ref
+                                  .read(productProvider.notifier)
+                                  .loadProducts();
+                              if (!context.mounted) return;
+                              setState(() => quantity = 1);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Productos descontados del inventario',
                                   ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Este producto no tiene unidades',
-                                    ),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            } on StateError catch (error) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error.message),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
                             } catch (e) {
                               safePrint("Error al intentar vender producto $e");
                             } finally {

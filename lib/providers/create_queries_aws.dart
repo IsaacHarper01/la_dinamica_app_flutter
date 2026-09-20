@@ -310,6 +310,35 @@ class DataStoreService {
     Amplify.DataStore.save(newSale);
   }
 
+  Future<ExtraPay> saveExtraPay({
+    required double amount,
+    required String category,
+    required String date,
+    required String profId,
+  }) async {
+    final extraPay = ExtraPay(
+      amount: amount,
+      category: category,
+      date: TemporalDate(DateTime.parse(date)),
+      prof_id: profId,
+    );
+    await Amplify.DataStore.save(extraPay);
+    return extraPay;
+  }
+
+  Future<ExtraPay> updateExtraPay({
+    required ExtraPay extraPay,
+    required double amount,
+    required String category,
+  }) async {
+    final updatedExtraPay = extraPay.copyWith(
+      amount: amount,
+      category: category,
+    );
+    await Amplify.DataStore.save(updatedExtraPay);
+    return updatedExtraPay;
+  }
+
   Future<Groups> saveGroup({
     required String name,
     required String tenantId,

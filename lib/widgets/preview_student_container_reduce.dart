@@ -37,7 +37,6 @@ class PreviewStudentContainerReduce extends ConsumerWidget{
     final screenWidth = MediaQuery.of(context).size.width;
     final imageUrl = ref.watch(imageProvider(student.image!));
     Color containerColor;
-
     if(student.expirationPlan != null){
       final remainingDays = student.expirationPlan!.getDateTime().difference(DateTime.parse(date)).inDays;
       final remainRealDays = student.expirationPlan!.getDateTime().difference(DateTime.now()).inDays;

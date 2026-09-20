@@ -46,14 +46,6 @@ Future<void> uploadAttendanceFromCsv()async{
     }
     for (var i = 1; i < rows.length; i++ ){
     final  columns = rows[i].split(',');
-    final newAttendance = Attendance(
-      date: TemporalDate(DateTime.parse(columns[3])),
-      client_id: columns[4],
-      prof_id: columns[5],
-      student: mapStudents[columns[2]],
-      status: true
-    ); 
-    await Amplify.DataStore.save(newAttendance);
     safePrint('Finished Column $i');
     }
 }

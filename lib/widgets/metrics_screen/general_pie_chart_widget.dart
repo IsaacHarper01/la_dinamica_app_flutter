@@ -103,7 +103,6 @@ class PieChartWidget extends ConsumerWidget {
                       Expanded(
                         flex: 1,
                         child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8.0),
                             child: chartInfo(summary, itemNames,sections,total,colors),
@@ -170,10 +169,19 @@ class PieChartWidget extends ConsumerWidget {
         }
         for(var sale in data.sales.rangelist){
           final item = PieChartItem(
-            id: sale.product!.id,
-            label: sale.product!.name!, 
+            id: sale.product.id,
+            label: sale.product.name!, 
             value: sale.price!,
             type: "Productos",
+            );
+          financialItems.add(item);
+        }
+        for(var extra in data.extraPays.rangelist){
+          final item = PieChartItem(
+            id: extra.id,
+            label: extra.category ?? "Desconocido", 
+            value: extra.amount ?? 0,
+            type: "Extras",
             );
           financialItems.add(item);
         }
@@ -192,8 +200,8 @@ class PieChartWidget extends ConsumerWidget {
       case "Ingreso de productos":
         for(var sale in data.sales.rangelist){
           final item = PieChartItem(
-            id: sale.product!.id,
-            label: sale.product!.name!, 
+            id: sale.product.id,
+            label: sale.product.name!, 
             value: sale.price!,
             type: "Productos",
             );

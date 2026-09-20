@@ -23,15 +23,14 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Attendance type in your schema. */
-class Attendance extends amplify_core.Model {
-  static const classType = const _AttendanceModelType();
+/** This is an auto generated class representing the ExtraPay type in your schema. */
+class ExtraPay extends amplify_core.Model {
+  static const classType = const _ExtraPayModelType();
   final String id;
+  final double? _amount;
   final amplify_core.TemporalDate? _date;
-  final String? _client_id;
+  final String? _category;
   final String? _prof_id;
-  final bool? _status;
-  final Student? _student;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -42,48 +41,26 @@ class Attendance extends amplify_core.Model {
   @override
   String getId() => id;
   
-  AttendanceModelIdentifier get modelIdentifier {
-      return AttendanceModelIdentifier(
+  ExtraPayModelIdentifier get modelIdentifier {
+      return ExtraPayModelIdentifier(
         id: id
       );
   }
   
-  amplify_core.TemporalDate get date {
-    try {
-      return _date!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
+  double? get amount {
+    return _amount;
   }
   
-  String? get client_id {
-    return _client_id;
+  amplify_core.TemporalDate? get date {
+    return _date;
+  }
+  
+  String? get category {
+    return _category;
   }
   
   String? get prof_id {
     return _prof_id;
-  }
-  
-  bool? get status {
-    return _status;
-  }
-  
-  Student get student {
-    try {
-      return _student!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -94,16 +71,15 @@ class Attendance extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Attendance._internal({required this.id, required date, client_id, prof_id, status, required student, createdAt, updatedAt}): _date = date, _client_id = client_id, _prof_id = prof_id, _status = status, _student = student, _createdAt = createdAt, _updatedAt = updatedAt;
+  const ExtraPay._internal({required this.id, amount, date, category, prof_id, createdAt, updatedAt}): _amount = amount, _date = date, _category = category, _prof_id = prof_id, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Attendance({String? id, required amplify_core.TemporalDate date, String? client_id, String? prof_id, bool? status, required Student student}) {
-    return Attendance._internal(
+  factory ExtraPay({String? id, double? amount, amplify_core.TemporalDate? date, String? category, String? prof_id}) {
+    return ExtraPay._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
+      amount: amount,
       date: date,
-      client_id: client_id,
-      prof_id: prof_id,
-      status: status,
-      student: student);
+      category: category,
+      prof_id: prof_id);
   }
   
   bool equals(Object other) {
@@ -113,13 +89,12 @@ class Attendance extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Attendance &&
+    return other is ExtraPay &&
       id == other.id &&
+      _amount == other._amount &&
       _date == other._date &&
-      _client_id == other._client_id &&
-      _prof_id == other._prof_id &&
-      _status == other._status &&
-      _student == other._student;
+      _category == other._category &&
+      _prof_id == other._prof_id;
   }
   
   @override
@@ -129,13 +104,12 @@ class Attendance extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Attendance {");
+    buffer.write("ExtraPay {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("amount=" + (_amount != null ? _amount!.toString() : "null") + ", ");
     buffer.write("date=" + (_date != null ? _date!.format() : "null") + ", ");
-    buffer.write("client_id=" + "$_client_id" + ", ");
+    buffer.write("category=" + "$_category" + ", ");
     buffer.write("prof_id=" + "$_prof_id" + ", ");
-    buffer.write("status=" + (_status != null ? _status!.toString() : "null") + ", ");
-    buffer.write("student=" + (_student != null ? _student!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -143,74 +117,62 @@ class Attendance extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Attendance copyWith({amplify_core.TemporalDate? date, String? client_id, String? prof_id, bool? status, Student? student}) {
-    return Attendance._internal(
+  ExtraPay copyWith({double? amount, amplify_core.TemporalDate? date, String? category, String? prof_id}) {
+    return ExtraPay._internal(
       id: id,
+      amount: amount ?? this.amount,
       date: date ?? this.date,
-      client_id: client_id ?? this.client_id,
-      prof_id: prof_id ?? this.prof_id,
-      status: status ?? this.status,
-      student: student ?? this.student);
+      category: category ?? this.category,
+      prof_id: prof_id ?? this.prof_id);
   }
   
-  Attendance copyWithModelFieldValues({
-    ModelFieldValue<amplify_core.TemporalDate>? date,
-    ModelFieldValue<String?>? client_id,
-    ModelFieldValue<String?>? prof_id,
-    ModelFieldValue<bool?>? status,
-    ModelFieldValue<Student>? student
+  ExtraPay copyWithModelFieldValues({
+    ModelFieldValue<double?>? amount,
+    ModelFieldValue<amplify_core.TemporalDate?>? date,
+    ModelFieldValue<String?>? category,
+    ModelFieldValue<String?>? prof_id
   }) {
-    return Attendance._internal(
+    return ExtraPay._internal(
       id: id,
+      amount: amount == null ? this.amount : amount.value,
       date: date == null ? this.date : date.value,
-      client_id: client_id == null ? this.client_id : client_id.value,
-      prof_id: prof_id == null ? this.prof_id : prof_id.value,
-      status: status == null ? this.status : status.value,
-      student: student == null ? this.student : student.value
+      category: category == null ? this.category : category.value,
+      prof_id: prof_id == null ? this.prof_id : prof_id.value
     );
   }
   
-  Attendance.fromJson(Map<String, dynamic> json)  
+  ExtraPay.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _amount = (json['amount'] as num?)?.toDouble(),
       _date = json['date'] != null ? amplify_core.TemporalDate.fromString(json['date']) : null,
-      _client_id = json['client_id'],
+      _category = json['category'],
       _prof_id = json['prof_id'],
-      _status = json['status'],
-      _student = json['student'] != null
-        ? json['student']['serializedData'] != null
-          ? Student.fromJson(new Map<String, dynamic>.from(json['student']['serializedData']))
-          : Student.fromJson(new Map<String, dynamic>.from(json['student']))
-        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'date': _date?.format(), 'client_id': _client_id, 'prof_id': _prof_id, 'status': _status, 'student': _student?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'amount': _amount, 'date': _date?.format(), 'category': _category, 'prof_id': _prof_id, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'amount': _amount,
     'date': _date,
-    'client_id': _client_id,
+    'category': _category,
     'prof_id': _prof_id,
-    'status': _status,
-    'student': _student,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<AttendanceModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<AttendanceModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<ExtraPayModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<ExtraPayModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final AMOUNT = amplify_core.QueryField(fieldName: "amount");
   static final DATE = amplify_core.QueryField(fieldName: "date");
-  static final CLIENT_ID = amplify_core.QueryField(fieldName: "client_id");
+  static final CATEGORY = amplify_core.QueryField(fieldName: "category");
   static final PROF_ID = amplify_core.QueryField(fieldName: "prof_id");
-  static final STATUS = amplify_core.QueryField(fieldName: "status");
-  static final STUDENT = amplify_core.QueryField(
-    fieldName: "student",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Student'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Attendance";
-    modelSchemaDefinition.pluralName = "Attendances";
+    modelSchemaDefinition.name = "ExtraPay";
+    modelSchemaDefinition.pluralName = "ExtraPays";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -226,34 +188,27 @@ class Attendance extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.DATE,
-      isRequired: true,
+      key: ExtraPay.AMOUNT,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.double)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: ExtraPay.DATE,
+      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.date)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.CLIENT_ID,
+      key: ExtraPay.CATEGORY,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.PROF_ID,
+      key: ExtraPay.PROF_ID,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Attendance.STATUS,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.bool)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: Attendance.STUDENT,
-      isRequired: true,
-      targetNames: ['studentID'],
-      ofModelName: 'Student'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -272,29 +227,29 @@ class Attendance extends amplify_core.Model {
   });
 }
 
-class _AttendanceModelType extends amplify_core.ModelType<Attendance> {
-  const _AttendanceModelType();
+class _ExtraPayModelType extends amplify_core.ModelType<ExtraPay> {
+  const _ExtraPayModelType();
   
   @override
-  Attendance fromJson(Map<String, dynamic> jsonData) {
-    return Attendance.fromJson(jsonData);
+  ExtraPay fromJson(Map<String, dynamic> jsonData) {
+    return ExtraPay.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Attendance';
+    return 'ExtraPay';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Attendance] in your schema.
+ * of [ExtraPay] in your schema.
  */
-class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendance> {
+class ExtraPayModelIdentifier implements amplify_core.ModelIdentifier<ExtraPay> {
   final String id;
 
-  /** Create an instance of AttendanceModelIdentifier using [id] the primary key. */
-  const AttendanceModelIdentifier({
+  /** Create an instance of ExtraPayModelIdentifier using [id] the primary key. */
+  const ExtraPayModelIdentifier({
     required this.id});
   
   @override
@@ -312,7 +267,7 @@ class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendan
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'AttendanceModelIdentifier(id: $id)';
+  String toString() => 'ExtraPayModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -320,7 +275,7 @@ class AttendanceModelIdentifier implements amplify_core.ModelIdentifier<Attendan
       return true;
     }
     
-    return other is AttendanceModelIdentifier &&
+    return other is ExtraPayModelIdentifier &&
       id == other.id;
   }
   

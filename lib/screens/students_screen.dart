@@ -277,7 +277,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>
                                   } else {
                                     final attendance = attendedIds.where(
                                       (element) =>
-                                          element.student!.id == student.id,
+                                          element.student.id == student.id,
                                     );
                                     if (attendance.isNotEmpty) {
                                       await handleDeleteDash(
@@ -316,7 +316,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>
                                     backgroundColor:
                                         attendedIds.any(
                                               (attendant) =>
-                                                  attendant.student!.id ==
+                                                  attendant.student.id ==
                                                   student.id,
                                             )
                                             ? Colors.green.withAlpha(20)
@@ -324,7 +324,7 @@ class StudentsScreenState extends ConsumerState<StudentsScreen>
                                     trailingIcon:
                                         attendedIds.any(
                                               (attendant) =>
-                                                  attendant.student!.id ==
+                                                  attendant.student.id ==
                                                   student.id,
                                             )
                                             ? const Icon(

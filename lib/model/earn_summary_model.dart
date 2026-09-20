@@ -4,43 +4,67 @@ import 'package:la_dinamica_app/models/ModelProvider.dart';
 class FinancialSummary {
   final FinancialModel<Sale> sales;
   final FinancialModel<Payment> payments;
+  final FinancialModel<ExtraPay> extraPays;
   final FinancialModel<Expense> expenses;
   final Map<DateTime, double>? mapDate;
 
   FinancialSummary({
     required this.sales,
     required this.payments,
+    required this.extraPays,
     required this.expenses,
-    this.mapDate
+    this.mapDate,
   });
 
   factory FinancialSummary.empty() {
     return FinancialSummary(
-      sales: FinancialModel<Sale>(dayList: [], rangelist: [], totalDay: 0.0, totalRange: 0.0),
-      payments: FinancialModel<Payment>(dayList: [], rangelist: [], totalDay: 0.0, totalRange: 0.0),
-      expenses: FinancialModel<Expense>(dayList: [], rangelist: [], totalDay: 0.0, totalRange: 0.0),
-      mapDate: const {}
+      sales: FinancialModel<Sale>(
+        dayList: [],
+        rangelist: [],
+        totalDay: 0.0,
+        totalRange: 0.0,
+      ),
+      payments: FinancialModel<Payment>(
+        dayList: [],
+        rangelist: [],
+        totalDay: 0.0,
+        totalRange: 0.0,
+      ),
+      extraPays: FinancialModel<ExtraPay>(
+        dayList: [],
+        rangelist: [],
+        totalDay: 0.0,
+        totalRange: 0.0,
+      ),
+      expenses: FinancialModel<Expense>(
+        dayList: [],
+        rangelist: [],
+        totalDay: 0.0,
+        totalRange: 0.0,
+      ),
+      mapDate: const {},
     );
   }
 
   FinancialSummary copyWith({
     FinancialModel<Sale>? sales,
     FinancialModel<Payment>? payments,
+    FinancialModel<ExtraPay>? extraPays,
     FinancialModel<Expense>? expenses,
     Map<DateTime, double>? mapDate,
-  }){
+  }) {
     return FinancialSummary(
-        sales: sales ?? this.sales,
-        payments: payments ?? this.payments,
-        expenses: expenses ?? this.expenses,
-        mapDate: mapDate ?? this.mapDate,
-      );
+      sales: sales ?? this.sales,
+      payments: payments ?? this.payments,
+      extraPays: extraPays ?? this.extraPays,
+      expenses: expenses ?? this.expenses,
+      mapDate: mapDate ?? this.mapDate,
+    );
   }
 
-  FinancialSummary setMap(String option){
+  FinancialSummary setMap(String option) {
     Map<DateTime, double> map = {};
     switch (option) {
-
       case "Ingreso Neto":
         for (var payment in payments.rangelist) {
           DateTime dateKey = payment.date!.getDateTime();
@@ -60,6 +84,11 @@ class FinancialSummary {
           } else {
             map[dateKey] = amount;
           }
+        }
+        for (var extraPay in extraPays.rangelist) {
+          DateTime dateKey = extraPay.date!.getDateTime();
+          double amount = extraPay.amount ?? 0.0;
+          map[dateKey] = (map[dateKey] ?? 0.0) + amount;
         }
         for (var expense in expenses.rangelist) {
           DateTime dateKey = expense.date.getDateTime();
@@ -98,7 +127,15 @@ class FinancialSummary {
           }
         }
         break;
-        
+
+      case "Ingresos extra":
+        for (var extraPay in extraPays.rangelist) {
+          DateTime dateKey = extraPay.date!.getDateTime();
+          double amount = extraPay.amount ?? 0.0;
+          map[dateKey] = (map[dateKey] ?? 0.0) + amount;
+        }
+        break;
+
       case "Gastos":
         for (var expense in expenses.rangelist) {
           DateTime dateKey = expense.date.getDateTime();
