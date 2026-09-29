@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_dinamica_app/models/ModelProvider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:la_dinamica_app/providers/expenses_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:la_dinamica_app/widgets/metrics_screen/add_expenses_widget.dart';
 
 class HistoryExpensesScreen extends ConsumerStatefulWidget {
@@ -17,6 +22,52 @@ class _HistoryExpensesScreenState extends ConsumerState<HistoryExpensesScreen> {
   static const allCategories = 'Todas las categorías';
   String selectedCategory = allCategories;
   String descriptionFilter = '';
+
+  Future<void> _shareCsvReport(List<Expense> expenses) async {
+    final rows = <List<String>>[
+      ['Fecha', 'Categoría', 'Descripción', 'Monto'],
+    ];
+    var total = 0.0;
+    var last_description = expenses[0].description ?? "";
+    String name = "${expenses[0].name} ${expenses[0].description ?? ""}";
+
+    for (final expense in expenses) {
+      total += expense.amount;
+      rows.add([
+        expense.date.toString(),
+        expense.name,
+        expense.description ?? '',
+        expense.amount.toStringAsFixed(2),
+      ]);
+      if (last_description != expense.description){
+        name = "Reporte general";
+      }
+      last_description = expense.description ?? "";
+    }
+
+    rows.add(['', '', 'Total', total.toStringAsFixed(2)]);
+    final csvContent = const ListToCsvConverter().convert(rows);
+
+    try {
+      final directory = await getTemporaryDirectory();
+      final file = File(
+        '${directory.path}/expenses_report_${DateTime.now().millisecondsSinceEpoch}.csv',
+      );
+      await file.writeAsString(csvContent);
+      await SharePlus.instance.share(
+        ShareParams(
+          title: 'Compartir reporte CSV',
+          subject: name,
+          files: [XFile(file.path, mimeType: 'text/csv')],
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo generar el reporte: $error')),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -38,19 +89,36 @@ class _HistoryExpensesScreenState extends ConsumerState<HistoryExpensesScreen> {
         final normalizedDescription = descriptionFilter.trim().toLowerCase();
         final filteredExpenses =
             expenses.rangelist.where((expense) {
-              final matchesCategory =
-                  activeCategory == allCategories ||
-                  expense.name == activeCategory;
-              final matchesDescription =
-                  normalizedDescription.isEmpty ||
-                  (expense.description ?? '').toLowerCase().contains(
-                    normalizedDescription,
-                  );
-              return matchesCategory && matchesDescription;
-            }).toList();
+                final matchesCategory =
+                    activeCategory == allCategories ||
+                    expense.name == activeCategory;
+                final matchesDescription =
+                    normalizedDescription.isEmpty ||
+                    (expense.description ?? '').toLowerCase().contains(
+                      normalizedDescription,
+                    );
+                return matchesCategory && matchesDescription;
+              }).toList()
+              ..sort(
+                (first, second) => second.date.getDateTime().compareTo(
+                  first.date.getDateTime(),
+                ),
+              );
 
         return Scaffold(
-          appBar: AppBar(title: Center(child: Text("Gastos del periodo"))),
+          appBar: AppBar(
+            title: const Center(child: Text('Gastos del periodo')),
+            actions: [
+              IconButton(
+                tooltip: 'Compartir reporte CSV',
+                onPressed:
+                    filteredExpenses.isEmpty
+                        ? null
+                        : () => _shareCsvReport(filteredExpenses),
+                icon: const Icon(Icons.share),
+              ),
+            ],
+          ),
           body: Column(
             children: [
               Padding(
